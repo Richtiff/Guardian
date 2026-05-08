@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Guardian — Message Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #080d14;
+  --surface: #0f1620;
+  --card: #131c28;
+  --border: rgba(255,255,255,0.07);
+  --white: #f0f4ff;
+  --muted: #4a5568;
+  --muted-hi: #8896aa;
+  --gold: #f5c842;
+  --gold-dim: rgba(245,200,66,0.15);
+  --blue: #3b7fff;
+  --blue-dim: rgba(59,127,255,0.12);
+  --green: #22c97a;
+  --green-dim: rgba(34,201,122,0.12);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ── */
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 14px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.3px;
+}
+
+.logo span { color: var(--gold); }
+
+.badge {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(245,200,66,0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* ── STEPS ── */
+.step { display: none; animation: fadeUp 0.2s ease; }
+.step.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── STEP 1: UPLOAD ── */
+.hero {
+  text-align: center;
+  padding: 8px 0 28px;
+}
+
+.hero-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--gold-dim);
+  border: 1.5px solid rgba(245,200,66,0.25);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 16px;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.hero-sub {
+  font-size: 14px;
+  color: var(--muted-hi);
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.upload-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  border-radius: 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s;
+}
+
+.upload-btn input { display: none; }
+
+.upload-primary {
+  background: linear-gradient(135deg, #c9a030, var(--gold));
+  color: #0a0800;
+}
+
+.upload-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,200,66,0.3); }
+
+.upload-secondary {
+  background: var(--card);
+  border: 1.5px solid var(--border) !important;
+  color: var(--muted-hi);
+}
+
+.upload-secondary:hover { border-color: rgba(255,255,255,0.15) !important; color: var(--white); }
+
+.apps-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.divider span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.type-toggle {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--muted-hi);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.type-toggle:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
+
+/* Type input panel */
+.type-panel {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-top: 12px;
+  display: none;
+}
+
+.type-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.5px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.type-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 13px 14px;
+  resize: none;
+  outline: none;
+  min-height: 100px;
+}
+
+.type-textarea::placeholder { color: var(--muted); }
+
+.type-confirm {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2563eb, var(--blue));
+  border: none;
+  color: #fff;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.type-confirm:hover { opacity: 0.9; }
+
+/* ── STEP 2: READING ── */
+.reading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  position: relative;
+}
+
+.spinner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--gold);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.reading-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.reading-sub {
+  font-size: 13px;
+  color: var(--muted-hi);
+}
+
+/* ── THEIR MESSAGE BUBBLE ── */
+.their-bubble {
+  background: var(--amber-dim);
+  border: 1.5px solid rgba(245,158,11,0.2);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.their-bubble-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.their-bubble-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--white);
+}
+
+/* ── STEP 3: QUESTION ── */
+.question-card {
+  background: var(--blue-dim);
+  border: 1.5px solid rgba(59,127,255,0.2);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.question-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.question-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.question-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.q-option {
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted-hi);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.q-option:hover {
+  border-color: rgba(59,127,255,0.35);
+  color: var(--white);
+  background: rgba(59,127,255,0.06);
+}
+
+.q-option.selected {
+  border-color: var(--blue);
+  background: rgba(59,127,255,0.1);
+  color: var(--white);
+}
+
+.detail-input {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  margin-top: 10px;
+  display: none;
+}
+
+.detail-input::placeholder { color: var(--muted); }
+
+/* ── STEP 4: REPLY ── */
+.coach-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.coach-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.coach-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+.coach-score {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.coach-body {
+  padding: 16px;
+}
+
+.suggested-reply {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--white);
+  font-weight: 500;
+  padding: 14px;
+  background: var(--blue-dim);
+  border-radius: 10px;
+  border-left: 3px solid var(--blue);
+  margin-bottom: 10px;
+}
+
+.reply-why {
+  font-size: 12.5px;
+  color: var(--muted-hi);
+  line-height: 1.6;
+}
+
+.refine-section {
+  padding: 0 16px 16px;
+}
+
+.refine-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted-hi);
+  margin-bottom: 8px;
+}
+
+.refine-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.refine-btn {
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted-hi);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.refine-btn:hover { border-color: rgba(59,127,255,0.3); color: var(--blue); }
+
+.refine-use {
+  background: var(--green-dim);
+  border-color: rgba(34,201,122,0.3) !important;
+  color: var(--green) !important;
+}
+
+.refine-use:hover { background: rgba(34,201,122,0.18) !important; }
+
+/* ── STEP 5: CONFIRMED ── */
+.confirmed-card {
+  background: var(--green-dim);
+  border: 1.5px solid rgba(34,201,122,0.25);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.confirmed-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.confirmed-reply {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--white);
+  font-weight: 500;
+  padding: 14px;
+  background: rgba(34,201,122,0.07);
+  border-radius: 10px;
+  border-left: 3px solid var(--green);
+  margin-bottom: 14px;
+}
+
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.copy-btn {
+  flex: 1;
+  padding: 13px;
+  background: linear-gradient(135deg, #1fbb70, var(--green));
+  border: none;
+  border-radius: 10px;
+  color: #041209;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.copy-btn:hover { opacity: 0.9; }
+
+.timing-note {
+  font-size: 12.5px;
+  color: var(--amber);
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--amber-dim);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.new-check-btn {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--muted-hi);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.new-check-btn:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1a2535;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--white);
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 999;
+  transition: transform 0.25s ease;
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,13,20,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  display: none;
+}
+
+.loading-overlay.show { display: flex; }
+
+.loading-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  margin-top: 16px;
+}
+
+.loading-sub {
+  font-size: 12px;
+  color: var(--muted-hi);
+  margin-top: 5px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">Guard<span>ian</span></div>
+    <div class="badge">MESSAGE COACH</div>
+  </div>
+
+  <!-- STEP 1: UPLOAD -->
+  <div class="step active" id="step1">
+    <div class="hero">
+      <div class="hero-icon">💬</div>
+      <div class="hero-title">Message Coach</div>
+      <div class="hero-sub">Upload their message and I'll work out exactly what to say</div>
+    </div>
+
+    <div class="upload-grid">
+      <label class="upload-btn upload-primary">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Take photo
+        <input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)">
+      </label>
+      <label class="upload-btn upload-secondary">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Screenshot
+        <input type="file" accept="image/*" onchange="handleUpload(event)">
+      </label>
+    </div>
+
+    <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · Email · any app</div>
+
+    <div class="divider"><span>or</span></div>
+
+    <button class="type-toggle" onclick="toggleType()">Type their message</button>
+
+    <div class="type-panel" id="typePanel">
+      <div class="type-panel-header">
+        TYPE THEIR MESSAGE
+        <button class="close-btn" onclick="toggleType()">×</button>
+      </div>
+      <textarea class="type-textarea" id="typeInput" rows="4" placeholder="Paste or type what they sent you..."></textarea>
+      <button class="type-confirm" onclick="confirmType()">Check this message →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: READING -->
+  <div class="step" id="step2">
+    <div class="reading">
+      <div class="spinner"></div>
+      <div class="reading-title" id="readingTitle">Reading message...</div>
+      <div class="reading-sub" id="readingSub">Give me a second</div>
+    </div>
+  </div>
+
+  <!-- STEP 3: QUESTION -->
+  <div class="step" id="step3">
+    <div class="their-bubble" id="theirBubble3">
+      <div class="their-bubble-label">Their message</div>
+      <div class="their-bubble-text" id="theirText3"></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-label">Before I suggest a reply</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="question-options" id="questionOptions"></div>
+      <textarea class="detail-input" id="detailInput" rows="2" placeholder="Add any extra detail here..."></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 4: REPLY -->
+  <div class="step" id="step4">
+    <div class="their-bubble" id="theirBubble4">
+      <div class="their-bubble-label">Their message</div>
+      <div class="their-bubble-text" id="theirText4"></div>
+    </div>
+
+    <div class="coach-card">
+      <div class="coach-header">
+        <span class="coach-label">💬 Message Coach says</span>
+        <span class="coach-score" id="coachScore"></span>
+      </div>
+      <div class="coach-body">
+        <div class="suggested-reply" id="suggestedReply"></div>
+        <div class="reply-why" id="replyWhy"></div>
+      </div>
+      <div class="refine-section">
+        <div class="refine-label">How does this feel?</div>
+        <div class="refine-row">
+          <button class="refine-btn" onclick="refine('soft')">Too soft</button>
+          <button class="refine-btn" onclick="refine('firm')">Too firm</button>
+          <button class="refine-btn" onclick="refine('change')">Change something</button>
+          <button class="refine-btn refine-use" onclick="confirm()">✓ Use this</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: CONFIRMED -->
+  <div class="step" id="step5">
+    <div class="confirmed-card">
+      <div class="confirmed-label">✓ Ready to send</div>
+      <div class="confirmed-reply" id="confirmedReply"></div>
+      <div class="action-row">
+        <button class="copy-btn" onclick="copyReply()">Copy reply</button>
+      </div>
+      <div class="timing-note" id="timingNote" style="display:none;"></div>
+    </div>
+    <button class="new-check-btn" onclick="reset()">← Check another message</button>
+  </div>
+
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Working...</div>
+  <div class="loading-sub" id="loadingSub"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = '/api/anthropic';
+
+var state = {
+  theirMsg: '',
+  answer: '',
+  question: '',
+  reply: '',
+  score: 0,
+  timing: ''
+};
+
+// ── NAVIGATION ──────────────────────────────────────
+
+function showStep(n) {
+  for (var i = 1; i <= 5; i++) {
+    var el = document.getElementById('step' + i);
+    el.classList.remove('active');
+  }
+  var target = document.getElementById('step' + n);
+  target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showLoading(text, sub) {
+  document.getElementById('loadingText').textContent = text || 'Working...';
+  document.getElementById('loadingSub').textContent = sub || '';
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2800);
+}
+
+// ── TYPE INPUT ──────────────────────────────────────
+
+function toggleType() {
+  var panel = document.getElementById('typePanel');
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  if (panel.style.display === 'block') {
+    document.getElementById('typeInput').focus();
+  }
+}
+
+function confirmType() {
+  var val = document.getElementById('typeInput').value.trim();
+  if (!val) { toast('Please type their message first'); return; }
+  state.theirMsg = val;
+  document.getElementById('typePanel').style.display = 'none';
+  askQuestion();
+}
+
+// ── UPLOAD ──────────────────────────────────────────
+
+async function handleUpload(event) {
+  var file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  showLoading('Reading message...', 'Give me a second');
+
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(',')[1];
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 500,
+          messages: [{
+            role: 'user',
+            content: [{
+              type: 'image',
+              source: { type: 'base64', media_type: file.type, data: b64 }
+            }, {
+              type: 'text',
+              text: 'Read this message screenshot. Extract all the message text you can see. Return ONLY the message text itself — no explanation, no labels. If you can only partially read it add [PARTIAL] at the end.'
+            }]
+          }]
+        })
+      });
+
+      var data = await res.json();
+      var extracted = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim());
+
+      if (extracted && extracted.length > 5) {
+        state.theirMsg = extracted.replace('[PARTIAL]', '').trim();
+        hideLoading();
+        askQuestion();
+      } else {
+        hideLoading();
+        toast("Couldn't read the screenshot clearly — try typing the message instead");
+      }
+    } catch (e) {
+      hideLoading();
+      toast('Upload failed — please try again');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── ASK QUESTION ────────────────────────────────────
+
+async function askQuestion() {
+  showLoading('Reading it...', 'Working out what to ask you');
+
+  document.getElementById('theirText3').textContent = state.theirMsg;
+  document.getElementById('theirText4').textContent = state.theirMsg;
+
+  try {
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 300,
+        messages: [{
+          role: 'user',
+          content: 'Family court England and Wales. Parent received: "' + state.theirMsg + '". I need to ask ONE question to understand the context before suggesting a reply. What is the most important question? Examples: "Were the kids actually back late?" "Did they eat before handover?" "Is any of this true?" "Was this agreed in your order?" Keep it short and conversational. Return ONLY JSON: {"question":"<question text>","options":["<option1>","<option2>","<option3>"]}'
+        }]
+      })
+    });
+
+    var data = await res.json();
+    var raw = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim()).replace(/```json|```/g, '').trim();
+    var parsed = null;
+    try { parsed = JSON.parse(raw); } catch(e) {
+      var m = raw.match(/\{[\s\S]*\}/);
+      if (m) try { parsed = JSON.parse(m[0]); } catch(e2) {}
+    }
+
+    hideLoading();
+
+    if (parsed && parsed.question) {
+      document.getElementById('questionText').textContent = parsed.question;
+      state.question = parsed.question;
+
+      var opts = document.getElementById('questionOptions');
+      opts.innerHTML = '';
+      var options = parsed.options || ['Yes', 'No', 'Partly'];
+
+      options.forEach(function(opt) {
+        var btn = document.createElement('button');
+        btn.className = 'q-option';
+        btn.textContent = opt;
+        btn.onclick = function() {
+          document.querySelectorAll('.q-option').forEach(function(b) { b.classList.remove('selected'); });
+          btn.classList.add('selected');
+          state.answer = opt;
+          document.getElementById('detailInput').style.display = 'block';
+          setTimeout(generateReply, 500);
+        };
+        opts.appendChild(btn);
+      });
+
+      showStep(3);
+    } else {
+      generateReplyDirect();
+    }
+  } catch(e) {
+    hideLoading();
+    generateReplyDirect();
+  }
+}
+
+// ── GENERATE REPLY ───────────────────────────────────
+
+async function generateReply() {
+  var detail = document.getElementById('detailInput').value.trim();
+  var context = 'Question: "' + state.question + '". Answer: "' + state.answer + '"' + (detail ? '. Extra info: "' + detail + '"' : '');
+  await _generateReply(context);
+}
+
+async function generateReplyDirect() {
+  await _generateReply('No extra context available.');
+}
+
+async function _generateReply(context) {
+  showLoading('Writing your reply...', 'Keeping it human');
+
+  try {
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 400,
+        messages: [{
+          role: 'user',
+          content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Context from parent: ' + context + '\n\nWrite a reply. STRICT RULES:\n1. Sound like a real parent texting — NOT a solicitor writing a letter\n2. Short everyday words only\n3. BANNED: please ensure, adequate, going forward, in accordance, I note that, address this properly, please provide specific dates, constructively\n4. NEVER assume facts not confirmed — if food not mentioned do not mention food\n5. Only address what the parent confirmed is true\n6. Maximum 2 sentences — 1 is better\n7. Specific beats vague: say "pasta at half five" not "the children had eaten"\n8. Enough detail to close the conversation — not so brief it invites follow-up\n9. Ignore swearing completely\n\nReturn ONLY JSON: {"reply":"<the reply>","why":"<1 sentence why this works>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<1 sentence when and why to send>"}'
+        }]
+      })
+    });
+
+    var data = await res.json();
+    var raw = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim()).replace(/```json|```/g, '').trim();
+    var parsed = null;
+    try { parsed = JSON.parse(raw); } catch(e) {
+      var m = raw.match(/\{[\s\S]*\}/);
+      if (m) try { parsed = JSON.parse(m[0]); } catch(e2) {}
+    }
+
+    hideLoading();
+
+    if (parsed && parsed.reply) {
+      state.reply = parsed.reply;
+      state.score = parsed.score || 8;
+      state.timing = parsed.timingNote || '';
+
+      document.getElementById('suggestedReply').textContent = parsed.reply;
+      document.getElementById('replyWhy').textContent = parsed.why || '';
+
+      var scoreEl = document.getElementById('coachScore');
+      scoreEl.textContent = (parsed.score || 8) + '/10';
+      scoreEl.style.color = (parsed.score >= 8) ? 'var(--green)' : (parsed.score >= 6) ? 'var(--amber)' : 'var(--red)';
+
+      showStep(4);
+    } else {
+      toast('Could not generate a reply — please try again');
+      showStep(1);
+    }
+  } catch(e) {
+    hideLoading();
+    toast('Something went wrong — please try again');
+    showStep(1);
+  }
+}
+
+// ── REFINE ───────────────────────────────────────────
+
+async function refine(type) {
+  var instructions = {
+    soft: 'Too soft — make it firmer and more boundaried while still sounding human and natural.',
+    firm: 'Too firm — soften it slightly while keeping it factual and calm.',
+    change: 'Improve it — make it more natural and human sounding.'
+  };
+
+  var prev = document.getElementById('suggestedReply').textContent;
+  document.getElementById('suggestedReply').textContent = 'Updating...';
+
+  try {
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 150,
+        messages: [{
+          role: 'user',
+          content: 'Their message: "' + state.theirMsg + '". Current reply: "' + state.reply + '". Feedback: ' + instructions[type] + ' Rewrite it. Sound like a real human parent. Short words. Max 2 sentences. No legal language at all. Return ONLY the new reply text.'
+        }]
+      })
+    });
+
+    var data = await res.json();
+    var refined = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim()).replace(/^["']|["']$/g, '');
+
+    if (refined && refined.length > 5) {
+      state.reply = refined;
+      document.getElementById('suggestedReply').textContent = refined;
+    } else {
+      document.getElementById('suggestedReply').textContent = prev;
+    }
+  } catch(e) {
+    document.getElementById('suggestedReply').textContent = prev;
+  }
+}
+
+// ── CONFIRM ──────────────────────────────────────────
+
+function confirm() {
+  document.getElementById('confirmedReply').textContent = state.reply;
+
+  if (state.timing) {
+    var timingEl = document.getElementById('timingNote');
+    timingEl.textContent = '⏰ ' + state.timing;
+    timingEl.style.display = 'block';
+  }
+
+  showStep(5);
+}
+
+function copyReply() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(state.reply).then(function() {
+      toast('✅ Copied — ready to send');
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = state.reply;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('✅ Copied — ready to send');
+  }
+}
+
+function reset() {
+  state = { theirMsg: '', answer: '', question: '', reply: '', score: 0, timing: '' };
+  document.getElementById('typeInput').value = '';
+  document.getElementById('detailInput').value = '';
+  document.getElementById('detailInput').style.display = 'none';
+  document.getElementById('typePanel').style.display = 'none';
+  document.getElementById('timingNote').style.display = 'none';
+  showStep(1);
+}
+</script>
+</body>
+</html>
+HTMLEOF
