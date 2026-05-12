@@ -738,7 +738,12 @@ html, body {
       </div>
       <div class="timing-note" id="timingNote" style="display:none;"></div>
     </div>
-    <button class="new-check-btn" onclick="reset()">← Check another message</button>
+    <div style="background:#131c28;border:1.5px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;margin-bottom:12px;">
+<div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#8896aa;margin-bottom:10px;">Edit to sound like you — then re-score</div>
+<textarea id="editInput" rows="3" placeholder="Change any words to sound more like you..." style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;color:#f0f4ff;font-family:Inter,sans-serif;font-size:14px;padding:11px 13px;resize:none;outline:none;margin-bottom:10px;"></textarea>
+<button onclick="rescoreReply()" style="width:100%;padding:12px;background:rgba(59,127,255,0.12);border:1.5px solid rgba(59,127,255,0.25);border-radius:10px;color:#3b7fff;font-family:Syne,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Re-score my version →</button>
+<div id="rescoreResult" style="display:none;margin-top:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid #f5c842;font-size:13px;color:#8896aa;line-height:1.6;"></div>
+</div><button class="new-check-btn" onclick="reset()">← Check another message</button>
   </div>
 
 </div>
@@ -1060,7 +1065,26 @@ function copyReply() {
   }
 }
 
-function reset() {
+async function rescoreReply() {
+  var edited = document.getElementById('editInput').value.trim();
+  if (!edited) { toast('Type your version first'); return; }
+  var btn = document.querySelector('[onclick="rescoreReply()"]');
+  btn.textContent = 'Scoring...';
+  try {
+    var res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200, messages: [{ role: 'user', content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Parent wants to send: "' + edited + '". Score out of 10 for court safety and de-escalation. Honest score. Return ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence>","tip":"<1 sentence or empty string>"}' }] }) });
+    var data = await res.json();
+    var raw = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed = null;
+    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2) {} }
+    btn.textContent = 'Re-score my version →';
+    if (parsed) {
+      var color = parsed.score >= 8 ? '#22c97a' : parsed.score >= 6 ? '#f59e0b' : '#ef4444';
+      var el = document.getElementById('rescoreResult');
+      el.style.display = 'block';
+      el.innerHTML = '<span style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;color:' + color + '">' + parsed.score + '/10</span> <span style="font-size:13px;margin-left:8px;">' + (parsed.verdict||'') + '</span>' + (parsed.tip ? '<div style="margin-top:8px;font-size:12px;color:#f59e0b;">💡 ' + parsed.tip + '</div>' : '');
+    }
+  } catch(e) { btn.textContent = 'Re-score my version →'; toast('Could not score — try again'); }
+}function reset() {
   state = { theirMsg: '', answer: '', question: '', reply: '', score: 0, timing: '' };
   document.getElementById('typeInput').value = '';
   document.getElementById('detailInput').value = '';
