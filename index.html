@@ -696,7 +696,7 @@ html, body {
       <div class="question-label">Before I suggest a reply</div>
       <div class="question-text" id="questionText"></div>
       <div class="question-options" id="questionOptions"></div>
-      <textarea class="detail-input" id="detailInput" rows="2" placeholder="Add any extra detail here..."></textarea>
+      <textarea class="detail-input" id="detailInput" rows="2" placeholder="Add any extra detail here..."></textarea><button id="continueBtn" onclick="generateReply()" style="display:none;width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,#3b7fff);border:none;border-radius:10px;color:#fff;font-family:Syne,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;">Get my reply →</button>
     </div>
   </div>
 
@@ -912,7 +912,7 @@ async function askQuestion() {
           btn.classList.add('selected');
           state.answer = opt;
           document.getElementById('detailInput').style.display = 'block';
-          setTimeout(generateReply, 500);
+         document.getElementById('continueBtn').style.display = 'block';
         };
         opts.appendChild(btn);
       });
