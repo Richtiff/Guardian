@@ -1071,7 +1071,7 @@ async function rescoreReply() {
   var btn = document.querySelector('[onclick="rescoreReply()"]');
   btn.textContent = 'Scoring...';
   try {
-    var res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200, messages: [{ role: 'user', content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Parent wants to send: "' + edited + '". Score out of 10 for court safety and de-escalation. Honest score. Return ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence>","tip":"<1 sentence or empty string>"}' }] }) });
+    var res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200, messages: [{ role: 'user', content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Parent wants to send: "' + edited + '".Score this reply out of 10. Calm, factual and brief is GOOD. Defensive, assumptive or legal language is BAD. NEVER suggest adding empathy phrases. Return ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence — is it safe to send?>","tip":"<1 sentence improvement or blank if good>"} ' }] }) });
     var data = await res.json();
     var raw = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed = null;
