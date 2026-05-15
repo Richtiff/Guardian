@@ -126,8 +126,19 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
 .coach-body { padding: 16px; }
 .breathe-note { font-size: 12px; color: var(--muted-hi); text-align: center; padding: 8px; margin-bottom: 12px; font-style: italic; }
 .suggested-reply { font-size: 17px; line-height: 1.7; color: var(--white); font-weight: 500; padding: 14px; background: var(--blue-dim); border-radius: 10px; border-left: 3px solid var(--blue); margin-bottom: 8px; }
-.reply-why { font-size: 12px; color: var(--muted-hi); line-height: 1.5; margin-bottom: 4px; }
-.timing-note { font-size: 12px; color: var(--amber); padding: 8px 10px; background: var(--amber-dim); border-radius: 8px; margin-top: 8px; }
+.reply-why { font-size: 12px; color: var(--muted-hi); line-height: 1.5; margin-bottom: 12px; }
+.timing-note { display: none; }
+.timing-card { border-radius: 14px; padding: 14px 16px; margin-top: 4px; display: none; }
+.timing-urgent { background: var(--red-dim); border: 2px solid rgba(239,68,68,0.4); }
+.timing-soon { background: var(--amber-dim); border: 2px solid rgba(245,158,11,0.4); }
+.timing-wait { background: var(--blue-dim); border: 2px solid rgba(59,127,255,0.25); }
+.timing-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.timing-headline { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; }
+.timing-urgent .timing-headline { color: var(--red); }
+.timing-soon .timing-headline { color: var(--amber); }
+.timing-wait .timing-headline { color: var(--blue); }
+.timing-countdown { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--white); }
+.timing-reason { font-size: 12px; color: var(--muted-hi); line-height: 1.5; margin-top: 4px; }
 .refine-section { padding: 0 16px 16px; }
 .refine-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted-hi); margin-bottom: 8px; }
 .refine-row { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -396,7 +407,13 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
           <div class="breathe-note">Take a breath before you decide.</div>
           <div class="suggested-reply" id="suggestedReply"></div>
           <div class="reply-why" id="replyWhy"></div>
-          <div class="timing-note" id="timingNote" style="display:none;"></div>
+          <div class="timing-card" id="timingCard">
+            <div class="timing-top">
+              <span class="timing-headline" id="timingHeadline"></span>
+              <span class="timing-countdown" id="timingCountdown"></span>
+            </div>
+            <div class="timing-reason" id="timingReason"></div>
+          </div>
         </div>
         <div class="refine-section">
           <div class="refine-label">How does this feel?</div>
@@ -456,6 +473,7 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
 <script>
 const API_URL = '/api/anthropic';
 var cooldownInterval = null;
+var timingInterval = null;
 var recognition = null;
 var isRecording = false;
 
@@ -666,6 +684,7 @@ function startCooldown() {
 
 function skipCooldown() {
   if (cooldownInterval) clearInterval(cooldownInterval);
+  if (timingInterval) clearInterval(timingInterval);
   proceedToQuestion();
 }
 
@@ -707,8 +726,13 @@ function proceedToQuestion(parsed) {
   var flagBanner = document.getElementById('flagBanner');
   if (state.flag && state.flagText) {
     var cls = state.flag === 'red' ? 'flag-red' : state.flag === 'amber' ? 'flag-amber' : 'flag-green';
-    var icon = state.flag === 'red' ? '🔴' : state.flag === 'amber' ? '🟡' : '🟢';
-    flagBanner.innerHTML = '<div class="flag-card ' + cls + '">' + icon + ' ' + state.flagText + '</div>';
+    var flagLabels = {
+      red:   { icon: '🔴', label: 'Serious allegation — reply carefully' },
+      amber: { icon: '🟡', label: 'Loaded message — stay factual' },
+      green: { icon: '🟢', label: 'Routine message — keep it brief' }
+    };
+    var fl = flagLabels[state.flag] || flagLabels['green'];
+    flagBanner.innerHTML = '<div class="flag-card ' + cls + '">' + fl.icon + ' <strong>' + fl.label + '</strong> &nbsp;·&nbsp; ' + state.flagText + '</div>';
   }
 
   if (parsed && parsed.question) {
@@ -859,11 +883,33 @@ async function _generateReply(context) {
       document.getElementById('suggestedReply').textContent = parsed.reply || '(No reply needed — silence is the stronger position here.)';
       document.getElementById('replyWhy').textContent = parsed.why || '';
 
-      if (parsed.timingNote) {
-        document.getElementById('timingNote').textContent = '⏰ ' + parsed.timingNote;
-        document.getElementById('timingNote').style.display = 'block';
+      // Timing card
+      if (timingInterval) clearInterval(timingInterval);
+      var timingCard = document.getElementById('timingCard');
+      if (parsed.timing && parsed.timingNote) {
+        var timingMap = {
+          'now':       { cls: 'timing-urgent', label: '⚠️ Send now', minutes: 120 },
+          'morning':   { cls: 'timing-soon',   label: '⏰ Send today', minutes: 480 },
+          'can_wait':  { cls: 'timing-wait',   label: '🕐 No rush', minutes: 1440 }
+        };
+        var t = timingMap[parsed.timing] || timingMap['morning'];
+        timingCard.className = 'timing-card ' + t.cls;
+        document.getElementById('timingHeadline').textContent = t.label;
+        document.getElementById('timingReason').textContent = parsed.timingNote;
+        var secondsLeft = t.minutes * 60;
+        function updateCountdown() {
+          var h = Math.floor(secondsLeft / 3600);
+          var m = Math.floor((secondsLeft % 3600) / 60);
+          var s = secondsLeft % 60;
+          document.getElementById('timingCountdown').textContent =
+            (h > 0 ? h + 'h ' : '') + m + 'm ' + (h === 0 ? s + 's' : '');
+          if (secondsLeft > 0) secondsLeft--;
+        }
+        updateCountdown();
+        timingInterval = setInterval(updateCountdown, 1000);
+        timingCard.style.display = 'block';
       } else {
-        document.getElementById('timingNote').style.display = 'none';
+        timingCard.style.display = 'none';
       }
 
       // What to do now tips
@@ -1024,6 +1070,7 @@ function reset() {
   document.getElementById('incomingPanel').style.display = 'none';
   document.getElementById('outgoingPanel').style.display = 'none';
   if (cooldownInterval) clearInterval(cooldownInterval);
+  if (timingInterval) clearInterval(timingInterval);
   showStep('1');
 }
 </script>
