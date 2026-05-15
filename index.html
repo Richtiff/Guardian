@@ -179,6 +179,17 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
 .silence-text { font-size: 13px; color: var(--muted-hi); line-height: 1.6; margin-bottom: 14px; }
 .silence-proceed { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 12px; cursor: pointer; }
 
+/* FEEDBACK */
+.feedback-row { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--border); }
+.feedback-label { font-size: 12px; color: var(--muted); }
+.feedback-btn { width: 40px; height: 40px; border-radius: 10px; border: 1.5px solid var(--border); background: rgba(255,255,255,0.03); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.feedback-btn:hover { transform: scale(1.1); }
+.feedback-btn.up:hover { border-color: rgba(34,201,122,0.4); background: var(--green-dim); }
+.feedback-btn.down:hover { border-color: rgba(239,68,68,0.4); background: var(--red-dim); }
+.feedback-btn.selected-up { border-color: var(--green); background: var(--green-dim); }
+.feedback-btn.selected-down { border-color: var(--red); background: var(--red-dim); }
+.feedback-thanks { font-size: 12px; color: var(--muted-hi); text-align: center; padding: 10px; display: none; }
+
 /* TOAST / LOADING */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a2535; border: 1px solid rgba(255,255,255,0.1); color: var(--white); padding: 11px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 999; transition: transform 0.25s ease; white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
@@ -383,6 +394,12 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
             <button class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
           </div>
         </div>
+        <div class="feedback-row">
+          <span class="feedback-label">Was this reply helpful?</span>
+          <button class="feedback-btn up" id="thumbsUp" onclick="submitFeedback('up')">👍</button>
+          <button class="feedback-btn down" id="thumbsDown" onclick="submitFeedback('down')">👎</button>
+        </div>
+        <div class="feedback-thanks" id="feedbackThanks">Thanks — that helps us improve Guardian.</div>
       </div>
     </div>
   </div>
@@ -799,7 +816,7 @@ async function _generateReply(context) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 400,
         system: GUARDIAN_SYSTEM,
         messages: [{ role: 'user', content: prompt }]
@@ -934,6 +951,22 @@ async function rescoreReply() {
       state.reply = edited;
     }
   } catch(e) { btn.textContent = 'Re-score my version →'; toast('Could not score — try again'); }
+}
+
+// ── FEEDBACK ──
+function submitFeedback(type) {
+  document.getElementById('thumbsUp').classList.remove('selected-up');
+  document.getElementById('thumbsDown').classList.remove('selected-down');
+  if (type === 'up') {
+    document.getElementById('thumbsUp').classList.add('selected-up');
+  } else {
+    document.getElementById('thumbsDown').classList.add('selected-down');
+  }
+  document.getElementById('feedbackThanks').style.display = 'block';
+  // Log to localStorage for review
+  var log = JSON.parse(localStorage.getItem('guardianFeedback') || '[]');
+  log.push({ type: type, score: state.score, flag: state.flag, ts: new Date().toISOString() });
+  localStorage.setItem('guardianFeedback', JSON.stringify(log));
 }
 
 // ── LOG SENT ──
