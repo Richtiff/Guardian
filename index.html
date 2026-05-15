@@ -179,6 +179,19 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
 .silence-text { font-size: 13px; color: var(--muted-hi); line-height: 1.6; margin-bottom: 14px; }
 .silence-proceed { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 12px; cursor: pointer; }
 
+/* WHAT TO DO NOW */
+.tip-card { background: rgba(245,200,66,0.06); border: 1.5px solid rgba(245,200,66,0.15); border-radius: 12px; padding: 12px 14px; margin: 0 16px 14px; }
+.tip-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.tip-items { display: flex; flex-direction: column; gap: 6px; }
+.tip-item { font-size: 13px; color: var(--muted-hi); line-height: 1.5; display: flex; gap: 8px; }
+.tip-item::before { content: '→'; color: var(--gold); flex-shrink: 0; }
+
+/* TIPS */
+.tip-card { margin: 0 16px 16px; background: rgba(245,200,66,0.06); border: 1.5px solid rgba(245,200,66,0.2); border-radius: 12px; padding: 12px 14px; }
+.tip-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.tip-item { font-size: 13px; color: var(--muted-hi); line-height: 1.6; padding: 4px 0 4px 16px; position: relative; }
+.tip-item::before { content: '→'; position: absolute; left: 0; color: var(--gold); font-size: 12px; }
+
 /* FEEDBACK */
 .feedback-row { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--border); }
 .feedback-label { font-size: 12px; color: var(--muted); }
@@ -394,6 +407,10 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
             <button class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
           </div>
         </div>
+        <div class="tip-card" id="tipCard" style="display:none;">
+          <div class="tip-label">💡 What to do now</div>
+          <div class="tip-items" id="tipItems"></div>
+        </div>
         <div class="feedback-row">
           <span class="feedback-label">Was this reply helpful?</span>
           <button class="feedback-btn up" id="thumbsUp" onclick="submitFeedback('up')">👍</button>
@@ -479,7 +496,7 @@ var GUARDIAN_SYSTEM = [
   '- No legal jargon.',
   '- No unnecessary apology.',
   '- No attempt to win the argument.',
-  '- No empathy phrases like "I hear you" or "I understand your concerns".',
+  '- Never end a reply with an open invitation. Do not use: "Let me know if...", "Feel free to...", "Happy to discuss...", "If you have any concerns...". These invite the next conflict. State the facts and stop.',
   '- No corporate phrases like "going forward", "please ensure", "reach out", "happy to chat".',
   '- Never say "picked up" or "dropped off".',
   '',
@@ -806,9 +823,10 @@ async function _generateReply(context) {
     '- If no reply is needed, return empty string for reply and explain why in the "why" field.',
     '- Do not add empathy openers. Do not start with "I understand" or "I appreciate".',
     '- Do not start with the other parent\'s name.',
+    '- For tips: give 2 short practical actions the parent should take RIGHT NOW — log the time, screenshot this, note what the child said, check the order. Specific not generic.',
     '',
     'Return ONLY JSON:',
-    '{"reply":"<reply text or empty string>","why":"<one line explaining the approach>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line on when to send or blank>","dangerous":false,"dangerReasons":"<blank or reasons if score below 5>"}'
+    '{"reply":"<reply text or empty string>","why":"<one line explaining the approach>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line on when to send or blank>","dangerous":false,"dangerReasons":"<blank or reasons if score below 5>","tips":["<practical action 1>","<practical action 2>"]}'
   ].join('\n');
 
   try {
@@ -846,6 +864,21 @@ async function _generateReply(context) {
         document.getElementById('timingNote').style.display = 'block';
       } else {
         document.getElementById('timingNote').style.display = 'none';
+      }
+
+      // What to do now tips
+      if (parsed.tips && parsed.tips.length > 0) {
+        var tipItems = document.getElementById('tipItems');
+        tipItems.innerHTML = '';
+        parsed.tips.forEach(function(tip) {
+          var div = document.createElement('div');
+          div.className = 'tip-item';
+          div.textContent = tip;
+          tipItems.appendChild(div);
+        });
+        document.getElementById('tipCard').style.display = 'block';
+      } else {
+        document.getElementById('tipCard').style.display = 'none';
       }
 
       if (parsed.score < 5 && parsed.dangerReasons) {
