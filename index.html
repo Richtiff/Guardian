@@ -129,10 +129,10 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 /* QA */
 .qa-wrap { display:flex; flex-direction:column; height:calc(100vh - 140px); }
 .qa-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding-bottom:12px; scroll-behavior:smooth; }
-.qa-msg { max-width:88%; font-size:14px; line-height:1.7; padding:13px 15px; border-radius:16px; }
-.qa-user { align-self:flex-end; background:var(--blue); color:white; border-radius:16px 16px 4px 16px; }
-.qa-guardian { align-self:flex-start; background:var(--card); border:1.5px solid var(--border); border-radius:4px 16px 16px 16px; color:var(--white); }
-.qa-guardian-name { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:6px; }
+.qa-msg { max-width:92%; font-size:14px; line-height:1.8; }
+.qa-user { align-self:flex-end; background:var(--blue); color:white; padding:11px 14px; border-radius:16px 16px 4px 16px; }
+.qa-guardian { align-self:flex-start; color:var(--white); padding:4px 0; }
+.qa-guardian-name { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:8px; }
 .qa-followups { align-self:flex-start; display:flex; flex-direction:column; gap:7px; max-width:88%; }
 .qa-followup-btn { padding:10px 14px; background:rgba(59,127,255,0.08); border:1.5px solid rgba(59,127,255,0.2); border-radius:12px; color:var(--blue); font-size:13px; cursor:pointer; text-align:left; transition:all 0.15s; }
 .qa-followup-btn:hover { background:rgba(59,127,255,0.15); border-color:rgba(59,127,255,0.4); }
@@ -923,6 +923,23 @@ function goHome() {
   }
 }
 
+function goBack() {
+  stepHistory.pop();
+  var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
+  var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
+  var t = document.getElementById(landing);
+  if (t) t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  var homeBtn = document.getElementById('homeBtn');
+  if (homeBtn) {
+    var hideOn = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
+    homeBtn.style.display = hideOn.indexOf(landing) === -1 ? 'block' : 'none';
+  }
+  var floatBack = document.getElementById('floatingBack');
+  if (floatBack) floatBack.classList.toggle('show', ['sHome','sWelcome'].indexOf(landing) === -1);
+}
+
 function go(id) {
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
@@ -1305,16 +1322,15 @@ async function sendQA() {
     document.getElementById('qaMsgs').appendChild(msgDiv);
     scrollQA();
 
-    // Word by word reveal
+    // Line by line reveal for speed illusion
     msgDiv.innerHTML='<div class="qa-guardian-name">GUARDIAN</div><div class="qa-msg-text" id="qaStream"></div>';
     var streamEl = document.getElementById('qaStream');
-    var words=fullReply.split(' ');
-    var shown='';
-    for(var i=0;i<words.length;i++){
-      shown+=(i>0?' ':'')+words[i];
-      streamEl.innerHTML=shown.replace(/\n/g,'<br>');
-      if(i%4===0) scrollQA();
-      await new Promise(function(r){setTimeout(r,25);});
+    var lines = fullReply.split('\n').filter(function(l){return l.trim().length>0;});
+    for(var i=0;i<lines.length;i++){
+      await new Promise(function(r){setTimeout(r,120);});
+      var shown = lines.slice(0,i+1).join('\n');
+      streamEl.innerHTML = shown.replace(/\n/g,'<br><br>');
+      scrollQA();
     }
 
     qaTyping=false;
@@ -1440,8 +1456,18 @@ function addQAGuardianMsg(text) {
   var c=document.getElementById('qaMsgs');
   var d=document.createElement('div');
   d.className='qa-msg qa-guardian';
-  d.innerHTML='<div class="qa-guardian-name">GUARDIAN</div><div class="qa-msg-text">'+text.replace(/\n/g,'<br>')+'</div>';
+  // Animate line by line
+  d.innerHTML='<div class="qa-guardian-name">GUARDIAN</div><div class="qa-msg-text"></div>';
   c.appendChild(d); scrollQA();
+  var textEl = d.querySelector('.qa-msg-text');
+  var lines = text.split('\n').filter(function(l){return l.trim().length>0;});
+  (async function(){
+    for(var i=0;i<lines.length;i++){
+      await new Promise(function(r){setTimeout(r,100);});
+      textEl.innerHTML = lines.slice(0,i+1).join('\n').replace(/\n/g,'<br><br>');
+      scrollQA();
+    }
+  })();
   return d;
 }
 function scrollQA(){ var c=document.getElementById('qaMsgs'); c.scrollTop=c.scrollHeight; }
