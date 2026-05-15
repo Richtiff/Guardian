@@ -110,7 +110,7 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
 .voice-btn { flex-shrink: 0; width: 48px; height: 48px; border-radius: 10px; background: var(--red-dim); border: 1.5px solid rgba(239,68,68,0.3); color: var(--red); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
 .voice-btn.recording { background: var(--red); color: white; animation: pulse 1s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-.detail-input { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; color: var(--white); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 10px 12px; resize: none; outline: none; min-height: 48px; }
+.detail-input { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; color: var(--white); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 10px 12px; resize: none; outline: none; min-height: 80px; }
 .detail-input::placeholder { color: var(--muted); }
 .continue-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, var(--blue)); border: none; border-radius: 10px; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; display: none; }
 .skip-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 12px; cursor: pointer; margin-top: 6px; }
@@ -316,7 +316,7 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
       <div class="honest-note" id="honestNote" style="display:none;">The more honest you are with me, the better I can protect you.</div>
       <div class="voice-row" id="voiceRow" style="display:none;">
         <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
-        <textarea class="detail-input" id="detailInput" rows="2" placeholder="Tell me what actually happened..."></textarea>
+        <textarea class="detail-input" id="detailInput" rows="4" placeholder="Tell me what actually happened — time, what you did, how the kids were. The more you tell me, the better I can help. Tap the mic or type here. Tap Stop when done."></textarea>
       </div>
       <button class="continue-btn" id="continueBtn" onclick="generateReply()">Help me reply →</button>
       <button class="skip-btn" onclick="generateReplyDirect()">Skip — just give me something safe to say</button>
@@ -339,7 +339,7 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
   <div class="step" id="step3c">
     <div class="silence-card">
       <div class="silence-title">Silence is sometimes the strongest reply</div>
-      <div class="silence-text">Checking in without a specific reason can look like monitoring. It can also open the door to conflict when things are otherwise calm. Unless William has a health concern or something urgent — waiting until your next contact is often the stronger position.</div>
+      <div class="silence-text">Checking in without a specific reason can look like monitoring. It can also open the door to conflict when things are otherwise calm. Unless there is a health concern or something urgent — waiting until your next contact is often the stronger position.</div>
       <button class="silence-proceed" onclick="outgoingProceed()">I still want to send something →</button>
     </div>
     <button class="new-check-btn" onclick="reset()" style="margin-top:0;">← Start again</button>
@@ -432,6 +432,57 @@ var state = {
   score: 0, timing: '', outgoing: false, outgoingMsg: ''
 };
 
+// ── CORE SYSTEM PROMPT ──
+// Rules the AI always follows when generating replies
+var GUARDIAN_SYSTEM = [
+  'You are a co-parenting communication safety assistant for parents in high-conflict situations in England and Wales.',
+  'Your job is to help the user reply to messages from the other parent in a way that is calm, child-focused, legally safe, and unlikely to escalate conflict.',
+  '',
+  'CORE RULES:',
+  '1. Always prioritise the child\'s welfare and practical arrangements.',
+  '2. Keep replies short, neutral, and factual. 1 to 4 short sentences maximum.',
+  '3. Do not blame, accuse, diagnose, shame, or psychoanalyse the other parent.',
+  '4. Do not admit fault unless the user clearly instructs you to.',
+  '5. Do not deny concerns aggressively. Acknowledge concerns neutrally where appropriate.',
+  '6. Avoid emotional language, sarcasm, threats, insults, or defensive explanations.',
+  '7. Assume every message may be screenshotted and shown in court.',
+  '8. Answer the actual practical question only.',
+  '9. Do not over-explain.',
+  '10. Do not reopen past disputes unless necessary.',
+  '11. Avoid legal arguments in parent-to-parent messages.',
+  '12. Where possible, redirect to: routine, welfare, handover, timing, health, school, or agreed arrangements.',
+  '13. If no reply is needed, say so clearly — silence is often the stronger position.',
+  '14. If the other parent sends an emotional or accusatory message, respond only to the child-related practical issue.',
+  '15. If the other parent raises a welfare concern, do not dismiss it. Respond with calm factual observations.',
+  '16. If the user is angry or upset, acknowledge it briefly, then draft a safe reply.',
+  '',
+  'TONE RULES:',
+  '- Sound like a real British parent texting — not a solicitor, not a chatbot.',
+  '- Plain English only. Short words. Short sentences.',
+  '- No legal jargon.',
+  '- No unnecessary apology.',
+  '- No attempt to win the argument.',
+  '- No empathy phrases like "I hear you" or "I understand your concerns".',
+  '- No corporate phrases like "going forward", "please ensure", "reach out", "happy to chat".',
+  '- Never say "picked up" or "dropped off".',
+  '',
+  'SAFE PHRASES (use where natural):',
+  '- "Thanks for letting me know."',
+  '- "I\'ll keep an eye on that."',
+  '- "He seemed fine with me."',
+  '- "I\'ll follow the agreed arrangements."',
+  '- "Please share any key information I need."',
+  '',
+  'PHRASES TO AVOID:',
+  '- "You always..." / "You never..."',
+  '- "That\'s not true." / "That\'s a lie."',
+  '- "This is harassment."',
+  '- "You\'re controlling."',
+  '- Anything that sounds defensive or accusatory.',
+  '',
+  'GOAL: Protect the child. Reduce conflict. Create a clean written record.'
+].join('\n');
+
 // ── INIT ──
 window.onload = function() {
   if (profile) {
@@ -476,7 +527,6 @@ function profileSelect(q, val) {
   document.querySelectorAll('#pq' + q + ' .profile-opt').forEach(function(b) {
     b.classList.toggle('selected', b.onclick.toString().includes("'" + val + "'"));
   });
-  // Show next question
   if (q === 1) { document.getElementById('pq2').style.display = 'block'; }
   if (q === 2) { document.getElementById('pq3').style.display = 'block'; }
   if (q === 3) { document.getElementById('profileNext').style.display = 'block'; }
@@ -558,13 +608,8 @@ function outgoingYes() {
   askQuestion();
 }
 
-function outgoingCheckin() {
-  showStep('3c');
-}
-
-function outgoingNotSure() {
-  showStep('3c');
-}
+function outgoingCheckin() { showStep('3c'); }
+function outgoingNotSure() { showStep('3c'); }
 
 function outgoingProceed() {
   state.theirMsg = '[OUTGOING MESSAGE] Parent wants to send: ' + state.outgoingMsg;
@@ -581,10 +626,7 @@ function startCooldown() {
     var m = Math.floor(seconds/60);
     var s = seconds % 60;
     document.getElementById('cooldownTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
-    if (seconds <= 0) {
-      clearInterval(cooldownInterval);
-      skipCooldown();
-    }
+    if (seconds <= 0) { clearInterval(cooldownInterval); skipCooldown(); }
   }, 1000);
 }
 
@@ -606,7 +648,8 @@ async function askQuestion() {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
-        messages: [{ role: 'user', content: 'Family court England and Wales. Parent received this message: "' + state.theirMsg + '". Analyse it and return ONLY JSON with these fields: {"question":"<ONE most important question to ask the parent before suggesting a reply>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line describing the message type e.g. Welfare allegation or Routine message>","cooldown":true|false}. Set cooldown true only if the message is highly aggressive or contains serious allegations.' }]
+        system: GUARDIAN_SYSTEM,
+        messages: [{ role: 'user', content: 'A parent in England and Wales received this co-parenting message: "' + state.theirMsg + '"\n\nAnalyse it and return ONLY JSON:\n{"question":"<ONE specific question to ask the parent — based on what they selected, ask about the actual facts: time, what happened, what the child was like. Not vague. Not generic.>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line — e.g. Welfare allegation, Routine update, Accusatory message>","cooldown":true|false}\n\nSet cooldown true only if the message is highly aggressive or contains serious allegations. Flag red for welfare allegations or accusations. Flag amber for tense or loaded messages. Flag green for routine or neutral messages.' }]
       })
     });
     var data = await res.json();
@@ -614,18 +657,11 @@ async function askQuestion() {
     var parsed = null;
     try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2) {} }
     hideLoading();
-
     if (parsed) {
-      // Store flag info
       state.flag = parsed.flag;
       state.flagText = parsed.flagText;
       state.question = parsed.question || '';
-
-      // Cooldown check
-      if (parsed.cooldown) {
-        startCooldown();
-        return;
-      }
+      if (parsed.cooldown) { startCooldown(); return; }
       proceedToQuestion(parsed);
     } else {
       proceedToQuestion(null);
@@ -634,7 +670,6 @@ async function askQuestion() {
 }
 
 function proceedToQuestion(parsed) {
-  // Show flag banner
   var flagBanner = document.getElementById('flagBanner');
   if (state.flag && state.flagText) {
     var cls = state.flag === 'red' ? 'flag-red' : state.flag === 'amber' ? 'flag-amber' : 'flag-green';
@@ -675,43 +710,51 @@ function toggleVoice() {
     toast('Voice not supported — please type instead');
     return;
   }
-  if (isRecording) {
-    stopVoice();
-  } else {
-    startVoice();
-  }
+  if (isRecording) { stopVoice(); } else { startVoice(); }
 }
 
 function startVoice() {
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
   recognition.continuous = true;
-  recognition.interimResults = false;
+  recognition.interimResults = true;
   recognition.lang = 'en-GB';
+  var finalTranscript = '';
   recognition.onresult = function(event) {
-    var transcript = Array.from(event.results).map(function(r) { return r[0].transcript; }).join(' ');
-    document.getElementById('detailInput').value = transcript;
+    var interim = '';
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript + ' ';
+      } else {
+        interim += event.results[i][0].transcript;
+      }
+    }
+    document.getElementById('detailInput').value = (finalTranscript + interim).trim();
   };
-  recognition.onerror = function() { stopVoice(); toast('Could not hear you — please type instead'); };
-  recognition.onend = function() { stopVoice(); };
+  recognition.onerror = function(e) {
+    if (e.error !== 'no-speech') { stopVoice(); toast('Could not hear you — please type instead'); }
+  };
+  // Do NOT auto-stop on recognition.onend — user taps stop
   recognition.start();
   isRecording = true;
   document.getElementById('voiceBtn').classList.add('recording');
   document.getElementById('voiceBtn').textContent = '⏹';
+  document.getElementById('voiceBtn').title = 'Tap to stop recording';
 }
 
 function stopVoice() {
-  if (recognition) { try { recognition.stop(); } catch(e) {} }
+  if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
   isRecording = false;
   document.getElementById('voiceBtn').classList.remove('recording');
   document.getElementById('voiceBtn').textContent = '🎤';
+  document.getElementById('voiceBtn').title = 'Tap to record';
 }
 
 // ── GENERATE REPLY ──
 async function generateReply() {
   stopVoice();
   var detail = document.getElementById('detailInput').value.trim();
-  var context = state.answer ? 'Question asked: "' + state.question + '". Answer: "' + state.answer + '".' : '';
+  var context = state.answer ? 'Question asked: "' + state.question + '". Parent answered: "' + state.answer + '".' : '';
   if (detail) context += ' Parent also said: "' + detail + '".';
   if (!context) context = 'No specific context provided.';
   await _generateReply(context);
@@ -722,20 +765,44 @@ async function generateReplyDirect() {
 }
 
 async function _generateReply(context) {
-  showLoading('Writing your reply...', 'Keeping it human');
+  showLoading('Writing your reply...', 'Keeping it safe and human');
+
   var toneDesc = '';
   if (profile) {
-    toneDesc = 'Parent profile: texting style is ' + (profile.q1||'') + ', situation is ' + (profile.q2||'') + ', priority is ' + (profile.q3||'') + '. Match the reply to this profile.';
+    var styleMap = { casual: 'casual and short', direct: 'direct and to the point', considered: 'thoughtful and measured' };
+    var situMap = { high: 'high conflict', tense: 'tense but managing', okay: 'mostly okay' };
+    var priorMap = { calm: 'staying calm and not escalating', protect: 'protecting their position', child: 'what is best for the child' };
+    toneDesc = 'Parent profile: texting style is ' + (styleMap[profile.q1]||profile.q1||'') + '. Situation: ' + (situMap[profile.q2]||profile.q2||'') + '. Priority: ' + (priorMap[profile.q3]||profile.q3||'') + '. Match the reply tone to this profile.';
   }
+
+  var prompt = [
+    toneDesc,
+    '',
+    'Their message: "' + state.theirMsg + '"',
+    'Context from parent: ' + context,
+    '',
+    'STRICT RULES:',
+    '- Only use facts the parent explicitly confirmed. Do not invent anything.',
+    '- If they confirmed nothing specific, say as little as possible.',
+    '- 1 to 4 short sentences. One is usually enough.',
+    '- UK English only.',
+    '- If no reply is needed, return empty string for reply and explain why in the "why" field.',
+    '- Do not add empathy openers. Do not start with "I understand" or "I appreciate".',
+    '- Do not start with the other parent\'s name.',
+    '',
+    'Return ONLY JSON:',
+    '{"reply":"<reply text or empty string>","why":"<one line explaining the approach>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line on when to send or blank>","dangerous":false,"dangerReasons":"<blank or reasons if score below 5>"}'
+  ].join('\n');
 
   try {
     var res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
-        messages: [{ role: 'user', content: 'You are helping a parent in English family court respond to a co-parent message. Suggest one short calm factual reply a real British parent would actually text.\n\n' + toneDesc + '\n\nTheir message: "' + state.theirMsg + '"\nWhat the parent told you: ' + context + '\n\nStrict rules:\n- Only use facts the parent explicitly confirmed. Do not invent anything.\n- If they confirmed nothing specific say as little as possible.\n- Never say: picked up, dropped off, I hear you, going forward, please ensure, reach out, happy to chat.\n- Sound like a real person texting not a lawyer or AI.\n- One sentence is almost always enough. Two maximum.\n- UK English only.\n- If nothing useful to say return empty string for reply.\n\nReturn ONLY JSON: {"reply":"<reply>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or comma separated reasons if score below 5>"}' }]
+        system: GUARDIAN_SYSTEM,
+        messages: [{ role: 'user', content: prompt }]
       })
     });
     var data = await res.json();
@@ -749,7 +816,6 @@ async function _generateReply(context) {
       state.score = parsed.score || 8;
       state.timing = parsed.timingNote || '';
 
-      // Score badge
       var badge = document.getElementById('scoreBadge');
       if (parsed.score >= 8) { badge.textContent = '✅ Safe to send'; badge.className = 'score-badge score-safe'; }
       else if (parsed.score >= 6) { badge.textContent = '⚠️ Send with care'; badge.className = 'score-badge score-caution'; }
@@ -761,9 +827,10 @@ async function _generateReply(context) {
       if (parsed.timingNote) {
         document.getElementById('timingNote').textContent = '⏰ ' + parsed.timingNote;
         document.getElementById('timingNote').style.display = 'block';
+      } else {
+        document.getElementById('timingNote').style.display = 'none';
       }
 
-      // Nuclear warning
       if (parsed.score < 5 && parsed.dangerReasons) {
         document.getElementById('nuclearWarning').style.display = 'block';
         document.getElementById('replyContent').style.display = 'none';
@@ -781,7 +848,7 @@ async function _generateReply(context) {
 }
 
 function fixReply() {
-  state.answer = (state.answer || '') + ' [Please generate a safer calmer version]';
+  state.answer = (state.answer || '') + ' [Please generate a safer, calmer version]';
   generateReply();
 }
 
@@ -793,9 +860,9 @@ function showReplyAnyway() {
 // ── REFINE ──
 async function refine(type) {
   var instructions = {
-    formal: 'Too formal — make it more natural and casual, like a real British parent texting.',
-    harsh: 'Too harsh — soften it while keeping it factual.',
-    different: 'Rewrite it differently — same meaning but different words.'
+    formal: 'This reply is too formal. Rewrite it to sound like a real British parent texting — shorter, more natural, less stiff. Keep it factual and calm.',
+    harsh: 'This reply sounds too harsh or defensive. Soften the tone while keeping it factual. Remove anything that could be read as accusatory.',
+    different: 'Rewrite this reply with different words — same meaning and tone, but said differently.'
   };
   var prev = document.getElementById('suggestedReply').textContent;
   document.getElementById('suggestedReply').textContent = 'Updating...';
@@ -806,7 +873,8 @@ async function refine(type) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 150,
-        messages: [{ role: 'user', content: 'Their message: "' + state.theirMsg + '". Current reply: "' + state.reply + '". Feedback: ' + instructions[type] + ' Rewrite it. Real British parent texting. Short words. Max 2 sentences. No legal language. Return ONLY the new reply text.' }]
+        system: GUARDIAN_SYSTEM,
+        messages: [{ role: 'user', content: 'Their message: "' + state.theirMsg + '"\nCurrent reply: "' + state.reply + '"\nFeedback: ' + instructions[type] + '\n\nRewrite it. Real British parent texting. Max 2 sentences. No legal language. No empathy openers. Return ONLY the new reply text, nothing else.' }]
       })
     });
     var data = await res.json();
@@ -849,7 +917,8 @@ async function rescoreReply() {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 200,
-        messages: [{ role: 'user', content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Parent wants to send: "' + edited + '". Score this reply out of 10. Calm factual brief is GOOD. Defensive assumptive legal language is BAD. Never suggest adding empathy phrases. Return ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence>","tip":"<1 sentence or blank>"}' }]
+        system: GUARDIAN_SYSTEM,
+        messages: [{ role: 'user', content: 'England and Wales family court context. Their message: "' + state.theirMsg + '"\nParent wants to send: "' + edited + '"\n\nScore this reply out of 10 for safety and effectiveness. Calm, factual, brief = high score. Defensive, emotional, accusatory = low score. Never suggest adding empathy phrases.\n\nReturn ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence>","tip":"<1 sentence improvement or blank>"}' }]
       })
     });
     var data = await res.json();
@@ -880,7 +949,6 @@ function reset() {
   document.getElementById('typeInput').value = '';
   document.getElementById('detailInput').value = '';
   document.getElementById('outgoingInput').value = '';
-  document.getElementById('detailInput').style.display = '';
   document.getElementById('voiceRow').style.display = 'none';
   document.getElementById('continueBtn').style.display = 'none';
   document.getElementById('honestNote').style.display = 'none';
