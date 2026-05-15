@@ -8,671 +8,274 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg: #080d14;
-  --surface: #0f1620;
-  --card: #131c28;
-  --border: rgba(255,255,255,0.07);
-  --white: #f0f4ff;
-  --muted: #4a5568;
-  --muted-hi: #8896aa;
-  --gold: #f5c842;
-  --gold-dim: rgba(245,200,66,0.15);
-  --blue: #3b7fff;
-  --blue-dim: rgba(59,127,255,0.12);
-  --green: #22c97a;
-  --green-dim: rgba(34,201,122,0.12);
-  --amber: #f59e0b;
-  --amber-dim: rgba(245,158,11,0.12);
-  --red: #ef4444;
-  --red-dim: rgba(239,68,68,0.12);
+  --bg: #080d14; --surface: #0f1620; --card: #131c28;
+  --border: rgba(255,255,255,0.07); --white: #f0f4ff;
+  --muted: #4a5568; --muted-hi: #8896aa;
+  --gold: #f5c842; --gold-dim: rgba(245,200,66,0.15);
+  --blue: #3b7fff; --blue-dim: rgba(59,127,255,0.12);
+  --green: #22c97a; --green-dim: rgba(34,201,122,0.12);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.12);
 }
-
-html, body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── LAYOUT ── */
-.app {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 0 16px 40px;
-  min-height: 100vh;
-}
-
-/* ── HEADER ── */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 0 14px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 24px;
-}
-
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--white);
-  letter-spacing: -0.3px;
-}
-
+html, body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+.app { max-width: 480px; margin: 0 auto; padding: 0 16px 60px; min-height: 100vh; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--white); }
 .logo span { color: var(--gold); }
-
-.badge {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--gold);
-  background: var(--gold-dim);
-  border: 1px solid rgba(245,200,66,0.2);
-  padding: 4px 10px;
-  border-radius: 20px;
-  letter-spacing: 0.5px;
-}
-
-/* ── STEPS ── */
+.badge { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(245,200,66,0.2); padding: 4px 10px; border-radius: 20px; }
 .step { display: none; animation: fadeUp 0.2s ease; }
 .step.active { display: block; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ── STEP 1: UPLOAD ── */
-.hero {
-  text-align: center;
-  padding: 8px 0 28px;
-}
-
-.hero-icon {
-  width: 72px;
-  height: 72px;
-  background: var(--gold-dim);
-  border: 1.5px solid rgba(245,200,66,0.25);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  margin: 0 auto 16px;
-}
-
-.hero-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 8px;
-}
-
-.hero-sub {
-  font-size: 14px;
-  color: var(--muted-hi);
-  line-height: 1.6;
-  max-width: 260px;
-  margin: 0 auto;
-}
-
-.upload-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.upload-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 18px 12px;
-  border-radius: 14px;
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: all 0.18s;
-}
-
-.upload-btn input { display: none; }
-
-.upload-primary {
-  background: linear-gradient(135deg, #c9a030, var(--gold));
-  color: #0a0800;
-}
-
-.upload-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,200,66,0.3); }
-
-.upload-secondary {
-  background: var(--card);
-  border: 1.5px solid var(--border) !important;
-  color: var(--muted-hi);
-}
-
-.upload-secondary:hover { border-color: rgba(255,255,255,0.15) !important; color: var(--white); }
-
-.apps-note {
-  text-align: center;
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-.divider span {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.type-toggle {
-  width: 100%;
-  padding: 13px;
-  background: transparent;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  color: var(--muted-hi);
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.18s;
-}
-
-.type-toggle:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
-
-/* Type input panel */
-.type-panel {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  margin-top: 12px;
-  display: none;
-}
-
-.type-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 14px;
-  border-bottom: 1px solid var(--border);
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--amber);
-  letter-spacing: 0.5px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 18px;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.type-textarea {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 1.65;
-  padding: 13px 14px;
-  resize: none;
-  outline: none;
-  min-height: 100px;
-}
-
-.type-textarea::placeholder { color: var(--muted); }
-
-.type-confirm {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #2563eb, var(--blue));
-  border: none;
-  color: #fff;
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.type-confirm:hover { opacity: 0.9; }
-
-/* ── STEP 2: READING ── */
-.reading {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.spinner {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 20px;
-  position: relative;
-}
-
-.spinner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2.5px solid var(--border);
-  border-top-color: var(--gold);
-  animation: spin 0.8s linear infinite;
-}
-
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.reading-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--white);
-  margin-bottom: 6px;
-}
+/* TONE PROFILE */
+.profile-step { text-align: center; padding: 20px 0; }
+.profile-icon { font-size: 48px; margin-bottom: 16px; }
+.profile-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.profile-sub { font-size: 14px; color: var(--muted-hi); line-height: 1.6; margin-bottom: 28px; }
+.profile-q { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; text-align: left; }
+.profile-q-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 0.5px; margin-bottom: 10px; }
+.profile-q-text { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 12px; }
+.profile-opts { display: flex; flex-direction: column; gap: 7px; }
+.profile-opt { padding: 11px 14px; background: rgba(255,255,255,0.03); border: 1.5px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 13px; cursor: pointer; text-align: left; transition: all 0.15s; }
+.profile-opt:hover { border-color: rgba(245,200,66,0.3); color: var(--white); }
+.profile-opt.selected { border-color: var(--gold); background: var(--gold-dim); color: var(--white); }
+.profile-next { width: 100%; padding: 14px; background: linear-gradient(135deg, #c9a030, var(--gold)); border: none; border-radius: 12px; color: #0a0800; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 16px; display: none; transition: opacity 0.15s; }
+.profile-next:hover { opacity: 0.9; }
 
-.reading-sub {
-  font-size: 13px;
-  color: var(--muted-hi);
-}
+/* HERO */
+.hero { text-align: center; padding: 8px 0 24px; }
+.hero-icon { width: 72px; height: 72px; background: var(--gold-dim); border: 1.5px solid rgba(245,200,66,0.25); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; }
+.hero-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.hero-sub { font-size: 13px; color: var(--muted-hi); line-height: 1.6; max-width: 280px; margin: 0 auto 20px; }
+.hero-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.mode-btn { padding: 18px 12px; border-radius: 14px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; border: none; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 0.18s; }
+.mode-incoming { background: linear-gradient(135deg, #c9a030, var(--gold)); color: #0a0800; }
+.mode-incoming:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,200,66,0.3); }
+.mode-outgoing { background: var(--card); border: 1.5px solid var(--border) !important; color: var(--muted-hi); }
+.mode-outgoing:hover { border-color: rgba(255,255,255,0.15) !important; color: var(--white); }
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.upload-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 12px; border-radius: 14px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--muted-hi); transition: all 0.18s; }
+.upload-btn input { display: none; }
+.upload-btn:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
+.apps-note { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+.divider { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.divider span { font-size: 11px; color: var(--muted); }
+.type-toggle { width: 100%; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; color: var(--muted-hi); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.18s; }
+.type-toggle:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
+.type-panel { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 10px; display: none; }
+.type-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-bottom: 1px solid var(--border); font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--amber); }
+.close-btn { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+.type-textarea { width: 100%; background: transparent; border: none; color: var(--white); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.65; padding: 13px 14px; resize: none; outline: none; min-height: 90px; }
+.type-textarea::placeholder { color: var(--muted); }
+.type-confirm { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, var(--blue)); border: none; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
 
-/* ── THEIR MESSAGE BUBBLE ── */
-.their-bubble {
-  background: var(--amber-dim);
-  border: 1.5px solid rgba(245,158,11,0.2);
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 16px;
-}
+/* RED FLAG */
+.flag-card { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+.flag-red { background: var(--red-dim); border: 1.5px solid rgba(239,68,68,0.25); color: var(--red); }
+.flag-amber { background: var(--amber-dim); border: 1.5px solid rgba(245,158,11,0.25); color: var(--amber); }
+.flag-green { background: var(--green-dim); border: 1.5px solid rgba(34,201,122,0.25); color: var(--green); }
 
-.their-bubble-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--amber);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-bottom: 7px;
-}
+/* COOLDOWN */
+.cooldown-card { background: var(--red-dim); border: 1.5px solid rgba(239,68,68,0.2); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 14px; }
+.cooldown-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+.cooldown-sub { font-size: 13px; color: var(--muted-hi); margin-bottom: 16px; line-height: 1.6; }
+.cooldown-timer { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; color: var(--red); margin-bottom: 16px; }
+.cooldown-skip { background: none; border: 1px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 12px; padding: 8px 16px; cursor: pointer; }
 
-.their-bubble-text {
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--white);
-}
+/* SPINNER / READING */
+.reading { text-align: center; padding: 60px 20px; }
+.spinner { width: 52px; height: 52px; margin: 0 auto 20px; position: relative; }
+.spinner::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2.5px solid var(--border); border-top-color: var(--gold); animation: spin 0.8s linear infinite; }
+.reading-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+.reading-sub { font-size: 13px; color: var(--muted-hi); }
 
-/* ── STEP 3: QUESTION ── */
-.question-card {
-  background: var(--blue-dim);
-  border: 1.5px solid rgba(59,127,255,0.2);
-  border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 14px;
-}
+/* THEIR BUBBLE */
+.their-bubble { background: var(--amber-dim); border: 1.5px solid rgba(245,158,11,0.2); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.their-bubble-label { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700; color: var(--amber); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; }
+.their-bubble-text { font-size: 14px; line-height: 1.65; color: var(--white); }
 
-.question-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--blue);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.question-text {
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--white);
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
-
-.question-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.q-option {
-  padding: 13px 16px;
-  background: rgba(255,255,255,0.03);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  color: var(--muted-hi);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.15s;
-}
-
-.q-option:hover {
-  border-color: rgba(59,127,255,0.35);
-  color: var(--white);
-  background: rgba(59,127,255,0.06);
-}
-
-.q-option.selected {
-  border-color: var(--blue);
-  background: rgba(59,127,255,0.1);
-  color: var(--white);
-}
-
-.detail-input {
-  width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
-  padding: 10px 12px;
-  resize: none;
-  outline: none;
-  margin-top: 10px;
-  display: none;
-}
-
+/* QUESTION */
+.question-card { background: var(--blue-dim); border: 1.5px solid rgba(59,127,255,0.2); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+.question-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: var(--blue); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.question-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--white); line-height: 1.5; margin-bottom: 14px; }
+.question-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.q-option { padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1.5px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 14px; cursor: pointer; text-align: left; transition: all 0.15s; }
+.q-option:hover { border-color: rgba(59,127,255,0.35); color: var(--white); background: rgba(59,127,255,0.06); }
+.q-option.selected { border-color: var(--blue); background: rgba(59,127,255,0.1); color: var(--white); }
+.honest-note { font-size: 12px; color: var(--gold); text-align: center; padding: 8px 0 10px; opacity: 0.8; }
+.voice-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.voice-btn { flex-shrink: 0; width: 48px; height: 48px; border-radius: 10px; background: var(--red-dim); border: 1.5px solid rgba(239,68,68,0.3); color: var(--red); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.voice-btn.recording { background: var(--red); color: white; animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+.detail-input { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; color: var(--white); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 10px 12px; resize: none; outline: none; min-height: 48px; }
 .detail-input::placeholder { color: var(--muted); }
+.continue-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, var(--blue)); border: none; border-radius: 10px; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 8px; display: none; }
+.skip-btn { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 12px; cursor: pointer; margin-top: 6px; }
 
-/* ── STEP 4: REPLY ── */
-.coach-card {
-  background: var(--card);
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-
-.coach-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
-}
-
-.coach-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--gold);
-  letter-spacing: 0.5px;
-}
-
-.coach-score {
-  font-family: 'Syne', sans-serif;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.coach-body {
-  padding: 16px;
-}
-
-.suggested-reply {
-  font-size: 17px;
-  line-height: 1.7;
-  color: var(--white);
-  font-weight: 500;
-  padding: 14px;
-  background: var(--blue-dim);
-  border-radius: 10px;
-  border-left: 3px solid var(--blue);
-  margin-bottom: 10px;
-}
-
-.reply-why {
-  font-size: 12.5px;
-  color: var(--muted-hi);
-  line-height: 1.6;
-}
-
-.refine-section {
-  padding: 0 16px 16px;
-}
-
-.refine-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted-hi);
-  margin-bottom: 8px;
-}
-
-.refine-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.refine-btn {
-  padding: 9px 14px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--muted-hi);
-  font-family: 'Syne', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
+/* REPLY */
+.coach-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+.coach-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+.coach-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--gold); }
+.score-badge { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+.score-safe { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,201,122,0.3); }
+.score-caution { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+.score-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.coach-body { padding: 16px; }
+.breathe-note { font-size: 12px; color: var(--muted-hi); text-align: center; padding: 8px; margin-bottom: 12px; font-style: italic; }
+.suggested-reply { font-size: 17px; line-height: 1.7; color: var(--white); font-weight: 500; padding: 14px; background: var(--blue-dim); border-radius: 10px; border-left: 3px solid var(--blue); margin-bottom: 8px; }
+.reply-why { font-size: 12px; color: var(--muted-hi); line-height: 1.5; margin-bottom: 4px; }
+.timing-note { font-size: 12px; color: var(--amber); padding: 8px 10px; background: var(--amber-dim); border-radius: 8px; margin-top: 8px; }
+.refine-section { padding: 0 16px 16px; }
+.refine-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted-hi); margin-bottom: 8px; }
+.refine-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.refine-btn { padding: 9px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; color: var(--muted-hi); font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
 .refine-btn:hover { border-color: rgba(59,127,255,0.3); color: var(--blue); }
+.refine-use { background: var(--green-dim); border-color: rgba(34,201,122,0.3) !important; color: var(--green) !important; }
 
-.refine-use {
-  background: var(--green-dim);
-  border-color: rgba(34,201,122,0.3) !important;
-  color: var(--green) !important;
-}
+/* NUCLEAR WARNING */
+.nuclear-card { background: var(--red-dim); border: 2px solid rgba(239,68,68,0.4); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+.nuclear-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--red); margin-bottom: 8px; }
+.nuclear-text { font-size: 13px; color: var(--muted-hi); line-height: 1.6; margin-bottom: 14px; }
+.nuclear-reasons { font-size: 12px; color: var(--red); margin-bottom: 14px; line-height: 1.8; }
+.nuclear-row { display: flex; gap: 8px; }
+.nuclear-fix { flex: 1; padding: 11px; background: var(--blue-dim); border: 1px solid rgba(59,127,255,0.3); border-radius: 10px; color: var(--blue); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+.nuclear-override { padding: 11px 14px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: 11px; cursor: pointer; }
 
-.refine-use:hover { background: rgba(34,201,122,0.18) !important; }
+/* CONFIRMED */
+.confirmed-card { background: var(--green-dim); border: 1.5px solid rgba(34,201,122,0.25); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+.confirmed-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: var(--green); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.confirmed-reply { font-size: 17px; line-height: 1.7; color: var(--white); font-weight: 500; padding: 14px; background: rgba(34,201,122,0.07); border-radius: 10px; border-left: 3px solid var(--green); margin-bottom: 14px; }
+.copy-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #1fbb70, var(--green)); border: none; border-radius: 10px; color: #041209; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+.edit-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+.edit-label { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted-hi); margin-bottom: 10px; }
+.edit-textarea { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; color: var(--white); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.65; padding: 11px 13px; resize: none; outline: none; min-height: 80px; margin-bottom: 10px; }
+.edit-textarea::placeholder { color: var(--muted); }
+.rescore-btn { width: 100%; padding: 12px; background: var(--blue-dim); border: 1.5px solid rgba(59,127,255,0.25); border-radius: 10px; color: var(--blue); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.rescore-result { margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--gold); font-size: 13px; color: var(--muted-hi); line-height: 1.6; display: none; }
+.sent-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; display: none; }
+.sent-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+.sent-row { display: flex; flex-direction: column; gap: 8px; }
+.sent-btn { padding: 12px; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: rgba(255,255,255,0.03); color: var(--muted-hi); text-align: left; transition: all 0.15s; }
+.sent-yes { border-color: rgba(34,201,122,0.3) !important; color: var(--green) !important; }
+.sent-no { border-color: rgba(245,158,11,0.3) !important; color: var(--amber) !important; }
+.new-check-btn { width: 100%; padding: 13px; background: transparent; border: 1.5px solid var(--border); border-radius: 12px; color: var(--muted-hi); font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-/* ── STEP 5: CONFIRMED ── */
-.confirmed-card {
-  background: var(--green-dim);
-  border: 1.5px solid rgba(34,201,122,0.25);
-  border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 14px;
-}
+/* OUTGOING */
+.outgoing-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 14px; }
+.outgoing-header { padding: 14px 16px; border-bottom: 1px solid var(--border); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--blue); }
+.outgoing-textarea { width: 100%; background: transparent; border: none; color: var(--white); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.65; padding: 13px 16px; resize: none; outline: none; min-height: 90px; }
+.outgoing-textarea::placeholder { color: var(--muted); }
+.outgoing-check { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, var(--blue)); border: none; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+.need-to-send { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+.need-label { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+.need-opts { display: flex; flex-direction: column; gap: 8px; }
+.need-opt { padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1.5px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 13px; cursor: pointer; text-align: left; transition: all 0.15s; }
+.need-opt:hover { border-color: rgba(59,127,255,0.3); color: var(--white); }
+.silence-card { background: var(--amber-dim); border: 1.5px solid rgba(245,158,11,0.25); border-radius: 14px; padding: 18px; margin-bottom: 14px; text-align: center; }
+.silence-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--amber); margin-bottom: 8px; }
+.silence-text { font-size: 13px; color: var(--muted-hi); line-height: 1.6; margin-bottom: 14px; }
+.silence-proceed { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--border); border-radius: 10px; color: var(--muted-hi); font-size: 12px; cursor: pointer; }
 
-.confirmed-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--green);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.confirmed-reply {
-  font-size: 17px;
-  line-height: 1.7;
-  color: var(--white);
-  font-weight: 500;
-  padding: 14px;
-  background: rgba(34,201,122,0.07);
-  border-radius: 10px;
-  border-left: 3px solid var(--green);
-  margin-bottom: 14px;
-}
-
-.action-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.copy-btn {
-  flex: 1;
-  padding: 13px;
-  background: linear-gradient(135deg, #1fbb70, var(--green));
-  border: none;
-  border-radius: 10px;
-  color: #041209;
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.copy-btn:hover { opacity: 0.9; }
-
-.timing-note {
-  font-size: 12.5px;
-  color: var(--amber);
-  line-height: 1.6;
-  padding: 10px 12px;
-  background: var(--amber-dim);
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.new-check-btn {
-  width: 100%;
-  padding: 13px;
-  background: transparent;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  color: var(--muted-hi);
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.new-check-btn:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
-
-/* ── TOAST ── */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: #1a2535;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: var(--white);
-  padding: 11px 20px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 999;
-  transition: transform 0.25s ease;
-  white-space: nowrap;
-}
-
+/* TOAST / LOADING */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a2535; border: 1px solid rgba(255,255,255,0.1); color: var(--white); padding: 11px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 999; transition: transform 0.25s ease; white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ── LOADING OVERLAY ── */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(8,13,20,0.85);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  display: none;
-}
-
+.loading-overlay { position: fixed; inset: 0; background: rgba(8,13,20,0.88); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
 .loading-overlay.show { display: flex; }
-
-.loading-text {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--white);
-  margin-top: 16px;
-}
-
-.loading-sub {
-  font-size: 12px;
-  color: var(--muted-hi);
-  margin-top: 5px;
-}
+.loading-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--white); margin-top: 16px; }
+.loading-sub { font-size: 12px; color: var(--muted-hi); margin-top: 5px; }
 </style>
 </head>
 <body>
-
 <div class="app">
-
-  <!-- HEADER -->
   <div class="header">
     <div class="logo">Guard<span>ian</span></div>
     <div class="badge">MESSAGE COACH</div>
   </div>
 
-  <!-- STEP 1: UPLOAD -->
-  <div class="step active" id="step1">
+  <!-- TONE PROFILE (first time only) -->
+  <div class="step active" id="stepProfile">
+    <div class="profile-step">
+      <div class="profile-icon">👋</div>
+      <div class="profile-title">Before we start</div>
+      <div class="profile-sub">Three quick questions so Guardian can give you replies that sound like you — not a lawyer.</div>
+    </div>
+    <div class="profile-q" id="pq1">
+      <div class="profile-q-label">YOUR STYLE</div>
+      <div class="profile-q-text">How do you normally text?</div>
+      <div class="profile-opts">
+        <button class="profile-opt" onclick="profileSelect(1,'casual')">Casual and short</button>
+        <button class="profile-opt" onclick="profileSelect(1,'direct')">Direct and to the point</button>
+        <button class="profile-opt" onclick="profileSelect(1,'considered')">I take my time and think it through</button>
+      </div>
+    </div>
+    <div class="profile-q" id="pq2" style="display:none;">
+      <div class="profile-q-label">YOUR SITUATION</div>
+      <div class="profile-q-text">How would you describe things right now?</div>
+      <div class="profile-opts">
+        <button class="profile-opt" onclick="profileSelect(2,'high')">High conflict — it is very difficult</button>
+        <button class="profile-opt" onclick="profileSelect(2,'tense')">Tense but we manage</button>
+        <button class="profile-opt" onclick="profileSelect(2,'okay')">Mostly okay with occasional problems</button>
+      </div>
+    </div>
+    <div class="profile-q" id="pq3" style="display:none;">
+      <div class="profile-q-label">YOUR PRIORITY</div>
+      <div class="profile-q-text">What matters most to you right now?</div>
+      <div class="profile-opts">
+        <button class="profile-opt" onclick="profileSelect(3,'calm')">Staying calm and not escalating things</button>
+        <button class="profile-opt" onclick="profileSelect(3,'protect')">Protecting my position</button>
+        <button class="profile-opt" onclick="profileSelect(3,'child')">What is best for my child</button>
+      </div>
+    </div>
+    <button class="profile-next" id="profileNext" onclick="finishProfile()">Start using Guardian →</button>
+  </div>
+
+  <!-- STEP 1: HOME -->
+  <div class="step" id="step1">
     <div class="hero">
       <div class="hero-icon">💬</div>
       <div class="hero-title">Message Coach</div>
-      <div class="hero-sub">Upload their message and I'll work out exactly what to say</div>
+      <div class="hero-sub">Paste their message. Tell me what happened. I will help you reply safely.</div>
     </div>
-
-    <div class="upload-grid">
-      <label class="upload-btn upload-primary">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Take photo
-        <input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)">
-      </label>
-      <label class="upload-btn upload-secondary">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Screenshot
-        <input type="file" accept="image/*" onchange="handleUpload(event)">
-      </label>
+    <div class="hero-modes">
+      <button class="mode-btn mode-incoming" onclick="showIncoming()">
+        <span style="font-size:24px;">📩</span>
+        They sent me something
+      </button>
+      <button class="mode-btn mode-outgoing" onclick="showOutgoing()">
+        <span style="font-size:24px;">✏️</span>
+        I want to send something
+      </button>
     </div>
-
-    <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · Email · any app</div>
-
-    <div class="divider"><span>or</span></div>
-
-    <button class="type-toggle" onclick="toggleType()">Type their message</button>
-
-    <div class="type-panel" id="typePanel">
-      <div class="type-panel-header">
-        TYPE THEIR MESSAGE
-        <button class="close-btn" onclick="toggleType()">×</button>
+    <div id="incomingPanel" style="display:none;">
+      <div class="upload-grid">
+        <label class="upload-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take photo
+          <input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)">
+        </label>
+        <label class="upload-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Screenshot
+          <input type="file" accept="image/*" onchange="handleUpload(event)">
+        </label>
       </div>
-      <textarea class="type-textarea" id="typeInput" rows="4" placeholder="Paste or type what they sent you..."></textarea>
-      <button class="type-confirm" onclick="confirmType()">Check this message →</button>
+      <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · any app</div>
+      <div class="divider"><span>or type it</span></div>
+      <div class="type-panel" id="typePanel" style="display:block;">
+        <div class="type-panel-header">THEIR MESSAGE</div>
+        <textarea class="type-textarea" id="typeInput" rows="4" placeholder="Paste or type what they sent you..."></textarea>
+        <button class="type-confirm" onclick="confirmType()">Check this message →</button>
+      </div>
+    </div>
+    <div id="outgoingPanel" style="display:none;">
+      <div class="outgoing-card">
+        <div class="outgoing-header">WHAT DO YOU WANT TO SAY?</div>
+        <textarea class="outgoing-textarea" id="outgoingInput" rows="4" placeholder="Type what you are thinking of sending..."></textarea>
+        <button class="outgoing-check" onclick="checkOutgoing()">Check before I send →</button>
+      </div>
     </div>
   </div>
 
@@ -685,19 +288,61 @@ html, body {
     </div>
   </div>
 
+  <!-- STEP 2b: COOLDOWN -->
+  <div class="step" id="step2b">
+    <div class="their-bubble" id="theirBubbleCool">
+      <div class="their-bubble-label">Their message</div>
+      <div class="their-bubble-text" id="theirTextCool"></div>
+    </div>
+    <div class="cooldown-card">
+      <div class="cooldown-title">⚠️ Take a breath first</div>
+      <div class="cooldown-sub">This message looks designed to provoke a reaction. Replying immediately is rarely the right move. Wait a moment — you will think more clearly.</div>
+      <div class="cooldown-timer" id="cooldownTimer">2:00</div>
+      <button class="cooldown-skip" onclick="skipCooldown()">I am ready to reply now</button>
+    </div>
+  </div>
+
   <!-- STEP 3: QUESTION -->
   <div class="step" id="step3">
     <div class="their-bubble" id="theirBubble3">
       <div class="their-bubble-label">Their message</div>
       <div class="their-bubble-text" id="theirText3"></div>
     </div>
-
+    <div id="flagBanner"></div>
     <div class="question-card">
       <div class="question-label">Before I suggest a reply</div>
       <div class="question-text" id="questionText"></div>
       <div class="question-options" id="questionOptions"></div>
-      <textarea class="detail-input" id="detailInput" rows="2" placeholder="Add any extra detail here..."></textarea><button id="continueBtn" onclick="generateReply()" style="display:none;width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,#3b7fff);border:none;border-radius:10px;color:#fff;font-family:Syne,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;">Get my reply →</button>
+      <div class="honest-note" id="honestNote" style="display:none;">The more honest you are with me, the better I can protect you.</div>
+      <div class="voice-row" id="voiceRow" style="display:none;">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
+        <textarea class="detail-input" id="detailInput" rows="2" placeholder="Tell me what actually happened..."></textarea>
+      </div>
+      <button class="continue-btn" id="continueBtn" onclick="generateReply()">Help me reply →</button>
+      <button class="skip-btn" onclick="generateReplyDirect()">Skip — just give me something safe to say</button>
     </div>
+  </div>
+
+  <!-- STEP 3b: OUTGOING NEED CHECK -->
+  <div class="step" id="step3b">
+    <div class="need-to-send">
+      <div class="need-label">Do you need to send this?</div>
+      <div class="need-opts">
+        <button class="need-opt" onclick="outgoingYes()">Yes — there is a specific reason I need to send this</button>
+        <button class="need-opt" onclick="outgoingCheckin()">I just want to check in</button>
+        <button class="need-opt" onclick="outgoingNotSure()">Not sure</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3c: SILENCE SUGGESTION -->
+  <div class="step" id="step3c">
+    <div class="silence-card">
+      <div class="silence-title">Silence is sometimes the strongest reply</div>
+      <div class="silence-text">Checking in without a specific reason can look like monitoring. It can also open the door to conflict when things are otherwise calm. Unless William has a health concern or something urgent — waiting until your next contact is often the stronger position.</div>
+      <button class="silence-proceed" onclick="outgoingProceed()">I still want to send something →</button>
+    </div>
+    <button class="new-check-btn" onclick="reset()" style="margin-top:0;">← Start again</button>
   </div>
 
   <!-- STEP 4: REPLY -->
@@ -706,23 +351,37 @@ html, body {
       <div class="their-bubble-label">Their message</div>
       <div class="their-bubble-text" id="theirText4"></div>
     </div>
-
-    <div class="coach-card">
-      <div class="coach-header">
-        <span class="coach-label">💬 Message Coach says</span>
-        <span class="coach-score" id="coachScore"></span>
+    <div id="nuclearWarning" style="display:none;">
+      <div class="nuclear-card">
+        <div class="nuclear-title">⚠️ Do not send this yet</div>
+        <div class="nuclear-text">This reply could make things worse. Here is why:</div>
+        <div class="nuclear-reasons" id="nuclearReasons"></div>
+        <div class="nuclear-row">
+          <button class="nuclear-fix" onclick="fixReply()">Fix it for me</button>
+          <button class="nuclear-override" onclick="showReplyAnyway()">Show it anyway</button>
+        </div>
       </div>
-      <div class="coach-body">
-        <div class="suggested-reply" id="suggestedReply"></div>
-        <div class="reply-why" id="replyWhy"></div>
-      </div>
-      <div class="refine-section">
-        <div class="refine-label">How does this feel?</div>
-        <div class="refine-row">
-          <button class="refine-btn" onclick="refine('soft')">Too soft</button>
-          <button class="refine-btn" onclick="refine('firm')">Too firm</button>
-          <button class="refine-btn" onclick="refine('change')">Change something</button>
-          <button class="refine-btn refine-use" onclick="confirm()">✓ Use this</button>
+    </div>
+    <div id="replyContent" style="display:none;">
+      <div class="coach-card">
+        <div class="coach-header">
+          <span class="coach-label">💬 Message Coach</span>
+          <span class="score-badge" id="scoreBadge"></span>
+        </div>
+        <div class="coach-body">
+          <div class="breathe-note">Take a breath before you decide.</div>
+          <div class="suggested-reply" id="suggestedReply"></div>
+          <div class="reply-why" id="replyWhy"></div>
+          <div class="timing-note" id="timingNote" style="display:none;"></div>
+        </div>
+        <div class="refine-section">
+          <div class="refine-label">How does this feel?</div>
+          <div class="refine-row">
+            <button class="refine-btn" onclick="refine('formal')">Too formal</button>
+            <button class="refine-btn" onclick="refine('harsh')">Too harsh</button>
+            <button class="refine-btn" onclick="refine('different')">Say something different</button>
+            <button class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
+          </div>
         </div>
       </div>
     </div>
@@ -733,52 +392,63 @@ html, body {
     <div class="confirmed-card">
       <div class="confirmed-label">✓ Ready to send</div>
       <div class="confirmed-reply" id="confirmedReply"></div>
-      <div class="action-row">
-        <button class="copy-btn" onclick="copyReply()">Copy reply</button>
-      </div>
-      <div class="timing-note" id="timingNote" style="display:none;"></div>
+      <button class="copy-btn" onclick="copyReply()">Copy reply</button>
     </div>
-    <div style="background:#131c28;border:1.5px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;margin-bottom:12px;">
-<div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:#8896aa;margin-bottom:10px;">Edit to sound like you — then re-score</div>
-<textarea id="editInput" rows="3" placeholder="Change any words to sound more like you..." style="width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;color:#f0f4ff;font-family:Inter,sans-serif;font-size:14px;padding:11px 13px;resize:none;outline:none;margin-bottom:10px;"></textarea>
-<button onclick="rescoreReply()" style="width:100%;padding:12px;background:rgba(59,127,255,0.12);border:1.5px solid rgba(59,127,255,0.25);border-radius:10px;color:#3b7fff;font-family:Syne,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Re-score my version →</button>
-<div id="rescoreResult" style="display:none;margin-top:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid #f5c842;font-size:13px;color:#8896aa;line-height:1.6;"></div>
-</div><button class="new-check-btn" onclick="reset()">← Check another message</button>
+    <div class="edit-card">
+      <div class="edit-label">Edit to sound more like you — then re-score</div>
+      <textarea class="edit-textarea" id="editInput" placeholder="Change any words to make it sound like you..."></textarea>
+      <button class="rescore-btn" onclick="rescoreReply()">Re-score my version →</button>
+      <div class="rescore-result" id="rescoreResult"></div>
+    </div>
+    <div class="sent-card" id="sentCard">
+      <div class="sent-label">Did you send it?</div>
+      <div class="sent-row">
+        <button class="sent-btn sent-yes" onclick="logSent('yes')">✓ Yes, sent it</button>
+        <button class="sent-btn sent-no" onclick="logSent('no')">Not yet — will send later</button>
+        <button class="sent-btn" onclick="logSent('different')">Sent something different</button>
+      </div>
+    </div>
+    <button class="new-check-btn" onclick="reset()">← Check another message</button>
   </div>
-
 </div>
 
-<!-- LOADING OVERLAY -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-text" id="loadingText">Working...</div>
   <div class="loading-sub" id="loadingSub"></div>
 </div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
 const API_URL = '/api/anthropic';
+var cooldownInterval = null;
+var recognition = null;
+var isRecording = false;
+
+var profile = JSON.parse(localStorage.getItem('guardianProfile') || 'null');
 
 var state = {
-  theirMsg: '',
-  answer: '',
-  question: '',
-  reply: '',
-  score: 0,
-  timing: ''
+  theirMsg: '', answer: '', question: '', reply: '',
+  score: 0, timing: '', outgoing: false, outgoingMsg: ''
 };
 
-// ── NAVIGATION ──────────────────────────────────────
-
-function showStep(n) {
-  for (var i = 1; i <= 5; i++) {
-    var el = document.getElementById('step' + i);
-    el.classList.remove('active');
+// ── INIT ──
+window.onload = function() {
+  if (profile) {
+    showStep('1');
+  } else {
+    showStep('Profile');
   }
+};
+
+// ── STEPS ──
+function showStep(n) {
+  ['Profile','1','2','2b','3','3b','3c','4','5'].forEach(function(id) {
+    var el = document.getElementById('step' + id);
+    if (el) el.classList.remove('active');
+  });
   var target = document.getElementById('step' + n);
-  target.classList.add('active');
+  if (target) target.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -799,33 +469,42 @@ function toast(msg) {
   setTimeout(function() { el.classList.remove('show'); }, 2800);
 }
 
-// ── TYPE INPUT ──────────────────────────────────────
-
-function toggleType() {
-  var panel = document.getElementById('typePanel');
-  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-  if (panel.style.display === 'block') {
-    document.getElementById('typeInput').focus();
-  }
+// ── TONE PROFILE ──
+var profileAnswers = {};
+function profileSelect(q, val) {
+  profileAnswers['q' + q] = val;
+  document.querySelectorAll('#pq' + q + ' .profile-opt').forEach(function(b) {
+    b.classList.toggle('selected', b.onclick.toString().includes("'" + val + "'"));
+  });
+  // Show next question
+  if (q === 1) { document.getElementById('pq2').style.display = 'block'; }
+  if (q === 2) { document.getElementById('pq3').style.display = 'block'; }
+  if (q === 3) { document.getElementById('profileNext').style.display = 'block'; }
 }
 
-function confirmType() {
-  var val = document.getElementById('typeInput').value.trim();
-  if (!val) { toast('Please type their message first'); return; }
-  state.theirMsg = val;
-  document.getElementById('typePanel').style.display = 'none';
-  askQuestion();
+function finishProfile() {
+  profile = profileAnswers;
+  localStorage.setItem('guardianProfile', JSON.stringify(profile));
+  showStep('1');
 }
 
-// ── UPLOAD ──────────────────────────────────────────
+// ── HOME ──
+function showIncoming() {
+  document.getElementById('incomingPanel').style.display = 'block';
+  document.getElementById('outgoingPanel').style.display = 'none';
+}
 
+function showOutgoing() {
+  document.getElementById('outgoingPanel').style.display = 'block';
+  document.getElementById('incomingPanel').style.display = 'none';
+}
+
+// ── UPLOAD ──
 async function handleUpload(event) {
   var file = event.target.files[0];
   event.target.value = '';
   if (!file) return;
-
-  showLoading('Reading message...', 'Give me a second');
-
+  showLoading('Reading screenshot...', 'Identifying who sent what');
   var reader = new FileReader();
   reader.onload = async function(e) {
     var b64 = e.target.result.split(',')[1];
@@ -836,43 +515,87 @@ async function handleUpload(event) {
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 500,
-          messages: [{
-            role: 'user',
-            content: [{
-              type: 'image',
-              source: { type: 'base64', media_type: file.type, data: b64 }
-            }, {
-              type: 'text',
-              text: 'Read this message screenshot. Extract all the message text you can see. Return ONLY the message text itself — no explanation, no labels. If you can only partially read it add [PARTIAL] at the end.'
-            }]
-          }]
+          messages: [{ role: 'user', content: [
+            { type: 'image', source: { type: 'base64', media_type: file.type, data: b64 } },
+            { type: 'text', text: 'Read this message screenshot. Identify which messages were sent by each person. Return ONLY JSON: {"theirMessages":"<their messages combined>","myMessages":"<my messages combined>","unclear":false}. If you cannot tell who sent what set unclear:true.' }
+          ]}]
         })
       });
-
       var data = await res.json();
-      var extracted = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim());
-
-      if (extracted && extracted.length > 5) {
-        state.theirMsg = extracted.replace('[PARTIAL]', '').trim();
-        hideLoading();
+      var raw = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/```json|```/g,'').trim();
+      var parsed = null;
+      try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2) {} }
+      hideLoading();
+      if (parsed && parsed.theirMessages && parsed.theirMessages.length > 3) {
+        state.theirMsg = parsed.theirMessages.trim();
         askQuestion();
       } else {
-        hideLoading();
-        toast("Couldn't read the screenshot clearly — try typing the message instead");
+        toast("Could not read screenshot — please type the message instead");
       }
-    } catch (e) {
-      hideLoading();
-      toast('Upload failed — please try again');
-    }
+    } catch(e) { hideLoading(); toast('Upload failed — please try again'); }
   };
   reader.readAsDataURL(file);
 }
 
-// ── ASK QUESTION ────────────────────────────────────
+function confirmType() {
+  var val = document.getElementById('typeInput').value.trim();
+  if (!val) { toast('Please type their message first'); return; }
+  state.theirMsg = val;
+  askQuestion();
+}
 
+// ── OUTGOING ──
+function checkOutgoing() {
+  var val = document.getElementById('outgoingInput').value.trim();
+  if (!val) { toast('Type what you want to send first'); return; }
+  state.outgoingMsg = val;
+  state.outgoing = true;
+  showStep('3b');
+}
+
+function outgoingYes() {
+  state.theirMsg = '[OUTGOING MESSAGE] Parent wants to send: ' + state.outgoingMsg;
+  askQuestion();
+}
+
+function outgoingCheckin() {
+  showStep('3c');
+}
+
+function outgoingNotSure() {
+  showStep('3c');
+}
+
+function outgoingProceed() {
+  state.theirMsg = '[OUTGOING MESSAGE] Parent wants to send: ' + state.outgoingMsg;
+  askQuestion();
+}
+
+// ── COOLDOWN ──
+function startCooldown() {
+  showStep('2b');
+  document.getElementById('theirBubbleCool').querySelector('.their-bubble-text').textContent = state.theirMsg;
+  var seconds = 120;
+  cooldownInterval = setInterval(function() {
+    seconds--;
+    var m = Math.floor(seconds/60);
+    var s = seconds % 60;
+    document.getElementById('cooldownTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (seconds <= 0) {
+      clearInterval(cooldownInterval);
+      skipCooldown();
+    }
+  }, 1000);
+}
+
+function skipCooldown() {
+  if (cooldownInterval) clearInterval(cooldownInterval);
+  proceedToQuestion();
+}
+
+// ── ASK QUESTION ──
 async function askQuestion() {
   showLoading('Reading it...', 'Working out what to ask you');
-
   document.getElementById('theirText3').textContent = state.theirMsg;
   document.getElementById('theirText4').textContent = state.theirMsg;
 
@@ -882,70 +605,128 @@ async function askQuestion() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
-        messages: [{
-          role: 'user',
-          content: 'Family court England and Wales. Parent received: "' + state.theirMsg + '". I need to ask ONE question to understand the context before suggesting a reply. What is the most important question? Examples: "Were the kids actually back late?" "Did they eat before handover?" "Is any of this true?" "Was this agreed in your order?" Keep it short and conversational. Return ONLY JSON: {"question":"<question text>","options":["<option1>","<option2>","<option3>"]}'
-        }]
+        max_tokens: 400,
+        messages: [{ role: 'user', content: 'Family court England and Wales. Parent received this message: "' + state.theirMsg + '". Analyse it and return ONLY JSON with these fields: {"question":"<ONE most important question to ask the parent before suggesting a reply>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line describing the message type e.g. Welfare allegation or Routine message>","cooldown":true|false}. Set cooldown true only if the message is highly aggressive or contains serious allegations.' }]
       })
     });
-
     var data = await res.json();
-    var raw = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim()).replace(/```json|```/g, '').trim();
+    var raw = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed = null;
-    try { parsed = JSON.parse(raw); } catch(e) {
-      var m = raw.match(/\{[\s\S]*\}/);
-      if (m) try { parsed = JSON.parse(m[0]); } catch(e2) {}
-    }
-
+    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2) {} }
     hideLoading();
 
-    if (parsed && parsed.question) {
-      document.getElementById('questionText').textContent = parsed.question;
-      state.question = parsed.question;
+    if (parsed) {
+      // Store flag info
+      state.flag = parsed.flag;
+      state.flagText = parsed.flagText;
+      state.question = parsed.question || '';
 
-      var opts = document.getElementById('questionOptions');
-      opts.innerHTML = '';
-      var options = parsed.options || ['Yes', 'No', 'Partly'];
-
-      options.forEach(function(opt) {
-        var btn = document.createElement('button');
-        btn.className = 'q-option';
-        btn.textContent = opt;
-        btn.onclick = function() {
-          document.querySelectorAll('.q-option').forEach(function(b) { b.classList.remove('selected'); });
-          btn.classList.add('selected');
-          state.answer = opt;
-          document.getElementById('detailInput').style.display = 'block';
-         document.getElementById('continueBtn').style.display = 'block';
-        };
-        opts.appendChild(btn);
-      });
-
-      showStep(3);
+      // Cooldown check
+      if (parsed.cooldown) {
+        startCooldown();
+        return;
+      }
+      proceedToQuestion(parsed);
     } else {
-      generateReplyDirect();
+      proceedToQuestion(null);
     }
-  } catch(e) {
-    hideLoading();
-    generateReplyDirect();
+  } catch(e) { hideLoading(); proceedToQuestion(null); }
+}
+
+function proceedToQuestion(parsed) {
+  // Show flag banner
+  var flagBanner = document.getElementById('flagBanner');
+  if (state.flag && state.flagText) {
+    var cls = state.flag === 'red' ? 'flag-red' : state.flag === 'amber' ? 'flag-amber' : 'flag-green';
+    var icon = state.flag === 'red' ? '🔴' : state.flag === 'amber' ? '🟡' : '🟢';
+    flagBanner.innerHTML = '<div class="flag-card ' + cls + '">' + icon + ' ' + state.flagText + '</div>';
+  }
+
+  if (parsed && parsed.question) {
+    document.getElementById('questionText').textContent = parsed.question;
+    var opts = document.getElementById('questionOptions');
+    opts.innerHTML = '';
+    (parsed.options || ['Yes','No','Partly']).forEach(function(opt) {
+      var btn = document.createElement('button');
+      btn.className = 'q-option';
+      btn.textContent = opt;
+      btn.onclick = function() {
+        document.querySelectorAll('.q-option').forEach(function(b) { b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        state.answer = opt;
+        document.getElementById('honestNote').style.display = 'block';
+        document.getElementById('voiceRow').style.display = 'flex';
+        document.getElementById('continueBtn').style.display = 'block';
+      };
+      opts.appendChild(btn);
+    });
+  } else {
+    document.getElementById('questionText').textContent = 'Is there anything specific you want me to know before I suggest a reply?';
+    document.getElementById('honestNote').style.display = 'block';
+    document.getElementById('voiceRow').style.display = 'flex';
+    document.getElementById('continueBtn').style.display = 'block';
+  }
+  showStep('3');
+}
+
+// ── VOICE ──
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    toast('Voice not supported — please type instead');
+    return;
+  }
+  if (isRecording) {
+    stopVoice();
+  } else {
+    startVoice();
   }
 }
 
-// ── GENERATE REPLY ───────────────────────────────────
+function startVoice() {
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.lang = 'en-GB';
+  recognition.onresult = function(event) {
+    var transcript = Array.from(event.results).map(function(r) { return r[0].transcript; }).join(' ');
+    document.getElementById('detailInput').value = transcript;
+  };
+  recognition.onerror = function() { stopVoice(); toast('Could not hear you — please type instead'); };
+  recognition.onend = function() { stopVoice(); };
+  recognition.start();
+  isRecording = true;
+  document.getElementById('voiceBtn').classList.add('recording');
+  document.getElementById('voiceBtn').textContent = '⏹';
+}
 
+function stopVoice() {
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+  isRecording = false;
+  document.getElementById('voiceBtn').classList.remove('recording');
+  document.getElementById('voiceBtn').textContent = '🎤';
+}
+
+// ── GENERATE REPLY ──
 async function generateReply() {
+  stopVoice();
   var detail = document.getElementById('detailInput').value.trim();
-  var context = 'Question: "' + state.question + '". Answer: "' + state.answer + '"' + (detail ? '. Extra info: "' + detail + '"' : '');
+  var context = state.answer ? 'Question asked: "' + state.question + '". Answer: "' + state.answer + '".' : '';
+  if (detail) context += ' Parent also said: "' + detail + '".';
+  if (!context) context = 'No specific context provided.';
   await _generateReply(context);
 }
 
 async function generateReplyDirect() {
-  await _generateReply('No extra context available.');
+  await _generateReply('No context provided — suggest the safest minimal reply.');
 }
 
 async function _generateReply(context) {
   showLoading('Writing your reply...', 'Keeping it human');
+  var toneDesc = '';
+  if (profile) {
+    toneDesc = 'Parent profile: texting style is ' + (profile.q1||'') + ', situation is ' + (profile.q2||'') + ', priority is ' + (profile.q3||'') + '. Match the reply to this profile.';
+  }
 
   try {
     var res = await fetch(API_URL, {
@@ -954,58 +735,70 @@ async function _generateReply(context) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 400,
-        messages: [{
-          role: 'user',
-         content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Context from parent: ' + context + '\n\nWrite a reply. STRICT RULES:\n1. Sound like a real British parent texting — NOT a solicitor, NOT a therapist, NOT American\n2. Short everyday words only\n3. BANNED: please ensure, adequate, going forward, in accordance, I note that, constructively, I hear you, happy to chat, fill me in, reach out\n4. NEVER assume direction of travel — never say picked up or dropped off unless the parent explicitly confirmed it\n5. CRITICAL — only use facts the parent explicitly confirmed. If they said nothing about food do not mention food. If they said nothing about sleep do not mention sleep. If they said nothing about timing do not mention timing. Inventing facts is worse than saying nothing\n6. When in doubt say less — one sentence with only confirmed facts scores higher than two sentences with assumptions\n7. Maximum 2 sentences — 1 is almost always better\n8. Ignore swearing completely\n9. Must sound like a real person not an AI\n10. If nothing useful to say — return empty string for reply and score 10\n\nReturn ONLY JSON: {"reply":"<the reply>","why":"<1 sentence why this works>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<1 sentence when and why to send>"}'        }]
+        messages: [{ role: 'user', content: 'You are helping a parent in English family court respond to a co-parent message. Suggest one short calm factual reply a real British parent would actually text.\n\n' + toneDesc + '\n\nTheir message: "' + state.theirMsg + '"\nWhat the parent told you: ' + context + '\n\nStrict rules:\n- Only use facts the parent explicitly confirmed. Do not invent anything.\n- If they confirmed nothing specific say as little as possible.\n- Never say: picked up, dropped off, I hear you, going forward, please ensure, reach out, happy to chat.\n- Sound like a real person texting not a lawyer or AI.\n- One sentence is almost always enough. Two maximum.\n- UK English only.\n- If nothing useful to say return empty string for reply.\n\nReturn ONLY JSON: {"reply":"<reply>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or comma separated reasons if score below 5>"}' }]
       })
     });
-
     var data = await res.json();
-    var raw = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim()).replace(/```json|```/g, '').trim();
+    var raw = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed = null;
-    try { parsed = JSON.parse(raw); } catch(e) {
-      var m = raw.match(/\{[\s\S]*\}/);
-      if (m) try { parsed = JSON.parse(m[0]); } catch(e2) {}
-    }
-
+    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2) {} }
     hideLoading();
 
-    if (parsed && parsed.reply) {
+    if (parsed && parsed.reply !== undefined) {
       state.reply = parsed.reply;
       state.score = parsed.score || 8;
       state.timing = parsed.timingNote || '';
 
-      document.getElementById('suggestedReply').textContent = parsed.reply;
+      // Score badge
+      var badge = document.getElementById('scoreBadge');
+      if (parsed.score >= 8) { badge.textContent = '✅ Safe to send'; badge.className = 'score-badge score-safe'; }
+      else if (parsed.score >= 6) { badge.textContent = '⚠️ Send with care'; badge.className = 'score-badge score-caution'; }
+      else { badge.textContent = '❌ Needs work'; badge.className = 'score-badge score-danger'; }
+
+      document.getElementById('suggestedReply').textContent = parsed.reply || '(No reply needed — silence is the stronger position here.)';
       document.getElementById('replyWhy').textContent = parsed.why || '';
 
-      var scoreEl = document.getElementById('coachScore');
-      scoreEl.textContent = (parsed.score || 8) + '/10';
-      scoreEl.style.color = (parsed.score >= 8) ? 'var(--green)' : (parsed.score >= 6) ? 'var(--amber)' : 'var(--red)';
+      if (parsed.timingNote) {
+        document.getElementById('timingNote').textContent = '⏰ ' + parsed.timingNote;
+        document.getElementById('timingNote').style.display = 'block';
+      }
 
-      showStep(4);
+      // Nuclear warning
+      if (parsed.score < 5 && parsed.dangerReasons) {
+        document.getElementById('nuclearWarning').style.display = 'block';
+        document.getElementById('replyContent').style.display = 'none';
+        document.getElementById('nuclearReasons').textContent = parsed.dangerReasons;
+      } else {
+        document.getElementById('nuclearWarning').style.display = 'none';
+        document.getElementById('replyContent').style.display = 'block';
+      }
+
+      showStep('4');
     } else {
       toast('Could not generate a reply — please try again');
-      showStep(1);
     }
-  } catch(e) {
-    hideLoading();
-    toast('Something went wrong — please try again');
-    showStep(1);
-  }
+  } catch(e) { hideLoading(); toast('Something went wrong — please try again'); }
 }
 
-// ── REFINE ───────────────────────────────────────────
+function fixReply() {
+  state.answer = (state.answer || '') + ' [Please generate a safer calmer version]';
+  generateReply();
+}
 
+function showReplyAnyway() {
+  document.getElementById('nuclearWarning').style.display = 'none';
+  document.getElementById('replyContent').style.display = 'block';
+}
+
+// ── REFINE ──
 async function refine(type) {
   var instructions = {
-    soft: 'Too soft — make it firmer and more boundaried while still sounding human and natural.',
-    firm: 'Too firm — soften it slightly while keeping it factual and calm.',
-    change: 'Improve it — make it more natural and human sounding.'
+    formal: 'Too formal — make it more natural and casual, like a real British parent texting.',
+    harsh: 'Too harsh — soften it while keeping it factual.',
+    different: 'Rewrite it differently — same meaning but different words.'
   };
-
   var prev = document.getElementById('suggestedReply').textContent;
   document.getElementById('suggestedReply').textContent = 'Updating...';
-
   try {
     var res = await fetch(API_URL, {
       method: 'POST',
@@ -1013,64 +806,52 @@ async function refine(type) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 150,
-        messages: [{
-          role: 'user',
-          content: 'Their message: "' + state.theirMsg + '". Current reply: "' + state.reply + '". Feedback: ' + instructions[type] + ' Rewrite it. Sound like a real human parent. Short words. Max 2 sentences. No legal language at all. Return ONLY the new reply text.'
-        }]
+        messages: [{ role: 'user', content: 'Their message: "' + state.theirMsg + '". Current reply: "' + state.reply + '". Feedback: ' + instructions[type] + ' Rewrite it. Real British parent texting. Short words. Max 2 sentences. No legal language. Return ONLY the new reply text.' }]
       })
     });
-
     var data = await res.json();
-    var refined = ((data.content || []).map(function(b) { return b.text || ''; }).join('').trim()).replace(/^["']|["']$/g, '');
-
-    if (refined && refined.length > 5) {
-      state.reply = refined;
-      document.getElementById('suggestedReply').textContent = refined;
-    } else {
-      document.getElementById('suggestedReply').textContent = prev;
-    }
-  } catch(e) {
-    document.getElementById('suggestedReply').textContent = prev;
-  }
+    var refined = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/^["']|["']$/g,'');
+    if (refined && refined.length > 3) { state.reply = refined; document.getElementById('suggestedReply').textContent = refined; }
+    else { document.getElementById('suggestedReply').textContent = prev; }
+  } catch(e) { document.getElementById('suggestedReply').textContent = prev; }
 }
 
-// ── CONFIRM ──────────────────────────────────────────
-
-function confirm() {
+// ── CONFIRM ──
+function confirmReply() {
   document.getElementById('confirmedReply').textContent = state.reply;
-
-  if (state.timing) {
-    var timingEl = document.getElementById('timingNote');
-    timingEl.textContent = '⏰ ' + state.timing;
-    timingEl.style.display = 'block';
-  }
-
-  showStep(5);
+  document.getElementById('editInput').value = state.reply;
+  setTimeout(function() { document.getElementById('sentCard').style.display = 'block'; }, 1500);
+  showStep('5');
 }
 
 function copyReply() {
+  var text = state.reply;
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(state.reply).then(function() {
-      toast('✅ Copied — ready to send');
-    });
+    navigator.clipboard.writeText(text).then(function() { toast('✅ Copied — ready to send'); });
   } else {
     var ta = document.createElement('textarea');
-    ta.value = state.reply;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
     toast('✅ Copied — ready to send');
   }
 }
 
+// ── RESCORE ──
 async function rescoreReply() {
   var edited = document.getElementById('editInput').value.trim();
-  if (!edited) { toast('Type your version first'); return; }
-  var btn = document.querySelector('[onclick="rescoreReply()"]');
+  if (!edited) { toast('Edit the reply first'); return; }
+  var btn = document.querySelector('.rescore-btn');
   btn.textContent = 'Scoring...';
   try {
-    var res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 200, messages: [{ role: 'user', content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Parent wants to send: "' + edited + '".Score this reply out of 10. Calm, factual and brief is GOOD. Defensive, assumptive or legal language is BAD. NEVER suggest adding empathy phrases. Return ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence — is it safe to send?>","tip":"<1 sentence improvement or blank if good>"} ' }] }) });
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        messages: [{ role: 'user', content: 'Family court England and Wales. Their message: "' + state.theirMsg + '". Parent wants to send: "' + edited + '". Score this reply out of 10. Calm factual brief is GOOD. Defensive assumptive legal language is BAD. Never suggest adding empathy phrases. Return ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence>","tip":"<1 sentence or blank>"}' }]
+      })
+    });
     var data = await res.json();
     var raw = ((data.content||[]).map(function(b){return b.text||''}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed = null;
@@ -1080,19 +861,37 @@ async function rescoreReply() {
       var color = parsed.score >= 8 ? '#22c97a' : parsed.score >= 6 ? '#f59e0b' : '#ef4444';
       var el = document.getElementById('rescoreResult');
       el.style.display = 'block';
-      el.innerHTML = '<span style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;color:' + color + '">' + parsed.score + '/10</span> <span style="font-size:13px;margin-left:8px;">' + (parsed.verdict||'') + '</span>' + (parsed.tip ? '<div style="margin-top:8px;font-size:12px;color:#f59e0b;">💡 ' + parsed.tip + '</div>' : '');
+      el.innerHTML = '<span style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:' + color + '">' + parsed.score + '/10</span> <span style="font-size:13px;margin-left:8px;">' + (parsed.verdict||'') + '</span>' + (parsed.tip ? '<div style="margin-top:8px;font-size:12px;color:#f59e0b;">💡 ' + parsed.tip + '</div>' : '');
+      state.reply = edited;
     }
   } catch(e) { btn.textContent = 'Re-score my version →'; toast('Could not score — try again'); }
-}function reset() {
-  state = { theirMsg: '', answer: '', question: '', reply: '', score: 0, timing: '' };
+}
+
+// ── LOG SENT ──
+function logSent(choice) {
+  var msgs = { yes: '✅ Logged — well done.', no: '📝 Noted — send when ready.', different: '📝 Logged — try the coached version next time.' };
+  document.getElementById('sentCard').innerHTML = '<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">' + msgs[choice] + '</div>';
+  toast(choice === 'yes' ? '✅ Sent and logged' : '📝 Logged');
+}
+
+// ── RESET ──
+function reset() {
+  state = { theirMsg:'', answer:'', question:'', reply:'', score:0, timing:'', outgoing:false, outgoingMsg:'' };
   document.getElementById('typeInput').value = '';
   document.getElementById('detailInput').value = '';
-  document.getElementById('detailInput').style.display = 'none';
-  document.getElementById('typePanel').style.display = 'none';
-  document.getElementById('timingNote').style.display = 'none';
-  showStep(1);
+  document.getElementById('outgoingInput').value = '';
+  document.getElementById('detailInput').style.display = '';
+  document.getElementById('voiceRow').style.display = 'none';
+  document.getElementById('continueBtn').style.display = 'none';
+  document.getElementById('honestNote').style.display = 'none';
+  document.getElementById('flagBanner').innerHTML = '';
+  document.getElementById('rescoreResult').style.display = 'none';
+  document.getElementById('sentCard').style.display = 'none';
+  document.getElementById('incomingPanel').style.display = 'none';
+  document.getElementById('outgoingPanel').style.display = 'none';
+  if (cooldownInterval) clearInterval(cooldownInterval);
+  showStep('1');
 }
 </script>
 </body>
 </html>
-HTMLEOF
