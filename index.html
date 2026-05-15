@@ -411,13 +411,6 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
           <div class="breathe-note">Take a breath before you decide.</div>
           <div class="suggested-reply" id="suggestedReply"></div>
           <div class="reply-why" id="replyWhy"></div>
-          <div class="timing-card" id="timingCard">
-            <div class="timing-top">
-              <span class="timing-headline" id="timingHeadline"></span>
-              <span class="timing-countdown" id="timingCountdown"></span>
-            </div>
-            <div class="timing-reason" id="timingReason"></div>
-          </div>
         </div>
         <div class="refine-section">
           <div class="refine-label">How does this feel?</div>
@@ -448,6 +441,13 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
       <div class="confirmed-label">✓ Ready to send</div>
       <div class="confirmed-reply" id="confirmedReply"></div>
       <button class="copy-btn" onclick="copyReply()">Copy reply</button>
+      <div class="timing-card" id="timingCard" style="margin-top:12px;">
+        <div class="timing-top">
+          <span class="timing-headline" id="timingHeadline"></span>
+          <span class="timing-countdown" id="timingCountdown"></span>
+        </div>
+        <div class="timing-reason" id="timingReason"></div>
+      </div>
     </div>
     <div class="edit-card">
       <div class="edit-label">Edit to sound more like you — then re-score</div>
@@ -781,32 +781,62 @@ function startVoice() {
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = 'en-GB';
+  recognition.maxAlternatives = 1;
   var finalTranscript = '';
+  var restartTimeout = null;
+
   recognition.onresult = function(event) {
-    var interim = '';
+    // Only append NEW final results — prevents duplication/looping
     for (var i = event.resultIndex; i < event.results.length; i++) {
       if (event.results[i].isFinal) {
-        finalTranscript += event.results[i][0].transcript + ' ';
-      } else {
-        interim += event.results[i][0].transcript;
+        var word = event.results[i][0].transcript.trim();
+        // Deduplicate: don't add if it already ends with this phrase
+        if (word && !finalTranscript.trim().endsWith(word)) {
+          finalTranscript += word + ' ';
+        }
       }
     }
-    document.getElementById('detailInput').value = (finalTranscript + interim).trim();
+    document.getElementById('detailInput').value = finalTranscript.trim();
   };
+
   recognition.onerror = function(e) {
-    if (e.error !== 'no-speech') { stopVoice(); toast('Could not hear you — please type instead'); }
+    if (e.error === 'no-speech') return; // ignore silence
+    if (e.error === 'aborted') return;   // ignore manual stop
+    stopVoice();
+    toast('Could not hear you — please type instead');
   };
-  // Do NOT auto-stop on recognition.onend — user taps stop
-  recognition.start();
+
+  // Auto-restart if browser ends session (mobile cuts out after ~60s)
+  recognition.onend = function() {
+    if (isRecording) {
+      restartTimeout = setTimeout(function() {
+        try { recognition.start(); } catch(e) {}
+      }, 200);
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch(e) {
+    toast('Could not start voice — please type instead');
+    return;
+  }
+
   isRecording = true;
   document.getElementById('voiceBtn').classList.add('recording');
   document.getElementById('voiceBtn').textContent = '⏹';
   document.getElementById('voiceBtn').title = 'Tap to stop recording';
+  // Store restartTimeout on recognition so stopVoice can clear it
+  recognition._restartTimeout = restartTimeout;
 }
 
 function stopVoice() {
-  if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
-  isRecording = false;
+  isRecording = false; // set first so onend doesn't restart
+  if (recognition) {
+    if (recognition._restartTimeout) clearTimeout(recognition._restartTimeout);
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
   document.getElementById('voiceBtn').classList.remove('recording');
   document.getElementById('voiceBtn').textContent = '🎤';
   document.getElementById('voiceBtn').title = 'Tap to record';
@@ -1080,3 +1110,4 @@ function reset() {
 </script>
 </body>
 </html>
+
