@@ -9,1859 +9,1300 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #080d14; --surface: #0f1620; --card: #131c28;
-  --border: rgba(255,255,255,0.07); --white: #f0f4ff;
-  --muted: #4a5568; --muted-hi: #8896aa;
+  --bg: #080d14; --card: #131c28; --border: rgba(255,255,255,0.07);
+  --white: #f0f4ff; --muted: #4a5568; --muted-hi: #8896aa;
   --gold: #f5c842; --gold-dim: rgba(245,200,66,0.15);
   --blue: #3b7fff; --blue-dim: rgba(59,127,255,0.12);
   --green: #22c97a; --green-dim: rgba(34,201,122,0.12);
   --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
   --red: #ef4444; --red-dim: rgba(239,68,68,0.12);
 }
-html, body { background: var(--bg); color: var(--white); font-family: "Inter", sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-.app { max-width: 480px; margin: 0 auto; padding: 0 16px 80px; min-height: 100vh; }
-.header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-.logo { font-family: "Syne", sans-serif; font-size: 20px; font-weight: 800; color: var(--white); }
-.logo span { color: var(--gold); }
-.header-right { display: flex; align-items: center; gap: 10px; }
-.badge { font-family: "Syne", sans-serif; font-size: 10px; font-weight: 700; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(245,200,66,0.2); padding: 4px 10px; border-radius: 20px; }
-.profile-icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--card); border: 1.5px solid var(--border); color: var(--muted-hi); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.step { display: none; animation: fadeUp 0.2s ease; }
-.step.active { display: block; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
+.app { max-width:480px; margin:0 auto; padding:0 16px 80px; }
+.header { display:flex; align-items:center; justify-content:space-between; padding:18px 0 14px; border-bottom:1px solid var(--border); margin-bottom:24px; }
+.logo { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; }
+.logo span { color:var(--gold); }
+.badge { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:var(--gold); background:var(--gold-dim); border:1px solid rgba(245,200,66,0.2); padding:4px 10px; border-radius:20px; }
+.step { display:none; animation:fadeUp 0.2s ease; }
+.step.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
 /* BUTTONS */
-.btn-gold { width:100%; padding:14px; background:linear-gradient(135deg,#c9a030,var(--gold)); border:none; border-radius:12px; color:#0a0800; font-family:"Syne",sans-serif; font-size:14px; font-weight:800; cursor:pointer; transition:opacity 0.15s; }
-.btn-gold:hover { opacity:0.9; }
-.btn-blue { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; border-radius:12px; color:#fff; font-family:"Syne",sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
-.btn-green { width:100%; padding:13px; background:linear-gradient(135deg,#1fbb70,var(--green)); border:none; border-radius:12px; color:#041209; font-family:"Syne",sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
-.btn-ghost { width:100%; padding:12px; background:transparent; border:1.5px solid var(--border); border-radius:12px; color:var(--muted-hi); font-family:"Syne",sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
-.btn-ghost:hover { border-color:rgba(255,255,255,0.15); color:var(--white); }
+.btn-gold { width:100%; padding:14px; background:linear-gradient(135deg,#c9a030,var(--gold)); border:none; border-radius:12px; color:#0a0800; font-family:'Syne',sans-serif; font-size:14px; font-weight:800; cursor:pointer; }
+.btn-blue { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; border-radius:12px; color:#fff; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+.btn-green { width:100%; padding:13px; background:linear-gradient(135deg,#1fbb70,var(--green)); border:none; border-radius:12px; color:#041209; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-ghost { width:100%; padding:12px; background:transparent; border:1.5px solid var(--border); border-radius:12px; color:var(--muted-hi); font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:10px; }
 
-/* CARDS */
-.card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
-.card-pad { padding:16px; }
-.card-header { padding:12px 16px; border-bottom:1px solid var(--border); font-family:"Syne",sans-serif; font-size:11px; font-weight:700; }
-
-/* SETUP — WELCOME */
-.welcome-hero { text-align:center; padding:30px 0 24px; }
-.welcome-shield { width:80px; height:80px; background:var(--gold-dim); border:2px solid rgba(245,200,66,0.3); border-radius:24px; display:flex; align-items:center; justify-content:center; font-size:36px; margin:0 auto 20px; }
-.welcome-title { font-family:"Syne",sans-serif; font-size:26px; font-weight:800; margin-bottom:10px; }
-.welcome-sub { font-size:14px; color:var(--muted-hi); line-height:1.7; max-width:300px; margin:0 auto 28px; }
-.welcome-features { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
-.welcome-feat { display:flex; align-items:center; gap:12px; padding:12px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; }
-.welcome-feat-icon { font-size:20px; flex-shrink:0; }
-.welcome-feat-text { font-size:13px; color:var(--muted-hi); line-height:1.5; }
-.welcome-feat-text strong { color:var(--white); display:block; font-size:13px; margin-bottom:2px; }
-.trial-note { font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
-
-/* SETUP — PROFILE */
+/* SETUP */
 .setup-progress { display:flex; gap:6px; margin-bottom:24px; }
-.setup-dot { flex:1; height:3px; border-radius:2px; background:var(--border); transition:background 0.3s; }
+.setup-dot { flex:1; height:3px; border-radius:2px; background:var(--border); }
 .setup-dot.done { background:var(--gold); }
 .setup-dot.active { background:rgba(245,200,66,0.5); }
-.setup-title { font-family:"Syne",sans-serif; font-size:20px; font-weight:800; margin-bottom:6px; }
+.setup-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:6px; }
 .setup-sub { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:22px; }
 .field-group { margin-bottom:16px; }
-.field-label { font-family:"Syne",sans-serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:8px; }
-.field-input { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:10px; color:var(--white); font-family:"Inter",sans-serif; font-size:14px; padding:12px 14px; outline:none; transition:border-color 0.15s; }
+.field-label { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:8px; display:block; }
+.field-input { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:10px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:12px 14px; outline:none; }
 .field-input:focus { border-color:rgba(245,200,66,0.4); }
 .field-input::placeholder { color:var(--muted); }
-.field-select { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:10px; color:var(--white); font-family:"Inter",sans-serif; font-size:14px; padding:12px 14px; outline:none; cursor:pointer; appearance:none; }
-.field-select option { background:var(--card); }
-.options-grid { display:flex; flex-direction:column; gap:8px; }
-.opt-btn { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:13px; cursor:pointer; text-align:left; transition:all 0.15s; }
-.opt-btn:hover { border-color:rgba(245,200,66,0.3); color:var(--white); }
-.opt-btn.selected { border-color:var(--gold); background:var(--gold-dim); color:var(--white); }
-
-/* CONFLICT SLIDER */
-.slider-wrap { margin-bottom:8px; }
+.field-select { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:10px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:12px 14px; outline:none; cursor:pointer; }
+.opts { display:flex; flex-direction:column; gap:8px; }
+.opt { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:13px; cursor:pointer; text-align:left; transition:all 0.15s; width:100%; }
+.opt:hover { border-color:rgba(245,200,66,0.3); color:var(--white); }
+.opt.sel { border-color:var(--gold); background:var(--gold-dim); color:var(--white); }
 .slider-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:8px; }
-.conflict-slider { width:100%; -webkit-appearance:none; appearance:none; height:6px; border-radius:3px; outline:none; cursor:pointer; }
+.conflict-slider { width:100%; -webkit-appearance:none; appearance:none; height:6px; border-radius:3px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer; }
 .conflict-slider::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--gold); cursor:pointer; border:2px solid var(--bg); }
-.slider-value { text-align:center; font-family:"Syne",sans-serif; font-size:22px; font-weight:800; margin-top:10px; }
+.slider-val { text-align:center; font-family:'Syne',sans-serif; font-size:22px; font-weight:800; margin-top:10px; }
 
-/* SETUP — UPLOAD */
+/* UPLOAD */
 .upload-section { margin-bottom:20px; }
-.upload-section-title { font-family:"Syne",sans-serif; font-size:12px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:10px; }
-.upload-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-bottom:8px; cursor:pointer; transition:all 0.15s; position:relative; overflow:hidden; }
-.upload-item:hover { border-color:rgba(255,255,255,0.15); }
+.upload-section-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:10px; }
+.upload-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-bottom:8px; position:relative; overflow:hidden; cursor:pointer; }
 .upload-item.uploaded { border-color:rgba(34,201,122,0.4); background:rgba(34,201,122,0.05); }
-.upload-item input { position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0; }
+.upload-item input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0; }
 .upload-item-icon { font-size:20px; flex-shrink:0; }
-.upload-item-text { flex:1; }
+.upload-item-body { flex:1; }
 .upload-item-name { font-size:13px; font-weight:600; color:var(--white); margin-bottom:2px; }
-.upload-item-hint { font-size:11px; color:var(--muted-hi); line-height:1.4; }
-.upload-item-status { font-size:18px; flex-shrink:0; }
-.export-guide { background:rgba(59,127,255,0.06); border:1px solid rgba(59,127,255,0.15); border-radius:10px; padding:12px; margin-top:6px; margin-bottom:8px; display:none; }
-.export-guide-title { font-family:"Syne",sans-serif; font-size:11px; font-weight:700; color:var(--blue); margin-bottom:6px; }
-.export-guide-steps { font-size:12px; color:var(--muted-hi); line-height:1.8; }
-.voice-onboard { display:flex; align-items:flex-start; gap:12px; padding:14px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-top:8px; }
-.voice-onboard-mic { width:44px; height:44px; border-radius:10px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; }
-.voice-onboard-mic.recording { background:var(--red); color:white; animation:pulse 1s infinite; }
-.voice-onboard-text { flex:1; }
-.voice-onboard-label { font-size:13px; font-weight:600; color:var(--white); margin-bottom:4px; }
-.voice-onboard-sub { font-size:11px; color:var(--muted-hi); }
-.voice-transcript { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; color:var(--white); font-family:"Inter",sans-serif; font-size:13px; padding:10px 12px; resize:none; outline:none; min-height:70px; margin-top:8px; }
+.upload-item-hint { font-size:11px; color:var(--muted-hi); }
+.upload-status { font-size:16px; flex-shrink:0; }
+.guide { background:rgba(59,127,255,0.06); border:1px solid rgba(59,127,255,0.15); border-radius:10px; padding:12px; margin-bottom:8px; display:none; }
+.guide-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--blue); margin-bottom:6px; }
+.guide-steps { font-size:12px; color:var(--muted-hi); line-height:1.8; }
+.voice-box { display:flex; align-items:flex-start; gap:12px; padding:14px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-top:8px; }
+.voice-box-mic { width:44px; height:44px; border-radius:10px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.voice-box-mic.rec { background:var(--red); color:white; animation:pulse 1s infinite; }
+.voice-transcript { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; color:var(--white); font-family:'Inter',sans-serif; font-size:13px; padding:10px 12px; resize:none; outline:none; min-height:70px; margin-top:8px; }
 .voice-transcript::placeholder { color:var(--muted); }
 
-/* SETUP — PROCESSING */
-.processing-wrap { text-align:center; padding:60px 20px; }
-.processing-icon { font-size:48px; margin-bottom:20px; animation:pulse 1.5s infinite; }
-.processing-title { font-family:"Syne",sans-serif; font-size:18px; font-weight:800; margin-bottom:8px; }
-.processing-sub { font-size:13px; color:var(--muted-hi); line-height:1.6; }
-.processing-items { text-align:left; margin-top:24px; display:flex; flex-direction:column; gap:8px; }
-.processing-item { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted-hi); }
-.processing-item.done { color:var(--green); }
-.processing-item.active { color:var(--white); }
-.spinner-sm { width:16px; height:16px; flex-shrink:0; border-radius:50%; border:2px solid var(--border); border-top-color:var(--gold); animation:spin 0.8s linear infinite; }
-
-/* SETUP — SUMMARY */
-.summary-section { margin-bottom:16px; }
-.summary-section-title { font-family:"Syne",sans-serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:10px; }
-.summary-row { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); }
+/* SUMMARY */
+.summary-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); }
 .summary-row:last-child { border-bottom:none; }
-.summary-key { font-size:12px; color:var(--muted-hi); flex:1; }
-.summary-val { font-size:13px; font-weight:600; color:var(--white); text-align:right; flex:1; }
-.summary-edit { font-size:11px; color:var(--blue); cursor:pointer; margin-left:8px; }
-.conflict-bar { height:6px; border-radius:3px; margin-top:6px; }
-.knowledge-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.knowledge-tag { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; background:var(--green-dim); color:var(--green); border:1px solid rgba(34,201,122,0.25); }
-.knowledge-tag.missing { background:rgba(255,255,255,0.03); color:var(--muted); border-color:var(--border); }
+.summary-key { font-size:12px; color:var(--muted-hi); }
+.summary-val { font-size:13px; font-weight:600; color:var(--white); text-align:right; max-width:60%; }
+.ktags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.ktag { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; background:var(--green-dim); color:var(--green); border:1px solid rgba(34,201,122,0.25); }
+.ktag.miss { background:rgba(255,255,255,0.03); color:var(--muted); border-color:var(--border); }
 
 /* HOME */
-.home-greeting { margin-bottom:20px; }
-.home-name { font-family:"Syne",sans-serif; font-size:22px; font-weight:800; margin-bottom:4px; }
-.home-status { font-size:13px; color:var(--muted-hi); }
-.conflict-indicator { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-bottom:20px; }
-.conflict-indicator-label { font-size:12px; color:var(--muted-hi); flex:1; }
-.conflict-indicator-val { font-family:"Syne",sans-serif; font-size:13px; font-weight:700; }
-.conflict-indicator-bar { width:80px; height:5px; border-radius:3px; background:var(--border); overflow:hidden; }
-.conflict-indicator-fill { height:100%; border-radius:3px; transition:width 0.3s; }
-.home-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-.home-action { padding:20px 14px; border-radius:16px; cursor:pointer; border:none; display:flex; flex-direction:column; align-items:center; gap:10px; transition:all 0.18s; text-align:center; }
-.home-action-coach { background:linear-gradient(135deg,#c9a030,var(--gold)); color:#0a0800; }
-.home-action-coach:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,200,66,0.3); }
-.home-action-qa { background:var(--card); border:1.5px solid var(--border) !important; color:var(--muted-hi); }
-.home-action-qa:hover { border-color:rgba(59,127,255,0.4) !important; color:var(--white); }
-.home-action-icon { font-size:26px; }
-.home-action-label { font-family:"Syne",sans-serif; font-size:13px; font-weight:700; }
-.home-action-sub { font-size:11px; opacity:0.75; }
-.trial-banner { background:var(--gold-dim); border:1.5px solid rgba(245,200,66,0.2); border-radius:12px; padding:12px 14px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
-.trial-banner-text { font-size:12px; color:var(--gold); }
-.trial-banner-count { font-family:"Syne",sans-serif; font-size:18px; font-weight:800; color:var(--gold); }
+.home-name { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; margin-bottom:4px; }
+.home-status { font-size:13px; color:var(--muted-hi); margin-bottom:20px; }
+.conflict-bar-row { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-bottom:16px; }
+.cb-label { font-size:12px; color:var(--muted-hi); flex:1; }
+.cb-bar { width:80px; height:5px; border-radius:3px; background:var(--border); overflow:hidden; }
+.cb-fill { height:100%; border-radius:3px; }
+.cb-val { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; }
+.home-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.home-btn { padding:20px 14px; border-radius:16px; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; transition:all 0.18s; }
+.home-btn-gold { background:linear-gradient(135deg,#c9a030,var(--gold)); color:#0a0800; }
+.home-btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,200,66,0.3); }
+.home-btn-card { background:var(--card); border:1.5px solid var(--border) !important; color:var(--muted-hi); }
+.home-btn-card:hover { border-color:rgba(59,127,255,0.4) !important; color:var(--white); }
+.home-btn-icon { font-size:26px; }
+.home-btn-label { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; }
+.home-btn-sub { font-size:11px; opacity:0.75; }
+.trial-banner { background:var(--gold-dim); border:1.5px solid rgba(245,200,66,0.2); border-radius:12px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+.trial-text { font-size:12px; color:var(--gold); }
+.trial-count { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--gold); }
 .memory-strip { background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:16px; }
-.memory-strip-title { font-family:"Syne",sans-serif; font-size:10px; font-weight:700; color:var(--muted-hi); letter-spacing:1px; margin-bottom:8px; }
-.memory-items { display:flex; flex-direction:column; gap:6px; }
-.memory-item { font-size:12px; color:var(--muted-hi); display:flex; align-items:flex-start; gap:6px; }
-.memory-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.memory-title { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:var(--muted-hi); letter-spacing:1px; margin-bottom:8px; }
+.mem-item { display:flex; align-items:flex-start; gap:6px; font-size:12px; color:var(--muted-hi); margin-bottom:4px; }
+.mem-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:4px; }
 
 /* PAYWALL */
-.paywall-card { background:linear-gradient(135deg,rgba(245,200,66,0.1),rgba(59,127,255,0.05)); border:2px solid rgba(245,200,66,0.25); border-radius:20px; padding:24px; text-align:center; margin-bottom:14px; }
+.paywall-card { background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(59,127,255,0.04)); border:2px solid rgba(245,200,66,0.2); border-radius:20px; padding:24px; text-align:center; margin-bottom:14px; }
 .paywall-icon { font-size:40px; margin-bottom:14px; }
-.paywall-title { font-family:"Syne",sans-serif; font-size:20px; font-weight:800; margin-bottom:8px; }
+.paywall-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:8px; }
 .paywall-sub { font-size:13px; color:var(--muted-hi); line-height:1.7; margin-bottom:20px; }
-.paywall-price { font-family:"Syne",sans-serif; font-size:32px; font-weight:800; color:var(--gold); margin-bottom:4px; }
+.paywall-price { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; color:var(--gold); }
 .paywall-price-sub { font-size:12px; color:var(--muted-hi); margin-bottom:20px; }
-.paywall-features { text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+.paywall-feats { text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
 .paywall-feat { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted-hi); }
-.paywall-feat::before { content:"✓"; color:var(--green); font-weight:700; flex-shrink:0; }
+.paywall-feat::before { content:"✓"; color:var(--green); font-weight:700; }
 
-/* QA CHAT */
-.qa-messages { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; min-height:200px; }
-.qa-msg { max-width:85%; }
-.qa-msg-user { align-self:flex-end; background:var(--blue-dim); border:1px solid rgba(59,127,255,0.2); border-radius:14px 14px 4px 14px; padding:12px 14px; font-size:14px; line-height:1.6; }
-.qa-msg-guardian { align-self:flex-start; background:var(--card); border:1.5px solid var(--border); border-radius:4px 14px 14px 14px; padding:12px 14px; font-size:14px; line-height:1.6; color:var(--muted-hi); }
-.qa-msg-guardian strong { color:var(--white); }
-.qa-input-row { display:flex; gap:8px; position:sticky; bottom:16px; }
-.qa-input { flex:1; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:"Inter",sans-serif; font-size:14px; padding:12px 14px; outline:none; }
+/* QA */
+.qa-msgs { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; min-height:200px; }
+.qa-msg { max-width:85%; font-size:14px; line-height:1.6; padding:12px 14px; border-radius:14px; }
+.qa-user { align-self:flex-end; background:var(--blue-dim); border:1px solid rgba(59,127,255,0.2); border-radius:14px 14px 4px 14px; }
+.qa-guardian { align-self:flex-start; background:var(--card); border:1.5px solid var(--border); border-radius:4px 14px 14px 14px; color:var(--muted-hi); }
+.qa-row { display:flex; gap:8px; }
+.qa-input { flex:1; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:12px 14px; outline:none; }
 .qa-input:focus { border-color:rgba(59,127,255,0.4); }
 .qa-input::placeholder { color:var(--muted); }
-.qa-send { width:46px; height:46px; border-radius:12px; background:var(--blue); border:none; color:white; font-size:18px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-.qa-voice-btn { width:46px; height:46px; border-radius:12px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-.qa-voice-btn.recording { background:var(--red); color:white; animation:pulse 1s infinite; }
-.qa-typing { display:flex; align-items:center; gap:6px; padding:10px 14px; background:var(--card); border:1.5px solid var(--border); border-radius:4px 14px 14px 14px; width:fit-content; }
-.qa-typing span { width:7px; height:7px; border-radius:50%; background:var(--muted-hi); animation:pulse 1s infinite; }
+.qa-send { width:46px; height:46px; border-radius:12px; background:var(--blue); border:none; color:white; font-size:20px; cursor:pointer; flex-shrink:0; }
+.qa-mic { width:46px; height:46px; border-radius:12px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.qa-mic.rec { background:var(--red); color:white; animation:pulse 1s infinite; }
+.qa-suggestions { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
+.qa-sug { padding:7px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:20px; color:var(--muted-hi); font-size:12px; cursor:pointer; }
+.qa-sug:hover { color:var(--blue); border-color:rgba(59,127,255,0.3); }
+.qa-typing { align-self:flex-start; background:var(--card); border:1.5px solid var(--border); border-radius:4px 14px 14px 14px; padding:12px 16px; display:flex; gap:5px; }
+.qa-typing span { width:7px; height:7px; border-radius:50%; background:var(--muted-hi); display:inline-block; animation:pulse 1s infinite; }
 .qa-typing span:nth-child(2) { animation-delay:0.2s; }
 .qa-typing span:nth-child(3) { animation-delay:0.4s; }
-.qa-suggestions { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
-.qa-suggestion { padding:7px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:20px; color:var(--muted-hi); font-size:12px; cursor:pointer; transition:all 0.15s; }
-.qa-suggestion:hover { border-color:rgba(59,127,255,0.3); color:var(--blue); }
 
-/* MESSAGE COACH (from v2) */
+/* MESSAGE COACH */
 .their-bubble { background:var(--amber-dim); border:1.5px solid rgba(245,158,11,0.2); border-radius:14px; padding:14px; margin-bottom:14px; }
-.their-bubble-label { font-family:"Syne",sans-serif; font-size:9px; font-weight:700; color:var(--amber); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:7px; }
-.their-bubble-text { font-size:14px; line-height:1.65; color:var(--white); }
+.their-label { font-family:'Syne',sans-serif; font-size:9px; font-weight:700; color:var(--amber); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:7px; }
+.their-text { font-size:14px; line-height:1.65; }
 .flag-card { border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:flex-start; gap:10px; }
 .flag-red { background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.25); }
 .flag-amber { background:var(--amber-dim); border:1.5px solid rgba(245,158,11,0.25); }
 .flag-green { background:var(--green-dim); border:1.5px solid rgba(34,201,122,0.25); }
 .flag-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
-.flag-text { display:flex; flex-direction:column; gap:3px; }
-.flag-title { font-family:"Syne",sans-serif; font-size:12px; font-weight:800; }
+.flag-body { display:flex; flex-direction:column; gap:3px; }
+.flag-title { font-family:'Syne',sans-serif; font-size:12px; font-weight:800; }
 .flag-red .flag-title { color:var(--red); }
 .flag-amber .flag-title { color:var(--amber); }
 .flag-green .flag-title { color:var(--green); }
 .flag-desc { font-size:12px; color:var(--muted-hi); line-height:1.4; }
-.question-card { background:var(--blue-dim); border:1.5px solid rgba(59,127,255,0.2); border-radius:16px; padding:18px; margin-bottom:14px; }
-.question-label { font-family:"Syne",sans-serif; font-size:10px; font-weight:700; color:var(--blue); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
-.question-text { font-family:"Syne",sans-serif; font-size:16px; font-weight:700; color:var(--white); line-height:1.5; margin-bottom:14px; }
-.question-options { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
-.q-option { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:14px; cursor:pointer; text-align:left; transition:all 0.15s; }
-.q-option:hover { border-color:rgba(59,127,255,0.35); color:var(--white); }
-.q-option.selected { border-color:var(--blue); background:rgba(59,127,255,0.1); color:var(--white); }
+.q-card { background:var(--blue-dim); border:1.5px solid rgba(59,127,255,0.2); border-radius:16px; padding:18px; margin-bottom:14px; }
+.q-label { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:var(--blue); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
+.q-text { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; line-height:1.5; margin-bottom:14px; }
+.q-opts { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+.q-opt { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:14px; cursor:pointer; text-align:left; }
+.q-opt:hover { border-color:rgba(59,127,255,0.35); color:var(--white); }
+.q-opt.sel { border-color:var(--blue); background:rgba(59,127,255,0.1); color:var(--white); }
 .honest-note { font-size:12px; color:var(--gold); text-align:center; padding:8px 0 10px; opacity:0.8; }
 .voice-row { display:flex; gap:8px; margin-bottom:8px; }
-.voice-btn { flex-shrink:0; width:48px; height:48px; border-radius:10px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
-.voice-btn.recording { background:var(--red); color:white; animation:pulse 1s infinite; }
-.detail-input { flex:1; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; color:var(--white); font-family:"Inter",sans-serif; font-size:13.5px; padding:10px 12px; resize:none; outline:none; min-height:80px; }
+.voice-btn { flex-shrink:0; width:48px; height:48px; border-radius:10px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.voice-btn.rec { background:var(--red); color:white; animation:pulse 1s infinite; }
+.detail-input { flex:1; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; color:var(--white); font-family:'Inter',sans-serif; font-size:13.5px; padding:10px 12px; resize:none; outline:none; min-height:80px; }
 .detail-input::placeholder { color:var(--muted); }
-.continue-btn { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; border-radius:10px; color:#fff; font-family:"Syne",sans-serif; font-size:14px; font-weight:700; cursor:pointer; margin-top:8px; display:none; }
+.continue-btn { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; border-radius:10px; color:#fff; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; margin-top:8px; display:none; }
 .skip-btn { width:100%; padding:10px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--muted); font-size:12px; cursor:pointer; margin-top:6px; }
 .coach-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
-.coach-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); }
-.coach-label { font-family:"Syne",sans-serif; font-size:11px; font-weight:700; color:var(--gold); }
-.score-badge { font-family:"Syne",sans-serif; font-size:12px; font-weight:700; padding:4px 10px; border-radius:20px; }
-.score-safe { background:var(--green-dim); color:var(--green); border:1px solid rgba(34,201,122,0.3); }
-.score-caution { background:var(--amber-dim); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
-.score-danger { background:var(--red-dim); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+.coach-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); }
+.coach-lbl { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--gold); }
+.score-badge { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.sc-safe { background:var(--green-dim); color:var(--green); border:1px solid rgba(34,201,122,0.3); }
+.sc-caution { background:var(--amber-dim); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
+.sc-danger { background:var(--red-dim); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
 .coach-body { padding:16px; }
-.breathe-note { font-size:12px; color:var(--muted-hi); text-align:center; padding:8px; margin-bottom:12px; font-style:italic; }
-.suggested-reply { font-size:17px; line-height:1.7; color:var(--white); font-weight:500; padding:14px; background:var(--blue-dim); border-radius:10px; border-left:3px solid var(--blue); margin-bottom:8px; }
+.breathe { font-size:12px; color:var(--muted-hi); text-align:center; padding:8px; margin-bottom:12px; font-style:italic; }
+.suggested { font-size:17px; line-height:1.7; font-weight:500; padding:14px; background:var(--blue-dim); border-radius:10px; border-left:3px solid var(--blue); margin-bottom:8px; }
 .reply-why { font-size:12px; color:var(--muted-hi); line-height:1.5; margin-bottom:12px; }
-.timing-card { border-radius:14px; padding:14px 16px; margin-top:4px; display:none; }
+.tip-card { margin:0 16px 16px; background:rgba(245,200,66,0.06); border:1.5px solid rgba(245,200,66,0.2); border-radius:12px; padding:12px 14px; display:none; }
+.tip-lbl { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.tip-item { font-size:13px; color:var(--muted-hi); line-height:1.6; padding:4px 0 4px 16px; position:relative; }
+.tip-item::before { content:"→"; position:absolute; left:0; color:var(--gold); }
+.refine-section { padding:0 16px 16px; }
+.refine-lbl { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--muted-hi); margin-bottom:8px; }
+.refine-row { display:flex; flex-wrap:wrap; gap:7px; }
+.refine-btn { padding:9px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; color:var(--muted-hi); font-family:'Syne',sans-serif; font-size:11px; font-weight:600; cursor:pointer; }
+.refine-use { background:var(--green-dim); border-color:rgba(34,201,122,0.3) !important; color:var(--green) !important; }
+.feedback-row { display:flex; align-items:center; justify-content:center; gap:12px; padding:14px 16px; border-top:1px solid var(--border); }
+.feedback-lbl { font-size:12px; color:var(--muted); }
+.fb-btn { width:40px; height:40px; border-radius:10px; border:1.5px solid var(--border); background:rgba(255,255,255,0.03); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.fb-btn.up-sel { border-color:var(--green); background:var(--green-dim); }
+.fb-btn.dn-sel { border-color:var(--red); background:var(--red-dim); }
+.fb-thanks { font-size:12px; color:var(--muted-hi); text-align:center; padding:10px; display:none; }
+.nuclear-card { background:var(--red-dim); border:2px solid rgba(239,68,68,0.4); border-radius:16px; padding:18px; margin-bottom:14px; }
+.nuclear-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--red); margin-bottom:8px; }
+.nuclear-text { font-size:13px; color:var(--muted-hi); margin-bottom:14px; line-height:1.6; }
+.nuclear-reasons { font-size:12px; color:var(--red); margin-bottom:14px; line-height:1.8; }
+.nuclear-row { display:flex; gap:8px; }
+.nuclear-fix { flex:1; padding:11px; background:var(--blue-dim); border:1px solid rgba(59,127,255,0.3); border-radius:10px; color:var(--blue); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
+.nuclear-skip { padding:11px 14px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--muted); font-size:11px; cursor:pointer; }
+.cooldown-card { background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.2); border-radius:16px; padding:20px; text-align:center; margin-bottom:14px; }
+.cooldown-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; margin-bottom:8px; }
+.cooldown-sub { font-size:13px; color:var(--muted-hi); margin-bottom:16px; line-height:1.6; }
+.cooldown-timer { font-family:'Syne',sans-serif; font-size:42px; font-weight:800; color:var(--red); margin-bottom:16px; }
+.cooldown-skip { background:none; border:1px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:12px; padding:8px 16px; cursor:pointer; }
+.confirmed-card { background:var(--green-dim); border:1.5px solid rgba(34,201,122,0.25); border-radius:16px; padding:18px; margin-bottom:14px; }
+.confirmed-lbl { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:var(--green); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
+.confirmed-reply { font-size:17px; line-height:1.7; font-weight:500; padding:14px; background:rgba(34,201,122,0.07); border-radius:10px; border-left:3px solid var(--green); margin-bottom:14px; }
+.timing-card { border-radius:14px; padding:14px 16px; margin-top:12px; display:none; }
 .timing-urgent { background:var(--red-dim); border:2px solid rgba(239,68,68,0.4); }
 .timing-soon { background:var(--amber-dim); border:2px solid rgba(245,158,11,0.4); }
 .timing-wait { background:var(--blue-dim); border:2px solid rgba(59,127,255,0.25); }
 .timing-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-.timing-headline { font-family:"Syne",sans-serif; font-size:14px; font-weight:800; }
+.timing-headline { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; }
 .timing-urgent .timing-headline { color:var(--red); }
 .timing-soon .timing-headline { color:var(--amber); }
 .timing-wait .timing-headline { color:var(--blue); }
-.timing-countdown { font-family:"Syne",sans-serif; font-size:20px; font-weight:800; color:var(--white); }
+.timing-countdown { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; }
 .timing-reason { font-size:12px; color:var(--muted-hi); line-height:1.5; margin-top:4px; }
-.refine-section { padding:0 16px 16px; }
-.refine-label { font-family:"Syne",sans-serif; font-size:11px; font-weight:700; color:var(--muted-hi); margin-bottom:8px; }
-.refine-row { display:flex; flex-wrap:wrap; gap:7px; }
-.refine-btn { padding:9px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; color:var(--muted-hi); font-family:"Syne",sans-serif; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s; }
-.refine-btn:hover { border-color:rgba(59,127,255,0.3); color:var(--blue); }
-.refine-use { background:var(--green-dim); border-color:rgba(34,201,122,0.3) !important; color:var(--green) !important; }
-.tip-card { margin:0 16px 16px; background:rgba(245,200,66,0.06); border:1.5px solid rgba(245,200,66,0.2); border-radius:12px; padding:12px 14px; display:none; }
-.tip-label { font-family:"Syne",sans-serif; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
-.tip-item { font-size:13px; color:var(--muted-hi); line-height:1.6; padding:4px 0 4px 16px; position:relative; }
-.tip-item::before { content:"\2192"; position:absolute; left:0; color:var(--gold); font-size:12px; }
-.feedback-row { display:flex; align-items:center; justify-content:center; gap:12px; padding:14px 16px; border-top:1px solid var(--border); }
-.feedback-label { font-size:12px; color:var(--muted); }
-.feedback-btn { width:40px; height:40px; border-radius:10px; border:1.5px solid var(--border); background:rgba(255,255,255,0.03); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
-.feedback-btn.selected-up { border-color:var(--green); background:var(--green-dim); }
-.feedback-btn.selected-down { border-color:var(--red); background:var(--red-dim); }
-.feedback-thanks { font-size:12px; color:var(--muted-hi); text-align:center; padding:10px; display:none; }
-.nuclear-card { background:var(--red-dim); border:2px solid rgba(239,68,68,0.4); border-radius:16px; padding:18px; margin-bottom:14px; }
-.nuclear-title { font-family:"Syne",sans-serif; font-size:16px; font-weight:800; color:var(--red); margin-bottom:8px; }
-.nuclear-text { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:14px; }
-.nuclear-reasons { font-size:12px; color:var(--red); margin-bottom:14px; line-height:1.8; }
-.nuclear-row { display:flex; gap:8px; }
-.nuclear-fix { flex:1; padding:11px; background:var(--blue-dim); border:1px solid rgba(59,127,255,0.3); border-radius:10px; color:var(--blue); font-family:"Syne",sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
-.nuclear-override { padding:11px 14px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--muted); font-size:11px; cursor:pointer; }
-.cooldown-card { background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.2); border-radius:16px; padding:20px; text-align:center; margin-bottom:14px; }
-.cooldown-title { font-family:"Syne",sans-serif; font-size:18px; font-weight:800; color:var(--white); margin-bottom:8px; }
-.cooldown-sub { font-size:13px; color:var(--muted-hi); margin-bottom:16px; line-height:1.6; }
-.cooldown-timer { font-family:"Syne",sans-serif; font-size:42px; font-weight:800; color:var(--red); margin-bottom:16px; }
-.cooldown-skip { background:none; border:1px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:12px; padding:8px 16px; cursor:pointer; }
-.confirmed-card { background:var(--green-dim); border:1.5px solid rgba(34,201,122,0.25); border-radius:16px; padding:18px; margin-bottom:14px; }
-.confirmed-label { font-family:"Syne",sans-serif; font-size:10px; font-weight:700; color:var(--green); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
-.confirmed-reply { font-size:17px; line-height:1.7; color:var(--white); font-weight:500; padding:14px; background:rgba(34,201,122,0.07); border-radius:10px; border-left:3px solid var(--green); margin-bottom:14px; }
 .edit-card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; }
-.edit-label { font-family:"Syne",sans-serif; font-size:12px; font-weight:700; color:var(--muted-hi); margin-bottom:10px; }
-.edit-textarea { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; color:var(--white); font-family:"Inter",sans-serif; font-size:14px; line-height:1.65; padding:11px 13px; resize:none; outline:none; min-height:80px; margin-bottom:10px; }
-.rescore-btn { width:100%; padding:12px; background:var(--blue-dim); border:1.5px solid rgba(59,127,255,0.25); border-radius:10px; color:var(--blue); font-family:"Syne",sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.edit-lbl { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:var(--muted-hi); margin-bottom:10px; }
+.edit-textarea { width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:11px 13px; resize:none; outline:none; min-height:80px; margin-bottom:10px; }
+.rescore-btn { width:100%; padding:12px; background:var(--blue-dim); border:1.5px solid rgba(59,127,255,0.25); border-radius:10px; color:var(--blue); font-family:'Syne',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 .rescore-result { margin-top:12px; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px; border-left:3px solid var(--gold); font-size:13px; color:var(--muted-hi); line-height:1.6; display:none; }
 .sent-card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; display:none; }
-.sent-label { font-family:"Syne",sans-serif; font-size:13px; font-weight:700; color:var(--white); margin-bottom:10px; }
+.sent-lbl { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:10px; }
 .sent-row { display:flex; flex-direction:column; gap:8px; }
-.sent-btn { padding:12px; border-radius:10px; font-family:"Syne",sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:rgba(255,255,255,0.03); color:var(--muted-hi); text-align:left; }
+.sent-btn { padding:12px; border-radius:10px; font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:rgba(255,255,255,0.03); color:var(--muted-hi); text-align:left; }
 .sent-yes { border-color:rgba(34,201,122,0.3) !important; color:var(--green) !important; }
 .sent-no { border-color:rgba(245,158,11,0.3) !important; color:var(--amber) !important; }
 .need-to-send { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; }
-.need-label { font-family:"Syne",sans-serif; font-size:14px; font-weight:700; color:var(--white); margin-bottom:12px; }
+.need-lbl { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px; }
 .need-opts { display:flex; flex-direction:column; gap:8px; }
-.need-opt { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:13px; cursor:pointer; text-align:left; transition:all 0.15s; }
-.need-opt:hover { border-color:rgba(59,127,255,0.3); color:var(--white); }
+.need-opt { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:13px; cursor:pointer; text-align:left; }
 .silence-card { background:var(--amber-dim); border:1.5px solid rgba(245,158,11,0.25); border-radius:14px; padding:18px; margin-bottom:14px; text-align:center; }
-.silence-title { font-family:"Syne",sans-serif; font-size:16px; font-weight:800; color:var(--amber); margin-bottom:8px; }
+.silence-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--amber); margin-bottom:8px; }
 .silence-text { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:14px; }
 .silence-proceed { width:100%; padding:12px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:12px; cursor:pointer; }
-.upload-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
-.upload-btn { display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 12px; border-radius:14px; font-family:"Syne",sans-serif; font-size:12px; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:var(--card); color:var(--muted-hi); transition:all 0.18s; }
-.upload-btn input { display:none; }
-.upload-btn:hover { border-color:rgba(255,255,255,0.15); color:var(--white); }
+.msg-upload-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.msg-upload-btn { display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 12px; border-radius:14px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:var(--card); color:var(--muted-hi); }
+.msg-upload-btn input { display:none; }
 .apps-note { text-align:center; font-size:11px; color:var(--muted); margin-bottom:16px; }
 .divider { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-.divider::before, .divider::after { content:""; flex:1; height:1px; background:var(--border); }
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
 .divider span { font-size:11px; color:var(--muted); }
-.type-panel { background:var(--card); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; margin-top:10px; }
-.type-panel-header { padding:11px 14px; border-bottom:1px solid var(--border); font-family:"Syne",sans-serif; font-size:11px; font-weight:700; color:var(--amber); }
-.type-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:"Inter",sans-serif; font-size:14px; line-height:1.65; padding:13px 14px; resize:none; outline:none; min-height:90px; }
+.type-panel { background:var(--card); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; }
+.type-header { padding:11px 14px; border-bottom:1px solid var(--border); font-family:'Syne',sans-serif; font-size:11px; font-weight:700; color:var(--amber); }
+.type-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 14px; resize:none; outline:none; min-height:90px; }
 .type-textarea::placeholder { color:var(--muted); }
-.type-confirm { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:"Syne",sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
-.outgoing-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
-.outgoing-header { padding:14px 16px; border-bottom:1px solid var(--border); font-family:"Syne",sans-serif; font-size:12px; font-weight:700; color:var(--blue); }
-.outgoing-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:"Inter",sans-serif; font-size:14px; line-height:1.65; padding:13px 16px; resize:none; outline:none; min-height:90px; }
-.outgoing-textarea::placeholder { color:var(--muted); }
-.outgoing-check { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:"Syne",sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+.type-confirm { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+.out-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
+.out-header { padding:14px 16px; border-bottom:1px solid var(--border); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:var(--blue); }
+.out-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 16px; resize:none; outline:none; min-height:90px; }
+.out-textarea::placeholder { color:var(--muted); }
+.out-check { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
 .reading { text-align:center; padding:60px 20px; }
 .spinner { width:52px; height:52px; margin:0 auto 20px; position:relative; }
-.spinner::before { content:""; position:absolute; inset:0; border-radius:50%; border:2.5px solid var(--border); border-top-color:var(--gold); animation:spin 0.8s linear infinite; }
-.reading-title { font-family:"Syne",sans-serif; font-size:17px; font-weight:800; margin-bottom:6px; }
+.spinner::before { content:''; position:absolute; inset:0; border-radius:50%; border:2.5px solid var(--border); border-top-color:var(--gold); animation:spin 0.8s linear infinite; }
+.reading-title { font-family:'Syne',sans-serif; font-size:17px; font-weight:800; margin-bottom:6px; }
 .reading-sub { font-size:13px; color:var(--muted-hi); }
-.new-check-btn { width:100%; padding:13px; background:transparent; border:1.5px solid var(--border); border-radius:12px; color:var(--muted-hi); font-family:"Syne",sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:8px; }
-
-/* TOAST / LOADING */
+.back-home { width:100%; padding:13px; background:transparent; border:1.5px solid var(--border); border-radius:12px; color:var(--muted-hi); font-family:'Syne',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:8px; }
+.section-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.back-btn { background:none; border:none; color:var(--muted-hi); font-size:22px; cursor:pointer; padding:0; line-height:1; }
+.section-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; }
+.section-sub { font-size:12px; color:var(--muted-hi); }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
-.loading-overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; }
-.loading-overlay.show { display:flex; }
-.loading-text { font-family:"Syne",sans-serif; font-size:15px; font-weight:700; color:var(--white); margin-top:16px; }
-.loading-sub { font-size:12px; color:var(--muted-hi); margin-top:5px; }
+.overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; }
+.overlay.show { display:flex; }
+.overlay-text { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-top:16px; }
+.overlay-sub { font-size:12px; color:var(--muted-hi); margin-top:5px; }
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="logo">Guard<span>ian</span></div>
-    <div class="header-right">
-      <div class="badge" id="headerBadge">CASE COMPANION</div>
-      <button class="profile-icon-btn" onclick="goToProfile()" title="My case">&#128196;</button>
+<div class="header">
+  <div class="logo">Guard<span>ian</span></div>
+  <div class="badge">CASE COMPANION</div>
+</div>
+
+<!-- WELCOME -->
+<div class="step active" id="sWelcome">
+  <div style="text-align:center;padding:30px 0 24px;">
+    <div style="width:80px;height:80px;background:var(--gold-dim);border:2px solid rgba(245,200,66,0.3);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;">🛡️</div>
+    <div style="font-family:Syne,sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;">Guardian has your back</div>
+    <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;max-width:300px;margin:0 auto 28px;">Built for parents in family court who need to stay calm, stay safe, and stay one step ahead.</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
+      <span style="font-size:20px;">💬</span>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Message Coach</div><div style="font-size:12px;color:var(--muted-hi);">Every reply coached and court-ready</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
+      <span style="font-size:20px;">📋</span>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Document Intelligence</div><div style="font-size:12px;color:var(--muted-hi);">Upload orders, Cafcass letters, chat history</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
+      <span style="font-size:20px;">🤖</span>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Ask Guardian Anything</div><div style="font-size:12px;color:var(--muted-hi);">Plain English answers — free forever</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
+      <span style="font-size:20px;">🧠</span>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Never Forgets</div><div style="font-size:12px;color:var(--muted-hi);">Guardian learns your case and remembers everything</div></div>
     </div>
   </div>
+  <button class="btn-gold" onclick="go('sProfile1')">Set up my case →</button>
+  <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">5 free message checks — no card needed</div>
+</div>
 
-  <!-- WELCOME -->
-  <div class="step active" id="stepWelcome">
-    <div class="welcome-hero">
-      <div class="welcome-shield">&#128737;</div>
-      <div class="welcome-title">Guardian has your back</div>
-      <div class="welcome-sub">Built for parents in family court who need to stay calm, stay safe, and stay one step ahead.</div>
-    </div>
-    <div class="welcome-features">
-      <div class="welcome-feat">
-        <div class="welcome-feat-icon">&#128172;</div>
-        <div class="welcome-feat-text"><strong>Message Coach</strong>Every reply coached, scored, and court-ready.</div>
-      </div>
-      <div class="welcome-feat">
-        <div class="welcome-feat-icon">&#128220;</div>
-        <div class="welcome-feat-text"><strong>Document Intelligence</strong>Upload your orders, Cafcass letters, chat history — Guardian reads everything.</div>
-      </div>
-      <div class="welcome-feat">
-        <div class="welcome-feat-icon">&#129302;</div>
-        <div class="welcome-feat-text"><strong>Ask Guardian Anything</strong>Plain English answers about your case, free forever.</div>
-      </div>
-      <div class="welcome-feat">
-        <div class="welcome-feat-icon">&#129504;</div>
-        <div class="welcome-feat-text"><strong>Never Forgets</strong>Guardian learns your case and gets smarter every session.</div>
-      </div>
-    </div>
-    <button class="btn-gold" onclick="showStep('stepProfile1')">Set up my case &rarr;</button>
-    <div class="trial-note">5 free message checks &mdash; no card needed</div>
-  </div>
+<!-- PROFILE 1 -->
+<div class="step" id="sProfile1">
+  <div class="setup-progress"><div class="setup-dot active"></div><div class="setup-dot"></div><div class="setup-dot"></div><div class="setup-dot"></div></div>
+  <div class="setup-title">Who are we protecting?</div>
+  <div class="setup-sub">This shapes every reply Guardian gives you from this moment on.</div>
+  <div class="field-group"><label class="field-label">YOUR FIRST NAME</label><input class="field-input" id="iMyName" type="text" placeholder="Your name"></div>
+  <div class="field-group"><label class="field-label">OTHER PARENT'S FIRST NAME</label><input class="field-input" id="iTheirName" type="text" placeholder="Their name"></div>
+  <div class="field-group"><label class="field-label">CHILD'S NAME AND AGE</label><input class="field-input" id="iChildName" type="text" placeholder="e.g. William, 6"></div>
+  <div class="field-group"><label class="field-label">ANY OTHER CHILDREN?</label><input class="field-input" id="iOtherKids" type="text" placeholder="e.g. Sophie, 9 — or leave blank"></div>
+  <button class="btn-gold" onclick="saveP1()" style="margin-top:8px;">Next →</button>
+</div>
 
-  <!-- PROFILE STEP 1 — ABOUT YOU -->
-  <div class="step" id="stepProfile1">
-    <div class="setup-progress">
-      <div class="setup-dot active" id="dot1"></div>
-      <div class="setup-dot" id="dot2"></div>
-      <div class="setup-dot" id="dot3"></div>
-      <div class="setup-dot" id="dot4"></div>
-    </div>
-    <div class="setup-title">Who are we protecting?</div>
-    <div class="setup-sub">Tell Guardian the basics. This shapes every reply and every answer from this moment on.</div>
-    <div class="field-group">
-      <div class="field-label">YOUR FIRST NAME</div>
-      <input class="field-input" type="text" id="inputMyName" placeholder="Your name">
-    </div>
-    <div class="field-group">
-      <div class="field-label">OTHER PARENT'S FIRST NAME</div>
-      <input class="field-input" type="text" id="inputTheirName" placeholder="Their name">
-    </div>
-    <div class="field-group">
-      <div class="field-label">CHILD'S NAME AND AGE</div>
-      <input class="field-input" type="text" id="inputChildName" placeholder="e.g. William, 6">
-    </div>
-    <div class="field-group">
-      <div class="field-label">ANY OTHER CHILDREN?</div>
-      <input class="field-input" type="text" id="inputOtherChildren" placeholder="e.g. Sophie, 9 — or leave blank">
-    </div>
-    <button class="btn-gold" onclick="saveProfile1()" style="margin-top:8px;">Next &rarr;</button>
-  </div>
-
-  <!-- PROFILE STEP 2 — YOUR CASE -->
-  <div class="step" id="stepProfile2">
-    <div class="setup-progress">
-      <div class="setup-dot done"></div>
-      <div class="setup-dot active"></div>
-      <div class="setup-dot"></div>
-      <div class="setup-dot"></div>
-    </div>
-    <div class="setup-title">Where are you in the process?</div>
-    <div class="setup-sub">Guardian needs to know your case type to give you the right coaching.</div>
-    <div class="field-group">
-      <div class="field-label">CASE TYPE</div>
-      <div class="options-grid" id="caseTypeOpts">
-        <button class="opt-btn" onclick="selectCaseType(this,'No court yet')">No court proceedings yet</button>
-        <button class="opt-btn" onclick="selectCaseType(this,'Active C100')">Active C100 &mdash; child arrangements</button>
-        <button class="opt-btn" onclick="selectCaseType(this,'Active C79')">C79 &mdash; enforcing an existing order</button>
-        <button class="opt-btn" onclick="selectCaseType(this,'Non-molestation order')">Non-molestation order involved</button>
-        <button class="opt-btn" onclick="selectCaseType(this,'Post order')">Order in place &mdash; post proceedings</button>
-        <button class="opt-btn" onclick="selectCaseType(this,'Back in court')">Back in court &mdash; variation application</button>
-      </div>
-    </div>
-    <div class="field-group" style="margin-top:16px;">
-      <div class="field-label">HOW LONG HAS THIS BEEN GOING ON?</div>
-      <select class="field-select" id="inputDuration">
-        <option value="">Select...</option>
-        <option>Under 6 months</option>
-        <option>6 to 12 months</option>
-        <option>1 to 2 years</option>
-        <option>Over 2 years</option>
-      </select>
-    </div>
-    <div class="field-group">
-      <div class="field-label">YOUR CONTACT SCHEDULE</div>
-      <input class="field-input" type="text" id="inputContact" placeholder="e.g. Every Saturday 10am-6pm">
-    </div>
-    <button class="btn-gold" onclick="saveProfile2()" style="margin-top:8px;">Next &rarr;</button>
-  </div>
-
-  <!-- PROFILE STEP 3 — CONFLICT + ALLEGATIONS -->
-  <div class="step" id="stepProfile3">
-    <div class="setup-progress">
-      <div class="setup-dot done"></div>
-      <div class="setup-dot done"></div>
-      <div class="setup-dot active"></div>
-      <div class="setup-dot"></div>
-    </div>
-    <div class="setup-title">Tell Guardian what's been happening</div>
-    <div class="setup-sub">The more Guardian knows, the better it can protect you. Be honest — this stays on your device.</div>
-    <div class="field-group">
-      <div class="field-label">CURRENT CONFLICT LEVEL</div>
-      <div class="slider-wrap">
-        <div class="slider-labels"><span>Calm</span><span>Very difficult</span></div>
-        <input type="range" class="conflict-slider" id="conflictSlider" min="1" max="10" value="5" oninput="updateSlider(this.value)">
-        <div class="slider-value" id="sliderVal">5 / 10</div>
-      </div>
-    </div>
-    <div class="field-group">
-      <div class="field-label">MAIN ALLEGATIONS MADE AGAINST YOU</div>
-      <textarea class="field-input" rows="3" id="inputAllegations" placeholder="e.g. Returning children tired and hungry, welfare concerns after contact, claims of dysregulation..." style="resize:none;"></textarea>
-    </div>
-    <div class="field-group">
-      <div class="field-label">WHAT HAS ALREADY BEEN DISMISSED OR RULED IN YOUR FAVOUR?</div>
-      <textarea class="field-input" rows="3" id="inputDismissed" placeholder="e.g. KCC CFA found no safeguarding concerns in April 2026..." style="resize:none;"></textarea>
-    </div>
-    <div class="field-group">
-      <div class="field-label">HOW WOULD YOU DESCRIBE THEIR COMMUNICATION STYLE?</div>
-      <div class="options-grid" id="commStyleOpts">
-        <button class="opt-btn" onclick="selectCommStyle(this,'Aggressive and hostile')">Aggressive and hostile</button>
-        <button class="opt-btn" onclick="selectCommStyle(this,'Manipulative and calculated')">Manipulative and calculated</button>
-        <button class="opt-btn" onclick="selectCommStyle(this,'Uses welfare claims as a weapon')">Uses welfare claims as a weapon</button>
-        <button class="opt-btn" onclick="selectCommStyle(this,'Uses the children to communicate')">Uses the children to communicate</button>
-        <button class="opt-btn" onclick="selectCommStyle(this,'Mostly civil with occasional flare-ups')">Mostly civil with occasional flare-ups</button>
-      </div>
-    </div>
-    <button class="btn-gold" onclick="saveProfile3()" style="margin-top:8px;">Next &rarr;</button>
-  </div>
-
-  <!-- PROFILE STEP 4 — DOCUMENTS -->
-  <div class="step" id="stepProfile4">
-    <div class="setup-progress">
-      <div class="setup-dot done"></div>
-      <div class="setup-dot done"></div>
-      <div class="setup-dot done"></div>
-      <div class="setup-dot active"></div>
-    </div>
-    <div class="setup-title">Upload your case documents</div>
-    <div class="setup-sub">The more Guardian reads, the smarter it gets. Everything is processed on your device and never shared.</div>
-
-    <div class="upload-section">
-      <div class="upload-section-title">COURT DOCUMENTS</div>
-      <label class="upload-item" id="uploadOrder">
-        <input type="file" accept=".pdf,image/*" onchange="handleDocUpload(event,'order')">
-        <div class="upload-item-icon">&#128196;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">Court Order / Child Arrangements Order</div>
-          <div class="upload-item-hint">PDF or screenshot</div>
-        </div>
-        <div class="upload-item-status" id="statusOrder">&#43;</div>
-      </label>
-      <label class="upload-item" id="uploadCafcass">
-        <input type="file" accept=".pdf,image/*" onchange="handleDocUpload(event,'cafcass')">
-        <div class="upload-item-icon">&#128101;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">Cafcass Letter or Report</div>
-          <div class="upload-item-hint">PDF or screenshot</div>
-        </div>
-        <div class="upload-item-status" id="statusCafcass">&#43;</div>
-      </label>
-      <label class="upload-item" id="uploadCNF">
-        <input type="file" accept=".pdf,image/*" onchange="handleDocUpload(event,'cnf')">
-        <div class="upload-item-icon">&#9878;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">CNF / C1A / Position Statement</div>
-          <div class="upload-item-hint">PDF or screenshot</div>
-        </div>
-        <div class="upload-item-status" id="statusCNF">&#43;</div>
-      </label>
-      <label class="upload-item" id="uploadOther">
-        <input type="file" accept=".pdf,image/*" multiple onchange="handleDocUpload(event,'other')">
-        <div class="upload-item-icon">&#128194;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">Any Other Court Document</div>
-          <div class="upload-item-hint">PDF or screenshot &mdash; multiple files OK</div>
-        </div>
-        <div class="upload-item-status" id="statusOther">&#43;</div>
-      </label>
-    </div>
-
-    <div class="upload-section">
-      <div class="upload-section-title">COMMUNICATION HISTORY</div>
-      <div class="upload-item" onclick="toggleGuide('waGuide')" style="cursor:pointer;">
-        <div class="upload-item-icon">&#128242;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">WhatsApp Chat Export</div>
-          <div class="upload-item-hint">Tap to see how to export &rarr; then upload the .txt file</div>
-        </div>
-        <div class="upload-item-status" id="statusWA">&#8250;</div>
-      </div>
-      <div class="export-guide" id="waGuide">
-        <div class="export-guide-title">HOW TO EXPORT WHATSAPP</div>
-        <div class="export-guide-steps">1. Open the chat with the other parent<br>2. Tap the three dots (menu)<br>3. Tap More &rarr; Export Chat<br>4. Choose Without Media<br>5. Share the .txt file and upload it below</div>
-        <label class="upload-item" style="margin-top:10px;margin-bottom:0;">
-          <input type="file" accept=".txt" onchange="handleDocUpload(event,'whatsapp')">
-          <div class="upload-item-icon">&#128229;</div>
-          <div class="upload-item-text"><div class="upload-item-name">Upload WhatsApp .txt file</div></div>
-          <div class="upload-item-status" id="statusWAFile">&#43;</div>
-        </label>
-      </div>
-      <div class="upload-item" onclick="toggleGuide('fbGuide')" style="cursor:pointer;">
-        <div class="upload-item-icon">&#128172;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">Facebook Messenger Export</div>
-          <div class="upload-item-hint">Tap to see how to export</div>
-        </div>
-        <div class="upload-item-status">&#8250;</div>
-      </div>
-      <div class="export-guide" id="fbGuide">
-        <div class="export-guide-title">HOW TO EXPORT MESSENGER</div>
-        <div class="export-guide-steps">1. Go to Facebook Settings<br>2. Tap Your Facebook Information<br>3. Download Your Information<br>4. Select Messages only &rarr; Request Download<br>5. Facebook emails you a link &mdash; download and upload the HTML file</div>
-        <label class="upload-item" style="margin-top:10px;margin-bottom:0;">
-          <input type="file" accept=".html,.txt,.json" onchange="handleDocUpload(event,'messenger')">
-          <div class="upload-item-icon">&#128229;</div>
-          <div class="upload-item-text"><div class="upload-item-name">Upload Messenger export</div></div>
-          <div class="upload-item-status" id="statusFB">&#43;</div>
-        </label>
-      </div>
-      <label class="upload-item" id="uploadScreenshots">
-        <input type="file" accept="image/*" multiple onchange="handleDocUpload(event,'screenshots')">
-        <div class="upload-item-icon">&#128247;</div>
-        <div class="upload-item-text">
-          <div class="upload-item-name">Message Screenshots</div>
-          <div class="upload-item-hint">AppClose, iMessage, SMS &mdash; multiple OK</div>
-        </div>
-        <div class="upload-item-status" id="statusScreenshots">&#43;</div>
-      </label>
-    </div>
-
-    <div class="upload-section">
-      <div class="upload-section-title">OR JUST TELL US YOUR CASE</div>
-      <div class="voice-onboard">
-        <button class="voice-onboard-mic" id="onboardMicBtn" onclick="toggleOnboardVoice()">&#127908;</button>
-        <div class="voice-onboard-text">
-          <div class="voice-onboard-label">Speak your case in your own words</div>
-          <div class="voice-onboard-sub">What happened, how long it's been going on, what you're dealing with. Guardian listens.</div>
-          <textarea class="voice-transcript" id="onboardTranscript" rows="3" placeholder="Tap the mic and talk, or type here..."></textarea>
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-gold" onclick="processDocuments()" style="margin-top:8px;">Guardian, read my case &rarr;</button>
-    <button class="btn-ghost" onclick="skipDocuments()" style="margin-top:10px;">Skip for now &mdash; I'll add documents later</button>
-  </div>
-
-  <!-- PROCESSING DOCUMENTS -->
-  <div class="step" id="stepProcessing">
-    <div class="processing-wrap">
-      <div class="processing-icon">&#128737;</div>
-      <div class="processing-title">Reading your case...</div>
-      <div class="processing-sub">Guardian is building your case profile. This takes about 30 seconds.</div>
-      <div class="processing-items" id="processingItems"></div>
+<!-- PROFILE 2 -->
+<div class="step" id="sProfile2">
+  <div class="setup-progress"><div class="setup-dot done"></div><div class="setup-dot active"></div><div class="setup-dot"></div><div class="setup-dot"></div></div>
+  <div class="setup-title">Where are you in the process?</div>
+  <div class="setup-sub">Guardian needs to know your case type to give you the right coaching.</div>
+  <div class="field-group">
+    <label class="field-label">CASE TYPE</label>
+    <div class="opts" id="caseTypeOpts">
+      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','No court yet')">No court proceedings yet</button>
+      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C100')">Active C100 — child arrangements</button>
+      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C79')">C79 — enforcing an existing order</button>
+      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Non-mol order')">Non-molestation order involved</button>
+      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Post order')">Order in place — post proceedings</button>
+      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Back in court')">Back in court — variation application</button>
     </div>
   </div>
-
-  <!-- CASE SUMMARY -->
-  <div class="step" id="stepSummary">
-    <div class="setup-title">Here's what Guardian knows</div>
-    <div class="setup-sub" style="margin-bottom:20px;">Check this is right. You can edit anything before we start.</div>
-    <div class="card card-pad" style="margin-bottom:14px;">
-      <div class="summary-section">
-        <div class="summary-section-title">YOUR CASE</div>
-        <div id="summaryContent"></div>
-      </div>
-    </div>
-    <div class="card card-pad" style="margin-bottom:14px;">
-      <div class="summary-section-title">WHAT GUARDIAN HAS READ</div>
-      <div class="knowledge-tags" id="knowledgeTags"></div>
-    </div>
-    <button class="btn-gold" onclick="confirmSummary()">This looks right &mdash; let's go &rarr;</button>
-    <button class="btn-ghost" style="margin-top:10px;" onclick="showStep('stepProfile4')">Go back and add more</button>
+  <div class="field-group" style="margin-top:16px;">
+    <label class="field-label">HOW LONG HAS THIS BEEN GOING ON?</label>
+    <select class="field-select" id="iDuration">
+      <option value="">Select...</option>
+      <option>Under 6 months</option><option>6 to 12 months</option>
+      <option>1 to 2 years</option><option>Over 2 years</option>
+    </select>
   </div>
+  <div class="field-group">
+    <label class="field-label">YOUR CONTACT SCHEDULE</label>
+    <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am to 6pm">
+  </div>
+  <button class="btn-gold" onclick="saveP2()" style="margin-top:8px;">Next →</button>
+</div>
 
-  <!-- HOME -->
-  <div class="step" id="stepHome">
-    <div class="home-greeting">
-      <div class="home-name" id="homeName">Good to have you back</div>
-      <div class="home-status" id="homeStatus">Guardian knows your case</div>
-    </div>
-    <div class="conflict-indicator" id="conflictIndicator">
-      <div class="conflict-indicator-label">Conflict level</div>
-      <div class="conflict-indicator-bar"><div class="conflict-indicator-fill" id="conflictFill"></div></div>
-      <div class="conflict-indicator-val" id="conflictVal"></div>
-    </div>
-    <div class="trial-banner" id="trialBanner" style="display:none;">
-      <div class="trial-banner-text">Free message checks remaining</div>
-      <div class="trial-banner-count" id="trialCount">5</div>
-    </div>
-    <div class="home-actions">
-      <button class="home-action home-action-coach" onclick="showStep('stepCoach')">
-        <div class="home-action-icon">&#128172;</div>
-        <div class="home-action-label">Message Coach</div>
-        <div class="home-action-sub">Check a message</div>
-      </button>
-      <button class="home-action home-action-qa" onclick="showStep('stepQA')">
-        <div class="home-action-icon">&#129302;</div>
-        <div class="home-action-label">Ask Guardian</div>
-        <div class="home-action-sub">Free &mdash; ask anything</div>
-      </button>
-    </div>
-    <div class="memory-strip" id="memoryStrip" style="display:none;">
-      <div class="memory-strip-title">GUARDIAN REMEMBERS</div>
-      <div class="memory-items" id="memoryItems"></div>
+<!-- PROFILE 3 -->
+<div class="step" id="sProfile3">
+  <div class="setup-progress"><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot active"></div><div class="setup-dot"></div></div>
+  <div class="setup-title">Tell Guardian what's been happening</div>
+  <div class="setup-sub">The more Guardian knows, the better it can protect you. This stays on your device.</div>
+  <div class="field-group">
+    <label class="field-label">CURRENT CONFLICT LEVEL</label>
+    <div class="slider-labels"><span>Calm</span><span>Very difficult</span></div>
+    <input type="range" class="conflict-slider" id="conflictSlider" min="1" max="10" value="5" oninput="updateSlider(this.value)">
+    <div class="slider-val" id="sliderVal">5 / 10</div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">MAIN ALLEGATIONS MADE AGAINST YOU</label>
+    <textarea class="field-input" rows="3" id="iAllegations" placeholder="e.g. Returning children tired and hungry, welfare concerns, dysregulation claims..." style="resize:none;"></textarea>
+  </div>
+  <div class="field-group">
+    <label class="field-label">WHAT HAS ALREADY BEEN DISMISSED OR RULED IN YOUR FAVOUR?</label>
+    <textarea class="field-input" rows="3" id="iDismissed" placeholder="e.g. KCC CFA found no safeguarding concerns in April 2026..." style="resize:none;"></textarea>
+  </div>
+  <div class="field-group">
+    <label class="field-label">HOW WOULD YOU DESCRIBE THEIR COMMUNICATION STYLE?</label>
+    <div class="opts" id="commOpts">
+      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Aggressive and hostile')">Aggressive and hostile</button>
+      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Manipulative and calculated')">Manipulative and calculated</button>
+      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses welfare claims as a weapon')">Uses welfare claims as a weapon</button>
+      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses the children to communicate')">Uses the children to communicate</button>
+      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Mostly civil with occasional flare-ups')">Mostly civil with occasional flare-ups</button>
     </div>
   </div>
+  <button class="btn-gold" onclick="saveP3()" style="margin-top:8px;">Next →</button>
+</div>
 
-  <!-- PAYWALL -->
-  <div class="step" id="stepPaywall">
-    <div class="paywall-card">
-      <div class="paywall-icon">&#128737;</div>
-      <div class="paywall-title">Guardian has been with you</div>
-      <div class="paywall-sub">You've used your 5 free message checks. Keep your case protected &mdash; Guardian knows your history and never forgets.</div>
-      <div class="paywall-price">&#163;9.99</div>
-      <div class="paywall-price-sub">per month &mdash; cancel anytime</div>
-      <div class="paywall-features">
-        <div class="paywall-feat">Unlimited message coaching</div>
-        <div class="paywall-feat">Guardian remembers your full case</div>
-        <div class="paywall-feat">Pattern detection across all messages</div>
-        <div class="paywall-feat">Court-ready replies every time</div>
-        <div class="paywall-feat">Ask Guardian anything &mdash; always free</div>
-      </div>
-      <button class="btn-gold">Keep Guardian protecting me</button>
-    </div>
-    <button class="btn-ghost" onclick="showStep('stepHome')">Back to home</button>
+<!-- PROFILE 4 — DOCUMENTS -->
+<div class="step" id="sProfile4">
+  <div class="setup-progress"><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot active"></div></div>
+  <div class="setup-title">Upload your case documents</div>
+  <div class="setup-sub">The more Guardian reads, the smarter it gets. Everything stays on your device.</div>
+  <div class="upload-section">
+    <div class="upload-section-title">COURT DOCUMENTS</div>
+    <label class="upload-item" id="uOrder"><input type="file" accept=".pdf,image/*" onchange="handleDoc(event,'order')"><div class="upload-item-icon">📄</div><div class="upload-item-body"><div class="upload-item-name">Court Order / Child Arrangements Order</div><div class="upload-item-hint">PDF or screenshot</div></div><div class="upload-status" id="stOrder">+</div></label>
+    <label class="upload-item" id="uCafcass"><input type="file" accept=".pdf,image/*" onchange="handleDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass Letter or Report</div><div class="upload-item-hint">PDF or screenshot</div></div><div class="upload-status" id="stCafcass">+</div></label>
+    <label class="upload-item" id="uCNF"><input type="file" accept=".pdf,image/*" onchange="handleDoc(event,'cnf')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">CNF / C1A / Position Statement</div><div class="upload-item-hint">PDF or screenshot</div></div><div class="upload-status" id="stCNF">+</div></label>
+    <label class="upload-item" id="uOther"><input type="file" accept=".pdf,image/*" multiple onchange="handleDoc(event,'other')"><div class="upload-item-icon">📁</div><div class="upload-item-body"><div class="upload-item-name">Any Other Court Document</div><div class="upload-item-hint">Multiple files OK</div></div><div class="upload-status" id="stOther">+</div></label>
   </div>
-
-  <!-- QA CHAT -->
-  <div class="step" id="stepQA">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <button onclick="showStep('stepHome')" style="background:none;border:none;color:var(--muted-hi);font-size:20px;cursor:pointer;">&#8592;</button>
-      <div>
-        <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;">Ask Guardian</div>
-        <div style="font-size:12px;color:var(--muted-hi);">Free &mdash; ask anything about your case</div>
-      </div>
+  <div class="upload-section">
+    <div class="upload-section-title">COMMUNICATION HISTORY</div>
+    <div class="upload-item" style="cursor:pointer;" onclick="toggleGuide('gWA')"><div class="upload-item-icon">📱</div><div class="upload-item-body"><div class="upload-item-name">WhatsApp Chat Export</div><div class="upload-item-hint">Tap to see how to export your chat</div></div><div class="upload-status">›</div></div>
+    <div class="guide" id="gWA">
+      <div class="guide-title">HOW TO EXPORT WHATSAPP</div>
+      <div class="guide-steps">1. Open the chat with the other parent<br>2. Tap the three dots → More → Export Chat<br>3. Choose Without Media<br>4. Share the .txt file and upload below</div>
+      <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".txt" onchange="handleDoc(event,'whatsapp')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload WhatsApp .txt file</div></div><div class="upload-status" id="stWA">+</div></label>
     </div>
-    <div class="qa-suggestions" id="qaSuggestions">
-      <button class="qa-suggestion" onclick="askSuggestion(this)">What does C100 mean?</button>
-      <button class="qa-suggestion" onclick="askSuggestion(this)">Do I have to attend mediation?</button>
-      <button class="qa-suggestion" onclick="askSuggestion(this)">What will Cafcass do?</button>
-      <button class="qa-suggestion" onclick="askSuggestion(this)">She breached the order &mdash; what can I do?</button>
-      <button class="qa-suggestion" onclick="askSuggestion(this)">What happens at a first hearing?</button>
+    <div class="upload-item" style="cursor:pointer;" onclick="toggleGuide('gFB')"><div class="upload-item-icon">💬</div><div class="upload-item-body"><div class="upload-item-name">Facebook Messenger Export</div><div class="upload-item-hint">Tap to see how to export</div></div><div class="upload-status">›</div></div>
+    <div class="guide" id="gFB">
+      <div class="guide-title">HOW TO EXPORT MESSENGER</div>
+      <div class="guide-steps">1. Facebook Settings → Your Facebook Information<br>2. Download Your Information → select Messages<br>3. Request Download — Facebook emails you a link<br>4. Download and upload the HTML file below</div>
+      <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".html,.txt,.json" onchange="handleDoc(event,'messenger')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload Messenger export</div></div><div class="upload-status" id="stFB">+</div></label>
     </div>
-    <div class="qa-messages" id="qaMessages"></div>
-    <div class="qa-input-row">
-      <button class="qa-voice-btn" id="qaVoiceBtn" onclick="toggleQAVoice()">&#127908;</button>
-      <input class="qa-input" type="text" id="qaInput" placeholder="Ask anything about your case..." onkeydown="if(event.key==='Enter')sendQA()">
-      <button class="qa-send" onclick="sendQA()">&#8594;</button>
-    </div>
+    <label class="upload-item"><input type="file" accept="image/*" multiple onchange="handleDoc(event,'screenshots')"><div class="upload-item-icon">📷</div><div class="upload-item-body"><div class="upload-item-name">Message Screenshots</div><div class="upload-item-hint">AppClose, iMessage, SMS — multiple OK</div></div><div class="upload-status" id="stScreenshots">+</div></label>
   </div>
-
-  <!-- MESSAGE COACH HOME -->
-  <div class="step" id="stepCoach">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-      <button onclick="showStep('stepHome')" style="background:none;border:none;color:var(--muted-hi);font-size:20px;cursor:pointer;">&#8592;</button>
-      <div>
-        <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;">Message Coach</div>
-        <div style="font-size:12px;color:var(--muted-hi);">Every reply coached and court-ready</div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-      <button class="home-action home-action-coach" onclick="showIncoming()">
-        <span style="font-size:24px;">&#128233;</span>
-        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;">They sent me something</div>
-      </button>
-      <button class="home-action home-action-qa" onclick="showOutgoing()">
-        <span style="font-size:24px;">&#9999;</span>
-        <div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;">I want to send something</div>
-      </button>
-    </div>
-    <div id="incomingPanel" style="display:none;">
-      <div class="upload-grid">
-        <label class="upload-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Take photo
-          <input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)">
-        </label>
-        <label class="upload-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Screenshot
-          <input type="file" accept="image/*" onchange="handleUpload(event)">
-        </label>
-      </div>
-      <div class="apps-note">WhatsApp &middot; AppClose &middot; iMessage &middot; SMS &middot; any app</div>
-      <div class="divider"><span>or type it</span></div>
-      <div class="type-panel">
-        <div class="type-panel-header">THEIR MESSAGE</div>
-        <textarea class="type-textarea" id="typeInput" rows="4" placeholder="Paste or type what they sent you..."></textarea>
-        <button class="type-confirm" onclick="confirmType()">Check this message &rarr;</button>
-      </div>
-    </div>
-    <div id="outgoingPanel" style="display:none;">
-      <div class="outgoing-card">
-        <div class="outgoing-header">WHAT DO YOU WANT TO SAY?</div>
-        <textarea class="outgoing-textarea" id="outgoingInput" rows="4" placeholder="Type what you are thinking of sending..."></textarea>
-        <button class="outgoing-check" onclick="checkOutgoing()">Check before I send &rarr;</button>
+  <div class="upload-section">
+    <div class="upload-section-title">OR JUST TELL US YOUR CASE</div>
+    <div class="voice-box">
+      <button class="voice-box-mic" id="obMicBtn" onclick="toggleObVoice()">🎤</button>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Speak your case in your own words</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-bottom:8px;">What happened, how long, what you're dealing with. Guardian listens.</div>
+        <textarea class="voice-transcript" id="obTranscript" rows="3" placeholder="Tap the mic and talk, or type here..."></textarea>
       </div>
     </div>
   </div>
+  <button class="btn-gold" onclick="processDocs()" style="margin-top:8px;">Guardian, read my case →</button>
+  <button class="btn-ghost" onclick="skipDocs()">Skip for now — I'll add documents later</button>
+</div>
 
-  <!-- READING -->
-  <div class="step" id="stepReading">
-    <div class="reading">
-      <div class="spinner"></div>
-      <div class="reading-title">Reading message...</div>
-      <div class="reading-sub">Give me a second</div>
-    </div>
-  </div>
-
-  <!-- COOLDOWN -->
-  <div class="step" id="stepCooldown">
-    <div class="their-bubble"><div class="their-bubble-label">Their message</div><div class="their-bubble-text" id="theirTextCool"></div></div>
-    <div class="cooldown-card">
-      <div class="cooldown-title">&#9888; Take a breath first</div>
-      <div class="cooldown-sub">This message looks designed to provoke a reaction. Replying immediately is rarely the right move.</div>
-      <div class="cooldown-timer" id="cooldownTimer">2:00</div>
-      <button class="cooldown-skip" onclick="skipCooldown()">I am ready to reply now</button>
-    </div>
-  </div>
-
-  <!-- QUESTION -->
-  <div class="step" id="stepQuestion">
-    <div class="their-bubble"><div class="their-bubble-label">Their message</div><div class="their-bubble-text" id="theirText3"></div></div>
-    <div id="flagBanner"></div>
-    <div class="question-card">
-      <div class="question-label">Before I suggest a reply</div>
-      <div class="question-text" id="questionText"></div>
-      <div class="question-options" id="questionOptions"></div>
-      <div class="honest-note" id="honestNote" style="display:none;">The more honest you are with me, the better I can protect you.</div>
-      <div class="voice-row" id="voiceRow" style="display:none;">
-        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">&#127908;</button>
-        <textarea class="detail-input" id="detailInput" rows="4" placeholder="Tell me what actually happened &mdash; time, what you did, how the kids were. The more you tell me the better I can help. Tap mic or type. Tap stop when done."></textarea>
-      </div>
-      <button class="continue-btn" id="continueBtn" onclick="generateReply()">Help me reply &rarr;</button>
-      <button class="skip-btn" onclick="generateReplyDirect()">Skip &mdash; just give me something safe to say</button>
-    </div>
-  </div>
-
-  <!-- OUTGOING CHECK -->
-  <div class="step" id="stepNeedCheck">
-    <div class="need-to-send">
-      <div class="need-label">Do you need to send this?</div>
-      <div class="need-opts">
-        <button class="need-opt" onclick="outgoingYes()">Yes &mdash; there is a specific reason I need to send this</button>
-        <button class="need-opt" onclick="outgoingCheckin()">I just want to check in</button>
-        <button class="need-opt" onclick="outgoingNotSure()">Not sure</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SILENCE -->
-  <div class="step" id="stepSilence">
-    <div class="silence-card">
-      <div class="silence-title">Silence is sometimes the strongest reply</div>
-      <div class="silence-text">Checking in without a specific reason can open the door to conflict. Unless there is a health concern or something urgent &mdash; waiting until your next contact is often the stronger position.</div>
-      <button class="silence-proceed" onclick="outgoingProceed()">I still want to send something &rarr;</button>
-    </div>
-    <button class="new-check-btn" onclick="showStep('stepHome')">&#8592; Back to home</button>
-  </div>
-
-  <!-- REPLY -->
-  <div class="step" id="stepReply">
-    <div class="their-bubble"><div class="their-bubble-label">Their message</div><div class="their-bubble-text" id="theirText4"></div></div>
-    <div id="nuclearWarning" style="display:none;">
-      <div class="nuclear-card">
-        <div class="nuclear-title">&#9888; Do not send this yet</div>
-        <div class="nuclear-text">This reply could make things worse. Here is why:</div>
-        <div class="nuclear-reasons" id="nuclearReasons"></div>
-        <div class="nuclear-row">
-          <button class="nuclear-fix" onclick="fixReply()">Fix it for me</button>
-          <button class="nuclear-override" onclick="showReplyAnyway()">Show it anyway</button>
-        </div>
-      </div>
-    </div>
-    <div id="replyContent" style="display:none;">
-      <div class="coach-card">
-        <div class="coach-header">
-          <span class="coach-label">&#128172; Message Coach</span>
-          <span class="score-badge" id="scoreBadge"></span>
-        </div>
-        <div class="coach-body">
-          <div class="breathe-note">Take a breath before you decide.</div>
-          <div class="suggested-reply" id="suggestedReply"></div>
-          <div class="reply-why" id="replyWhy"></div>
-        </div>
-        <div class="tip-card" id="tipCard">
-          <div class="tip-label">&#128161; What to do now</div>
-          <div id="tipItems"></div>
-        </div>
-        <div class="refine-section">
-          <div class="refine-label">How does this feel?</div>
-          <div class="refine-row">
-            <button class="refine-btn" onclick="refine('formal')">Too formal</button>
-            <button class="refine-btn" onclick="refine('harsh')">Too harsh</button>
-            <button class="refine-btn" onclick="refine('different')">Say something different</button>
-            <button class="refine-btn refine-use" onclick="confirmReply()">&#10003; Use this</button>
-          </div>
-        </div>
-        <div class="feedback-row">
-          <span class="feedback-label">Was this helpful?</span>
-          <button class="feedback-btn" id="thumbsUp" onclick="submitFeedback('up')">&#128077;</button>
-          <button class="feedback-btn" id="thumbsDown" onclick="submitFeedback('down')">&#128078;</button>
-        </div>
-        <div class="feedback-thanks" id="feedbackThanks">Thanks &mdash; that helps us improve Guardian.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONFIRMED -->
-  <div class="step" id="stepConfirmed">
-    <div class="confirmed-card">
-      <div class="confirmed-label">&#10003; Ready to send</div>
-      <div class="confirmed-reply" id="confirmedReply"></div>
-      <button class="btn-green" onclick="copyReply()" style="margin-bottom:10px;">Copy reply</button>
-      <div class="timing-card" id="timingCard">
-        <div class="timing-top">
-          <span class="timing-headline" id="timingHeadline"></span>
-          <span class="timing-countdown" id="timingCountdown"></span>
-        </div>
-        <div class="timing-reason" id="timingReason"></div>
-      </div>
-    </div>
-    <div class="edit-card">
-      <div class="edit-label">Edit to sound more like you &mdash; then re-score</div>
-      <textarea class="edit-textarea" id="editInput" placeholder="Change any words to make it sound like you..."></textarea>
-      <button class="rescore-btn" onclick="rescoreReply()">Re-score my version &rarr;</button>
-      <div class="rescore-result" id="rescoreResult"></div>
-    </div>
-    <div class="sent-card" id="sentCard">
-      <div class="sent-label">Did you send it?</div>
-      <div class="sent-row">
-        <button class="sent-btn sent-yes" onclick="logSent('yes')">&#10003; Yes, sent it</button>
-        <button class="sent-btn sent-no" onclick="logSent('no')">Not yet &mdash; will send later</button>
-        <button class="sent-btn" onclick="logSent('different')">Sent something different</button>
-      </div>
-    </div>
-    <button class="new-check-btn" onclick="showStep('stepCoach')">&#8592; Check another message</button>
+<!-- PROCESSING -->
+<div class="step" id="sProcessing">
+  <div style="text-align:center;padding:60px 20px;">
+    <div style="font-size:48px;margin-bottom:20px;animation:pulse 1.5s infinite;">🛡️</div>
+    <div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;">Reading your case...</div>
+    <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:24px;">Guardian is building your case profile. About 30 seconds.</div>
+    <div id="procItems" style="text-align:left;display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 </div>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Working...</div>
-  <div class="loading-sub" id="loadingSub"></div>
+<!-- SUMMARY -->
+<div class="step" id="sSummary">
+  <div class="setup-title">Here's what Guardian knows</div>
+  <div class="setup-sub" style="margin-bottom:20px;">Check this is right before we start.</div>
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+    <div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">YOUR CASE</div>
+    <div id="summaryContent"></div>
+  </div>
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+    <div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS READ</div>
+    <div class="ktags" id="knowledgeTags"></div>
+  </div>
+  <button class="btn-gold" onclick="confirmSummary()">This looks right — let's go →</button>
+  <button class="btn-ghost" onclick="go('sProfile4')">Go back and add more</button>
 </div>
+
+<!-- HOME -->
+<div class="step" id="sHome">
+  <div class="home-name" id="homeName">Guardian</div>
+  <div class="home-status" id="homeStatus">Your case is loaded</div>
+  <div class="conflict-bar-row" id="conflictRow">
+    <div class="cb-label">Conflict level</div>
+    <div class="cb-bar"><div class="cb-fill" id="cbFill"></div></div>
+    <div class="cb-val" id="cbVal"></div>
+  </div>
+  <div class="trial-banner" id="trialBanner" style="display:none;">
+    <div class="trial-text">Free message checks remaining</div>
+    <div class="trial-count" id="trialCount">5</div>
+  </div>
+  <div class="home-grid">
+    <button class="home-btn home-btn-gold" onclick="go('sCoach')">
+      <div class="home-btn-icon">💬</div>
+      <div class="home-btn-label">Message Coach</div>
+      <div class="home-btn-sub">Check a message</div>
+    </button>
+    <button class="home-btn home-btn-card" onclick="goQA()">
+      <div class="home-btn-icon">🤖</div>
+      <div class="home-btn-label">Ask Guardian</div>
+      <div class="home-btn-sub">Free — ask anything</div>
+    </button>
+  </div>
+  <div class="memory-strip" id="memoryStrip" style="display:none;">
+    <div class="memory-title">GUARDIAN REMEMBERS</div>
+    <div id="memoryItems"></div>
+  </div>
+</div>
+
+<!-- PAYWALL -->
+<div class="step" id="sPaywall">
+  <div class="paywall-card">
+    <div class="paywall-icon">🛡️</div>
+    <div class="paywall-title">Guardian has been with you</div>
+    <div class="paywall-sub">You've used your 5 free message checks. Keep your case protected — Guardian knows your history and never forgets.</div>
+    <div class="paywall-price">£9.99</div>
+    <div class="paywall-price-sub">per month — cancel anytime</div>
+    <div class="paywall-feats">
+      <div class="paywall-feat">Unlimited message coaching</div>
+      <div class="paywall-feat">Guardian remembers your full case</div>
+      <div class="paywall-feat">Pattern detection across messages</div>
+      <div class="paywall-feat">Court-ready replies every time</div>
+      <div class="paywall-feat">Ask Guardian anything — always free</div>
+    </div>
+    <button class="btn-gold">Keep Guardian protecting me</button>
+  </div>
+  <button class="btn-ghost" onclick="go('sHome')">Back to home</button>
+</div>
+
+<!-- QA -->
+<div class="step" id="sQA">
+  <div class="section-header">
+    <button class="back-btn" onclick="go('sHome')">←</button>
+    <div><div class="section-title">Ask Guardian</div><div class="section-sub">Free — ask anything about your case</div></div>
+  </div>
+  <div class="qa-suggestions" id="qaSugs"></div>
+  <div class="qa-msgs" id="qaMsgs"></div>
+  <div class="qa-row">
+    <button class="qa-mic" id="qaMic" onclick="toggleQAVoice()">🎤</button>
+    <input class="qa-input" id="qaIn" type="text" placeholder="Ask anything about your case..." onkeydown="if(event.key==='Enter')sendQA()">
+    <button class="qa-send" onclick="sendQA()">→</button>
+  </div>
+</div>
+
+<!-- COACH HOME -->
+<div class="step" id="sCoach">
+  <div class="section-header">
+    <button class="back-btn" onclick="go('sHome')">←</button>
+    <div><div class="section-title">Message Coach</div><div class="section-sub">Every reply coached and court-ready</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+    <button class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">📩</span><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
+    <button class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">✏️</span><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
+  </div>
+  <div id="inPanel" style="display:none;">
+    <div class="msg-upload-grid">
+      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Take photo<input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)"></label>
+      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Screenshot<input type="file" accept="image/*" onchange="handleUpload(event)"></label>
+    </div>
+    <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · any app</div>
+    <div class="divider"><span>or type it</span></div>
+    <div class="type-panel">
+      <div class="type-header">THEIR MESSAGE</div>
+      <textarea class="type-textarea" id="typeIn" rows="4" placeholder="Paste or type what they sent you..."></textarea>
+      <button class="type-confirm" onclick="confirmType()">Check this message →</button>
+    </div>
+  </div>
+  <div id="outPanel" style="display:none;">
+    <div class="out-card">
+      <div class="out-header">WHAT DO YOU WANT TO SAY?</div>
+      <textarea class="out-textarea" id="outIn" rows="4" placeholder="Type what you are thinking of sending..."></textarea>
+      <button class="out-check" onclick="checkOut()">Check before I send →</button>
+    </div>
+  </div>
+</div>
+
+<!-- READING -->
+<div class="step" id="sReading">
+  <div class="reading"><div class="spinner"></div><div class="reading-title">Reading message...</div><div class="reading-sub">Give me a second</div></div>
+</div>
+
+<!-- COOLDOWN -->
+<div class="step" id="sCooldown">
+  <div class="their-bubble"><div class="their-label">Their message</div><div class="their-text" id="coolText"></div></div>
+  <div class="cooldown-card">
+    <div class="cooldown-title">⚠️ Take a breath first</div>
+    <div class="cooldown-sub">This message looks designed to provoke a reaction. Replying immediately is rarely the right move.</div>
+    <div class="cooldown-timer" id="coolTimer">2:00</div>
+    <button class="cooldown-skip" onclick="skipCool()">I am ready to reply now</button>
+  </div>
+</div>
+
+<!-- QUESTION -->
+<div class="step" id="sQuestion">
+  <div class="their-bubble"><div class="their-label">Their message</div><div class="their-text" id="qTheirText"></div></div>
+  <div id="flagBanner"></div>
+  <div class="q-card">
+    <div class="q-label">Before I suggest a reply</div>
+    <div class="q-text" id="qText"></div>
+    <div class="q-opts" id="qOpts"></div>
+    <div class="honest-note" id="honestNote" style="display:none;">The more honest you are with me, the better I can protect you.</div>
+    <div class="voice-row" id="voiceRow" style="display:none;">
+      <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
+      <textarea class="detail-input" id="detailIn" rows="4" placeholder="Tell me what actually happened — time, what you did, how the kids were. Tap mic or type. Tap stop when done."></textarea>
+    </div>
+    <button class="continue-btn" id="continueBtn" onclick="genReply()">Help me reply →</button>
+    <button class="skip-btn" onclick="genReplyDirect()">Skip — just give me something safe to say</button>
+  </div>
+</div>
+
+<!-- NEED CHECK -->
+<div class="step" id="sNeedCheck">
+  <div class="need-to-send">
+    <div class="need-lbl">Do you need to send this?</div>
+    <div class="need-opts">
+      <button class="need-opt" onclick="outYes()">Yes — there is a specific reason I need to send this</button>
+      <button class="need-opt" onclick="outCheckin()">I just want to check in</button>
+      <button class="need-opt" onclick="outNotSure()">Not sure</button>
+    </div>
+  </div>
+</div>
+
+<!-- SILENCE -->
+<div class="step" id="sSilence">
+  <div class="silence-card">
+    <div class="silence-title">Silence is sometimes the strongest reply</div>
+    <div class="silence-text">Checking in without a specific reason can open the door to conflict. Unless there is a health concern or something urgent — waiting until your next contact is often the stronger position.</div>
+    <button class="silence-proceed" onclick="outProceed()">I still want to send something →</button>
+  </div>
+  <button class="back-home" onclick="go('sHome')">← Back to home</button>
+</div>
+
+<!-- REPLY -->
+<div class="step" id="sReply">
+  <div class="their-bubble"><div class="their-label">Their message</div><div class="their-text" id="rTheirText"></div></div>
+  <div id="nuclearWarn" style="display:none;">
+    <div class="nuclear-card">
+      <div class="nuclear-title">⚠️ Do not send this yet</div>
+      <div class="nuclear-text">This reply could make things worse. Here is why:</div>
+      <div class="nuclear-reasons" id="nuclearReasons"></div>
+      <div class="nuclear-row"><button class="nuclear-fix" onclick="fixReply()">Fix it for me</button><button class="nuclear-skip" onclick="showAnyway()">Show it anyway</button></div>
+    </div>
+  </div>
+  <div id="replyContent" style="display:none;">
+    <div class="coach-card">
+      <div class="coach-header"><span class="coach-lbl">💬 Message Coach</span><span class="score-badge" id="scoreBadge"></span></div>
+      <div class="coach-body">
+        <div class="breathe">Take a breath before you decide.</div>
+        <div class="suggested" id="suggestedReply"></div>
+        <div class="reply-why" id="replyWhy"></div>
+      </div>
+      <div class="tip-card" id="tipCard"><div class="tip-lbl">💡 What to do now</div><div id="tipItems"></div></div>
+      <div class="refine-section">
+        <div class="refine-lbl">How does this feel?</div>
+        <div class="refine-row">
+          <button class="refine-btn" onclick="refine('formal')">Too formal</button>
+          <button class="refine-btn" onclick="refine('harsh')">Too harsh</button>
+          <button class="refine-btn" onclick="refine('different')">Say something different</button>
+          <button class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
+        </div>
+      </div>
+      <div class="feedback-row">
+        <span class="feedback-lbl">Was this helpful?</span>
+        <button class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
+        <button class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
+      </div>
+      <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRMED -->
+<div class="step" id="sConfirmed">
+  <div class="confirmed-card">
+    <div class="confirmed-lbl">✓ Ready to send</div>
+    <div class="confirmed-reply" id="confirmedReply"></div>
+    <button class="btn-green" onclick="copyReply()" style="margin-bottom:10px;">Copy reply</button>
+    <div class="timing-card" id="timingCard">
+      <div class="timing-top"><span class="timing-headline" id="timingHL"></span><span class="timing-countdown" id="timingCD"></span></div>
+      <div class="timing-reason" id="timingReason"></div>
+    </div>
+  </div>
+  <div class="edit-card">
+    <div class="edit-lbl">Edit to sound more like you — then re-score</div>
+    <textarea class="edit-textarea" id="editIn" placeholder="Change any words to make it sound like you..."></textarea>
+    <button class="rescore-btn" onclick="rescoreReply()">Re-score my version →</button>
+    <div class="rescore-result" id="rescoreResult"></div>
+  </div>
+  <div class="sent-card" id="sentCard">
+    <div class="sent-lbl">Did you send it?</div>
+    <div class="sent-row">
+      <button class="sent-btn sent-yes" onclick="logSent('yes')">✓ Yes, sent it</button>
+      <button class="sent-btn sent-no" onclick="logSent('no')">Not yet — will send later</button>
+      <button class="sent-btn" onclick="logSent('different')">Sent something different</button>
+    </div>
+  </div>
+  <button class="back-home" onclick="go('sCoach')">← Check another message</button>
+</div>
+</div>
+
+<div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <div class="toast" id="toast"></div>
+
 <script>
-const API_URL = "/api/anthropic";
-var cooldownInterval = null;
-var timingInterval = null;
-var recognition = null;
-var isRecording = false;
-var onboardRecognition = null;
-var isOnboardRecording = false;
-var qaRecognition = null;
-var isQARecording = false;
+const API = '/api/anthropic';
+var coolInt = null, timingInt = null;
+var recog = null, isRec = false;
+var obRecog = null, isObRec = false;
+var qaRecog = null, isQARec = false;
+var qaTyping = false;
+var qaHistory = [];
+var selCaseType = '', selCommStyle = '';
+var profile = JSON.parse(localStorage.getItem('gProfile') || 'null');
+var docs = JSON.parse(localStorage.getItem('gDocs') || '{}');
+var msgLog = JSON.parse(localStorage.getItem('gLog') || '[]');
+var checks = parseInt(localStorage.getItem('gChecks') || '0');
+var uploadedDocs = {};
+var st = { msg:'', answer:'', question:'', reply:'', score:0, timing:'', timingNote:'', flag:'', flagText:'', outgoing:false, outMsg:'' };
 
-// ── STATE ──
-var state = {
-  theirMsg:"", answer:"", question:"", reply:"",
-  score:0, timing:"", timingNote:"", outgoing:false, outgoingMsg:""
-};
+var SYS = 'You are Guardian, a co-parenting communication safety assistant for parents in family court in England and Wales.\nHelp the user reply to messages from the other parent in a way that is calm, child-focused, legally safe, and unlikely to escalate conflict.\nUse the case context provided in every response.\n\nCORE RULES:\n1. Prioritise the child welfare and practical arrangements.\n2. Keep replies short, neutral, factual. 1 to 4 sentences max.\n3. Do not blame, accuse, or psychoanalyse the other parent.\n4. Do not admit fault unless the user instructs you to.\n5. Assume every message may be shown in court.\n6. Do not over-explain. Answer the practical question only.\n7. If no reply needed, say so.\n\nTONE:\n- Real British parent texting. Not a solicitor.\n- Plain English. Short words.\n- No empathy openers: never I understand, I hear you.\n- No: going forward, please ensure, reach out, happy to chat.\n- Never say picked up or dropped off.\n- No unnecessary apology.\n- Never end with Let me know if...\n\nGOAL: Protect the child. Reduce conflict. Create a clean written record.';
 
-// ── CASE PROFILE (persisted) ──
-var caseProfile = JSON.parse(localStorage.getItem("guardianProfile") || "null");
-var docExtracts = JSON.parse(localStorage.getItem("guardianDocs") || "{}");
-var messageLog = JSON.parse(localStorage.getItem("guardianLog") || "[]");
-var checksUsed = parseInt(localStorage.getItem("guardianChecks") || "0");
-var selectedCaseType = "";
-var selectedCommStyle = "";
-
-// ── SYSTEM PROMPT ──
-var GUARDIAN_SYSTEM = [
-  "You are Guardian, a co-parenting communication safety assistant for parents in high-conflict family court situations in England and Wales.",
-  "Your job is to help the user reply to messages from the other parent in a way that is calm, child-focused, legally safe, and unlikely to escalate conflict.",
-  "You know the user s full case history and personal context. Use it in every response.",
-  "",
-  "CORE RULES:",
-  "1. Always prioritise the child s welfare and practical arrangements.",
-  "2. Keep replies short, neutral, and factual. 1 to 4 short sentences maximum.",
-  "3. Do not blame, accuse, diagnose, shame, or psychoanalyse the other parent.",
-  "4. Do not admit fault unless the user clearly instructs you to.",
-  "5. Do not deny concerns aggressively. Acknowledge concerns neutrally where appropriate.",
-  "6. Assume every message may be screenshotted and shown in court.",
-  "7. Answer the actual practical question only. Do not over-explain.",
-  "8. Do not reopen past disputes unless necessary.",
-  "9. Where possible, redirect to: routine, welfare, handover, timing, health, school, or agreed arrangements.",
-  "10. If no reply is needed, say so clearly.",
-  "11. If the other parent sends an emotional or accusatory message, respond only to the child-related practical issue.",
-  "12. If the user is angry, de-escalate them first, then draft the reply.",
-  "",
-  "TONE:",
-  "- Sound like a real British parent texting. Not a solicitor. Not a chatbot.",
-  "- Plain English. Short words. Short sentences.",
-  "- No empathy openers: never I understand, I hear you, I appreciate.",
-  "- No corporate phrases: going forward, please ensure, reach out, happy to chat.",
-  "- Never say picked up or dropped off.",
-  "- No unnecessary apology.",
-  "- No attempt to win the argument.",
-  "- Never end with an open invitation like Let me know if...",
-  "",
-  "SAFE PHRASES:",
-  "- Thanks for letting me know.",
-  "- I ll keep an eye on that.",
-  "- He seemed fine with me.",
-  "- I ll follow the agreed arrangements.",
-  "",
-  "GOAL: Protect the child. Reduce conflict. Create a clean written record."
-].join("\n");
-
-// ── GET CASE CONTEXT (injected into every AI call) ──
-function getCaseContext() {
-  if (!caseProfile) return "";
-  var lines = ["CASE CONTEXT (always use this in your responses):"];
-  if (caseProfile.myName) lines.push("Parent using Guardian: " + caseProfile.myName);
-  if (caseProfile.theirName) lines.push("Other parent: " + caseProfile.theirName);
-  if (caseProfile.childName) lines.push("Child: " + caseProfile.childName);
-  if (caseProfile.otherChildren) lines.push("Other children: " + caseProfile.otherChildren);
-  if (caseProfile.caseType) lines.push("Case type: " + caseProfile.caseType);
-  if (caseProfile.contact) lines.push("Contact schedule: " + caseProfile.contact);
-  if (caseProfile.duration) lines.push("How long ongoing: " + caseProfile.duration);
-  if (caseProfile.conflictLevel) lines.push("Conflict level: " + caseProfile.conflictLevel + "/10");
-  if (caseProfile.allegations) lines.push("Known allegations made against parent: " + caseProfile.allegations);
-  if (caseProfile.dismissed) lines.push("Already dismissed or ruled in parent s favour: " + caseProfile.dismissed);
-  if (caseProfile.commStyle) lines.push("Other parent s communication style: " + caseProfile.commStyle);
-  if (caseProfile.voiceContext) lines.push("Additional case context (parent s words): " + caseProfile.voiceContext);
-  // Add document extracts
-  Object.keys(docExtracts).forEach(function(key) {
-    if (docExtracts[key]) lines.push("From " + key + ": " + docExtracts[key].substring(0, 400));
-  });
-  // Add recent message patterns
-  if (messageLog.length > 0) {
-    var recent = messageLog.slice(-10);
-    var redCount = recent.filter(function(m){return m.flag==="red";}).length;
-    var amberCount = recent.filter(function(m){return m.flag==="amber";}).length;
-    if (redCount > 0 || amberCount > 0) {
-      lines.push("Recent message pattern: " + redCount + " serious allegations and " + amberCount + " loaded messages in last " + recent.length + " messages.");
-    }
+function getCTX() {
+  if (!profile) return '';
+  var lines = ['CASE CONTEXT:'];
+  if (profile.myName) lines.push('Parent: ' + profile.myName);
+  if (profile.theirName) lines.push('Other parent: ' + profile.theirName);
+  if (profile.childName) lines.push('Child: ' + profile.childName);
+  if (profile.otherKids) lines.push('Other children: ' + profile.otherKids);
+  if (profile.caseType) lines.push('Case type: ' + profile.caseType);
+  if (profile.contact) lines.push('Contact: ' + profile.contact);
+  if (profile.duration) lines.push('Duration: ' + profile.duration);
+  if (profile.conflict) lines.push('Conflict level: ' + profile.conflict + '/10');
+  if (profile.allegations) lines.push('Allegations against parent: ' + profile.allegations);
+  if (profile.dismissed) lines.push('Already dismissed/ruled in favour: ' + profile.dismissed);
+  if (profile.commStyle) lines.push('Other parent communication style: ' + profile.commStyle);
+  if (profile.voice) lines.push('Parent described: ' + profile.voice);
+  Object.keys(docs).forEach(function(k) { if (docs[k]) lines.push('From ' + k + ': ' + docs[k].substring(0,300)); });
+  if (msgLog.length > 3) {
+    var r = msgLog.slice(-10);
+    var red = r.filter(function(m){return m.flag==='red';}).length;
+    var amb = r.filter(function(m){return m.flag==='amber';}).length;
+    if (red+amb > 0) lines.push('Recent pattern: ' + red + ' serious allegations, ' + amb + ' loaded messages in last ' + r.length + ' messages.');
   }
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
-// ── INIT ──
 window.onload = function() {
-  if (caseProfile && caseProfile.complete) {
-    showHome();
-  } else {
-    showStep("stepWelcome");
-  }
+  if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
 };
 
-// ── STEPS ──
-var allSteps = ["stepWelcome","stepProfile1","stepProfile2","stepProfile3","stepProfile4",
-  "stepProcessing","stepSummary","stepHome","stepPaywall","stepQA",
-  "stepCoach","stepReading","stepCooldown","stepQuestion","stepNeedCheck",
-  "stepSilence","stepReply","stepConfirmed"];
+var ALL_STEPS = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed'];
 
-function showStep(n) {
-  allSteps.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove("active");
-  });
-  var target = document.getElementById(n);
-  if (target) target.classList.add("active");
-  window.scrollTo({top:0,behavior:"smooth"});
+function go(id) {
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
+  var t = document.getElementById(id);
+  if (t) t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function showLoading(text, sub) {
-  document.getElementById("loadingText").textContent = text || "Working...";
-  document.getElementById("loadingSub").textContent = sub || "";
-  document.getElementById("loadingOverlay").classList.add("show");
+function load(text, sub) {
+  document.getElementById('overlayText').textContent = text||'Working...';
+  document.getElementById('overlaySub').textContent = sub||'';
+  document.getElementById('overlay').classList.add('show');
 }
-
-function hideLoading() {
-  document.getElementById("loadingOverlay").classList.remove("show");
-}
-
+function unload() { document.getElementById('overlay').classList.remove('show'); }
 function toast(msg) {
-  var el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  setTimeout(function(){el.classList.remove("show");}, 2800);
+  var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},2800);
 }
 
-function showHome() {
-  var name = caseProfile && caseProfile.myName ? caseProfile.myName : "";
-  var hour = new Date().getHours();
-  var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  document.getElementById("homeName").textContent = name ? greeting + ", " + name : greeting;
-  // Conflict indicator
-  if (caseProfile && caseProfile.conflictLevel) {
-    var level = parseInt(caseProfile.conflictLevel);
-    var pct = (level / 10) * 100;
-    var color = level >= 8 ? "var(--red)" : level >= 5 ? "var(--amber)" : "var(--green)";
-    document.getElementById("conflictFill").style.width = pct + "%";
-    document.getElementById("conflictFill").style.background = color;
-    document.getElementById("conflictVal").textContent = level + "/10";
-    document.getElementById("conflictVal").style.color = color;
-  }
-  // Trial banner
-  var isPaid = localStorage.getItem("guardianPaid") === "true";
-  if (!isPaid) {
-    var remaining = Math.max(0, 5 - checksUsed);
-    document.getElementById("trialCount").textContent = remaining;
-    document.getElementById("trialBanner").style.display = remaining > 0 ? "flex" : "none";
-  }
-  // Memory strip
-  if (messageLog.length > 0) {
-    var strip = document.getElementById("memoryStrip");
-    var items = document.getElementById("memoryItems");
-    items.innerHTML = "";
-    var recent = messageLog.slice(-3).reverse();
-    recent.forEach(function(m) {
-      var color = m.flag==="red" ? "var(--red)" : m.flag==="amber" ? "var(--amber)" : "var(--green)";
-      var div = document.createElement("div");
-      div.className = "memory-item";
-      div.innerHTML = "<div class=\"memory-dot\" style=\"background:" + color + "\"></div><span>" + m.summary + "</span>";
-      items.appendChild(div);
-    });
-    strip.style.display = "block";
-  }
-  showStep("stepHome");
+// PROFILE
+function pickOpt(grp, btn, key, val) {
+  document.querySelectorAll('#'+grp+' .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  if (key==='caseType') selCaseType=val;
+  if (key==='commStyle') selCommStyle=val;
 }
 
-function goToProfile() {
-  showStep("stepProfile1");
+function saveP1() {
+  var n=document.getElementById('iMyName').value.trim();
+  var c=document.getElementById('iChildName').value.trim();
+  if (!n||!c){toast('Please enter your name and child\'s name');return;}
+  if (!profile) profile={};
+  profile.myName=n; profile.theirName=document.getElementById('iTheirName').value.trim();
+  profile.childName=c; profile.otherKids=document.getElementById('iOtherKids').value.trim();
+  save(); go('sProfile2');
 }
 
-// ── SETUP FLOW ──
-function saveProfile1() {
-  var myName = document.getElementById("inputMyName").value.trim();
-  var theirName = document.getElementById("inputTheirName").value.trim();
-  var childName = document.getElementById("inputChildName").value.trim();
-  if (!myName || !childName) { toast("Please enter your name and your child s name"); return; }
-  if (!caseProfile) caseProfile = {};
-  caseProfile.myName = myName;
-  caseProfile.theirName = theirName;
-  caseProfile.childName = childName;
-  caseProfile.otherChildren = document.getElementById("inputOtherChildren").value.trim();
-  localStorage.setItem("guardianProfile", JSON.stringify(caseProfile));
-  showStep("stepProfile2");
+function saveP2() {
+  if (!selCaseType){toast('Please select your case type');return;}
+  profile.caseType=selCaseType; profile.duration=document.getElementById('iDuration').value;
+  profile.contact=document.getElementById('iContact').value.trim();
+  save(); go('sProfile3');
 }
 
-function selectCaseType(btn, val) {
-  document.querySelectorAll("#caseTypeOpts .opt-btn").forEach(function(b){b.classList.remove("selected");});
-  btn.classList.add("selected");
-  selectedCaseType = val;
+function updateSlider(v) {
+  document.getElementById('sliderVal').textContent=v+' / 10';
+  var pct=((v-1)/9)*100;
+  var col=v>=8?'#ef4444':v>=5?'#f59e0b':'#22c97a';
+  document.getElementById('conflictSlider').style.background='linear-gradient(to right,'+col+' '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';
 }
 
-function saveProfile2() {
-  if (!selectedCaseType) { toast("Please select your case type"); return; }
-  caseProfile.caseType = selectedCaseType;
-  caseProfile.duration = document.getElementById("inputDuration").value;
-  caseProfile.contact = document.getElementById("inputContact").value.trim();
-  localStorage.setItem("guardianProfile", JSON.stringify(caseProfile));
-  showStep("stepProfile3");
+function saveP3() {
+  profile.conflict=document.getElementById('conflictSlider').value;
+  profile.allegations=document.getElementById('iAllegations').value.trim();
+  profile.dismissed=document.getElementById('iDismissed').value.trim();
+  profile.commStyle=selCommStyle;
+  save(); go('sProfile4');
 }
 
-function updateSlider(val) {
-  document.getElementById("sliderVal").textContent = val + " / 10";
-  var pct = ((val-1)/9)*100;
-  var slider = document.getElementById("conflictSlider");
-  var color = val >= 8 ? "#ef4444" : val >= 5 ? "#f59e0b" : "#22c97a";
-  slider.style.background = "linear-gradient(to right, " + color + " " + pct + "%, rgba(255,255,255,0.1) " + pct + "%)";
-}
-
-function selectCommStyle(btn, val) {
-  document.querySelectorAll("#commStyleOpts .opt-btn").forEach(function(b){b.classList.remove("selected");});
-  btn.classList.add("selected");
-  selectedCommStyle = val;
-}
-
-function saveProfile3() {
-  caseProfile.conflictLevel = document.getElementById("conflictSlider").value;
-  caseProfile.allegations = document.getElementById("inputAllegations").value.trim();
-  caseProfile.dismissed = document.getElementById("inputDismissed").value.trim();
-  caseProfile.commStyle = selectedCommStyle;
-  localStorage.setItem("guardianProfile", JSON.stringify(caseProfile));
-  showStep("stepProfile4");
-}
+function save() { localStorage.setItem('gProfile',JSON.stringify(profile)); }
 
 function toggleGuide(id) {
-  var el = document.getElementById(id);
-  el.style.display = el.style.display === "block" ? "none" : "block";
+  var el=document.getElementById(id);
+  el.style.display=el.style.display==='block'?'none':'block';
 }
 
-// ── VOICE ONBOARDING ──
-function toggleOnboardVoice() {
-  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-    toast("Voice not supported — please type instead"); return;
-  }
-  if (isOnboardRecording) {
-    stopOnboardVoice();
-  } else {
-    startOnboardVoice();
-  }
+// VOICE ONBOARDING
+function toggleObVoice() {
+  if (!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){toast('Voice not supported — please type');return;}
+  if (isObRec){stopObVoice();}else{startObVoice();}
 }
-
-function startOnboardVoice() {
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  onboardRecognition = new SR();
-  onboardRecognition.continuous = true;
-  onboardRecognition.interimResults = true;
-  onboardRecognition.lang = "en-GB";
-  var finalT = document.getElementById("onboardTranscript").value.trim();
-  if (finalT) finalT += " ";
-  onboardRecognition.onresult = function(event) {
-    var interim = "";
-    for (var i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) { finalT += event.results[i][0].transcript + " "; }
-      else { interim += event.results[i][0].transcript; }
-    }
-    document.getElementById("onboardTranscript").value = (finalT + interim).trim();
+function startObVoice() {
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  obRecog=new SR(); obRecog.continuous=true; obRecog.interimResults=true; obRecog.lang='en-GB';
+  var fin=document.getElementById('obTranscript').value.trim(); if(fin) fin+=' ';
+  obRecog.onresult=function(e){
+    var interim='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}else{interim+=e.results[i][0].transcript;}}
+    document.getElementById('obTranscript').value=(fin+interim).trim();
   };
-  onboardRecognition.onend = function() { if (isOnboardRecording) { try { onboardRecognition.start(); } catch(e){} } };
-  onboardRecognition.onerror = function(e) { if (e.error !== "no-speech") { stopOnboardVoice(); toast("Could not hear you"); } };
-  onboardRecognition.start();
-  isOnboardRecording = true;
-  var btn = document.getElementById("onboardMicBtn");
-  btn.classList.add("recording");
-  btn.innerHTML = "&#9209;";
+  obRecog.onend=function(){if(isObRec){try{obRecog.start();}catch(err){}}};
+  obRecog.onerror=function(e){if(e.error!=='no-speech'){stopObVoice();toast('Could not hear you');}};
+  obRecog.start(); isObRec=true;
+  var b=document.getElementById('obMicBtn'); b.classList.add('rec'); b.textContent='⏹';
+}
+function stopObVoice() {
+  if(obRecog){try{obRecog.stop();}catch(e){} obRecog=null;}
+  isObRec=false;
+  var b=document.getElementById('obMicBtn'); b.classList.remove('rec'); b.textContent='🎤';
 }
 
-function stopOnboardVoice() {
-  if (onboardRecognition) { try { onboardRecognition.stop(); } catch(e){} onboardRecognition = null; }
-  isOnboardRecording = false;
-  var btn = document.getElementById("onboardMicBtn");
-  btn.classList.remove("recording");
-  btn.innerHTML = "&#127908;";
-}
-
-// ── DOCUMENT UPLOAD ──
-var uploadedDocs = {};
-
-async function handleDocUpload(event, docType) {
-  var files = event.target.files;
-  if (!files || files.length === 0) return;
-  var statusEl = document.getElementById("status" + docType.charAt(0).toUpperCase() + docType.slice(1));
-  if (!statusEl) statusEl = document.getElementById("statusWAFile");
-  if (statusEl) statusEl.textContent = "&#8987;";
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    uploadedDocs[docType + i] = { name: file.name, type: file.type, docType: docType };
-    var reader = new FileReader();
-    reader.onload = (function(f, dt, idx) {
-      return function(e) {
-        uploadedDocs[dt + idx].data = e.target.result.split(",")[1];
-        uploadedDocs[dt + idx].mediaType = f.type;
-        var el = document.getElementById("upload" + dt.charAt(0).toUpperCase() + dt.slice(1));
-        if (el) el.classList.add("uploaded");
-        if (statusEl) statusEl.textContent = "\u2705";
+// DOCUMENT UPLOAD
+async function handleDoc(event, docType) {
+  var files=event.target.files; if(!files||!files.length) return;
+  var stId='st'+docType.charAt(0).toUpperCase()+docType.slice(1);
+  var stEl=document.getElementById(stId);
+  if(stEl) stEl.textContent='⏳';
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    (function(file,dt,idx){
+      var r=new FileReader();
+      r.onload=function(e){
+        uploadedDocs[dt+idx]={name:file.name,type:file.type,data:e.target.result.split(',')[1]};
+        var uEl=document.getElementById('u'+dt.charAt(0).toUpperCase()+dt.slice(1));
+        if(uEl) uEl.classList.add('uploaded');
+        if(stEl) stEl.textContent='✅';
       };
-    })(file, docType, i);
-    reader.readAsDataURL(file);
+      r.readAsDataURL(file);
+    })(f,docType,i);
   }
-  var label = document.getElementById("upload" + docType.charAt(0).toUpperCase() + docType.slice(1));
-  if (label) label.classList.add("uploaded");
 }
 
-async function processDocuments() {
-  var voiceContext = document.getElementById("onboardTranscript").value.trim();
-  if (voiceContext) caseProfile.voiceContext = voiceContext;
-  var docKeys = Object.keys(uploadedDocs);
-  if (docKeys.length === 0 && !voiceContext) {
-    skipDocuments(); return;
-  }
-  showStep("stepProcessing");
-  var items = document.getElementById("processingItems");
-  var toProcess = docKeys.length > 0 ? docKeys : [];
-  if (voiceContext) toProcess.push("__voice__");
-  var extracts = {};
-  for (var i = 0; i < toProcess.length; i++) {
-    var key = toProcess[i];
-    var itemDiv = document.createElement("div");
-    itemDiv.className = "processing-item active";
-    if (key === "__voice__") {
-      itemDiv.innerHTML = "<div class=\"spinner-sm\"></div><span>Reading your case description...</span>";
-    } else {
-      itemDiv.innerHTML = "<div class=\"spinner-sm\"></div><span>Reading " + (uploadedDocs[key].name || uploadedDocs[key].docType) + "...</span>";
-    }
-    items.appendChild(itemDiv);
+async function processDocs() {
+  var voice=document.getElementById('obTranscript').value.trim();
+  if(voice) profile.voice=voice;
+  save();
+  var keys=Object.keys(uploadedDocs);
+  if(!keys.length&&!voice){skipDocs();return;}
+  go('sProcessing');
+  var items=document.getElementById('procItems');
+  var extracts={};
+  for(var i=0;i<keys.length;i++){
+    var key=keys[i]; var doc=uploadedDocs[key];
+    var div=document.createElement('div');
+    div.style.cssText='display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white);';
+    div.innerHTML='<div style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);animation:spin 0.8s linear infinite;flex-shrink:0;"></div><span>Reading '+doc.name+'...</span>';
+    items.appendChild(div);
     try {
-      var extract = "";
-      if (key === "__voice__") {
-        extract = "Parent described their case: " + voiceContext;
+      var msgContent=[];
+      if(doc.type&&doc.type.startsWith('image/')){
+        msgContent=[{type:'image',source:{type:'base64',media_type:doc.type,data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
+      } else if(doc.type==='application/pdf'){
+        msgContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
       } else {
-        var doc = uploadedDocs[key];
-        var msgContent = [];
-        if (doc.mediaType && doc.mediaType.startsWith("image/")) {
-          msgContent = [
-            { type:"image", source:{ type:"base64", media_type:doc.mediaType, data:doc.data } },
-            { type:"text", text:"Extract the key legal facts from this document. Return a brief summary covering: document type, key dates, key findings, any orders made, any allegations mentioned, any outcomes. Plain English. Max 200 words." }
-          ];
-        } else if (doc.mediaType === "application/pdf") {
-          msgContent = [
-            { type:"document", source:{ type:"base64", media_type:"application/pdf", data:doc.data } },
-            { type:"text", text:"Extract the key legal facts from this document. Return a brief summary covering: document type, key dates, key findings, any orders made, any allegations mentioned, any outcomes. Plain English. Max 200 words." }
-          ];
-        } else {
-          var decoder = atob(doc.data);
-          var text = decoder.substring(0, 3000);
-          msgContent = [{ type:"text", text:"This is a text export of messages. Extract key patterns: Who sends aggressive messages? What allegations have been made? What are the key dates? Summarise in 150 words. Text: " + text }];
-        }
-        var res = await fetch(API_URL, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:300, messages:[{ role:"user", content:msgContent }] })
-        });
-        var data = await res.json();
-        extract = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim());
+        var txt=atob(doc.data).substring(0,2000);
+        msgContent=[{type:'text',text:'Text export of messages. Extract key patterns: allegations made, aggressive messages, key dates. Summary in 100 words. Text: '+txt}];
       }
-      extracts[key] = extract;
-      itemDiv.className = "processing-item done";
-      itemDiv.innerHTML = "&#10003; " + itemDiv.querySelector("span").textContent;
+      var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:250,messages:[{role:'user',content:msgContent}]})});
+      var data=await res.json();
+      extracts[key]=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+      div.innerHTML='<span style="color:var(--green)">✓</span><span style="color:var(--muted-hi)">'+doc.name+'</span>';
     } catch(e) {
-      itemDiv.className = "processing-item";
-      itemDiv.innerHTML = "&#8212; Could not read " + (uploadedDocs[key] ? uploadedDocs[key].name : key);
+      div.innerHTML='<span style="color:var(--muted)">—</span><span style="color:var(--muted)">Could not read '+doc.name+'</span>';
     }
   }
-  docExtracts = extracts;
-  localStorage.setItem("guardianDocs", JSON.stringify(extracts));
-  await buildCaseSummary();
+  docs=extracts; localStorage.setItem('gDocs',JSON.stringify(docs));
+  await buildSummary();
 }
 
-async function skipDocuments() {
-  caseProfile.voiceContext = document.getElementById("onboardTranscript").value.trim();
-  localStorage.setItem("guardianProfile", JSON.stringify(caseProfile));
-  await buildCaseSummary();
+async function skipDocs() {
+  profile.voice=document.getElementById('obTranscript').value.trim();
+  save(); await buildSummary();
 }
 
-async function buildCaseSummary() {
-  showLoading("Building your case profile...", "Almost ready");
-  var context = getCaseContext();
+async function buildSummary() {
+  load('Building your case profile...','Almost ready');
+  var ctx=getCTX();
   try {
-    var res = await fetch(API_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({
-        model:"claude-sonnet-4-6", max_tokens:500,
-        messages:[{ role:"user", content: context + "\n\nBased on everything above, produce a plain English case summary. Return ONLY JSON: {\n\"caseOverview\": \"<2-3 sentence overview of the case>\",\n\"keyFacts\": [\"<fact1>\", \"<fact2>\", \"<fact3>\"],\n\"watchPoints\": [\"<thing to watch 1>\", \"<thing to watch 2>\"]\n}" }]
-      })
-    });
-    var data = await res.json();
-    var raw = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim()).replace(/```json|```/g,"").trim();
-    var parsed = null;
-    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2){} }
-    hideLoading();
-    if (parsed) {
-      caseProfile.summary = parsed;
-      localStorage.setItem("guardianProfile", JSON.stringify(caseProfile));
-      renderSummary(parsed);
-    } else {
-      showSummaryBasic();
-    }
-  } catch(e) { hideLoading(); showSummaryBasic(); }
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:ctx+'\n\nBased on above, produce a case summary. Return ONLY JSON:\n{"overview":"<2-3 sentence plain English overview>","keyFacts":["<fact1>","<fact2>","<fact3>"]}'})})});
+    var data=await res.json();
+    var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed=null;
+    try{parsed=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    unload();
+    renderSummary(parsed);
+  } catch(e) { unload(); renderSummary(null); }
 }
 
 function renderSummary(parsed) {
-  var container = document.getElementById("summaryContent");
-  var html = "";
-  if (caseProfile.myName) html += "<div class=\"summary-row\"><span class=\"summary-key\">Your name</span><span class=\"summary-val\">" + caseProfile.myName + "</span></div>";
-  if (caseProfile.childName) html += "<div class=\"summary-row\"><span class=\"summary-key\">Child</span><span class=\"summary-val\">" + caseProfile.childName + "</span></div>";
-  if (caseProfile.caseType) html += "<div class=\"summary-row\"><span class=\"summary-key\">Case type</span><span class=\"summary-val\">" + caseProfile.caseType + "</span></div>";
-  if (caseProfile.contact) html += "<div class=\"summary-row\"><span class=\"summary-key\">Contact</span><span class=\"summary-val\">" + caseProfile.contact + "</span></div>";
-  if (caseProfile.conflictLevel) html += "<div class=\"summary-row\"><span class=\"summary-key\">Conflict level</span><span class=\"summary-val\">" + caseProfile.conflictLevel + "/10</span></div>";
-  if (parsed.caseOverview) html += "<div style=\"padding:10px 0;font-size:13px;color:var(--muted-hi);line-height:1.6;\">" + parsed.caseOverview + "</div>";
-  container.innerHTML = html;
-  // Knowledge tags
-  var tags = document.getElementById("knowledgeTags");
-  var known = [];
-  if (caseProfile.allegations) known.push("Allegations");
-  if (caseProfile.dismissed) known.push("Dismissed findings");
-  if (caseProfile.contact) known.push("Contact schedule");
-  if (docExtracts["order0"]) known.push("Court order");
-  if (docExtracts["cafcass0"]) known.push("Cafcass report");
-  if (docExtracts["whatsapp0"] || docExtracts["whatsapp0"]) known.push("Message history");
-  if (docExtracts["screenshots0"]) known.push("Screenshots");
-  if (caseProfile.voiceContext) known.push("Voice description");
-  var missing = [];
-  if (!caseProfile.dismissed) missing.push("Dismissed findings");
-  if (!docExtracts["order0"]) missing.push("Court order");
-  if (!docExtracts["cafcass0"]) missing.push("Cafcass report");
-  tags.innerHTML = known.map(function(t){return "<span class=\"knowledge-tag\">" + t + "</span>";}).join("") +
-    missing.map(function(t){return "<span class=\"knowledge-tag missing\">" + t + "</span>";}).join("");
-  showStep("stepSummary");
-}
-
-function showSummaryBasic() {
-  renderSummary({ caseOverview: "Guardian has your basic case details. Add documents to give Guardian a deeper understanding of your situation." });
+  var c=document.getElementById('summaryContent');
+  var html='';
+  if(profile.myName) html+='<div class="summary-row"><span class="summary-key">Your name</span><span class="summary-val">'+profile.myName+'</span></div>';
+  if(profile.childName) html+='<div class="summary-row"><span class="summary-key">Child</span><span class="summary-val">'+profile.childName+'</span></div>';
+  if(profile.caseType) html+='<div class="summary-row"><span class="summary-key">Case type</span><span class="summary-val">'+profile.caseType+'</span></div>';
+  if(profile.contact) html+='<div class="summary-row"><span class="summary-key">Contact</span><span class="summary-val">'+profile.contact+'</span></div>';
+  if(profile.conflict) html+='<div class="summary-row"><span class="summary-key">Conflict level</span><span class="summary-val">'+profile.conflict+'/10</span></div>';
+  if(parsed&&parsed.overview) html+='<div style="padding:10px 0;font-size:13px;color:var(--muted-hi);line-height:1.6;">'+parsed.overview+'</div>';
+  c.innerHTML=html;
+  var tags=document.getElementById('knowledgeTags');
+  var known=[]; var missing=[];
+  if(profile.allegations) known.push('Allegations');
+  if(profile.dismissed) known.push('Dismissed findings');
+  if(profile.contact) known.push('Contact schedule');
+  if(docs['order0']) known.push('Court order');
+  if(docs['cafcass0']) known.push('Cafcass report');
+  if(docs['whatsapp0']) known.push('Message history');
+  if(profile.voice) known.push('Voice description');
+  if(!docs['order0']) missing.push('Court order');
+  if(!docs['cafcass0']) missing.push('Cafcass report');
+  tags.innerHTML=known.map(function(t){return '<span class="ktag">'+t+'</span>';}).join('')+missing.map(function(t){return '<span class="ktag miss">'+t+'</span>';}).join('');
+  go('sSummary');
 }
 
 function confirmSummary() {
-  caseProfile.complete = true;
-  localStorage.setItem("guardianProfile", JSON.stringify(caseProfile));
-  showHome();
+  profile.complete=true; save(); showHome();
 }
 
-// ── QA CHAT ──
-var qaHistory = [];
-var isQATyping = false;
-
-function showQASuggestions() {
-  var child = caseProfile && caseProfile.childName ? caseProfile.childName.split(",")[0] : "my child";
-  var suggestions = document.getElementById("qaSuggestions");
-  if (suggestions && caseProfile) {
-    suggestions.innerHTML = [
-      "What does my " + (caseProfile.caseType || "case") + " mean?",
-      "Do I have to attend mediation?",
-      "What will Cafcass actually do?",
-      "She breached the order — what can I do?",
-      "What happens at a first hearing?"
-    ].map(function(s){return "<button class=\"qa-suggestion\" onclick=\"askSuggestion(this)\">" + s + "</button>";}).join("");
+function showHome() {
+  var h=new Date().getHours();
+  var g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  var n=profile&&profile.myName?', '+profile.myName:'';
+  document.getElementById('homeName').textContent=g+n;
+  document.getElementById('homeStatus').textContent=profile&&profile.childName?'Protecting '+profile.childName.split(',')[0]:'Your case is loaded';
+  if(profile&&profile.conflict){
+    var lv=parseInt(profile.conflict);
+    var pct=(lv/10)*100;
+    var col=lv>=8?'var(--red)':lv>=5?'var(--amber)':'var(--green)';
+    document.getElementById('cbFill').style.width=pct+'%';
+    document.getElementById('cbFill').style.background=col;
+    document.getElementById('cbVal').textContent=lv+'/10';
+    document.getElementById('cbVal').style.color=col;
   }
+  var paid=localStorage.getItem('gPaid')==='true';
+  if(!paid){
+    var rem=Math.max(0,5-checks);
+    document.getElementById('trialCount').textContent=rem;
+    document.getElementById('trialBanner').style.display=rem>=0?'flex':'none';
+  }
+  if(msgLog.length>0){
+    var strip=document.getElementById('memoryStrip');
+    var items=document.getElementById('memoryItems');
+    items.innerHTML='';
+    msgLog.slice(-3).reverse().forEach(function(m){
+      var col=m.flag==='red'?'var(--red)':m.flag==='amber'?'var(--amber)':'var(--green)';
+      var d=document.createElement('div');
+      d.className='mem-item';
+      d.innerHTML='<div class="mem-dot" style="background:'+col+'"></div><span>'+m.summary+'</span>';
+      items.appendChild(d);
+    });
+    strip.style.display='block';
+  }
+  go('sHome');
 }
 
-function askSuggestion(btn) {
-  document.getElementById("qaInput").value = btn.textContent;
-  document.getElementById("qaSuggestions").style.display = "none";
+function goQA() {
+  qaHistory=[];
+  document.getElementById('qaMsgs').innerHTML='';
+  var child=profile&&profile.childName?profile.childName.split(',')[0]:'your child';
+  var ct=profile&&profile.caseType?profile.caseType:'your case';
+  var sugs=['What does '+ct+' mean?','Do I have to attend mediation?','What will Cafcass actually do?','She breached the order — what can I do?','What happens at a first hearing?'];
+  document.getElementById('qaSugs').innerHTML=sugs.map(function(s){return '<button class="qa-sug" onclick="askSug(this)">'+s+'</button>';}).join('');
+  go('sQA');
+}
+
+function askSug(btn) {
+  document.getElementById('qaIn').value=btn.textContent;
+  document.getElementById('qaSugs').style.display='none';
   sendQA();
 }
 
 async function sendQA() {
-  var input = document.getElementById("qaInput");
-  var msg = input.value.trim();
-  if (!msg || isQATyping) return;
-  input.value = "";
-  stopQAVoice();
-  // Add user message
-  addQAMessage("user", msg);
-  qaHistory.push({ role:"user", content: msg });
-  // Show typing
-  isQATyping = true;
-  var typingEl = document.createElement("div");
-  typingEl.className = "qa-typing";
-  typingEl.innerHTML = "<span></span><span></span><span></span>";
-  typingEl.id = "qaTyping";
-  document.getElementById("qaMessages").appendChild(typingEl);
+  var input=document.getElementById('qaIn');
+  var msg=input.value.trim();
+  if(!msg||qaTyping) return;
+  input.value=''; stopQAVoice();
+  addQAMsg('user',msg);
+  qaHistory.push({role:'user',content:msg});
+  qaTyping=true;
+  var td=document.createElement('div');
+  td.className='qa-typing'; td.id='qaTyp';
+  td.innerHTML='<span></span><span></span><span></span>';
+  document.getElementById('qaMsgs').appendChild(td);
   scrollQA();
-  var caseCtx = getCaseContext();
-  var systemPrompt = [
-    "You are Guardian, a knowledgeable case companion for parents going through family court in England and Wales.",
-    "Answer questions in plain English. Be honest, warm, and direct. Never use legal jargon without explaining it.",
-    "Always frame answers around the user s specific case context when relevant.",
-    "You are NOT a lawyer and do not give legal advice. You explain, coach, and support.",
-    "Keep answers focused and practical. If something needs a solicitor, say so clearly.",
-    "",
-    caseCtx
-  ].join("\n");
+  var sys='You are Guardian, a case companion for parents in family court in England and Wales.\nAnswer in plain English. Be honest, warm, direct. Never use legal jargon without explaining it.\nYou are not a lawyer and do not give legal advice. You explain, coach, and support.\nKeep answers practical and focused.\n\n'+getCTX();
   try {
-    var messages = qaHistory.slice(-10);
-    var res = await fetch(API_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:600, system:systemPrompt, messages:messages })
-    });
-    var data = await res.json();
-    var reply = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim());
-    var el = document.getElementById("qaTyping");
-    if (el) el.remove();
-    isQATyping = false;
-    addQAMessage("guardian", reply);
-    qaHistory.push({ role:"assistant", content:reply });
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,system:sys,messages:qaHistory.slice(-10)})});
+    var data=await res.json();
+    var reply=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    var te=document.getElementById('qaTyp'); if(te) te.remove();
+    qaTyping=false;
+    addQAMsg('guardian',reply);
+    qaHistory.push({role:'assistant',content:reply});
   } catch(e) {
-    var el = document.getElementById("qaTyping");
-    if (el) el.remove();
-    isQATyping = false;
-    addQAMessage("guardian", "Sorry, something went wrong. Please try again.");
+    var te=document.getElementById('qaTyp'); if(te) te.remove();
+    qaTyping=false;
+    addQAMsg('guardian','Sorry, something went wrong. Please try again.');
   }
 }
 
-function addQAMessage(type, text) {
-  var container = document.getElementById("qaMessages");
-  var div = document.createElement("div");
-  div.className = "qa-msg " + (type === "user" ? "qa-msg-user" : "qa-msg-guardian");
-  div.textContent = text;
-  container.appendChild(div);
-  scrollQA();
+function addQAMsg(type,text) {
+  var c=document.getElementById('qaMsgs');
+  var d=document.createElement('div');
+  d.className='qa-msg '+(type==='user'?'qa-user':'qa-guardian');
+  d.textContent=text;
+  c.appendChild(d); scrollQA();
 }
-
-function scrollQA() {
-  var container = document.getElementById("qaMessages");
-  container.scrollTop = container.scrollHeight;
-}
+function scrollQA(){ var c=document.getElementById('qaMsgs'); c.scrollTop=c.scrollHeight; }
 
 function toggleQAVoice() {
-  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-    toast("Voice not supported — please type instead"); return;
-  }
-  if (isQARecording) { stopQAVoice(); } else { startQAVoice(); }
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){toast('Voice not supported');return;}
+  if(isQARec){stopQAVoice();}else{startQAVoice();}
 }
-
 function startQAVoice() {
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  qaRecognition = new SR();
-  qaRecognition.continuous = true;
-  qaRecognition.interimResults = true;
-  qaRecognition.lang = "en-GB";
-  var finalT = "";
-  qaRecognition.onresult = function(event) {
-    var interim = "";
-    for (var i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) { finalT += event.results[i][0].transcript + " "; }
-      else { interim += event.results[i][0].transcript; }
-    }
-    document.getElementById("qaInput").value = (finalT + interim).trim();
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  qaRecog=new SR(); qaRecog.continuous=true; qaRecog.interimResults=true; qaRecog.lang='en-GB';
+  var fin='';
+  qaRecog.onresult=function(e){
+    var int='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}else{int+=e.results[i][0].transcript;}}
+    document.getElementById('qaIn').value=(fin+int).trim();
   };
-  qaRecognition.onend = function() { if (isQARecording) { try { qaRecognition.start(); } catch(e){} } };
-  qaRecognition.start();
-  isQARecording = true;
-  var btn = document.getElementById("qaVoiceBtn");
-  btn.classList.add("recording");
-  btn.innerHTML = "&#9209;";
+  qaRecog.onend=function(){if(isQARec){try{qaRecog.start();}catch(err){}}};
+  qaRecog.start(); isQARec=true;
+  var b=document.getElementById('qaMic'); b.classList.add('rec'); b.textContent='⏹';
 }
-
 function stopQAVoice() {
-  if (qaRecognition) { try { qaRecognition.stop(); } catch(e){} qaRecognition = null; }
-  isQARecording = false;
-  var btn = document.getElementById("qaVoiceBtn");
-  if (btn) { btn.classList.remove("recording"); btn.innerHTML = "&#127908;"; }
+  if(qaRecog){try{qaRecog.stop();}catch(e){} qaRecog=null;}
+  isQARec=false;
+  var b=document.getElementById('qaMic');
+  if(b){b.classList.remove('rec');b.textContent='🎤';}
 }
 
-// ── MESSAGE COACH ──
-function showIncoming() {
-  document.getElementById("incomingPanel").style.display = "block";
-  document.getElementById("outgoingPanel").style.display = "none";
-}
-function showOutgoing() {
-  document.getElementById("outgoingPanel").style.display = "block";
-  document.getElementById("incomingPanel").style.display = "none";
-}
+// MESSAGE COACH
+function showIn() { document.getElementById('inPanel').style.display='block'; document.getElementById('outPanel').style.display='none'; }
+function showOut() { document.getElementById('outPanel').style.display='block'; document.getElementById('inPanel').style.display='none'; }
 
 async function handleUpload(event) {
-  var file = event.target.files[0];
-  event.target.value = "";
-  if (!file) return;
-  showLoading("Reading screenshot...", "Identifying who sent what");
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var b64 = e.target.result.split(",")[1];
+  var file=event.target.files[0]; event.target.value=''; if(!file) return;
+  load('Reading screenshot...','Identifying who sent what');
+  var reader=new FileReader();
+  reader.onload=async function(e){
+    var b64=e.target.result.split(',')[1];
     try {
-      var res = await fetch(API_URL, {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:500,
-          messages:[{ role:"user", content:[
-            { type:"image", source:{type:"base64", media_type:file.type, data:b64} },
-            { type:"text", text:"Read this message screenshot. Identify which messages were sent by each person. Return ONLY JSON: {\"theirMessages\":\"<their messages combined>\",\"myMessages\":\"<my messages combined>\",\"unclear\":false}" }
-          ]}]
-        })
-      });
-      var data = await res.json();
-      var raw = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim()).replace(/```json|```/g,"").trim();
-      var parsed = null;
-      try { parsed = JSON.parse(raw); } catch(err) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2){} }
-      hideLoading();
-      if (parsed && parsed.theirMessages && parsed.theirMessages.length > 3) {
-        state.theirMsg = parsed.theirMessages.trim();
-        askQuestion();
-      } else { toast("Could not read screenshot — please type the message instead"); }
-    } catch(e) { hideLoading(); toast("Upload failed — please try again"); }
+      var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:file.type,data:b64}},{type:'text',text:'Read this message screenshot. Return ONLY JSON: {"theirMessages":"<their messages>","myMessages":"<my messages>","unclear":false}'}]}]})});
+      var data=await res.json();
+      var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+      var p=null; try{p=JSON.parse(raw);}catch(err){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
+      unload();
+      if(p&&p.theirMessages&&p.theirMessages.length>3){st.msg=p.theirMessages.trim();askQ();}
+      else{toast('Could not read screenshot — please type the message instead');}
+    } catch(e){unload();toast('Upload failed — please try again');}
   };
   reader.readAsDataURL(file);
 }
 
 function confirmType() {
-  var val = document.getElementById("typeInput").value.trim();
-  if (!val) { toast("Please type their message first"); return; }
-  state.theirMsg = val;
-  askQuestion();
+  var v=document.getElementById('typeIn').value.trim();
+  if(!v){toast('Please type their message first');return;}
+  st.msg=v; askQ();
 }
-
-function checkOutgoing() {
-  var val = document.getElementById("outgoingInput").value.trim();
-  if (!val) { toast("Type what you want to send first"); return; }
-  state.outgoingMsg = val;
-  state.outgoing = true;
-  showStep("stepNeedCheck");
+function checkOut() {
+  var v=document.getElementById('outIn').value.trim();
+  if(!v){toast('Type what you want to send first');return;}
+  st.outMsg=v; st.outgoing=true; go('sNeedCheck');
 }
+function outYes(){st.msg='[OUTGOING] Parent wants to send: '+st.outMsg;askQ();}
+function outCheckin(){go('sSilence');}
+function outNotSure(){go('sSilence');}
+function outProceed(){st.msg='[OUTGOING] Parent wants to send: '+st.outMsg;askQ();}
 
-function outgoingYes() { state.theirMsg = "[OUTGOING MESSAGE] Parent wants to send: " + state.outgoingMsg; askQuestion(); }
-function outgoingCheckin() { showStep("stepSilence"); }
-function outgoingNotSure() { showStep("stepSilence"); }
-function outgoingProceed() { state.theirMsg = "[OUTGOING MESSAGE] Parent wants to send: " + state.outgoingMsg; askQuestion(); }
-
-function startCooldown() {
-  showStep("stepCooldown");
-  document.getElementById("theirTextCool").textContent = state.theirMsg;
-  var seconds = 120;
-  cooldownInterval = setInterval(function() {
-    seconds--;
-    var m = Math.floor(seconds/60);
-    var s = seconds % 60;
-    document.getElementById("cooldownTimer").textContent = m + ":" + (s<10?"0":"") + s;
-    if (seconds <= 0) { clearInterval(cooldownInterval); skipCooldown(); }
-  }, 1000);
+function startCool() {
+  go('sCooldown');
+  document.getElementById('coolText').textContent=st.msg;
+  var secs=120;
+  coolInt=setInterval(function(){
+    secs--;
+    var m=Math.floor(secs/60),s=secs%60;
+    document.getElementById('coolTimer').textContent=m+':'+(s<10?'0':'')+s;
+    if(secs<=0){clearInterval(coolInt);skipCool();}
+  },1000);
 }
+function skipCool(){if(coolInt)clearInterval(coolInt);doQuestion();}
 
-function skipCooldown() {
-  if (cooldownInterval) clearInterval(cooldownInterval);
-  proceedToQuestion();
-}
-
-// Check trial
-function checkTrial() {
-  var isPaid = localStorage.getItem("guardianPaid") === "true";
-  if (isPaid) return true;
-  if (checksUsed >= 5) {
-    showStep("stepPaywall");
-    return false;
-  }
+function checkTrial(){
+  if(localStorage.getItem('gPaid')==='true') return true;
+  if(checks>=5){go('sPaywall');return false;}
   return true;
 }
 
-async function askQuestion() {
-  if (!checkTrial()) return;
-  showLoading("Reading it...", "Working out what to ask you");
-  document.getElementById("theirText3").textContent = state.theirMsg;
-  document.getElementById("theirText4").textContent = state.theirMsg;
-  var caseCtx = getCaseContext();
+async function askQ() {
+  if(!checkTrial()) return;
+  load('Reading it...','Working out what to ask you');
+  document.getElementById('qTheirText').textContent=st.msg;
+  document.getElementById('rTheirText').textContent=st.msg;
+  var ctx=getCTX();
   try {
-    var res = await fetch(API_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:400,
-        system: GUARDIAN_SYSTEM + "\n\n" + caseCtx,
-        messages:[{ role:"user", content:"A parent received this co-parenting message: \"" + state.theirMsg + "\"\n\nAnalyse it. Return ONLY JSON:\n{\"question\":\"<ONE plain-English question — ask what actually happened from the parent s side. Simple and direct. E.g. How were the kids when they left you? Not formal or legal.>\",\"options\":[\"<short plain option 1>\",\"<short plain option 2>\",\"<short plain option 3>\"],\"flag\":\"red|amber|green\",\"flagText\":\"<one line — e.g. Welfare allegation, Routine update>\",\"cooldown\":true|false}\n\nFlag red for welfare allegations or accusations. Amber for tense or loaded messages. Green for routine. Cooldown true only if highly aggressive." }]
-      })
-    });
-    var data = await res.json();
-    var raw = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim()).replace(/```json|```/g,"").trim();
-    var parsed = null;
-    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2){} }
-    hideLoading();
-    if (parsed) {
-      state.flag = parsed.flag;
-      state.flagText = parsed.flagText;
-      state.question = parsed.question || "";
-      if (parsed.cooldown) { startCooldown(); return; }
-      proceedToQuestion(parsed);
-    } else { proceedToQuestion(null); }
-  } catch(e) { hideLoading(); proceedToQuestion(null); }
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:SYS+'\n\n'+ctx,messages:[{role:'user',content:'A parent received: "'+st.msg+'"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.'}]})});
+    var data=await res.json();
+    var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
+    unload();
+    if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
+    else{doQuestion(null);}
+  } catch(e){unload();doQuestion(null);}
 }
 
-function proceedToQuestion(parsed) {
-  var flagBanner = document.getElementById("flagBanner");
-  if (state.flag && state.flagText) {
-    var cls = state.flag==="red" ? "flag-red" : state.flag==="amber" ? "flag-amber" : "flag-green";
-    var flagLabels = {
-      red:  { icon:"\uD83D\uDD34", label:"Serious allegation — reply carefully" },
-      amber:{ icon:"\uD83D\DFE1", label:"Loaded message — stay factual" },
-      green:{ icon:"\uD83D\DFE2", label:"Routine message — keep it brief" }
-    };
-    var fl = flagLabels[state.flag] || flagLabels["green"];
-    flagBanner.innerHTML = "<div class=\"flag-card " + cls + "\"><span class=\"flag-icon\">" + fl.icon + "</span><div class=\"flag-text\"><div class=\"flag-title\">" + fl.label + "</div><div class=\"flag-desc\">" + state.flagText + "</div></div></div>";
-  }
-  if (parsed && parsed.question) {
-    document.getElementById("questionText").textContent = parsed.question;
-    var opts = document.getElementById("questionOptions");
-    opts.innerHTML = "";
-    (parsed.options || ["Yes","No","Partly"]).forEach(function(opt) {
-      var btn = document.createElement("button");
-      btn.className = "q-option";
-      btn.textContent = opt;
-      btn.onclick = function() {
-        document.querySelectorAll(".q-option").forEach(function(b){b.classList.remove("selected");});
-        btn.classList.add("selected");
-        state.answer = opt;
-        document.getElementById("honestNote").style.display = "block";
-        document.getElementById("voiceRow").style.display = "flex";
-        document.getElementById("continueBtn").style.display = "block";
+function doQuestion(p) {
+  var fb=document.getElementById('flagBanner');
+  if(st.flag&&st.flagText){
+    var cls=st.flag==='red'?'flag-red':st.flag==='amber'?'flag-amber':'flag-green';
+    var labels={red:{icon:'🔴',lbl:'Serious allegation — reply carefully'},amber:{icon:'🟡',lbl:'Loaded message — stay factual'},green:{icon:'🟢',lbl:'Routine message — keep it brief'}};
+    var fl=labels[st.flag]||labels.green;
+    fb.innerHTML='<div class="flag-card '+cls+'"><span class="flag-icon">'+fl.icon+'</span><div class="flag-body"><div class="flag-title">'+fl.lbl+'</div><div class="flag-desc">'+st.flagText+'</div></div></div>';
+  } else { fb.innerHTML=''; }
+  if(p&&p.question){
+    document.getElementById('qText').textContent=p.question;
+    var opts=document.getElementById('qOpts'); opts.innerHTML='';
+    (p.options||['Yes','No','Partly']).forEach(function(opt){
+      var btn=document.createElement('button'); btn.className='q-opt'; btn.textContent=opt;
+      btn.onclick=function(){
+        document.querySelectorAll('.q-opt').forEach(function(b){b.classList.remove('sel');});
+        btn.classList.add('sel'); st.answer=opt;
+        document.getElementById('honestNote').style.display='block';
+        document.getElementById('voiceRow').style.display='flex';
+        document.getElementById('continueBtn').style.display='block';
       };
       opts.appendChild(btn);
     });
   } else {
-    document.getElementById("questionText").textContent = "Anything you want to tell me before I suggest a reply?";
-    document.getElementById("honestNote").style.display = "block";
-    document.getElementById("voiceRow").style.display = "flex";
-    document.getElementById("continueBtn").style.display = "block";
+    document.getElementById('qText').textContent='Anything you want to tell me before I suggest a reply?';
+    document.getElementById('honestNote').style.display='block';
+    document.getElementById('voiceRow').style.display='flex';
+    document.getElementById('continueBtn').style.display='block';
   }
-  showStep("stepQuestion");
+  go('sQuestion');
 }
 
-// ── VOICE (context) ──
-function toggleVoice() {
-  if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) { toast("Voice not supported"); return; }
-  if (isRecording) { stopVoice(); } else { startVoice(); }
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){toast('Voice not supported');return;}
+  if(isRec){stopVoice();}else{startVoice();}
 }
-
-function startVoice() {
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = "en-GB";
-  var finalT = document.getElementById("detailInput").value.trim();
-  if (finalT) finalT += " ";
-  recognition.onresult = function(event) {
-    var interim = "";
-    for (var i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) { finalT += event.results[i][0].transcript + " "; }
-      else { interim += event.results[i][0].transcript; }
-    }
-    document.getElementById("detailInput").value = (finalT + interim).trim();
+function startVoice(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recog=new SR(); recog.continuous=true; recog.interimResults=true; recog.lang='en-GB';
+  var fin=document.getElementById('detailIn').value.trim(); if(fin) fin+=' ';
+  recog.onresult=function(e){
+    var int='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}else{int+=e.results[i][0].transcript;}}
+    document.getElementById('detailIn').value=(fin+int).trim();
   };
-  recognition.onend = function() { if (isRecording) { try { recognition.start(); } catch(e){} } };
-  recognition.onerror = function(e) { if (e.error !== "no-speech") { stopVoice(); toast("Could not hear you"); } };
-  recognition.start();
-  isRecording = true;
-  document.getElementById("voiceBtn").classList.add("recording");
-  document.getElementById("voiceBtn").innerHTML = "&#9209;";
+  recog.onend=function(){if(isRec){try{recog.start();}catch(e){}}};
+  recog.onerror=function(e){if(e.error!=='no-speech'){stopVoice();toast('Could not hear you');}};
+  recog.start(); isRec=true;
+  document.getElementById('voiceBtn').classList.add('rec');
+  document.getElementById('voiceBtn').textContent='⏹';
+}
+function stopVoice(){
+  if(recog){try{recog.stop();}catch(e){} recog=null;}
+  isRec=false;
+  document.getElementById('voiceBtn').classList.remove('rec');
+  document.getElementById('voiceBtn').textContent='🎤';
 }
 
-function stopVoice() {
-  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
-  isRecording = false;
-  document.getElementById("voiceBtn").classList.remove("recording");
-  document.getElementById("voiceBtn").innerHTML = "&#127908;";
-}
-
-// ── GENERATE REPLY ──
-async function generateReply() {
+async function genReply(){
   stopVoice();
-  var detail = document.getElementById("detailInput").value.trim();
-  var context = state.answer ? "Question: \"" + state.question + "\". Parent answered: \"" + state.answer + "\"." : "";
-  if (detail) context += " Parent also said: \"" + detail + "\".";
-  if (!context) context = "No specific context provided.";
-  await _generateReply(context);
+  var detail=document.getElementById('detailIn').value.trim();
+  var ctx=st.answer?'Question: "'+st.question+'". Answer: "'+st.answer+'".':'';
+  if(detail) ctx+=' Parent said: "'+detail+'".';
+  if(!ctx) ctx='No context provided.';
+  await _gen(ctx);
 }
+async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
 
-async function generateReplyDirect() {
-  await _generateReply("No context — suggest the safest minimal reply.");
-}
-
-async function _generateReply(context) {
-  showLoading("Writing your reply...", "Keeping it safe and human");
-  var caseCtx = getCaseContext();
-  var prompt = [
-    caseCtx,
-    "",
-    "Their message: \"" + state.theirMsg + "\"",
-    "Context from parent: " + context,
-    "",
-    "STRICT RULES:",
-    "- Use the case context above. Reference the child by name if relevant.",
-    "- Only use facts the parent explicitly confirmed. Do not invent anything.",
-    "- If nothing confirmed, say as little as possible.",
-    "- 1 to 4 short sentences. One is usually enough.",
-    "- UK English only.",
-    "- Do not start with the other parent s name.",
-    "- No empathy openers.",
-    "- For tips: give 2 specific practical actions RIGHT NOW — log the time, screenshot this, check the order, note what the child said.",
-    "",
-    "Return ONLY JSON:",
-    "{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action 1>","<action 2>"]}"
-  ].join("\n");
+async function _gen(ctx) {
+  load('Writing your reply...','Keeping it safe and human');
+  var caseCtx=getCTX();
+  var prompt=caseCtx+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name if relevant.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- No empathy openers.\n- For tips: give 2 specific actions RIGHT NOW — log the time, screenshot this, check the order.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
-    var res = await fetch(API_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:500, system:GUARDIAN_SYSTEM, messages:[{ role:"user", content:prompt }] })
-    });
-    var data = await res.json();
-    var raw = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim()).replace(/```json|```/g,"").trim();
-    var parsed = null;
-    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2){} }
-    hideLoading();
-    if (parsed && parsed.reply !== undefined) {
-      state.reply = parsed.reply;
-      state.score = parsed.score || 8;
-      state.timing = parsed.timing || "morning";
-      state.timingNote = parsed.timingNote || "";
-      // Increment check counter
-      checksUsed++;
-      localStorage.setItem("guardianChecks", checksUsed);
-      // Log to memory
-      messageLog.push({ flag:state.flag, score:state.score, summary:(state.flagText || "Message checked") + " — " + new Date().toLocaleDateString("en-GB"), ts:new Date().toISOString() });
-      localStorage.setItem("guardianLog", JSON.stringify(messageLog));
-      var badge = document.getElementById("scoreBadge");
-      if (parsed.score >= 8) { badge.textContent = "\u2705 Safe to send"; badge.className = "score-badge score-safe"; }
-      else if (parsed.score >= 6) { badge.textContent = "\u26A0\uFE0F Send with care"; badge.className = "score-badge score-caution"; }
-      else { badge.textContent = "\u274C Needs work"; badge.className = "score-badge score-danger"; }
-      document.getElementById("suggestedReply").textContent = parsed.reply || "(No reply needed — silence is the stronger position here.)";
-      document.getElementById("replyWhy").textContent = parsed.why || "";
-      if (parsed.tips && parsed.tips.length > 0) {
-        var tipItems = document.getElementById("tipItems");
-        tipItems.innerHTML = "";
-        parsed.tips.forEach(function(tip) {
-          var div = document.createElement("div");
-          div.className = "tip-item";
-          div.textContent = tip;
-          tipItems.appendChild(div);
-        });
-        document.getElementById("tipCard").style.display = "block";
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
+    var data=await res.json();
+    var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
+    unload();
+    if(p&&p.reply!==undefined){
+      st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
+      checks++; localStorage.setItem('gChecks',checks);
+      msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
+      localStorage.setItem('gLog',JSON.stringify(msgLog));
+      var badge=document.getElementById('scoreBadge');
+      if(p.score>=8){badge.textContent='✅ Safe to send';badge.className='score-badge sc-safe';}
+      else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
+      else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
+      document.getElementById('suggestedReply').textContent=p.reply||'(No reply needed — silence is the stronger position here.)';
+      document.getElementById('replyWhy').textContent=p.why||'';
+      if(p.tips&&p.tips.length){
+        var ti=document.getElementById('tipItems'); ti.innerHTML='';
+        p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});
+        document.getElementById('tipCard').style.display='block';
+      } else { document.getElementById('tipCard').style.display='none'; }
+      if(p.score<5&&p.dangerReasons){
+        document.getElementById('nuclearWarn').style.display='block';
+        document.getElementById('replyContent').style.display='none';
+        document.getElementById('nuclearReasons').textContent=p.dangerReasons;
       } else {
-        document.getElementById("tipCard").style.display = "none";
+        document.getElementById('nuclearWarn').style.display='none';
+        document.getElementById('replyContent').style.display='block';
       }
-      if (parsed.score < 5 && parsed.dangerReasons) {
-        document.getElementById("nuclearWarning").style.display = "block";
-        document.getElementById("replyContent").style.display = "none";
-        document.getElementById("nuclearReasons").textContent = parsed.dangerReasons;
-      } else {
-        document.getElementById("nuclearWarning").style.display = "none";
-        document.getElementById("replyContent").style.display = "block";
-      }
-      showStep("stepReply");
-    } else { toast("Could not generate a reply — please try again"); }
-  } catch(e) { hideLoading(); toast("Something went wrong — please try again"); }
+      go('sReply');
+    } else { toast('Could not generate a reply — please try again'); }
+  } catch(e){unload();toast('Something went wrong — please try again');}
 }
 
-function fixReply() { state.answer = (state.answer||"") + " [Please generate a safer calmer version]"; generateReply(); }
-function showReplyAnyway() { document.getElementById("nuclearWarning").style.display="none"; document.getElementById("replyContent").style.display="block"; }
+function fixReply(){st.answer=(st.answer||'')+' [Please generate a safer calmer version]';genReply();}
+function showAnyway(){document.getElementById('nuclearWarn').style.display='none';document.getElementById('replyContent').style.display='block';}
 
-async function refine(type) {
-  var instructions = {
-    formal:"Too formal. Rewrite to sound like a real British parent texting — shorter, more natural, less stiff. Keep it factual.",
-    harsh:"Too harsh. Soften the tone while keeping it factual. Remove anything that sounds accusatory.",
-    different:"Rewrite with different words — same meaning and tone, said differently."
-  };
-  var prev = document.getElementById("suggestedReply").textContent;
-  document.getElementById("suggestedReply").textContent = "Updating...";
-  var caseCtx = getCaseContext();
+async function refine(type){
+  var instr={formal:'Too formal. Rewrite as real British parent texting — shorter, natural. Keep factual.',harsh:'Too harsh. Soften while keeping factual. Remove anything accusatory.',different:'Rewrite with different words — same meaning, said differently.'};
+  var prev=document.getElementById('suggestedReply').textContent;
+  document.getElementById('suggestedReply').textContent='Updating...';
   try {
-    var res = await fetch(API_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:150, system:GUARDIAN_SYSTEM,
-        messages:[{ role:"user", content:caseCtx + "\n\nTheir message: \"" + state.theirMsg + "\"\nCurrent reply: \"" + state.reply + "\"\nFeedback: " + instructions[type] + "\n\nRewrite it. Real British parent texting. Max 2 sentences. No legal language. No empathy openers. Return ONLY the new reply text." }]
-      })
-    });
-    var data = await res.json();
-    var refined = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim()).replace(/^["']|["']$/g,"");
-    if (refined && refined.length > 3) { state.reply = refined; document.getElementById("suggestedReply").textContent = refined; }
-    else { document.getElementById("suggestedReply").textContent = prev; }
-  } catch(e) { document.getElementById("suggestedReply").textContent = prev; }
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:150,system:SYS,messages:[{role:'user',content:getCTX()+'\n\nTheir message: "'+st.msg+'"\nCurrent reply: "'+st.reply+'"\nFeedback: '+instr[type]+'\n\nRewrite it. Real British parent. Max 2 sentences. No legal language. Return ONLY the new reply text.'}]})});
+    var data=await res.json();
+    var r=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/^["']|["']$/g,'');
+    if(r&&r.length>3){st.reply=r;document.getElementById('suggestedReply').textContent=r;}
+    else{document.getElementById('suggestedReply').textContent=prev;}
+  } catch(e){document.getElementById('suggestedReply').textContent=prev;}
 }
 
-function confirmReply() {
-  document.getElementById("confirmedReply").textContent = state.reply;
-  document.getElementById("editInput").value = state.reply;
-  // Timing card
-  if (timingInterval) clearInterval(timingInterval);
-  var timingMap = {
-    "now":      { cls:"timing-urgent", label:"\u26A0\uFE0F Send now", minutes:120 },
-    "morning":  { cls:"timing-soon",   label:"\u23F0 Send today", minutes:480 },
-    "can_wait": { cls:"timing-wait",   label:"\uD83D\uDD50 No rush", minutes:1440 }
-  };
-  var tc = document.getElementById("timingCard");
-  if (state.timingNote) {
-    var t = timingMap[state.timing] || timingMap["morning"];
-    tc.className = "timing-card " + t.cls;
-    document.getElementById("timingHeadline").textContent = t.label;
-    document.getElementById("timingReason").textContent = state.timingNote;
-    var secondsLeft = t.minutes * 60;
-    function updateCountdown() {
-      var h = Math.floor(secondsLeft/3600);
-      var m = Math.floor((secondsLeft%3600)/60);
-      var s = secondsLeft%60;
-      document.getElementById("timingCountdown").textContent = (h>0?h+"h ":"") + m+"m " + (h===0?s+"s":"");
-      if (secondsLeft > 0) secondsLeft--;
+function confirmReply(){
+  document.getElementById('confirmedReply').textContent=st.reply;
+  document.getElementById('editIn').value=st.reply;
+  if(timingInt) clearInterval(timingInt);
+  var tc=document.getElementById('timingCard');
+  if(st.timingNote){
+    var tmap={now:{cls:'timing-urgent',lbl:'⚠️ Send now',mins:120},morning:{cls:'timing-soon',lbl:'⏰ Send today',mins:480},can_wait:{cls:'timing-wait',lbl:'🕐 No rush',mins:1440}};
+    var t=tmap[st.timing]||tmap.morning;
+    tc.className='timing-card '+t.cls;
+    document.getElementById('timingHL').textContent=t.lbl;
+    document.getElementById('timingReason').textContent=st.timingNote;
+    var secs=t.mins*60;
+    function tick(){
+      var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;
+      document.getElementById('timingCD').textContent=(h>0?h+'h ':'')+m+'m '+(h===0?s+'s':'');
+      if(secs>0) secs--;
     }
-    updateCountdown();
-    timingInterval = setInterval(updateCountdown, 1000);
-    tc.style.display = "block";
-  } else {
-    tc.style.display = "none";
-  }
-  setTimeout(function(){ document.getElementById("sentCard").style.display="block"; }, 1500);
-  showStep("stepConfirmed");
+    tick(); timingInt=setInterval(tick,1000); tc.style.display='block';
+  } else { tc.style.display='none'; }
+  setTimeout(function(){document.getElementById('sentCard').style.display='block';},1500);
+  go('sConfirmed');
 }
 
-function copyReply() {
-  var text = state.reply;
-  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function(){ toast("\u2705 Copied — ready to send"); }); }
-  else { var ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); toast("\u2705 Copied"); }
+function copyReply(){
+  var text=st.reply;
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('✅ Copied — ready to send');});}
+  else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ Copied');}
 }
 
-async function rescoreReply() {
-  var edited = document.getElementById("editInput").value.trim();
-  if (!edited) { toast("Edit the reply first"); return; }
-  var btn = document.querySelector(".rescore-btn");
-  btn.textContent = "Scoring...";
-  var caseCtx = getCaseContext();
+async function rescoreReply(){
+  var edited=document.getElementById('editIn').value.trim();
+  if(!edited){toast('Edit the reply first');return;}
+  var btn=document.querySelector('.rescore-btn'); btn.textContent='Scoring...';
   try {
-    var res = await fetch(API_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:200, system:GUARDIAN_SYSTEM,
-        messages:[{ role:"user", content:caseCtx + "\n\nTheir message: \"" + state.theirMsg + "\"\nParent wants to send: \"" + edited + "\"\n\nScore out of 10. Calm, factual, brief = high. Defensive, emotional, accusatory = low. Return ONLY JSON: {\"score\":<0-10>,\"verdict\":\"<1 sentence>\",\"tip\":\"<1 sentence or blank>\"}" }]
-      })
-    });
-    var data = await res.json();
-    var raw = ((data.content||[]).map(function(b){return b.text||"";}).join("").trim()).replace(/```json|```/g,"").trim();
-    var parsed = null;
-    try { parsed = JSON.parse(raw); } catch(e) { var m=raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
-    btn.textContent = "Re-score my version \u2192";
-    if (parsed) {
-      var color = parsed.score>=8?"#22c97a":parsed.score>=6?"#f59e0b":"#ef4444";
-      var el = document.getElementById("rescoreResult");
-      el.style.display = "block";
-      el.innerHTML = "<span style=\"font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:"+color+"\">" + parsed.score + "/10</span> <span style=\"font-size:13px;margin-left:8px;\">" + (parsed.verdict||"") + "</span>" + (parsed.tip?"<div style=\"margin-top:8px;font-size:12px;color:#f59e0b;\">\uD83D\uDCA1 "+parsed.tip+"</div>":"");
-      state.reply = edited;
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:200,system:SYS,messages:[{role:'user',content:getCTX()+'\n\nTheir message: "'+st.msg+'"\nParent wants to send: "'+edited+'"\n\nScore out of 10. Calm, factual, brief = high. Defensive, emotional, accusatory = low.\nReturn ONLY JSON: {"score":<0-10>,"verdict":"<1 sentence>","tip":"<1 sentence or blank>"}'}]})});
+    var data=await res.json();
+    var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
+    btn.textContent='Re-score my version →';
+    if(p){
+      var col=p.score>=8?'#22c97a':p.score>=6?'#f59e0b':'#ef4444';
+      var el=document.getElementById('rescoreResult'); el.style.display='block';
+      el.innerHTML='<span style="font-family:Syne,sans-serif;font-size:20px;font-weight:800;color:'+col+'">'+p.score+'/10</span> <span style="font-size:13px;margin-left:8px;">'+(p.verdict||'')+'</span>'+(p.tip?'<div style="margin-top:8px;font-size:12px;color:#f59e0b;">💡 '+p.tip+'</div>':'');
+      st.reply=edited;
     }
-  } catch(e) { btn.textContent = "Re-score my version \u2192"; toast("Could not score — try again"); }
+  } catch(e){btn.textContent='Re-score my version →';toast('Could not score — try again');}
 }
 
-function submitFeedback(type) {
-  document.getElementById("thumbsUp").classList.remove("selected-up");
-  document.getElementById("thumbsDown").classList.remove("selected-down");
-  if (type==="up") { document.getElementById("thumbsUp").classList.add("selected-up"); }
-  else { document.getElementById("thumbsDown").classList.add("selected-down"); }
-  document.getElementById("feedbackThanks").style.display = "block";
-  var log = JSON.parse(localStorage.getItem("guardianFeedback")||"[]");
-  log.push({ type:type, score:state.score, flag:state.flag, ts:new Date().toISOString() });
-  localStorage.setItem("guardianFeedback", JSON.stringify(log));
+function doFeedback(type){
+  document.getElementById('fbUp').classList.remove('up-sel');
+  document.getElementById('fbDn').classList.remove('dn-sel');
+  if(type==='up') document.getElementById('fbUp').classList.add('up-sel');
+  else document.getElementById('fbDn').classList.add('dn-sel');
+  document.getElementById('fbThanks').style.display='block';
+  var log=JSON.parse(localStorage.getItem('gFeedback')||'[]');
+  log.push({type:type,score:st.score,flag:st.flag,ts:new Date().toISOString()});
+  localStorage.setItem('gFeedback',JSON.stringify(log));
 }
 
-function logSent(choice) {
-  var msgs = { yes:"\u2705 Logged — well done.", no:"\uD83D\uDCDD Noted — send when ready.", different:"\uD83D\uDCDD Logged — try the coached version next time." };
-  document.getElementById("sentCard").innerHTML = "<div style=\"font-size:13px;color:var(--muted-hi);padding:4px 0;\">" + msgs[choice] + "</div>";
-  toast(choice==="yes" ? "\u2705 Sent and logged" : "\uD83D\uDCDD Logged");
+function logSent(choice){
+  var msgs={yes:'✅ Logged — well done.',no:'📝 Noted — send when ready.',different:'📝 Logged — try the coached version next time.'};
+  document.getElementById('sentCard').innerHTML='<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">'+msgs[choice]+'</div>';
+  toast(choice==='yes'?'✅ Sent and logged':'📝 Logged');
 }
-
-// ── INIT QA SUGGESTIONS ──
-document.getElementById("stepQA").addEventListener("animationend", function(){
-  if (document.getElementById("stepQA").classList.contains("active")) {
-    showQASuggestions();
-  }
-});
 </script>
 </body>
 </html>
