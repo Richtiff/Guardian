@@ -889,7 +889,8 @@ async function buildSummary() {
   load('Building your case profile...','Almost ready');
   var ctx=getCTX();
   try {
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:ctx+'\n\nBased on above, produce a case summary. Return ONLY JSON:\n{"overview":"<2-3 sentence plain English overview>","keyFacts":["<fact1>","<fact2>","<fact3>"]}'})})});
+    var summaryPrompt = ctx + '\n\nBased on the above case context, produce a plain English case summary. Return ONLY valid JSON with these exact keys: overview (2-3 sentence overview as a string) and keyFacts (array of 3 strings). No other text.';
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:summaryPrompt}]})});
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed=null;
