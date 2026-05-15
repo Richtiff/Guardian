@@ -73,7 +73,11 @@ html, body { background: var(--bg); color: var(--white); font-family: 'Inter', s
 .type-confirm { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, var(--blue)); border: none; color: #fff; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
 
 /* RED FLAG */
-.flag-card { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+.flag-card { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; font-weight: 600; flex-direction: row; }
+.flag-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.flag-text { display: flex; flex-direction: column; gap: 3px; }
+.flag-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800; }
+.flag-desc { font-size: 12px; font-weight: 400; opacity: 0.85; line-height: 1.4; }
 .flag-red { background: var(--red-dim); border: 1.5px solid rgba(239,68,68,0.25); color: var(--red); }
 .flag-amber { background: var(--amber-dim); border: 1.5px solid rgba(245,158,11,0.25); color: var(--amber); }
 .flag-green { background: var(--green-dim); border: 1.5px solid rgba(34,201,122,0.25); color: var(--green); }
@@ -732,7 +736,7 @@ function proceedToQuestion(parsed) {
       green: { icon: '🟢', label: 'Routine message — keep it brief' }
     };
     var fl = flagLabels[state.flag] || flagLabels['green'];
-    flagBanner.innerHTML = '<div class="flag-card ' + cls + '">' + fl.icon + ' <strong>' + fl.label + '</strong> &nbsp;·&nbsp; ' + state.flagText + '</div>';
+    flagBanner.innerHTML = '<div class="flag-card ' + cls + '"><span class="flag-icon">' + fl.icon + '</span><div class="flag-text"><div class="flag-title">' + fl.label + '</div><div class="flag-desc">' + state.flagText + '</div></div></div>';
   }
 
   if (parsed && parsed.question) {
