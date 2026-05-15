@@ -289,6 +289,13 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .back-home { width:100%; padding:13px; background:transparent; border:1.5px solid var(--border); border-radius:12px; color:var(--muted-hi); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:8px; }
 .floating-back { position:fixed; bottom:24px; left:16px; width:48px; height:48px; border-radius:50%; background:var(--card); border:1.5px solid var(--border); color:var(--white); font-size:20px; cursor:pointer; display:none; align-items:center; justify-content:center; z-index:50; box-shadow:0 4px 16px rgba(0,0,0,0.4); }
 .floating-back.show { display:flex; }
+.upsell-toast { position:fixed; bottom:90px; left:16px; right:16px; max-width:448px; margin:0 auto; background:linear-gradient(135deg,rgba(245,200,66,0.15),rgba(59,127,255,0.08)); border:1.5px solid rgba(245,200,66,0.3); border-radius:16px; padding:16px; z-index:60; display:none; animation:fadeUp 0.3s ease; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+.upsell-toast.show { display:block; }
+.upsell-msg { font-size:13px; color:var(--white); line-height:1.6; margin-bottom:12px; }
+.upsell-msg strong { color:var(--gold); }
+.upsell-row { display:flex; gap:8px; }
+.upsell-cta { flex:1; padding:10px; background:linear-gradient(135deg,#c9a030,var(--gold)); border:none; border-radius:10px; color:#0a0800; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.upsell-dismiss { padding:10px 14px; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--muted); font-size:12px; cursor:pointer; }
 .timeline-item { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
 .timeline-item:last-child { border-bottom:none; }
 .timeline-dot-col { display:flex; flex-direction:column; align-items:center; gap:0; flex-shrink:0; padding-top:3px; }
@@ -845,6 +852,15 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 
 </div><!-- end .app -->
 
+<!-- UPSELL TOAST -->
+<div class="upsell-toast" id="upsellToast">
+  <div class="upsell-msg" id="upsellMsg"></div>
+  <div class="upsell-row">
+    <button class="upsell-cta" onclick="goUpsell()">Keep Guardian protecting me →</button>
+    <button class="upsell-dismiss" onclick="dismissUpsell()">Not now</button>
+  </div>
+</div>
+
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -1209,6 +1225,7 @@ function showHome() {
     strip.style.display='block';
   }
   go('sHome');
+  checkSevenDayUpsell();
 }
 
 function goQA() {
@@ -1322,19 +1339,26 @@ async function sendQA() {
     document.getElementById('qaMsgs').appendChild(msgDiv);
     scrollQA();
 
-    // Line by line reveal for speed illusion
-    msgDiv.innerHTML='<div class="qa-guardian-name">GUARDIAN</div><div class="qa-msg-text" id="qaStream"></div>';
-    var streamEl = document.getElementById('qaStream');
+    // Line by line reveal
+    var nameDiv = document.createElement('div');
+    nameDiv.className = 'qa-guardian-name';
+    nameDiv.textContent = 'GUARDIAN';
+    var textDiv = document.createElement('div');
+    textDiv.className = 'qa-msg-text';
+    msgDiv.appendChild(nameDiv);
+    msgDiv.appendChild(textDiv);
     var lines = fullReply.split('\n').filter(function(l){return l.trim().length>0;});
+    if (lines.length === 0) lines = [fullReply];
     for(var i=0;i<lines.length;i++){
-      await new Promise(function(r){setTimeout(r,120);});
-      var shown = lines.slice(0,i+1).join('\n');
-      streamEl.innerHTML = shown.replace(/\n/g,'<br><br>');
+      await new Promise(function(r){setTimeout(r,150);});
+      textDiv.innerHTML += (i > 0 ? '<br><br>' : '') + lines[i];
       scrollQA();
     }
 
     qaTyping=false;
     qaHistory.push({role:'assistant',content:fullReply});
+    // Upsell after deep conversation (4+ exchanges)
+    if (qaHistory.length >= 8) checkUpsellTriggers('deepqa');
     // Generate contextual follow-ups in background
     addFollowUps(msg, fullReply);
 
@@ -1444,7 +1468,14 @@ function addQAMsg(type,text) {
   var d=document.createElement('div');
   d.className='qa-msg '+(type==='user'?'qa-user':'qa-guardian');
   if(type==='guardian') {
-    d.innerHTML='<div class="qa-guardian-name">GUARDIAN</div><div class="qa-msg-text">'+text.replace(/\n/g,'<br>')+'</div>';
+    var nameEl = document.createElement('div');
+    nameEl.className = 'qa-guardian-name';
+    nameEl.textContent = 'GUARDIAN';
+    var textEl = document.createElement('div');
+    textEl.className = 'qa-msg-text';
+    textEl.innerHTML = text.replace(/\n/g,'<br>');
+    d.appendChild(nameEl);
+    d.appendChild(textEl);
   } else {
     d.textContent=text;
   }
@@ -1456,15 +1487,20 @@ function addQAGuardianMsg(text) {
   var c=document.getElementById('qaMsgs');
   var d=document.createElement('div');
   d.className='qa-msg qa-guardian';
-  // Animate line by line
-  d.innerHTML='<div class="qa-guardian-name">GUARDIAN</div><div class="qa-msg-text"></div>';
+  var nameEl = document.createElement('div');
+  nameEl.className = 'qa-guardian-name';
+  nameEl.textContent = 'GUARDIAN';
+  var textEl = document.createElement('div');
+  textEl.className = 'qa-msg-text';
+  d.appendChild(nameEl);
+  d.appendChild(textEl);
   c.appendChild(d); scrollQA();
-  var textEl = d.querySelector('.qa-msg-text');
   var lines = text.split('\n').filter(function(l){return l.trim().length>0;});
+  if (lines.length === 0) lines = [text];
   (async function(){
     for(var i=0;i<lines.length;i++){
-      await new Promise(function(r){setTimeout(r,100);});
-      textEl.innerHTML = lines.slice(0,i+1).join('\n').replace(/\n/g,'<br><br>');
+      await new Promise(function(r){setTimeout(r,120);});
+      textEl.innerHTML += (i > 0 ? '<br><br>' : '') + lines[i];
       scrollQA();
     }
   })();
@@ -1671,6 +1707,12 @@ async function _gen(ctx) {
       checks++; localStorage.setItem('gChecks',checks);
       msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
       localStorage.setItem('gLog',JSON.stringify(msgLog));
+      // Upsell triggers
+      if (checks === 3) checkUpsellTriggers('check3');
+      if (checks === 5) checkUpsellTriggers('check5');
+      // Pattern upsell - if 3+ red flags in last 10 messages
+      var recentRed = msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
+      if (recentRed >= 3) checkUpsellTriggers('pattern');
       var badge=document.getElementById('scoreBadge');
       if(p.score>=8){badge.textContent='✅ Safe to send';badge.className='score-badge sc-safe';}
       else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
@@ -1770,6 +1812,67 @@ function doFeedback(type){
   localStorage.setItem('gFeedback',JSON.stringify(log));
 }
 
+// ── UPSELL SYSTEM ──
+var upsellShownThisSession = false;
+var upsellDismissed = JSON.parse(localStorage.getItem('gUpsellDismissed') || '{}');
+
+function showUpsell(context) {
+  // Never show if paid
+  if (localStorage.getItem('gPaid') === 'true') return;
+  // Only once per session
+  if (upsellShownThisSession) return;
+  // Don't show if dismissed in last 3 days
+  var lastDismissed = upsellDismissed[context];
+  if (lastDismissed && (Date.now() - lastDismissed) < 3 * 24 * 60 * 60 * 1000) return;
+
+  var messages = {
+    check3: "<strong>Guardian has helped you through 3 messages.</strong> It knows your case, it spots the patterns, and it has your back. Keep it working for you — unlimited coaching for less than one call to a solicitor.",
+    check5: "<strong>You have used your 5 free checks.</strong> Your case is still live. Guardian has been learning your situation. Do not face the next message without it.",
+    deepqa: "<strong>You have been asking exactly the right questions.</strong> Guardian knows your case well now. Keep that knowledge working for you — and get unlimited message coaching on top.",
+    document: "<strong>Guardian has read your documents.</strong> Every message reply is now built on what is in your case file. Unlock unlimited coaching to use it fully.",
+    pattern: "<strong>Guardian has spotted a pattern in the messages.</strong> This has happened before. Unlimited coaching means Guardian keeps watching so you do not have to.",
+    sevendays: "<strong>Guardian has been with you through this.</strong> Your case does not stop. Neither should your protection. £9.99 a month — less than one call to a solicitor."
+  };
+
+  var msg = messages[context] || messages.check3;
+  document.getElementById('upsellMsg').innerHTML = msg;
+  document.getElementById('upsellToast').classList.add('show');
+  upsellShownThisSession = true;
+
+  // Auto dismiss after 12 seconds
+  setTimeout(function() { dismissUpsell(); }, 12000);
+}
+
+function dismissUpsell() {
+  document.getElementById('upsellToast').classList.remove('show');
+  // Remember which context was dismissed and when
+  var activeContext = document.getElementById('upsellToast').dataset.context || 'check3';
+  upsellDismissed[activeContext] = Date.now();
+  localStorage.setItem('gUpsellDismissed', JSON.stringify(upsellDismissed));
+}
+
+function goUpsell() {
+  dismissUpsell();
+  go('sPaywall');
+}
+
+function checkUpsellTriggers(context) {
+  if (localStorage.getItem('gPaid') === 'true') return;
+  document.getElementById('upsellToast').dataset = document.getElementById('upsellToast').dataset || {};
+  document.getElementById('upsellToast').setAttribute('data-context', context);
+  // Delay slightly so it appears after the main action completes
+  setTimeout(function() { showUpsell(context); }, 1500);
+}
+
+// Check 7-day trigger on home screen load
+function checkSevenDayUpsell() {
+  if (localStorage.getItem('gPaid') === 'true') return;
+  var firstUse = localStorage.getItem('gFirstUse');
+  if (!firstUse) { localStorage.setItem('gFirstUse', Date.now()); return; }
+  var daysSince = (Date.now() - parseInt(firstUse)) / (1000 * 60 * 60 * 24);
+  if (daysSince >= 7) { setTimeout(function(){ showUpsell('sevendays'); }, 2000); }
+}
+
 function logSent(choice){
   var msgs={yes:'✅ Logged — well done.',no:'📝 Noted — send when ready.',different:'📝 Logged — try the coached version next time.'};
   document.getElementById('sentCard').innerHTML='<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">'+msgs[choice]+'</div>';
@@ -1865,6 +1968,7 @@ async function addDoc(event, docType) {
   document.getElementById('docsProcessing').style.display = 'none';
   renderTimeline();
   toast('✅ Document added to your timeline');
+  checkUpsellTriggers('document');
 }
 
 // EDIT PROFILE
