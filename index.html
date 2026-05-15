@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#080d14">
 <title>Guardian — Case Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -127,14 +131,14 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .qa-msg { max-width:85%; font-size:14px; line-height:1.6; padding:12px 14px; border-radius:14px; }
 .qa-user { align-self:flex-end; background:var(--blue-dim); border:1px solid rgba(59,127,255,0.2); border-radius:14px 14px 4px 14px; }
 .qa-guardian { align-self:flex-start; background:var(--card); border:1.5px solid var(--border); border-radius:4px 14px 14px 14px; color:var(--muted-hi); }
-.qa-row { display:flex; gap:8px; }
-.qa-input { flex:1; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:12px 14px; outline:none; }
+.qa-row { display:flex; gap:6px; align-items:center; }
+.qa-input { flex:1; min-width:0; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:11px 12px; outline:none; }
 .qa-input:focus { border-color:rgba(59,127,255,0.4); }
-.qa-input::placeholder { color:var(--muted); }
-.qa-send { width:46px; height:46px; border-radius:12px; background:var(--blue); border:none; color:white; font-size:20px; cursor:pointer; flex-shrink:0; }
-.qa-mic { width:46px; height:46px; border-radius:12px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:20px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.qa-input::placeholder { color:var(--muted); font-size:13px; }
+.qa-send { width:42px; height:42px; border-radius:10px; background:var(--blue); border:none; color:white; font-size:18px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.qa-mic { width:42px; height:42px; border-radius:10px; background:var(--red-dim); border:1.5px solid rgba(239,68,68,0.3); color:var(--red); font-size:18px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
 .qa-mic.rec { background:var(--red); color:white; animation:pulse 1s infinite; }
-.qa-clip { width:46px; height:46px; border-radius:12px; background:var(--card); border:1.5px solid var(--border); color:var(--muted-hi); font-size:20px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.qa-clip { width:42px; height:42px; border-radius:10px; background:var(--card); border:1.5px solid var(--border); color:var(--muted-hi); font-size:18px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
 .qa-clip input { position:absolute; inset:0; opacity:0; cursor:pointer; font-size:0; }
 .qa-clip:hover { border-color:rgba(255,255,255,0.2); color:var(--white); }
 .qa-attach-preview { background:var(--blue-dim); border:1px solid rgba(59,127,255,0.2); border-radius:8px; padding:8px 12px; margin-bottom:8px; font-size:12px; color:var(--blue); display:none; align-items:center; justify-content:space-between; gap:8px; }
@@ -147,6 +151,12 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .qa-typing span { width:7px; height:7px; border-radius:50%; background:var(--muted-hi); display:inline-block; animation:pulse 1s infinite; }
 .qa-typing span:nth-child(2) { animation-delay:0.2s; }
 .qa-typing span:nth-child(3) { animation-delay:0.4s; }
+.upsell-card { background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(59,127,255,0.06)); border:1.5px solid rgba(245,200,66,0.25); border-radius:14px; padding:14px 16px; margin-top:4px; }
+.upsell-tag { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+.upsell-title { font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; color:var(--white); margin-bottom:6px; line-height:1.4; }
+.upsell-text { font-size:12px; color:var(--muted-hi); line-height:1.6; margin-bottom:12px; }
+.upsell-btn { width:100%; padding:11px; background:linear-gradient(135deg,#c9a030,var(--gold)); border:none; border-radius:10px; color:#0a0800; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.upsell-dismiss { width:100%; padding:8px; background:transparent; border:none; color:var(--muted); font-size:11px; cursor:pointer; margin-top:6px; }
 
 /* MESSAGE COACH */
 .their-bubble { background:var(--amber-dim); border:1.5px solid rgba(245,158,11,0.2); border-radius:14px; padding:14px; margin-bottom:14px; }
@@ -278,8 +288,8 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .section-sub { font-size:12px; color:var(--muted-hi); }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
-.overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; }
-.overlay.show { display:flex; }
+.overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
+.overlay.show { display:flex; pointer-events:all; }
 .overlay-text { font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; margin-top:16px; }
 .overlay-sub { font-size:12px; color:var(--muted-hi); margin-top:5px; }
 </style>
@@ -343,12 +353,12 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="field-group">
     <label class="field-label">CASE TYPE</label>
     <div class="opts" id="caseTypeOpts">
-      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','No court yet')">No court proceedings yet</button>
-      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C100')">Active C100 — child arrangements</button>
-      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C79')">C79 — enforcing an existing order</button>
-      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Non-mol order')">Non-molestation order involved</button>
-      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Post order')">Order in place — post proceedings</button>
-      <button class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Back in court')">Back in court — variation application</button>
+      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','No court yet')">No court proceedings yet</button>
+      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C100')">Active C100 — child arrangements</button>
+      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C79')">C79 — enforcing an existing order</button>
+      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Non-mol order')">Non-molestation order involved</button>
+      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Post order')">Order in place — post proceedings</button>
+      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Back in court')">Back in court — variation application</button>
     </div>
   </div>
   <div class="field-group" style="margin-top:16px;">
@@ -388,11 +398,11 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="field-group">
     <label class="field-label">HOW WOULD YOU DESCRIBE THEIR COMMUNICATION STYLE?</label>
     <div class="opts" id="commOpts">
-      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Aggressive and hostile')">Aggressive and hostile</button>
-      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Manipulative and calculated')">Manipulative and calculated</button>
-      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses welfare claims as a weapon')">Uses welfare claims as a weapon</button>
-      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses the children to communicate')">Uses the children to communicate</button>
-      <button class="opt" onclick="pickOpt('commOpts',this,'commStyle','Mostly civil with occasional flare-ups')">Mostly civil with occasional flare-ups</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Aggressive and hostile')">Aggressive and hostile</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Manipulative and calculated')">Manipulative and calculated</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses welfare claims as a weapon')">Uses welfare claims as a weapon</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses the children to communicate')">Uses the children to communicate</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Mostly civil with occasional flare-ups')">Mostly civil with occasional flare-ups</button>
     </div>
   </div>
   <button type="button" class="btn-gold" onclick="saveP3()" style="margin-top:8px;">Next →</button>
@@ -429,7 +439,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="upload-section">
     <div class="upload-section-title">OR JUST TELL US YOUR CASE</div>
     <div class="voice-box">
-      <button class="voice-box-mic" id="obMicBtn" onclick="toggleObVoice()">🎤</button>
+      <button type="button" class="voice-box-mic" id="obMicBtn" onclick="toggleObVoice()">🎤</button>
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Speak your case in your own words</div>
         <div style="font-size:11px;color:var(--muted-hi);margin-bottom:8px;">What happened, how long, what you're dealing with. Guardian listens.</div>
@@ -481,12 +491,12 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     <div class="trial-count" id="trialCount">5</div>
   </div>
   <div class="home-grid">
-    <button class="home-btn home-btn-gold" onclick="go('sCoach')">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sCoach')">
       <div class="home-btn-icon">💬</div>
       <div class="home-btn-label">Message Coach</div>
       <div class="home-btn-sub">Check a message</div>
     </button>
-    <button class="home-btn home-btn-card" onclick="goQA()">
+    <button type="button" class="home-btn home-btn-card" onclick="goQA()">
       <div class="home-btn-icon">🤖</div>
       <div class="home-btn-label">Ask Guardian</div>
       <div class="home-btn-sub">Free — ask anything</div>
@@ -515,41 +525,41 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     </div>
     <button type="button" class="btn-gold">Keep Guardian protecting me</button>
   </div>
-  <button type="button" class="btn-ghost" onclick="go('sHome')">Back to home</button>
+  <button type="button" class="btn-ghost" onclick="goBack()">Back to home</button>
 </div>
 
 <!-- QA -->
 <div class="step" id="sQA">
   <div class="section-header">
-    <button class="back-btn" onclick="go('sHome')">←</button>
+    <button type="button" class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Ask Guardian</div><div class="section-sub">Free — ask anything about your case</div></div>
   </div>
   <div class="qa-suggestions" id="qaSugs"></div>
-  <div class="qa-msgs" id="qaMsgs"></div>
+  <div class="qa-msgs" id="qaMsgs" style="padding-bottom:8px;"></div>
   <div class="qa-attach-preview" id="qaAttachPreview">
     <span class="qa-attach-name" id="qaAttachName"></span>
     <span class="qa-attach-remove" onclick="removeAttach()">✕</span>
   </div>
-  <div class="qa-row">
-    <button class="qa-mic" id="qaMic" onclick="toggleQAVoice()">🎤</button>
+  <div class="qa-row" style="position:sticky;bottom:16px;background:var(--bg);padding:8px 0 4px;">
+    <button type="button" class="qa-mic" id="qaMic" onclick="toggleQAVoice()">🎤</button>
     <label class="qa-clip" title="Attach a document or screenshot">
       📎
       <input type="file" accept="image/*,.pdf,.txt" onchange="handleQAAttach(event)">
     </label>
-    <input class="qa-input" id="qaIn" type="text" placeholder="Ask anything — or attach a document..." onkeydown="if(event.key==='Enter')sendQA()">
-    <button class="qa-send" onclick="sendQA()">→</button>
+    <input class="qa-input" id="qaIn" type="text" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendQA()">
+    <button type="button" class="qa-send" onclick="sendQA()">→</button>
   </div>
 </div>
 
 <!-- COACH HOME -->
 <div class="step" id="sCoach">
   <div class="section-header">
-    <button class="back-btn" onclick="go('sHome')">←</button>
+    <button type="button" class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Message Coach</div><div class="section-sub">Every reply coached and court-ready</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-    <button class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">📩</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
-    <button class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">✏️</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
+    <button type="button" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">📩</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
+    <button type="button" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">✏️</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
   </div>
   <div id="inPanel" style="display:none;">
     <div class="msg-upload-grid">
@@ -585,7 +595,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     <div class="cooldown-title">⚠️ Take a breath first</div>
     <div class="cooldown-sub">This message looks designed to provoke a reaction. Replying immediately is rarely the right move.</div>
     <div class="cooldown-timer" id="coolTimer">2:00</div>
-    <button class="cooldown-skip" onclick="skipCool()">I am ready to reply now</button>
+    <button type="button" class="cooldown-skip" onclick="skipCool()">I am ready to reply now</button>
   </div>
 </div>
 
@@ -599,11 +609,11 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     <div class="q-opts" id="qOpts"></div>
     <div class="honest-note" id="honestNote" style="display:none;">The more honest you are with me, the better I can protect you.</div>
     <div class="voice-row" id="voiceRow" style="display:none;">
-      <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
+      <button type="button" class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤</button>
       <textarea class="detail-input" id="detailIn" rows="4" placeholder="Tell me what actually happened — time, what you did, how the kids were. Tap mic or type. Tap stop when done."></textarea>
     </div>
-    <button class="continue-btn" id="continueBtn" onclick="genReply()">Help me reply →</button>
-    <button class="skip-btn" onclick="genReplyDirect()">Skip — just give me something safe to say</button>
+    <button type="button" class="continue-btn" id="continueBtn" onclick="genReply()">Help me reply →</button>
+    <button type="button" class="skip-btn" onclick="genReplyDirect()">Skip — just give me something safe to say</button>
   </div>
 </div>
 
@@ -612,9 +622,9 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="need-to-send">
     <div class="need-lbl">Do you need to send this?</div>
     <div class="need-opts">
-      <button class="need-opt" onclick="outYes()">Yes — there is a specific reason I need to send this</button>
-      <button class="need-opt" onclick="outCheckin()">I just want to check in</button>
-      <button class="need-opt" onclick="outNotSure()">Not sure</button>
+      <button type="button" class="need-opt" onclick="outYes()">Yes — there is a specific reason I need to send this</button>
+      <button type="button" class="need-opt" onclick="outCheckin()">I just want to check in</button>
+      <button type="button" class="need-opt" onclick="outNotSure()">Not sure</button>
     </div>
   </div>
 </div>
@@ -624,9 +634,9 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="silence-card">
     <div class="silence-title">Silence is sometimes the strongest reply</div>
     <div class="silence-text">Checking in without a specific reason can open the door to conflict. Unless there is a health concern or something urgent — waiting until your next contact is often the stronger position.</div>
-    <button class="silence-proceed" onclick="outProceed()">I still want to send something →</button>
+    <button type="button" class="silence-proceed" onclick="outProceed()">I still want to send something →</button>
   </div>
-  <button class="back-home" onclick="go('sHome')">← Back to home</button>
+  <button type="button" class="back-home" onclick="goBack()">← Back to home</button>
 </div>
 
 <!-- REPLY -->
@@ -637,7 +647,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
       <div class="nuclear-title">⚠️ Do not send this yet</div>
       <div class="nuclear-text">This reply could make things worse. Here is why:</div>
       <div class="nuclear-reasons" id="nuclearReasons"></div>
-      <div class="nuclear-row"><button class="nuclear-fix" onclick="fixReply()">Fix it for me</button><button class="nuclear-skip" onclick="showAnyway()">Show it anyway</button></div>
+      <div class="nuclear-row"><button type="button" class="nuclear-fix" onclick="fixReply()">Fix it for me</button><button type="button" class="nuclear-skip" onclick="showAnyway()">Show it anyway</button></div>
     </div>
   </div>
   <div id="replyContent" style="display:none;">
@@ -652,16 +662,16 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
       <div class="refine-section">
         <div class="refine-lbl">How does this feel?</div>
         <div class="refine-row">
-          <button class="refine-btn" onclick="refine('formal')">Too formal</button>
-          <button class="refine-btn" onclick="refine('harsh')">Too harsh</button>
-          <button class="refine-btn" onclick="refine('different')">Say something different</button>
-          <button class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
+          <button type="button" class="refine-btn" onclick="refine('formal')">Too formal</button>
+          <button type="button" class="refine-btn" onclick="refine('harsh')">Too harsh</button>
+          <button type="button" class="refine-btn" onclick="refine('different')">Say something different</button>
+          <button type="button" class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
         </div>
       </div>
       <div class="feedback-row">
         <span class="feedback-lbl">Was this helpful?</span>
-        <button class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
-        <button class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
+        <button type="button" class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
+        <button type="button" class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
       </div>
       <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
     </div>
@@ -682,18 +692,18 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="edit-card">
     <div class="edit-lbl">Edit to sound more like you — then re-score</div>
     <textarea class="edit-textarea" id="editIn" placeholder="Change any words to make it sound like you..."></textarea>
-    <button class="rescore-btn" onclick="rescoreReply()">Re-score my version →</button>
+    <button type="button" class="rescore-btn" onclick="rescoreReply()">Re-score my version →</button>
     <div class="rescore-result" id="rescoreResult"></div>
   </div>
   <div class="sent-card" id="sentCard">
     <div class="sent-lbl">Did you send it?</div>
     <div class="sent-row">
-      <button class="sent-btn sent-yes" onclick="logSent('yes')">✓ Yes, sent it</button>
-      <button class="sent-btn sent-no" onclick="logSent('no')">Not yet — will send later</button>
-      <button class="sent-btn" onclick="logSent('different')">Sent something different</button>
+      <button type="button" class="sent-btn sent-yes" onclick="logSent('yes')">✓ Yes, sent it</button>
+      <button type="button" class="sent-btn sent-no" onclick="logSent('no')">Not yet — will send later</button>
+      <button type="button" class="sent-btn" onclick="logSent('different')">Sent something different</button>
     </div>
   </div>
-  <button class="back-home" onclick="go('sCoach')">← Check another message</button>
+  <button type="button" class="back-home" onclick="go('sCoach')">← Check another message</button>
 </div>
 </div>
 
@@ -745,6 +755,18 @@ function getCTX() {
 }
 
 window.onload = function() {
+  // Safety — always hide overlay on load
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('overlay').style.display = 'none';
+
+  // Android PWA back button support
+  window.addEventListener('popstate', function(e) {
+    goBack();
+  });
+
+  // Push initial state so back button has something to intercept
+  history.pushState({step:'init'}, '');
+
   if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
 };
 
@@ -795,9 +817,15 @@ window.addEventListener('popstate', function(e) {
 function load(text, sub) {
   document.getElementById('overlayText').textContent = text||'Working...';
   document.getElementById('overlaySub').textContent = sub||'';
-  document.getElementById('overlay').classList.add('show');
+  var el = document.getElementById('overlay');
+  el.style.display = 'flex';
+  el.classList.add('show');
 }
-function unload() { document.getElementById('overlay').classList.remove('show'); }
+function unload() { 
+  var el = document.getElementById('overlay');
+  el.classList.remove('show'); 
+  el.style.display = 'none';
+}
 function toast(msg) {
   var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
   setTimeout(function(){el.classList.remove('show');},2800);
@@ -995,7 +1023,8 @@ function showHome() {
   var g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
   var n=profile&&profile.myName?', '+profile.myName:'';
   document.getElementById('homeName').textContent=g+n;
-  document.getElementById('homeStatus').textContent=profile&&profile.childName?'Protecting '+profile.childName.split(',')[0]:'Your case is loaded';
+  var childDisplay = profile && profile.childName ? profile.childName.split(',')[0].trim() : '';
+  document.getElementById('homeStatus').textContent = childDisplay ? 'Protecting ' + childDisplay : 'Your case is loaded';
   if(profile&&profile.conflict){
     var lv=parseInt(profile.conflict);
     var pct=(lv/10)*100;
@@ -1088,70 +1117,47 @@ async function sendQA() {
   qaHistory[qaHistory.length-1].content = msgContent;
 
   try {
-    // Use streaming via fetch
     var res=await fetch(API,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-6',
         max_tokens:800,
-        stream:true,
         system:sys,
         messages:qaHistory.slice(-10)
       })
     });
 
+    var data=await res.json();
+    var fullReply=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+
     // Remove typing indicator
     var te=document.getElementById('qaTyp'); if(te) te.remove();
 
-    // Create streaming message div
+    // Create message div and animate text appearance word by word
     var msgDiv=document.createElement('div');
     msgDiv.className='qa-msg qa-guardian';
     document.getElementById('qaMsgs').appendChild(msgDiv);
     scrollQA();
 
-    var fullReply='';
-
-    if(res.headers.get('content-type')&&res.headers.get('content-type').includes('text/event-stream')) {
-      // True streaming
-      var reader=res.body.getReader();
-      var decoder=new TextDecoder();
-      while(true){
-        var chunk=await reader.read();
-        if(chunk.done) break;
-        var text=decoder.decode(chunk.value);
-        var lines=text.split('\n');
-        for(var i=0;i<lines.length;i++){
-          var line=lines[i].trim();
-          if(line.startsWith('data: ')){
-            var data=line.slice(6);
-            if(data==='[DONE]') break;
-            try{
-              var parsed=JSON.parse(data);
-              var delta=parsed.delta&&parsed.delta.text?parsed.delta.text:'';
-              if(delta){fullReply+=delta;msgDiv.textContent=fullReply;scrollQA();}
-            }catch(e){}
-          }
-        }
-      }
-    } else {
-      // Fallback non-streaming
-      var data=await res.json();
-      fullReply=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
-      // Simulate streaming by typing out the response
-      msgDiv.textContent='';
-      for(var i=0;i<fullReply.length;i++){
-        await new Promise(function(r){setTimeout(r,8);});
-        msgDiv.textContent=fullReply.substring(0,i+1);
-        if(i%10===0) scrollQA();
-      }
+    // Word by word reveal for natural feel
+    var words=fullReply.split(' ');
+    var shown='';
+    for(var i=0;i<words.length;i++){
+      shown+=(i>0?' ':'')+words[i];
+      msgDiv.textContent=shown;
+      if(i%3===0) scrollQA();
+      await new Promise(function(r){setTimeout(r,30);});
     }
 
     qaTyping=false;
     qaHistory.push({role:'assistant',content:fullReply});
 
-    // Generate follow-up suggestions
-    await addFollowUps(msg, fullReply);
+    // Generate follow-up suggestions in background (no await = non-blocking)
+    addFollowUps(msg, fullReply);
+
+    // Check for upsell trigger
+    checkUpsell(msg, fullReply);
 
   } catch(e) {
     var te=document.getElementById('qaTyp'); if(te) te.remove();
@@ -1160,12 +1166,70 @@ async function sendQA() {
   }
 }
 
+function checkUpsell(question, answer) {
+  // Don't show if already on paid or profile complete with docs
+  if (localStorage.getItem('gPaid') === 'true') return;
+  var combined = (question + ' ' + answer).toLowerCase();
+  var triggers = [
+    { keywords: ['without notice', 'ex parte', 'non-mol', 'non molestation', 'injunction'],
+      title: 'A without notice hearing is serious — Guardian can help you prepare',
+      text: 'With your case loaded, Guardian can walk you through exactly what happens at a without notice hearing, what the judge needs to hear from you, and help you draft what to say.' },
+    { keywords: ['c100', 'first hearing', 'fact finding', 'fact-finding'],
+      title: 'Guardian can help you prepare for this hearing',
+      text: 'Upload your documents and Guardian will read your full case history — then help you understand what the judge is looking at and what your strongest points are.' },
+    { keywords: ['cafcass', 'safeguarding letter', 'section 7', 'welfare report'],
+      title: 'Guardian can explain exactly what Cafcass will do next',
+      text: 'With your case profile loaded, Guardian gives you a personalised breakdown of what Cafcass found, what it means for your case, and how to respond.' },
+    { keywords: ['breach', 'enforcement', 'c79', 'not following the order', 'breaking the order'],
+      title: 'Guardian can help you enforce your order',
+      text: 'Upload your order and Guardian will identify exactly what has been breached, what evidence you need, and what to do next.' },
+    { keywords: ['supervised contact', 'contact centre', 'indirect contact'],
+      title: 'Guardian knows how to challenge contact restrictions',
+      text: 'With your full case loaded Guardian can help you build the strongest case for changing contact arrangements.' },
+    { keywords: ['position statement', 'witness statement', 'statement for court'],
+      title: 'Guardian can help you write your statement',
+      text: "The most powerful Guardian feature. With your full case history loaded, it helps you draft a court-ready position statement addressing every allegation." }
+  ];
+  var matched = null;
+  for (var i = 0; i < triggers.length; i++) {
+    var t = triggers[i];
+    for (var j = 0; j < t.keywords.length; j++) {
+      if (combined.indexOf(t.keywords[j]) !== -1) { matched = t; break; }
+    }
+    if (matched) break;
+  }
+  if (!matched) return;
+  // Check if profile is complete — if so suggest upgrading to paid
+  var isSetup = profile && profile.complete;
+  var container = document.getElementById('qaMsgs');
+  var card = document.createElement('div');
+  card.className = 'upsell-card';
+  card.innerHTML =
+    '<div class="upsell-tag">⭐ Case Companion</div>' +
+    '<div class="upsell-title">' + matched.title + '</div>' +
+    '<div class="upsell-text">' + matched.text + '</div>' +
+    '<button class="upsell-btn" onclick="triggerUpsell()">' +
+      (isSetup ? "Unlock the full Case Companion — £9.99/month" : "Set up your case — free to start") +
+    '</button>' +
+    '<button class="upsell-dismiss" onclick="this.parentElement.remove()">Not right now</button>';
+  container.appendChild(card);
+  scrollQA();
+}
+
+function triggerUpsell() {
+  if (profile && profile.complete) {
+    go('sPaywall');
+  } else {
+    go('sProfile1');
+  }
+}
+
 async function addFollowUps(question, answer) {
   try {
     var ctx=getCTX();
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       model:'claude-haiku-4-5-20251001',
-      max_tokens:200,
+      max_tokens:120,
       messages:[{role:'user',content:ctx+'\n\nParent just asked: "'+question+'"\nGuardian answered about: '+answer.substring(0,200)+'\n\nGenerate 3 short follow-up questions the parent would naturally want to ask next. Questions should go deeper or explore a related angle. Each under 8 words. Return ONLY JSON array: ["<q1>","<q2>","<q3>"]'}]
     })});
     var data=await res.json();
