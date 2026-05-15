@@ -287,8 +287,11 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 <body>
 <div class="app">
 <div class="header">
-  <div class="logo">Guard<span>ian</span></div>
-  <div class="badge">CASE COMPANION</div>
+  <div class="logo" onclick="goHome()" style="cursor:pointer;">Guard<span>ian</span></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button id="homeBtn" onclick="goHome()" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--muted-hi);font-size:12px;font-weight:600;padding:7px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;">🏠 Home</button>
+    <div class="badge">CASE COMPANION</div>
+  </div>
 </div>
 
 <!-- WELCOME -->
@@ -750,6 +753,16 @@ var ALL_STEPS = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sPr
 var stepHistory = [];
 var navLock = false;
 
+var SETUP_SCREENS = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary'];
+
+function goHome() {
+  if (profile && profile.complete) {
+    go('sHome');
+  } else {
+    go('sWelcome');
+  }
+}
+
 function go(id) {
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
@@ -759,6 +772,12 @@ function go(id) {
   history.pushState({step:id}, '', '');
   stepHistory.push(id);
   setTimeout(function(){ navLock = false; }, 100);
+  // Show home button on all screens except setup and home itself
+  var homeBtn = document.getElementById('homeBtn');
+  if (homeBtn) {
+    var hideOn = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
+    homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
+  }
 }
 
 // Intercept browser back button
