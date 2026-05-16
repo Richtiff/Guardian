@@ -10,6 +10,7 @@
 <title>Guardian — Case Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -137,6 +138,16 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .qa-followup-btn { padding:10px 14px; background:rgba(59,127,255,0.08); border:1.5px solid rgba(59,127,255,0.2); border-radius:12px; color:var(--blue); font-size:13px; cursor:pointer; text-align:left; transition:all 0.15s; }
 .qa-followup-btn:hover { background:rgba(59,127,255,0.15); border-color:rgba(59,127,255,0.4); }
 .qa-bottom { flex-shrink:0; padding-top:10px; border-top:1px solid var(--border); }
+.qa-confidence { display:flex; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; border-radius:8px; font-size:11px; line-height:1.4; }
+.conf-high { background:rgba(34,201,122,0.08); border:1px solid rgba(34,201,122,0.2); color:var(--green); }
+.conf-mid { background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); color:var(--amber); }
+.conf-low { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:var(--red); }
+.conf-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.conf-high .conf-dot { background:var(--green); }
+.conf-mid .conf-dot { background:var(--amber); }
+.conf-low .conf-dot { background:var(--red); }
+.conf-text { flex:1; }
+.conf-label { font-weight:700; font-family:'DM Sans',sans-serif; }
 .qa-row { display:flex; gap:6px; align-items:center; }
 .qa-input { flex:1; min-width:0; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:11px 12px; outline:none; }
 .qa-input:focus { border-color:rgba(59,127,255,0.4); }
@@ -179,6 +190,23 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .flag-green .flag-title { color:var(--green); }
 .flag-desc { font-size:12px; color:var(--muted-hi); line-height:1.4; }
 .q-card { background:var(--blue-dim); border:1.5px solid rgba(59,127,255,0.2); border-radius:16px; padding:18px; margin-bottom:14px; }
+.mode-selector { margin-bottom:16px; }
+.mode-selector-label { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:var(--muted-hi); letter-spacing:0.5px; margin-bottom:8px; }
+.mode-opts { display:flex; gap:7px; }
+.mode-opt { flex:1; padding:10px 8px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; cursor:pointer; text-align:center; transition:all 0.15s; }
+.mode-opt:hover { border-color:rgba(255,255,255,0.2); }
+.mode-opt.active { border-width:2px; }
+.mode-opt-icon { font-size:18px; margin-bottom:4px; }
+.mode-opt-label { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; line-height:1.3; }
+.mode-natural { }
+.mode-natural.active { border-color:var(--green); background:var(--green-dim); }
+.mode-natural.active .mode-opt-label { color:var(--green); }
+.mode-welfare { }
+.mode-welfare.active { border-color:var(--blue); background:var(--blue-dim); }
+.mode-welfare.active .mode-opt-label { color:var(--blue); }
+.mode-protective { }
+.mode-protective.active { border-color:var(--amber); background:var(--amber-dim); }
+.mode-protective.active .mode-opt-label { color:var(--amber); }
 .q-label { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--blue); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
 .q-text { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:700; line-height:1.5; margin-bottom:14px; }
 .q-opts { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
@@ -289,6 +317,20 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .back-home { width:100%; padding:13px; background:transparent; border:1.5px solid var(--border); border-radius:12px; color:var(--muted-hi); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; margin-top:8px; }
 .floating-back { position:fixed; bottom:24px; left:16px; width:48px; height:48px; border-radius:50%; background:var(--card); border:1.5px solid var(--border); color:var(--white); font-size:20px; cursor:pointer; display:none; align-items:center; justify-content:center; z-index:50; box-shadow:0 4px 16px rgba(0,0,0,0.4); }
 .floating-back.show { display:flex; }
+.auth-screen { text-align:center; padding:40px 0 20px; }
+.auth-icon { font-size:48px; margin-bottom:16px; }
+.auth-title { font-family:'DM Sans',sans-serif; font-size:24px; font-weight:800; margin-bottom:8px; }
+.auth-sub { font-size:14px; color:var(--muted-hi); line-height:1.6; margin-bottom:32px; max-width:280px; margin-left:auto; margin-right:auto; }
+.auth-form { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+.auth-input { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:15px; padding:14px 16px; outline:none; text-align:left; }
+.auth-input:focus { border-color:rgba(245,200,66,0.4); }
+.auth-input::placeholder { color:var(--muted); }
+.auth-error { font-size:13px; color:var(--red); text-align:center; padding:8px; background:var(--red-dim); border-radius:8px; display:none; }
+.auth-switch { font-size:13px; color:var(--muted-hi); text-align:center; margin-top:12px; }
+.auth-switch span { color:var(--gold); cursor:pointer; font-weight:600; }
+.auth-divider { display:flex; align-items:center; gap:12px; margin:16px 0; }
+.auth-divider::before,.auth-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+.auth-divider span { font-size:11px; color:var(--muted); }
 .upsell-toast { position:fixed; bottom:90px; left:16px; right:16px; max-width:448px; margin:0 auto; background:linear-gradient(135deg,rgba(245,200,66,0.15),rgba(59,127,255,0.08)); border:1.5px solid rgba(245,200,66,0.3); border-radius:16px; padding:16px; z-index:60; display:none; animation:fadeUp 0.3s ease; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
 .upsell-toast.show { display:block; }
 .upsell-msg { font-size:13px; color:var(--white); line-height:1.6; margin-bottom:12px; }
@@ -338,6 +380,54 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   </div>
 </div>
 
+<!-- LOGIN -->
+<div class="step" id="sLogin">
+  <div class="auth-screen">
+    <div class="auth-icon">🛡️</div>
+    <div class="auth-title">Welcome back</div>
+    <div class="auth-sub">Guardian remembers everything. Sign in to continue protecting your case.</div>
+  </div>
+  <div class="auth-form">
+    <input class="auth-input" type="email" id="loginEmail" placeholder="Your email address" autocomplete="email">
+    <input class="auth-input" type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+  </div>
+  <div class="auth-error" id="loginError"></div>
+  <button type="button" class="btn-gold" onclick="doLogin()" style="margin-top:4px;">Sign in →</button>
+  <div class="auth-divider"><span>or</span></div>
+  <button type="button" class="btn-ghost" onclick="go('sSignup')">Create an account</button>
+  <div class="auth-switch" style="margin-top:16px;"><span onclick="showForgotPassword()">Forgot your password?</span></div>
+</div>
+
+<!-- SIGNUP -->
+<div class="step" id="sSignup">
+  <div class="auth-screen">
+    <div class="auth-icon">🛡️</div>
+    <div class="auth-title">Join Guardian</div>
+    <div class="auth-sub">Create your account. Guardian will remember your case forever.</div>
+  </div>
+  <div class="auth-form">
+    <input class="auth-input" type="email" id="signupEmail" placeholder="Your email address" autocomplete="email">
+    <input class="auth-input" type="password" id="signupPassword" placeholder="Choose a password" autocomplete="new-password">
+    <input class="auth-input" type="password" id="signupConfirm" placeholder="Confirm password" autocomplete="new-password">
+  </div>
+  <div class="auth-error" id="signupError"></div>
+  <button type="button" class="btn-gold" onclick="doSignup()" style="margin-top:4px;">Create account →</button>
+  <div class="auth-divider"><span>or</span></div>
+  <button type="button" class="btn-ghost" onclick="go('sLogin')">Already have an account</button>
+  <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6;">By creating an account you agree to our terms. Your case data is encrypted and never shared.</div>
+</div>
+
+<!-- VERIFY EMAIL -->
+<div class="step" id="sVerify">
+  <div class="auth-screen">
+    <div class="auth-icon">📧</div>
+    <div class="auth-title">Check your email</div>
+    <div class="auth-sub">We've sent you a confirmation link. Click it to activate your account then come back here.</div>
+  </div>
+  <button type="button" class="btn-gold" onclick="go('sLogin')">I've confirmed my email →</button>
+  <button type="button" class="btn-ghost" onclick="resendVerification()">Resend confirmation email</button>
+</div>
+
 <!-- WELCOME -->
 <div class="step active" id="sWelcome">
   <div style="text-align:center;padding:30px 0 24px;">
@@ -356,7 +446,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
       <span style="font-size:20px;">🤖</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Ask Guardian Anything</div><div style="font-size:12px;color:var(--muted-hi);">Plain English answers — free forever</div></div>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Court Guru Anything</div><div style="font-size:12px;color:var(--muted-hi);">Plain English answers — free forever</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
       <span style="font-size:20px;">🧠</span>
@@ -532,13 +622,13 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="goQA()">
       <div class="home-btn-icon">🤖</div>
-      <div class="home-btn-label">Ask Guardian</div>
-      <div class="home-btn-sub">Free — ask anything</div>
+      <div class="home-btn-label">Court Guru</div>
+      <div class="home-btn-sub">Free — know everything</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="go('sDocs')">
       <div class="home-btn-icon">📁</div>
-      <div class="home-btn-label">My Documents</div>
-      <div class="home-btn-sub">Upload &amp; timeline</div>
+      <div class="home-btn-label">Case File</div>
+      <div class="home-btn-sub">Documents &amp; timeline</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="go('sEditProfile')">
       <div class="home-btn-icon">⚙️</div>
@@ -565,7 +655,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
       <div class="paywall-feat">Guardian remembers your full case</div>
       <div class="paywall-feat">Pattern detection across messages</div>
       <div class="paywall-feat">Court-ready replies every time</div>
-      <div class="paywall-feat">Ask Guardian anything — always free</div>
+      <div class="paywall-feat">Court Guru anything — always free</div>
     </div>
     <button type="button" class="btn-gold">Keep Guardian protecting me</button>
   </div>
@@ -576,7 +666,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 <div class="step" id="sQA">
   <div class="section-header">
     <button type="button" class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Ask Guardian</div><div class="section-sub">Free — ask anything about your case</div></div>
+    <div><div class="section-title">Court Guru</div><div class="section-sub">Free — know everything about your case</div></div>
   </div>
   <div class="qa-suggestions" id="qaSugs"></div>
   <div class="qa-msgs" id="qaMsgs" style="padding-bottom:8px;"></div>
@@ -590,7 +680,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
       📎
       <input type="file" accept="image/*,.pdf,.txt" onchange="handleQAAttach(event)">
     </label>
-    <input class="qa-input" id="qaIn" type="text" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendQA()">
+    <input class="qa-input" id="qaIn" type="text" placeholder="Ask Court Guru anything..." onkeydown="if(event.key==='Enter')sendQA()">
     <button type="button" class="qa-send" onclick="sendQA()">→</button>
   </div>
 </div>
@@ -648,6 +738,23 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div class="their-bubble"><div class="their-label">Their message</div><div class="their-text" id="qTheirText"></div></div>
   <div id="flagBanner"></div>
   <div class="q-card">
+    <div class="mode-selector">
+      <div class="mode-selector-label">HOW DO YOU WANT TO HANDLE THIS?</div>
+      <div class="mode-opts">
+        <div class="mode-opt mode-natural" id="modeNatural" onclick="setMode('natural')">
+          <div class="mode-opt-icon">💬</div>
+          <div class="mode-opt-label">Keep it natural</div>
+        </div>
+        <div class="mode-opt mode-welfare" id="modeWelfare" onclick="setMode('welfare')">
+          <div class="mode-opt-icon">👶</div>
+          <div class="mode-opt-label">Welfare focused</div>
+        </div>
+        <div class="mode-opt mode-protective" id="modeProtective" onclick="setMode('protective')">
+          <div class="mode-opt-icon">🛡️</div>
+          <div class="mode-opt-label">Protective reply</div>
+        </div>
+      </div>
+    </div>
     <div class="q-label">Before I suggest a reply</div>
     <div class="q-text" id="qText"></div>
     <div class="q-opts" id="qOpts"></div>
@@ -756,7 +863,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 <div class="step" id="sDocs">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">My Documents</div><div class="section-sub">Your full case on file</div></div>
+    <div><div class="section-title">Case File</div><div class="section-sub">Everything Guardian knows about your case</div></div>
   </div>
   <div class="upload-section">
     <div class="upload-section-title">ADD A DOCUMENT</div>
@@ -853,6 +960,9 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     <div style="font-size:13px;color:var(--muted-hi);margin-bottom:12px;line-height:1.6;">Running a C100 and non-mol at the same time? Need to manage a second case? Coming soon.</div>
     <button type="button" class="btn-ghost" style="opacity:0.5;cursor:not-allowed;">+ Add another case — coming soon</button>
   </div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+    <button type="button" onclick="doLogout()" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(239,68,68,0.3);border-radius:12px;color:var(--red);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Sign out</button>
+  </div>
 </div>
 
 </div><!-- end .app -->
@@ -871,6 +981,23 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 
 <script>
 const API = '/api/anthropic';
+const SUPA_URL = 'https://khgfladykvpfarkllwmd.supabase.co';
+const SUPA_KEY = 'sb_publishable_gEibzvtjKL-0wE0xMz91pw_raDbu-wp';
+var supabase = null;
+var currentUser = null;
+
+function initSupabase() {
+  try {
+    if (window.supabase && window.supabase.createClient) {
+      supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+      console.log('Supabase ready');
+      return true;
+    }
+  } catch(e) {
+    console.warn('Supabase init failed:', e);
+  }
+  return false;
+}
 var coolInt = null, timingInt = null;
 var recog = null, isRec = false;
 var obRecog = null, isObRec = false;
@@ -884,9 +1011,58 @@ var docs = JSON.parse(localStorage.getItem('gDocs') || '{}');
 var msgLog = JSON.parse(localStorage.getItem('gLog') || '[]');
 var checks = parseInt(localStorage.getItem('gChecks') || '0');
 var uploadedDocs = {};
-var st = { msg:'', answer:'', question:'', reply:'', score:0, timing:'', timingNote:'', flag:'', flagText:'', outgoing:false, outMsg:'' };
+var st = { msg:'', answer:'', question:'', reply:'', score:0, timing:'', timingNote:'', flag:'', flagText:'', outgoing:false, outMsg:'', replyMode:'natural' };
 
-var SYS = 'You are Guardian, a co-parenting communication safety assistant for parents in family court in England and Wales.\nHelp the user reply to messages from the other parent in a way that is calm, child-focused, legally safe, and unlikely to escalate conflict.\nUse the case context provided in every response.\n\nCORE RULES:\n1. Prioritise the child welfare and practical arrangements.\n2. Keep replies short, neutral, factual. 1 to 4 sentences max.\n3. Do not blame, accuse, or psychoanalyse the other parent.\n4. Do not admit fault unless the user instructs you to.\n5. Assume every message may be shown in court.\n6. Do not over-explain. Answer the practical question only.\n7. If no reply needed, say so.\n\nTONE:\n- Real British parent texting. Not a solicitor.\n- Plain English. Short words.\n- No empathy openers: never I understand, I hear you.\n- No: going forward, please ensure, reach out, happy to chat.\n- Never say picked up or dropped off.\n- No unnecessary apology.\n- Never end with Let me know if...\n\nGOAL: Protect the child. Reduce conflict. Create a clean written record.';
+var SYS = [
+  'You are Guardian, a co-parenting communication safety assistant for parents in family court in England and Wales.',
+  'Help the user reply to messages from the other parent in a way that is calm, child-focused, legally safe, and unlikely to escalate conflict.',
+  'Use the case context provided in every response.',
+  '',
+  'CORE RULES:',
+  '1. Prioritise the child welfare and practical arrangements.',
+  '2. Keep replies short, neutral, factual. 1 to 4 sentences max.',
+  '3. Do not blame, accuse, or psychoanalyse the other parent.',
+  '4. Do not admit fault unless the user instructs you to.',
+  '5. Assume every message may be shown in court.',
+  '6. Do not over-explain. Answer the practical question only.',
+  '7. If no reply needed, say so — silence is sometimes the strongest reply.',
+  '',
+  'TONE — THIS IS CRITICAL:',
+  '- Sound exactly like this specific parent would naturally text. Not a solicitor. Not a chatbot.',
+  '- Plain English. Short words. Short sentences.',
+  '- Match the energy of the incoming message. Cooperative message = cooperative reply. Hostile message = measured reply.',
+  '- When the conversation is going well — keep it going well. Do not inject legal language into a human moment.',
+  '- No empathy openers: never I understand, I hear you, I appreciate.',
+  '- No corporate phrases: going forward, please ensure, reach out, happy to chat.',
+  '- Never say picked up or dropped off.',
+  '- No unnecessary apology.',
+  '- Never end with Let me know if...',
+  "- Never add phrases like the child's welfare comes first — it sounds performative. Show it through actions not words.",
+  '- Sometimes the highest scoring reply is the shortest one. A thumbs up or Thanks is often exactly right.',
+  '',
+  'PROTECTION RULES — APPLY IN ALL MODES:',
+  '- Always acknowledge every concern raised — never leave anything unaddressed even if the message seems routine.',
+  '- Always confirm receipt of any health, welfare or practical information.',
+  '- Always state what action you are taking or will take.',
+  '- Read every word of the incoming message carefully. Do not miss details — a parent asking if a cream contains steroids is NOT confirming it is safe to use.',
+  '- Friendly messages can be traps — a co-parent building a paper trail of ignored concerns. Close every loop naturally.',
+  '- Only use facts the parent explicitly confirmed. Never assume. Never invent. If you do not know something do not put it in the reply.',
+  '- Low conflict messages are as dangerous as high conflict ones. A cooperative moment poorly handled creates evidence against you.',
+  '',
+  'WELFARE MESSAGES:',
+  "- When health or medical information is mentioned — read it carefully and completely before suggesting a reply.",
+  "- If there is any ambiguity about a health concern, medication, or child safety issue — the reply must reflect that ambiguity. Do not assume something is safe or resolved when it has not been confirmed.",
+  "- Suggest the parent waits for confirmation before acting on unclear medical guidance.",
+  "- Use the child's own words where possible — it shows attentiveness without over-engineering.",
+  '',
+  'WHEN TO SAY ALMOST NOTHING:',
+  "- When the other parent is being cooperative — match it. Short. Warm. Human.",
+  '- When the loop is already closed by previous messages — do not reopen it.',
+  '- When adding more words would make the reply worse — say less.',
+  "- A reply of Thanks or a thumbs up acknowledgement can score 8 or 9 out of 10.",
+  '',
+  'GOAL: Protect the child. Reduce conflict. Create a clean written record. Sound like a real human being.'
+].join("\n");
 
 function getCTX() {
   if (!profile) return '';
@@ -913,23 +1089,40 @@ function getCTX() {
   return lines.join('\n');
 }
 
-window.onload = function() {
+window.onload = async function() {
   // Safety — always hide overlay on load
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('overlay').style.display = 'none';
 
   // Android PWA back button support
-  window.addEventListener('popstate', function(e) {
-    goBack();
-  });
+  window.addEventListener('popstate', function(e) { goBack(); });
 
-  // Push initial state so back button has something to intercept
+  // Push initial state
   history.pushState({step:'init'}, '');
 
-  if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+  // Init Supabase now that all scripts are loaded
+  initSupabase();
+
+  // Check Supabase session
+  if (supabase) {
+    try {
+      var sessionResult = await supabase.auth.getSession();
+      if (sessionResult.data && sessionResult.data.session) {
+        currentUser = sessionResult.data.session.user;
+        await loadProfileFromSupabase();
+        return;
+      }
+    } catch(e) {
+      console.warn('Session check failed:', e);
+    }
+    go('sLogin');
+  } else {
+    // Fallback to localStorage if Supabase unavailable
+    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+  }
 };
 
-var ALL_STEPS = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sScanner','sDiary','sDiaryEntry'];
 
 var stepHistory = [];
 var navLock = false;
@@ -941,6 +1134,27 @@ function goHome() {
     go('sHome');
   } else {
     go('sWelcome');
+  }
+}
+
+function setMode(mode) {
+  st.replyMode = mode;
+  document.querySelectorAll('.mode-opt').forEach(function(el){ el.classList.remove('active'); });
+  var map = { natural:'modeNatural', welfare:'modeWelfare', protective:'modeProtective' };
+  var el = document.getElementById(map[mode]);
+  if (el) el.classList.add('active');
+}
+
+function autoSetMode() {
+  // Auto-select mode based on flag and conflict level
+  var conflict = parseInt(profile && profile.conflict ? profile.conflict : 5);
+  var flag = st.flag;
+  if (flag === 'red' || conflict >= 8) {
+    setMode('protective');
+  } else if (flag === 'amber' || st.flagText && st.flagText.toLowerCase().indexOf('welfare') !== -1) {
+    setMode('welfare');
+  } else {
+    setMode('natural');
   }
 }
 
@@ -1055,7 +1269,10 @@ function saveP3() {
   save(); go('sProfile4');
 }
 
-function save() { localStorage.setItem('gProfile',JSON.stringify(profile)); }
+function save() {
+  localStorage.setItem('gProfile',JSON.stringify(profile));
+  saveProfileToSupabase();
+}
 
 function toggleGuide(id) {
   var el=document.getElementById(id);
@@ -1294,7 +1511,7 @@ async function sendQA() {
   document.getElementById('qaMsgs').appendChild(td);
   scrollQA();
 
-  var sys='You are Guardian, a knowledgeable companion for parents navigating family court in England and Wales.\n\nYou can answer ANYTHING the parent asks — family court procedure, legal forms, Cafcass process, how to write statements, what judges look for, child psychology, co-parenting research, their rights, definitions, strategy. Absolutely anything relevant to their situation.\n\nBe like a brilliant, knowledgeable friend who happens to know everything about family court. Warm, honest, direct. Never talk down to them. Never refuse a reasonable question.\n\nFormat your answers well — use short paragraphs. For lists use dashes. Make it easy to read on a phone. Never write walls of text.\n\nFor anything that may have changed recently — court fees, specific forms, practice directions — note that information is current to early 2025 and suggest checking gov.uk or judiciary.gov.uk for the latest.\n\nYou are not a lawyer and do not give formal legal advice. But you can explain everything in plain English and help them understand their situation deeply.\n\nIMPORTANT: If the parent mentions any new facts about their case — a new allegation, a hearing date, a name, an order — note them as they may be useful context.\n\n'+getCTX();
+  var sys='You are Guardian, a knowledgeable companion for parents navigating family court in England and Wales.\n\nYou can answer ANYTHING the parent asks — family court procedure, legal forms, Cafcass process, how to write statements, what judges look for, child psychology, co-parenting research, their rights, definitions, strategy. Absolutely anything relevant to their situation.\n\nBe like a brilliant, knowledgeable friend who happens to know everything about family court. Warm, honest, direct. Never talk down to them. Never refuse a reasonable question.\n\nFormat your answers well — use short paragraphs. For lists use dashes. Make it easy to read on a phone. Never write walls of text.\n\nFor anything that may have changed recently — court fees, specific forms, practice directions — note that information is current to early 2025 and suggest checking gov.uk or judiciary.gov.uk for the latest.\n\nYou are not a lawyer and do not give formal legal advice. But you can explain everything in plain English and help them understand their situation deeply.\n\nIMPORTANT: If the parent mentions any new facts about their case — a new allegation, a hearing date, a name, an order — note them as they may be useful context.\n\nAt the end of EVERY response, on a new line, add exactly this format:\nCONFIDENCE:[high|mid|low]|[one plain English reason under 12 words]\nHigh = established law or standard procedure. Mid = correct as of 2025 but worth confirming. Low = based on your specific case details, not established fact.\n\n'+getCTX();
 
   // Build message content - include attachment if present
   var msgContent;
@@ -1333,12 +1550,28 @@ async function sendQA() {
     });
 
     var data=await res.json();
-    var fullReply=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    var rawReply=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+
+    // Extract confidence level
+    var confidence = { level:'mid', reason:'Check important decisions with your McKenzie Friend' };
+    var confMatch = null;
+    var confIdx = rawReply.indexOf('CONFIDENCE:');
+    if (confIdx !== -1) {
+      var confLine = rawReply.substring(confIdx).split('\n')[0];
+      var confParts = confLine.replace('CONFIDENCE:','').split('|');
+      if (confParts.length >= 2) { confMatch = confParts; }
+      rawReply = rawReply.substring(0, confIdx).trim();
+    }
+    if (confMatch) {
+      confidence.level = confMatch[0].trim().toLowerCase();
+      confidence.reason = confMatch[1].trim();
+    }
+    var fullReply = rawReply;
 
     // Remove typing indicator
     var te=document.getElementById('qaTyp'); if(te) te.remove();
 
-    // Create message div and animate text appearance word by word
+    // Create message div
     var msgDiv=document.createElement('div');
     msgDiv.className='qa-msg qa-guardian';
     document.getElementById('qaMsgs').appendChild(msgDiv);
@@ -1359,6 +1592,19 @@ async function sendQA() {
       textDiv.innerHTML += (i > 0 ? '<br><br>' : '') + lines[i];
       scrollQA();
     }
+
+    // Show confidence indicator after text appears
+    var confLabels = {
+      high: { cls:'conf-high', icon:'🟢', label:'High confidence', desc:confidence.reason },
+      mid:  { cls:'conf-mid',  icon:'🟡', label:'Worth checking',  desc:confidence.reason },
+      low:  { cls:'conf-low',  icon:'🔴', label:'Case specific',   desc:confidence.reason }
+    };
+    var cl = confLabels[confidence.level] || confLabels.mid;
+    var confDiv = document.createElement('div');
+    confDiv.className = 'qa-confidence ' + cl.cls;
+    confDiv.innerHTML = '<div class="conf-dot"></div><div class="conf-text"><span class="conf-label">' + cl.icon + ' ' + cl.label + '</span> — ' + cl.desc + '</div>';
+    msgDiv.appendChild(confDiv);
+    scrollQA();
 
     qaTyping=false;
     qaHistory.push({role:'assistant',content:fullReply});
@@ -1613,6 +1859,15 @@ function checkTrial(){
   return true;
 }
 
+function resetTrial(){
+  checks=0;
+  localStorage.setItem('gChecks','0');
+  localStorage.removeItem('gUpsellDismissed');
+  upsellShownThisSession=false;
+  toast('✅ Trial reset — 5 checks restored');
+  go('sHome');
+}
+
 async function askQ() {
   if(!checkTrial()) return;
   load('Reading it...','Working out what to ask you');
@@ -1658,6 +1913,7 @@ function doQuestion(p) {
     document.getElementById('voiceRow').style.display='flex';
     document.getElementById('continueBtn').style.display='block';
   }
+  autoSetMode();
   go('sQuestion');
 }
 
@@ -1700,7 +1956,15 @@ async function genReplyDirect(){ await _gen('No context — suggest the safest m
 async function _gen(ctx) {
   load('Writing your reply...','Keeping it safe and human');
   var caseCtx=getCTX();
-  var prompt=caseCtx+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name if relevant.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- No empathy openers.\n- For tips: give 2 specific actions RIGHT NOW — log the time, screenshot this, check the order.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
+  var modeInstructions = {
+    natural: "REPLY MODE: Natural everyday co-parenting. Sound exactly like this parent would naturally text. Casual opener like Hey [name] if appropriate. Use the child's own words where possible. End with a practical question not a statement. No legal language. No guardedness. Just a real parent texting. IMPORTANT: Even in natural mode you must always acknowledge any concern raised, confirm any information received, and state any action you are taking. Low conflict messages can be traps — a parent who later claims their concern was ignored. Close every loop naturally without sounding defensive.",
+    welfare: "REPLY MODE: Welfare focused. Show genuine care for the child's needs. Use the child's name. Acknowledge the concern directly. Confirm what you will do. Ask what else you can do if needed. Creates a clear timestamped record of engagement without sounding like you are creating a record. Still warm and natural. Never leave a welfare concern unacknowledged even if it seems minor.",
+    protective: "REPLY MODE: Protective reply. Measured, factual, short. Every word chosen carefully. No emotion. Court-ready without sounding court-ready. Acknowledge without over-engaging. Confirm receipt of any information. State what action you are taking. Redirect to the child's practical needs. Do not admit anything. Do not deny anything aggressively. Always close the loop so nothing can later be described as ignored."
+  };
+
+  var universalRules = "UNIVERSAL RULES THAT APPLY IN ALL MODES: 1) Always acknowledge any concern raised — never leave it unaddressed even if the message seems routine. 2) Always confirm receipt of any health, welfare or practical information. 3) Always state what action you are taking or will take. 4) Friendly messages can be traps — a co-parent building a paper trail of ignored concerns. Close every loop. 5) The reply must create a clear record that the parent engaged, noticed, and acted — without ever sounding like that is what it is doing.";
+
+  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
@@ -1712,6 +1976,7 @@ async function _gen(ctx) {
       checks++; localStorage.setItem('gChecks',checks);
       msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
       localStorage.setItem('gLog',JSON.stringify(msgLog));
+      saveProfileToSupabase();
       // Upsell triggers
       if (checks === 3) checkUpsellTriggers('check3');
       if (checks === 5) checkUpsellTriggers('check5');
@@ -1817,6 +2082,140 @@ function doFeedback(type){
   localStorage.setItem('gFeedback',JSON.stringify(log));
 }
 
+// ── SUPABASE AUTH ──
+
+async function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var password = document.getElementById('loginPassword').value.trim();
+  var errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  if (!email || !password) { showAuthError('loginError', 'Please enter your email and password'); return; }
+  load('Signing in...', '');
+  try {
+    var result = await supabase.auth.signInWithPassword({ email:email, password:password });
+    unload();
+    if (result.error) { showAuthError('loginError', result.error.message); return; }
+    currentUser = result.data.user;
+    await loadProfileFromSupabase();
+  } catch(e) { unload(); showAuthError('loginError', 'Something went wrong. Please try again.'); }
+}
+
+async function doSignup() {
+  var email = document.getElementById('signupEmail').value.trim();
+  var password = document.getElementById('signupPassword').value.trim();
+  var confirm = document.getElementById('signupConfirm').value.trim();
+  var errEl = document.getElementById('signupError');
+  errEl.style.display = 'none';
+  if (!email || !password) { showAuthError('signupError', 'Please enter your email and password'); return; }
+  if (password !== confirm) { showAuthError('signupError', 'Passwords do not match'); return; }
+  if (password.length < 6) { showAuthError('signupError', 'Password must be at least 6 characters'); return; }
+  load('Creating your account...', '');
+  try {
+    var result = await supabase.auth.signUp({ email:email, password:password });
+    unload();
+    if (result.error) { showAuthError('signupError', result.error.message); return; }
+    go('sVerify');
+  } catch(e) { unload(); showAuthError('signupError', 'Something went wrong. Please try again.'); }
+}
+
+async function resendVerification() {
+  var email = document.getElementById('signupEmail').value.trim();
+  if (!email) { toast('Please go back and enter your email'); return; }
+  try {
+    await supabase.auth.resend({ type:'signup', email:email });
+    toast('Confirmation email sent');
+  } catch(e) { toast('Could not resend — please try again'); }
+}
+
+async function showForgotPassword() {
+  var email = prompt('Enter your email address to reset your password:');
+  if (!email) return;
+  try {
+    await supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://guardian-xgzl.vercel.app' });
+    toast('Password reset email sent — check your inbox');
+  } catch(e) { toast('Could not send reset email — please try again'); }
+}
+
+async function doLogout() {
+  if (supabase) { await supabase.auth.signOut(); }
+  currentUser = null;
+  profile = null;
+  localStorage.clear();
+  go('sLogin');
+}
+
+function showAuthError(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── SUPABASE PROFILE SYNC ──
+
+async function loadProfileFromSupabase() {
+  if (!supabase || !currentUser) {
+    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+    return;
+  }
+  try {
+    var result = await supabase.from('profiles').select('*').eq('user_id', currentUser.id).single();
+    if (result.data) {
+      // Load profile from Supabase
+      profile = {
+        myName: result.data.my_name || '',
+        theirName: result.data.their_name || '',
+        childName: result.data.child_name || '',
+        otherKids: result.data.other_kids || '',
+        caseType: result.data.case_type || '',
+        duration: result.data.duration || '',
+        contact: result.data.contact || '',
+        conflict: result.data.conflict || '5',
+        allegations: result.data.allegations || '',
+        dismissed: result.data.dismissed || '',
+        commStyle: result.data.comm_style || '',
+        voiceContext: result.data.voice_context || '',
+        complete: result.data.complete || false
+      };
+      if (result.data.doc_extracts) { try { docs = JSON.parse(result.data.doc_extracts); } catch(e){} }
+      if (result.data.message_log) { try { msgLog = JSON.parse(result.data.message_log); } catch(e){} }
+      localStorage.setItem('gProfile', JSON.stringify(profile));
+      if (profile.complete) { showHome(); } else { go('sWelcome'); }
+    } else {
+      // New user — no profile yet
+      go('sWelcome');
+    }
+  } catch(e) {
+    // Fallback to localStorage
+    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+  }
+}
+
+async function saveProfileToSupabase() {
+  if (!supabase || !currentUser || !profile) return;
+  try {
+    var data = {
+      user_id: currentUser.id,
+      my_name: profile.myName || '',
+      their_name: profile.theirName || '',
+      child_name: profile.childName || '',
+      other_kids: profile.otherKids || '',
+      case_type: profile.caseType || '',
+      duration: profile.duration || '',
+      contact: profile.contact || '',
+      conflict: profile.conflict || '5',
+      allegations: profile.allegations || '',
+      dismissed: profile.dismissed || '',
+      comm_style: profile.commStyle || '',
+      voice_context: profile.voiceContext || '',
+      doc_extracts: JSON.stringify(docs),
+      message_log: JSON.stringify(msgLog),
+      complete: profile.complete || false,
+      updated_at: new Date().toISOString()
+    };
+    await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
+  } catch(e) { console.warn('Supabase save failed:', e); }
+}
+
 // ── UPSELL SYSTEM ──
 var upsellShownThisSession = false;
 var upsellDismissed = JSON.parse(localStorage.getItem('gUpsellDismissed') || '{}');
@@ -1876,6 +2275,295 @@ function checkSevenDayUpsell() {
   if (!firstUse) { localStorage.setItem('gFirstUse', Date.now()); return; }
   var daysSince = (Date.now() - parseInt(firstUse)) / (1000 * 60 * 60 * 24);
   if (daysSince >= 7) { setTimeout(function(){ showUpsell('sevendays'); }, 2000); }
+}
+
+// ── GUARDIAN BRAIN ──
+var brainLog = JSON.parse(localStorage.getItem('gBrainLog') || '[]');
+
+function loadBrainScreen() {
+  // Stats
+  var nums = document.getElementById('brainNumbers');
+  var total = msgLog.length;
+  var red = msgLog.filter(function(m){return m.flag==='red';}).length;
+  var green = msgLog.filter(function(m){return m.flag==='green';}).length;
+  var docs = caseDocuments.length;
+  nums.innerHTML = [
+    {label:'Messages checked', val:total, col:'var(--gold)'},
+    {label:'Serious flags caught', val:red, col:'var(--red)'},
+    {label:'Routine messages', val:green, col:'var(--green)'},
+    {label:'Documents on file', val:docs, col:'var(--blue)'}
+  ].map(function(s){
+    return '<div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">' +
+      '<div style="font-family:DM Sans,sans-serif;font-size:24px;font-weight:800;color:'+s.col+'">'+s.val+'</div>' +
+      '<div style="font-size:11px;color:var(--muted-hi);margin-top:3px;">'+s.label+'</div>' +
+    '</div>';
+  }).join('');
+
+  // Recent log
+  var logEl = document.getElementById('brainLog');
+  if (msgLog.length === 0) {
+    logEl.textContent = 'No messages logged yet.';
+  } else {
+    var recent = msgLog.slice(-5).reverse();
+    logEl.innerHTML = recent.map(function(m){
+      var col = m.flag==='red'?'var(--red)':m.flag==='amber'?'var(--amber)':'var(--green)';
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);">' +
+        '<div style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0;"></div>' +
+        '<div style="flex:1;font-size:12px;color:var(--muted-hi);">'+m.summary+'</div>' +
+        '<div style="font-size:11px;color:var(--muted);">'+m.score+'/10</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+function logBrainOutcome(outcome) {
+  var entry = { outcome:outcome, ts:new Date().toISOString(), msgCount:msgLog.length };
+  brainLog.push(entry);
+  localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
+  var msgs = {
+    positive:'✅ Logged — great outcome. Guardian learns from this.',
+    neutral:'📝 Logged — noted for Guardian Brain.',
+    negative:'⚠️ Logged — Guardian will use this to improve.',
+    edited:'✏️ Logged — your edit helps Guardian sound more human.'
+  };
+  toast(msgs[outcome] || 'Logged');
+  setTimeout(function(){ go('sHome'); }, 1500);
+}
+
+// ── DOCUMENT EXPLAINER ──
+var lastExplainedDoc = null;
+
+async function explainDoc(event, docType) {
+  var file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  load('Reading your document...', 'Guardian is translating this into plain English');
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(',')[1];
+    var ctx = getCTX();
+    try {
+      var msgContent = [];
+      if (file.type && file.type.startsWith('image/')) {
+        msgContent = [
+          { type:'image', source:{ type:'base64', media_type:file.type, data:b64 } },
+          { type:'text', text:ctx + '\n\nThis parent has uploaded a document. Read it and explain it in plain English as if talking to a worried parent who has never dealt with the legal system before.\n\nReturn ONLY JSON:\n{"documentType":"<what type of document this is>","summary":"<plain English explanation — 3-4 sentences, no jargon>","actions":"<what the parent needs to do now>","deadline":"<any deadline mentioned, or blank>","urgency":"high|medium|low"}' }
+        ];
+      } else {
+        msgContent = [
+          { type:'document', source:{ type:'base64', media_type:'application/pdf', data:b64 } },
+          { type:'text', text:ctx + '\n\nThis parent has uploaded a document. Read it and explain it in plain English as if talking to a worried parent who has never dealt with the legal system before.\n\nReturn ONLY JSON:\n{"documentType":"<what type of document this is>","summary":"<plain English explanation — 3-4 sentences, no jargon>","actions":"<what the parent needs to do now>","deadline":"<any deadline mentioned, or blank>","urgency":"high|medium|low"}' }
+        ];
+      }
+      var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:600, system:'You are Guardian, explaining legal and official documents to parents in family court proceedings in England and Wales. Always use plain English. Never use legal jargon without explaining it. Be warm, direct, and reassuring. Focus on what the parent needs to understand and do.', messages:[{ role:'user', content:msgContent }] }) });
+      var data = await res.json();
+      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+      var parsed = null;
+      try { parsed = JSON.parse(raw); } catch(err) { var m = raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
+      unload();
+      if (parsed) {
+        lastExplainedDoc = parsed;
+        document.getElementById('explainerType').textContent = parsed.documentType || 'Document';
+        document.getElementById('explainerSummary').innerHTML = (parsed.summary || '').replace(/\n/g,'<br>');
+        document.getElementById('explainerActions').innerHTML = (parsed.actions || '').replace(/\n/g,'<br>');
+        if (parsed.deadline) {
+          document.getElementById('explainerDeadline').textContent = parsed.deadline;
+          document.getElementById('explainerDeadlineBox').style.display = 'block';
+        } else {
+          document.getElementById('explainerDeadlineBox').style.display = 'none';
+        }
+        document.getElementById('explainerResult').style.display = 'block';
+      } else {
+        toast('Could not read document — please try again');
+      }
+    } catch(err) { unload(); toast('Something went wrong — please try again'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function goQAWithDoc() {
+  if (lastExplainedDoc) {
+    qaHistory = [{ role:'assistant', content:'I have just read your ' + lastExplainedDoc.documentType + '. ' + lastExplainedDoc.summary + ' What would you like to know about it?' }];
+    document.getElementById('qaMsgs').innerHTML = '';
+    addQAGuardianMsg('I have just read your ' + (lastExplainedDoc.documentType||'document') + '. ' + (lastExplainedDoc.summary||'') + ' What would you like to know about it?');
+  }
+  goQA();
+}
+
+// ── STATEMENT SCANNER ──
+var scanType = 'mine';
+
+function setScanType(type) {
+  scanType = type;
+  document.getElementById('scanMine').classList.toggle('sel', type==='mine');
+  document.getElementById('scanTheirs').classList.toggle('sel', type==='theirs');
+  document.getElementById('scannerLabel').textContent = type==='mine' ? 'Upload my statement' : 'Upload their statement';
+}
+
+async function scanStatement(event) {
+  var file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  document.getElementById('scannerStatus').textContent = '⏳';
+  load('Scanning statement...', 'Guardian is reading every word');
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(',')[1];
+    var ctx = getCTX();
+    var isMine = scanType === 'mine';
+    var prompt = ctx + '\n\nThis parent has uploaded ' + (isMine ? 'their own' : "the other parent's") + ' position statement for Guardian to analyse.\n\n' +
+      (isMine ?
+        'Score this statement out of 10. Identify weaknesses and strengths. Suggest improvements.' :
+        'Analyse this statement. List every allegation made and how to respond.') +
+      '\n\nReturn ONLY JSON:\n{"score":null,"verdict":"<2-3 sentence assessment>","weaknesses":["<w1>","<w2>","<w3>"],"strengths":["<s1>","<s2>"],"response":"<how to respond or improve>"}';
+    try {
+      var msgContent = [];
+      if (file.type && file.type.startsWith('image/')) {
+        msgContent = [{ type:'image', source:{type:'base64',media_type:file.type,data:b64}},{ type:'text', text:prompt }];
+      } else {
+        msgContent = [{ type:'document', source:{type:'base64',media_type:'application/pdf',data:b64}},{ type:'text', text:prompt }];
+      }
+      var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:800, system:'You are Guardian, analysing family court position statements for parents in England and Wales. Be forensic, specific, and practical. Focus on what will actually help in court.', messages:[{ role:'user', content:msgContent }] }) });
+      var data = await res.json();
+      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+      var parsed = null;
+      try { parsed = JSON.parse(raw); } catch(err) { var m=raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
+      unload();
+      document.getElementById('scannerStatus').textContent = '✅';
+      if (parsed) {
+        var scoreEl = document.getElementById('scanScore');
+        if (parsed.score !== null && parsed.score !== undefined) {
+          var col = parsed.score>=7?'var(--green)':parsed.score>=5?'var(--amber)':'var(--red)';
+          scoreEl.innerHTML = '<span style="color:'+col+'">' + parsed.score + '</span><span style="font-size:14px;color:var(--muted-hi)">/10</span>';
+        } else {
+          scoreEl.textContent = '';
+        }
+        document.getElementById('scanVerdict').textContent = parsed.verdict || '';
+        document.getElementById('scanWeaknesses').innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:4px 0;border-bottom:1px solid var(--border);">'+( i+1)+'. '+w+'</div>';}).join('');
+        document.getElementById('scanStrengths').innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
+        if (parsed.response) {
+          document.getElementById('scanResponse').innerHTML = parsed.response.replace(/\n/g,'<br>');
+          document.getElementById('scanResponseBox').style.display = 'block';
+        }
+        document.getElementById('scannerResult').style.display = 'block';
+      } else { toast('Could not analyse statement — please try again'); }
+    } catch(err) { unload(); toast('Something went wrong — please try again'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── DIARY ──
+var diaryEntries = JSON.parse(localStorage.getItem('gDiary') || '[]');
+var diaryType = '';
+var diaryMood = '';
+var diaryContact = '';
+var diaryVoiceRecog = null;
+var isDiaryRec = false;
+
+function loadDiaryScreen() {
+  // Set child name in entry screen
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'child';
+  var els = document.querySelectorAll('#diaryChildName, #diaryChildName2');
+  els.forEach(function(el){ el.textContent = child; });
+  // Set today's date
+  document.getElementById('diaryDate').value = new Date().toISOString().split('T')[0];
+  // Render list
+  var list = document.getElementById('diaryList');
+  if (!diaryEntries.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0;">No entries yet. Start logging your contact sessions.</div>';
+    return;
+  }
+  var sorted = diaryEntries.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+  var typeIcons = { contact:'👶', incident:'⚠️', message:'💬', hearing:'⚖️', welfare:'🏥' };
+  var moodIcons = { happy:'😊', okay:'😐', upset:'😢', unwell:'🤒' };
+  list.innerHTML = sorted.map(function(entry) {
+    return '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
+        '<span style="font-size:18px;">'+(typeIcons[entry.type]||'📝')+'</span>' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:13px;font-weight:600;color:var(--white);">'+new Date(entry.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})+'</div>' +
+          '<div style="font-size:11px;color:var(--muted-hi);">'+entry.typeLabel+(entry.mood?' · '+(moodIcons[entry.mood]||''):'')+'</div>' +
+        '</div>' +
+        (entry.contactOk===false?'<span style="font-size:10px;font-weight:700;color:var(--red);background:var(--red-dim);padding:3px 8px;border-radius:10px;">CONTACT ISSUE</span>':'') +
+      '</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;">'+entry.text.substring(0,150)+(entry.text.length>150?'...':'')+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+function pickDiaryType(btn, val) {
+  document.querySelectorAll('#diaryTypeOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  diaryType = val;
+}
+
+function pickDiaryMood(btn, val) {
+  document.querySelectorAll('#diaryMoodOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  diaryMood = val;
+}
+
+function pickDiaryContact(btn, val) {
+  document.getElementById('diaryContactYes').classList.toggle('sel', val==='yes');
+  document.getElementById('diaryContactNo').classList.toggle('sel', val==='no');
+  diaryContact = val;
+  document.getElementById('diaryContactIssueBox').style.display = val==='no'?'block':'none';
+}
+
+function toggleDiaryVoice() {
+  if (!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){toast('Voice not supported');return;}
+  if (isDiaryRec){stopDiaryVoice();}else{startDiaryVoice();}
+}
+
+function startDiaryVoice() {
+  var SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  diaryVoiceRecog = new SR(); diaryVoiceRecog.continuous=true; diaryVoiceRecog.interimResults=true; diaryVoiceRecog.lang='en-GB';
+  var fin = document.getElementById('diaryText').value.trim(); if(fin) fin+=' ';
+  diaryVoiceRecog.onresult=function(e){
+    var int='';
+    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}else{int+=e.results[i][0].transcript;}}
+    document.getElementById('diaryText').value=(fin+int).trim();
+  };
+  diaryVoiceRecog.onend=function(){if(isDiaryRec){try{diaryVoiceRecog.start();}catch(err){}}};
+  diaryVoiceRecog.start(); isDiaryRec=true;
+  var b=document.getElementById('diaryVoiceBtn'); b.classList.add('rec'); b.textContent='⏹';
+}
+
+function stopDiaryVoice() {
+  if(diaryVoiceRecog){try{diaryVoiceRecog.stop();}catch(e){} diaryVoiceRecog=null;}
+  isDiaryRec=false;
+  var b=document.getElementById('diaryVoiceBtn');
+  if(b){b.classList.remove('rec');b.textContent='🎤';}
+}
+
+function saveDiaryEntry() {
+  stopDiaryVoice();
+  var text = document.getElementById('diaryText').value.trim();
+  var date = document.getElementById('diaryDate').value;
+  if (!text) { toast('Please describe what happened'); return; }
+  if (!date) { toast('Please select a date'); return; }
+  var typeLabels = { contact:'Contact session', incident:'Incident', message:'Message exchange', hearing:'Hearing', welfare:'Welfare concern' };
+  var entry = {
+    id: Date.now(),
+    date: date,
+    type: diaryType || 'contact',
+    typeLabel: typeLabels[diaryType] || 'Entry',
+    mood: diaryMood,
+    contactOk: diaryContact === 'no' ? false : true,
+    contactIssue: document.getElementById('diaryContactIssue').value.trim(),
+    text: text,
+    createdAt: new Date().toISOString()
+  };
+  diaryEntries.push(entry);
+  localStorage.setItem('gDiary', JSON.stringify(diaryEntries));
+  // Reset form
+  document.getElementById('diaryText').value = '';
+  document.getElementById('diaryContactIssue').value = '';
+  document.querySelectorAll('#diaryTypeOpts .opt, #diaryMoodOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  document.getElementById('diaryContactIssueBox').style.display = 'none';
+  diaryType=''; diaryMood=''; diaryContact='';
+  toast('✅ Diary entry saved');
+  go('sDiary');
 }
 
 function logSent(choice){
