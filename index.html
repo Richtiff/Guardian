@@ -1706,6 +1706,15 @@ function go(id) {
     var hideOn = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
     homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
   }
+  // Load screen data
+  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); }, 50); }
+  if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
+  if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
+  if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); }, 50); }
+  if (id==='sStatements') {}
+  if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
+  if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
+  if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
 }
 
 // Intercept browser back button
