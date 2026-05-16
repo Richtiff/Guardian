@@ -378,6 +378,19 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .section-intro-body { font-size:14px; color:var(--muted-hi); line-height:1.7; margin-bottom:20px; text-align:center; }
 .section-intro-close { width:100%; padding:13px; background:linear-gradient(135deg,#c9a030,var(--gold)); border:none; border-radius:12px; color:#0a0800; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:800; cursor:pointer; }
 .section-intro-skip { width:100%; padding:10px; background:transparent; border:none; color:var(--muted); font-size:12px; cursor:pointer; margin-top:8px; }
+.hearing-opt { background:var(--card); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:border-color 0.15s; }
+.hearing-opt:hover { border-color:rgba(212,168,67,0.3); }
+.hearing-opt.sel { border-color:var(--gold); background:var(--gold-dim); }
+.hearing-opt-header { display:flex; align-items:center; gap:10px; padding:12px 14px; }
+.hearing-opt-check { width:18px; height:18px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; transition:all 0.15s; }
+.hearing-opt.sel .hearing-opt-check { background:var(--gold); border-color:var(--gold); }
+.hearing-opt-title { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; color:var(--white); }
+.hearing-opt-body { display:none; padding:0 14px 14px; }
+.hearing-opt.sel .hearing-opt-body { display:block; }
+.hearing-opt.open .hearing-opt-body { display:block; }
+.hearing-opt-what { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; }
+.hearing-opt-goal { font-size:13px; color:var(--white); line-height:1.6; padding:10px 12px; background:rgba(212,168,67,0.08); border:1px solid rgba(212,168,67,0.15); border-radius:8px; }
+.hearing-opt-goal::before { content:"Your statement needs to: "; font-weight:700; color:var(--gold); font-size:11px; display:block; margin-bottom:4px; letter-spacing:0.5px; font-family:'DM Sans',sans-serif; }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
 .overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
@@ -677,9 +690,9 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-label">Understand Your Documents</div>
       <div class="home-btn-sub">Take the fear out of every letter</div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sScanner','scanner')">
-      <div class="home-btn-icon">🔎</div>
-      <div class="home-btn-label">Statement Scanner</div>
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sStatements','scanner')">
+      <div class="home-btn-icon">📋</div>
+      <div class="home-btn-label">Statements</div>
       <div class="home-btn-sub">See your case through the court's eyes</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="go('sEditProfile')">
@@ -1082,42 +1095,117 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <!-- STATEMENT SCANNER -->
-<div class="step" id="sScanner">
+<div class="step" id="sStatements">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Statement Scanner</div><div class="section-sub">See your case through the court's eyes</div></div>
+    <div><div class="section-title">Statements</div><div class="section-sub">Your voice in court</div></div>
   </div>
-  <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:16px;">Upload your statement or theirs. Guardian scores it, spots the weaknesses, and tells you exactly what needs fixing.</div>
-  <div style="display:flex;gap:10px;margin-bottom:16px;">
-    <button type="button" class="opt" id="scanMine" onclick="setScanType('mine')" style="flex:1;padding:14px;">📝 My statement</button>
-    <button type="button" class="opt" id="scanTheirs" onclick="setScanType('theirs')" style="flex:1;padding:14px;">⚔️ Their statement</button>
+  <div style="background:rgba(52,120,212,0.08);border:1.5px solid rgba(52,120,212,0.15);border-radius:16px;padding:18px;margin-bottom:20px;">
+    <div style="font-size:15px;color:var(--white);line-height:1.8;font-style:italic;">"Receiving a statement is one of the hardest moments in any case. Whatever it says — Guardian is here to help you understand it, respond to it, and make sure your voice is heard."</div>
   </div>
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <button type="button" onclick="go('sReadTheirs')" style="width:100%;text-align:left;background:var(--card);border:1.5px solid rgba(52,120,212,0.25);border-radius:16px;padding:18px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--blue-dim);border:1px solid rgba(52,120,212,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">📨</div>
+        <div style="flex:1;">
+          <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px;">Read Their Statement</div>
+          <div style="font-size:13px;color:var(--muted-hi);line-height:1.5;">Find out exactly what you are up against. Every allegation. Every claim. What is weak. What needs answering.</div>
+        </div>
+        <div style="color:var(--blue);font-size:20px;">→</div>
+      </div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--blue-dim);border-radius:8px;font-size:12px;color:var(--blue);font-weight:600;">Free — upload any document they have filed</div>
+    </button>
+    <button type="button" onclick="go('sCheckMine')" style="width:100%;text-align:left;background:var(--card);border:1.5px solid rgba(201,148,58,0.25);border-radius:16px;padding:18px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--amber-dim);border:1px solid rgba(201,148,58,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🔍</div>
+        <div style="flex:1;">
+          <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:var(--white);margin-bottom:4px;">Check Mine</div>
+          <div style="font-size:13px;color:var(--muted-hi);line-height:1.5;">See your statement through the court's eyes. Guardian scores it, finds the weaknesses, and tells you exactly what to fix.</div>
+        </div>
+        <div style="color:var(--amber);font-size:20px;">→</div>
+      </div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--amber-dim);border-radius:8px;font-size:12px;color:var(--amber);font-weight:600;">Free — upload your draft statement</div>
+    </button>
+    <button type="button" onclick="goStatementWriter()" style="width:100%;text-align:left;background:linear-gradient(135deg,rgba(212,168,67,0.12),rgba(212,168,67,0.05));border:1.5px solid rgba(212,168,67,0.3);border-radius:16px;padding:18px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--gold-dim);border:1px solid rgba(212,168,67,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">✍️</div>
+        <div style="flex:1;">
+          <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:var(--gold);margin-bottom:4px;">Write My Statement</div>
+          <div style="font-size:13px;color:var(--muted-hi);line-height:1.5;">Guardian builds your full position statement using your diary, documents, and case history. Court-ready. Human. Yours.</div>
+        </div>
+        <div style="color:var(--gold);font-size:20px;">→</div>
+      </div>
+      <div style="margin-top:12px;padding:8px 12px;background:var(--gold-dim);border-radius:8px;font-size:12px;color:var(--gold);font-weight:600;">£79 one-time — built on everything Guardian knows about your case</div>
+    </button>
+  </div>
+</div>
+
+<!-- READ THEIR STATEMENT -->
+<div class="step" id="sReadTheirs">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Read Their Statement</div><div class="section-sub">Find out exactly what you are up against</div></div>
+  </div>
+  <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload whatever they have filed — position statement, witness statement, Cafcass letter, solicitor letter. Guardian reads every word and tells you what it means and how to respond.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,image/*,.txt" id="scannerFile" onchange="scanStatement(event)">
-    <div class="upload-item-icon">📄</div>
-    <div class="upload-item-body"><div class="upload-item-name" id="scannerLabel">Upload statement</div><div class="upload-item-hint">PDF, image, or text file</div></div>
-    <div class="upload-status" id="scannerStatus">+</div>
+    <input type="file" accept=".pdf,image/*,.txt" onchange="scanStatement(event,'theirs')">
+    <div class="upload-item-icon">📨</div>
+    <div class="upload-item-body"><div class="upload-item-name">Upload their document</div><div class="upload-item-hint">Position statement, Cafcass letter, solicitor letter, anything filed</div></div>
+    <div class="upload-status" id="theirsScanStatus">+</div>
   </label>
-  <div id="scannerResult" style="display:none;">
+  <div id="theirsResult" style="display:none;">
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">WHAT THEY ARE SAYING</div>
+      <div id="theirsVerdict" style="font-size:14px;color:var(--white);line-height:1.7;margin-bottom:16px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">ALLEGATIONS MADE</div>
+      <div id="theirsAllegations" style="font-size:14px;color:var(--muted-hi);line-height:1.8;margin-bottom:16px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin-bottom:8px;">HOW TO RESPOND TO EACH ONE</div>
+      <div id="theirsResponse" style="font-size:14px;color:var(--white);line-height:1.8;margin-bottom:16px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">WHAT IS WEAK IN THEIR CASE</div>
+      <div id="theirsWeaknesses" style="font-size:14px;color:var(--muted-hi);line-height:1.8;"></div>
+    </div>
+    <div id="theirsAddToProfile" style="background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;">🧠 Add to your case profile?</div>
+      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:10px;line-height:1.5;">Guardian found allegations in this document. Adding them to your profile means Message Coach, Diary, and Statement Writer all know what you are up against.</div>
+      <button onclick="addTheirsToProfile()" style="padding:9px 16px;background:var(--blue);border:none;border-radius:8px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Yes — update my profile</button>
+    </div>
+    <div style="background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.2);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;">Ready to respond?</div>
+      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:14px;line-height:1.6;">Guardian will build your response statement around every allegation they have made.</div>
+      <button type="button" class="btn-gold" onclick="goStatementWriter()">Build my response statement →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECK MINE -->
+<div class="step" id="sCheckMine">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Check Mine</div><div class="section-sub">See your statement through the court's eyes</div></div>
+  </div>
+  <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload your draft statement. Guardian scores it out of 10, finds the weaknesses, flags any AI tells, and tells you exactly what to fix before you file it.</div>
+  <label class="upload-item" style="margin-bottom:14px;">
+    <input type="file" accept=".pdf,image/*,.txt" onchange="scanStatement(event,'mine')">
+    <div class="upload-item-icon">🔍</div>
+    <div class="upload-item-body"><div class="upload-item-name">Upload my statement</div><div class="upload-item-hint">PDF, image, or text file</div></div>
+    <div class="upload-status" id="mineScanStatus">+</div>
+  </label>
+  <div id="mineResult" style="display:none;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;">STATEMENT SCORE</div>
-        <div id="scanScore" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;"></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;">YOUR STATEMENT SCORE</div>
+        <div id="mineScanScore" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;"></div>
       </div>
-      <div id="scanVerdict" style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:14px;"></div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">WEAKNESSES</div>
-      <div id="scanWeaknesses" style="font-size:13px;color:var(--muted-hi);line-height:1.8;margin-bottom:14px;"></div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">STRENGTHS</div>
-      <div id="scanStrengths" style="font-size:13px;color:var(--muted-hi);line-height:1.8;margin-bottom:14px;"></div>
-      <div id="scanResponseBox" style="display:none;">
-        <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin-bottom:8px;">HOW TO RESPOND</div>
-        <div id="scanResponse" style="font-size:13px;color:var(--muted-hi);line-height:1.8;"></div>
-      </div>
+      <div id="mineScanVerdict" style="font-size:14px;color:var(--muted-hi);line-height:1.6;margin-bottom:14px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">WHAT NEEDS FIXING</div>
+      <div id="mineScanWeaknesses" style="font-size:14px;color:var(--muted-hi);line-height:1.8;margin-bottom:14px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">WHAT IS WORKING</div>
+      <div id="mineScanStrengths" style="font-size:14px;color:var(--muted-hi);line-height:1.8;"></div>
     </div>
-    <div style="background:var(--gold-dim);border:1.5px solid rgba(245,200,66,0.2);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
-      <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;">Want Guardian to write it properly?</div>
-      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:14px;line-height:1.6;">Guardian knows your full case. A court-ready statement built on everything.</div>
-      <button type="button" class="btn-gold" onclick="go('sPaywall')">Get my statement written — £79</button>
+    <div style="background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.2);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;">Want Guardian to rewrite it properly?</div>
+      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:14px;line-height:1.6;">Built on your full case history. Court-ready. Human. Yours.</div>
+      <button type="button" class="btn-gold" onclick="goStatementWriter()">Guardian rewrites it for me — £79 →</button>
     </div>
   </div>
 </div>
@@ -1180,6 +1268,154 @@ p, .body-text { font-size: 16px !important; }
     <textarea class="field-input" id="diaryContactIssue" rows="2" placeholder="What happened with contact?" style="resize:none;"></textarea>
   </div>
   <button type="button" class="btn-gold" onclick="saveDiaryEntry()" style="margin-top:8px;">Save entry →</button>
+</div>
+
+
+<!-- STATEMENT WRITER -->
+<div class="step" id="sStatementWriter">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Statement Writer</div><div class="section-sub">Court-ready. Human. Yours.</div></div>
+  </div>
+
+  <!-- STAGE 1: Pre-build info -->
+  <div id="swStage1">
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">BEFORE WE START</div>
+      <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:12px;">Guardian will build your position statement using everything it knows about your case — your diary entries, uploaded documents, message history, dismissed findings, and case profile.</div>
+      <div style="font-size:13px;color:var(--muted-hi);line-height:1.7;">The stronger your case file, the stronger your statement. Make sure you have uploaded your key documents before continuing.</div>
+    </div>
+
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;" id="swCaseCheck"></div>
+
+    <div class="field-group">
+      <label class="field-label">WHAT ARE YOU ASKING THE COURT FOR?</label>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Be specific. Guardian will make sure every section of your statement builds towards this.</div>
+      <textarea class="field-input" id="swCourtAsk" rows="3" style="resize:none;" placeholder="e.g. I am asking the court to confirm the existing contact order and enforce it under C79. I want contact to resume immediately."></textarea>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">WHICH HEARING IS THIS FOR?</label>
+      <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Tap a hearing type to see what it means and what your statement needs to achieve.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="swHearingOpts">
+
+        <div class="hearing-opt" onclick="selectHearing(this,'First hearing directions')">
+          <div class="hearing-opt-header">
+            <div class="hearing-opt-check" id="hCheck0"></div>
+            <div class="hearing-opt-title">First hearing — FHDRA</div>
+          </div>
+          <div class="hearing-opt-body">
+            <div class="hearing-opt-what">Your first appearance in court. Be prepared — this hearing rarely goes the way parents hope. The judge is not here to make decisions today. They are finding out what the case is about and deciding what happens next. Most FHDRA hearings end with another hearing being listed and a Cafcass section 7 report being ordered. That is normal. Do not be disheartened.</div>
+            <div class="hearing-opt-goal"> introduce yourself calmly and make a good first impression. State your position clearly. Address the Cafcass safeguarding letter directly. Make a reasonable interim proposal for contact while the case continues. Save your strongest arguments for the next hearing — today is about showing the court you are reasonable, child-focused, and not a risk. Plant the seeds. The judge will remember how you came across today.</div>
+          </div>
+        </div>
+
+        <div class="hearing-opt" onclick="selectHearing(this,'Contested hearing')">
+          <div class="hearing-opt-header">
+            <div class="hearing-opt-check" id="hCheck1"></div>
+            <div class="hearing-opt-title">Contested hearing — dispute resolution</div>
+          </div>
+          <div class="hearing-opt-body">
+            <div class="hearing-opt-what">Both sides are still disagreeing and the court is trying to help you reach an agreement before a final hearing. Cafcass may have filed a section 7 report.</div>
+            <div class="hearing-opt-goal"> address every allegation directly, reference any Cafcass findings that support your position, show the court you have tried to resolve this, and make a clear specific proposal for contact.</div>
+          </div>
+        </div>
+
+        <div class="hearing-opt" onclick="selectHearing(this,'Enforcement hearing C79')">
+          <div class="hearing-opt-header">
+            <div class="hearing-opt-check" id="hCheck2"></div>
+            <div class="hearing-opt-title">Enforcement hearing — C79</div>
+          </div>
+          <div class="hearing-opt-body">
+            <div class="hearing-opt-what">There is already a court order in place but it is not being followed. You are asking the court to enforce it. This is serious — a breach of a court order can result in penalties including unpaid work or in severe cases committal.</div>
+            <div class="hearing-opt-goal"> document every specific breach with dates and times, show the impact on your child, demonstrate you have tried to resolve it without court intervention, and ask the court to enforce the order and consider enforcement measures.</div>
+          </div>
+        </div>
+
+        <div class="hearing-opt" onclick="selectHearing(this,'Review hearing')">
+          <div class="hearing-opt-header">
+            <div class="hearing-opt-check" id="hCheck3"></div>
+            <div class="hearing-opt-title">Review hearing</div>
+          </div>
+          <div class="hearing-opt-body">
+            <div class="hearing-opt-what">The court ordered a review to check how things are going since the last order or directions. This is your chance to tell the court what has worked, what has not, and what needs to change.</div>
+            <div class="hearing-opt-goal"> report honestly on what has happened since the last hearing, highlight any positives, address any issues, and make proposals for what should happen going forward.</div>
+          </div>
+        </div>
+
+        <div class="hearing-opt" onclick="selectHearing(this,'Final hearing')">
+          <div class="hearing-opt-header">
+            <div class="hearing-opt-check" id="hCheck4"></div>
+            <div class="hearing-opt-title">Final hearing</div>
+          </div>
+          <div class="hearing-opt-body">
+            <div class="hearing-opt-what">This is the most important hearing. The judge will make a final decision that will become a sealed court order. Both sides will give evidence. This is your one opportunity to put your full case before the court.</div>
+            <div class="hearing-opt-goal"> be comprehensive, address every allegation with evidence, put your child's welfare at the centre of every section, make a detailed specific proposal for what you want the court to order, and explain clearly why that is in your child's best interests.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button type="button" class="btn-gold" onclick="startStatementBuild()" style="margin-top:8px;">Build my statement →</button>
+  </div>
+
+  <!-- STAGE 2: Building -->
+  <div id="swStage2" style="display:none;">
+    <div style="text-align:center;padding:30px 0;">
+      <div style="font-size:32px;margin-bottom:16px;">📝</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Guardian is writing your statement</div>
+      <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;" id="swBuildStatus">Reading your case history...</div>
+      <div style="margin-top:20px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+        <div id="swProgress" style="height:100%;background:var(--gold);width:0%;transition:width 0.5s ease;border-radius:2px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 3: Statement ready -->
+  <div id="swStage3" style="display:none;">
+    <div style="background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:12px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">✅</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--green);">Statement ready</div>
+        <div style="font-size:12px;color:var(--muted-hi);" id="swScoreLabel">Reviewing quality...</div>
+      </div>
+    </div>
+
+    <!-- AI audit results -->
+    <div id="swAuditBox" style="background:var(--amber-dim);border:1.5px solid rgba(201,148,58,0.25);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:none;">
+      <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:6px;">⚠️ GUARDIAN NOTICED</div>
+      <div id="swAuditText" style="font-size:13px;color:var(--muted-hi);line-height:1.6;"></div>
+    </div>
+
+    <!-- Editable statement -->
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--gold);">YOUR STATEMENT</div>
+        <div style="font-size:11px;color:var(--muted-hi);">Tap to edit</div>
+      </div>
+      <textarea id="swStatementText" style="width:100%;min-height:400px;background:transparent;border:none;color:var(--white);font-family:'Inter',sans-serif;font-size:15px;line-height:1.8;padding:16px;outline:none;resize:vertical;"></textarea>
+    </div>
+
+    <!-- Re-score button -->
+    <button type="button" onclick="rescoreStatement()" style="width:100%;padding:12px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Re-score my edits →</button>
+
+    <!-- Sending instructions -->
+    <div id="swSendingInstructions" style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;display:none;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">📬 WHO TO SEND THIS TO</div>
+      <div id="swSendingText" style="font-size:14px;color:var(--muted-hi);line-height:1.8;"></div>
+    </div>
+
+    <!-- Export options -->
+    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--muted-hi);letter-spacing:0.5px;margin-bottom:10px;">EXPORT YOUR STATEMENT</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <button type="button" onclick="exportStatement('copy')" style="padding:13px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;"><span>📋</span> Copy to clipboard — paste into Word or Google Docs</button>
+      <button type="button" onclick="exportStatement('pdf')" style="padding:13px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;"><span>📄</span> Download as PDF</button>
+      <button type="button" onclick="exportStatement('txt')" style="padding:13px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;"><span>📝</span> Download as text file — open in any app</button>
+    </div>
+
+    <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;padding:0 10px;">This statement was built by Guardian using your case history. Always review before sending. Guardian is not a solicitor and this is not legal advice.</div>
+  </div>
 </div>
 
 </div><!-- end .app -->
@@ -1350,7 +1586,7 @@ window.onload = async function() {
   }
 };
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sScanner','sDiary','sDiaryEntry'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter'];
 
 var stepHistory = [];
 var navLock = false;
@@ -1400,7 +1636,7 @@ function getIntroData() {
     docs: { icon:'🗂', title:(name?name+"'s":'Your')+' Case File', body:hey+'Upload your court orders, Cafcass letters, WhatsApp history, screenshots — anything. I will read it all and build a timeline of your case. Safe, stored, and ready the moment you need it.' },
     diary: { icon:'📓', title:'Your memory. Your safety net.', body:hey+'Your diary is your most powerful piece of evidence. Every contact session with '+child+', every welfare concern, every incident — voice or type. I remember everything so you do not have to. Start today.' },
     explainer: { icon:'📩', title:(name?name+', let':'Let')+' me read that for you', body:hey+'Got a letter making you anxious? Upload it here and I will tell you exactly what it means, what you need to do, and how long you have. Take the fear out of every letter.' },
-    scanner: { icon:'🔎', title:"Let's see where you stand, "+(name||'you'), body:hey+'Upload your statement and I will score it and find the weaknesses. Or upload their statement and I will identify every allegation and show you how to respond. Free — every parent deserves to know where they stand.' },
+    scanner: { icon:'📋', title:"Let's see where you stand, "+(name||'you'), body:hey+'Upload your statement and I will score it and find the weaknesses. Or upload their statement and I will identify every allegation and show you how to respond. Free — every parent deserves to know where they stand.' },
     brain: { icon:'🧠', title:'You help protect others, '+(name||'you'), body:hey+'Every time you tell me how a message went, you make Guardian smarter for every parent who comes after you. Your experience protects thousands of parents you will never meet. You are not alone. And because of you, neither are they.' }
   };
 }
@@ -2700,22 +2936,25 @@ function setScanType(type) {
   document.getElementById('scannerLabel').textContent = type==='mine' ? 'Upload my statement' : 'Upload their statement';
 }
 
-async function scanStatement(event) {
+async function scanStatement(event, forcedType) {
   var file = event.target.files[0];
   event.target.value = '';
   if (!file) return;
-  document.getElementById('scannerStatus').textContent = '⏳';
-  load('Scanning statement...', 'Guardian is reading every word');
+  var type = forcedType || scanType || 'mine';
+  var statusId = type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus';
+  var statusEl = document.getElementById(statusId);
+  if (statusEl) statusEl.textContent = '⏳';
+  load('Reading their statement...', type === 'theirs' ? 'Guardian is finding every allegation' : 'Guardian is reviewing your statement');
   var reader = new FileReader();
   reader.onload = async function(e) {
     var b64 = e.target.result.split(',')[1];
     var ctx = getCTX();
-    var isMine = scanType === 'mine';
-    var prompt = ctx + '\n\nThis parent has uploaded ' + (isMine ? 'their own' : "the other parent's") + ' position statement for Guardian to analyse.\n\n' +
+    var isMine = type === 'mine';
+    var prompt = ctx + '\n\nThis parent has uploaded ' + (isMine ? 'their own position statement' : "the other parent's statement") + ' for Guardian to analyse.\n\n' +
       (isMine ?
-        'Score this statement out of 10. Identify weaknesses and strengths. Suggest improvements.' :
-        'Analyse this statement. List every allegation made and how to respond.') +
-      '\n\nReturn ONLY JSON:\n{"score":null,"verdict":"<2-3 sentence assessment>","weaknesses":["<w1>","<w2>","<w3>"],"strengths":["<s1>","<s2>"],"response":"<how to respond or improve>"}';
+        'Score this statement out of 10. Identify specific weaknesses — anything that sounds defensive, AI-generated, unproven, or legally weak. Identify strengths. Be specific and constructive.' :
+        'Read this statement carefully. Identify every allegation made against this parent. Assess how strong each allegation is. Suggest specifically how the parent should respond to each one based on their case history. Identify what is weak in their case.') +
+      '\n\nReturn ONLY JSON: {"score":' + (isMine ? '<0-10>' : 'null') + ',"verdict":"<plain English summary of what this document says or means>","weaknesses":["<' + (isMine ? 'weakness' : 'allegation') + ' 1>","<' + (isMine ? 'weakness' : 'allegation') + ' 2>","<' + (isMine ? 'weakness' : 'allegation') + ' 3>"],"strengths":["<' + (isMine ? 'strength' : 'weakness in their case') + ' 1>","<' + (isMine ? 'strength' : 'weakness in their case') + ' 2>"],"response":"<' + (isMine ? 'what to improve' : 'how to respond to each allegation specifically') + '>"}';
     try {
       var msgContent = [];
       if (file.type && file.type.startsWith('image/')) {
@@ -2729,24 +2968,27 @@ async function scanStatement(event) {
       var parsed = null;
       try { parsed = JSON.parse(raw); } catch(err) { var m=raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
       unload();
-      document.getElementById('scannerStatus').textContent = '✅';
+      var statusEl2 = document.getElementById(type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus');
+      if (statusEl2) statusEl2.textContent = '✅';
       if (parsed) {
-        var scoreEl = document.getElementById('scanScore');
-        if (parsed.score !== null && parsed.score !== undefined) {
-          var col = parsed.score>=7?'var(--green)':parsed.score>=5?'var(--amber)':'var(--red)';
-          scoreEl.innerHTML = '<span style="color:'+col+'">' + parsed.score + '</span><span style="font-size:14px;color:var(--muted-hi)">/10</span>';
+        if (type === 'theirs') {
+          document.getElementById('theirsVerdict').innerHTML = (parsed.verdict||'').replace(/\n/g,'<br>');
+          document.getElementById('theirsAllegations').innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-weight:700;color:var(--red);">Allegation '+(i+1)+':</span> '+w+'</div>';}).join('');
+          document.getElementById('theirsResponse').innerHTML = (parsed.response||'').replace(/\n/g,'<br>');
+          document.getElementById('theirsWeaknesses').innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
+          document.getElementById('theirsResult').style.display = 'block';
         } else {
-          scoreEl.textContent = '';
+          var scoreEl = document.getElementById('mineScanScore');
+          if (parsed.score !== null && parsed.score !== undefined) {
+            var col = parsed.score>=7?'var(--green)':parsed.score>=5?'var(--amber)':'var(--red)';
+            scoreEl.innerHTML = '<span style="color:'+col+'">' + parsed.score + '</span><span style="font-size:14px;color:var(--muted-hi)">/10</span>';
+          }
+          document.getElementById('mineScanVerdict').textContent = parsed.verdict || '';
+          document.getElementById('mineScanWeaknesses').innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:6px 0;border-bottom:1px solid var(--border);">'+(i+1)+'. '+w+'</div>';}).join('');
+          document.getElementById('mineScanStrengths').innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
+          document.getElementById('mineResult').style.display = 'block';
         }
-        document.getElementById('scanVerdict').textContent = parsed.verdict || '';
-        document.getElementById('scanWeaknesses').innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:4px 0;border-bottom:1px solid var(--border);">'+( i+1)+'. '+w+'</div>';}).join('');
-        document.getElementById('scanStrengths').innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
-        if (parsed.response) {
-          document.getElementById('scanResponse').innerHTML = parsed.response.replace(/\n/g,'<br>');
-          document.getElementById('scanResponseBox').style.display = 'block';
-        }
-        document.getElementById('scannerResult').style.display = 'block';
-      } else { toast('Could not analyse statement — please try again'); }
+      } else { toast('Could not analyse — please try again'); }
     } catch(err) { unload(); toast('Something went wrong — please try again'); }
   };
   reader.readAsDataURL(file);
@@ -3008,6 +3250,270 @@ function logInDiary() {
     text: 'Message checked: ' + (st.flagText || '') + '. Reply sent via Guardian.'
   });
   go('sDiaryEntry');
+}
+
+
+// ── STATEMENT WRITER ──
+var swHearingType = '';
+var swBuiltStatement = '';
+
+function selectHearing(el, type) {
+  // Toggle open/close on tap
+  var isOpen = el.classList.contains('open') || el.classList.contains('sel');
+  document.querySelectorAll('.hearing-opt').forEach(function(o){
+    o.classList.remove('sel','open');
+  });
+  if (!isOpen) {
+    el.classList.add('sel');
+    swHearingType = type;
+  } else {
+    swHearingType = '';
+  }
+}
+
+function addTheirsToProfile() {
+  var allegations = document.getElementById('theirsAllegations').textContent.trim();
+  if (!profile) profile = {};
+  if (allegations) {
+    profile.allegations = profile.allegations ? profile.allegations + '; ' + allegations : allegations;
+    save();
+    toast('Profile updated — Message Coach and Statement Writer now know what you are up against');
+    document.getElementById('theirsAddToProfile').style.display = 'none';
+  }
+}
+
+function loadStatementWriter() {
+  document.getElementById('swStage1').style.display = 'block';
+  document.getElementById('swStage2').style.display = 'none';
+  document.getElementById('swStage3').style.display = 'none';
+  swHearingType = '';
+  swBuiltStatement = '';
+}
+
+function goStatementWriter() {
+  // Pre-flight check — show what Guardian has
+  var checks = [];
+  var diary = diaryEntries.length;
+  var docs = caseDocuments.length;
+  var hasMsgs = msgLog.length > 0;
+  var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
+  var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
+
+  var checkHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>';
+  checkHtml += [
+    { label: diary + ' diary entries', ok: diary > 0, tip: 'Log contact sessions in My Diary' },
+    { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
+    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Message Coach' },
+    { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
+    { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
+  ].map(function(c) {
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">' +
+      '<span style="font-size:14px;">' + (c.ok ? '✅' : '⚠️') + '</span>' +
+      '<div style="flex:1;"><div style="font-size:13px;color:' + (c.ok ? 'var(--white)' : 'var(--muted-hi)') + ';">' + c.label + '</div>' +
+      (!c.ok ? '<div style="font-size:11px;color:var(--muted);">' + c.tip + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+
+  document.getElementById('swCaseCheck').innerHTML = checkHtml;
+  go('sStatementWriter');
+}
+
+function startStatementBuild() {
+  var ask = document.getElementById('swCourtAsk').value.trim();
+  if (!ask) { toast('Please tell Guardian what you are asking the court for'); return; }
+
+  document.getElementById('swStage1').style.display = 'none';
+  document.getElementById('swStage2').style.display = 'block';
+
+  buildStatement(ask);
+}
+
+async function buildStatement(courtAsk) {
+  var statuses = [
+    'Reading your case history...',
+    'Reviewing your diary entries...',
+    'Analysing allegations...',
+    'Building your strongest arguments...',
+    'Ranking allegations by severity...',
+    'Writing your statement...',
+    'Checking for AI tells...',
+    'Final quality review...'
+  ];
+
+  var prog = document.getElementById('swProgress');
+  var stat = document.getElementById('swBuildStatus');
+
+  // Animate progress
+  for (var i = 0; i < statuses.length; i++) {
+    stat.textContent = statuses[i];
+    prog.style.width = ((i + 1) / statuses.length * 85) + '%';
+    await new Promise(function(r){ setTimeout(r, 600); });
+  }
+
+  try {
+    var ctx = getCTX();
+    var diaryText = diaryEntries.slice(-20).map(function(e){
+      return e.date + ': ' + e.typeLabel + ' — ' + e.text.substring(0,200);
+    }).join('\n');
+    var docText = caseDocuments.map(function(d){
+      return d.type + ': ' + d.name + ' — ' + (d.extract || '');
+    }).join('\n');
+    var msgText = msgLog.slice(-10).map(function(m){
+      return m.summary + ' (score: ' + m.score + '/10, flag: ' + m.flag + ')';
+    }).join('\n');
+
+    var hearingType = swHearingType || 'hearing';
+    var prompt = ctx +
+      '\n\nDIARY ENTRIES:\n' + (diaryText || 'None logged yet') +
+      '\n\nDOCUMENTS:\n' + (docText || 'None uploaded yet') +
+      '\n\nMESSAGE HISTORY:\n' + (msgText || 'None yet') +
+      '\n\nWHAT THE PARENT IS ASKING FOR:\n' + courtAsk +
+      '\n\nHEARING TYPE: ' + hearingType +
+
+      '\n\nWrite a position statement for this parent for their ' + hearingType + ' in England and Wales Family Court. CRITICAL RULES: NO headers, NO section titles, NO bold text, NO bullet points anywhere. NO Furthermore, Moreover, It is submitted, The applicant, It should be noted. NO passive voice. Write in first person. Sound like a real human being. Use specific dates and details from the case history. Rank allegations from most serious to least serious, address each one directly. Short paragraphs. End with numbered asks. 600 to 900 words. SECTION ORDER: Opening (who you are, your child, what you are asking for), Allegations (most serious first), Background (key findings in your favour), The child (what contact means for them), Closing asks (numbered, specific). After the statement write SENDING_INSTRUCTIONS: then provide specific sending instructions based on any case numbers, court names, or contact details found in the documents.';
+
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        system: "You are helping a litigant in person write a position statement for the Family Court in England and Wales. Sound like a real parent — human, specific, measured. No AI tells. Barrister quality, parent voice.",
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    var data = await res.json();
+    var full = ((data.content || []).map(function(b){ return b.text || ''; }).join('').trim());
+
+    // Split statement from sending instructions
+    var sendingIdx = full.indexOf('SENDING_INSTRUCTIONS:');
+    var statement = sendingIdx !== -1 ? full.substring(0, sendingIdx).trim() : full;
+    var sendingInstructions = sendingIdx !== -1 ? full.substring(sendingIdx + 21).trim() : '';
+
+    swBuiltStatement = statement;
+
+    // AI audit — check for tells
+    var tells = [];
+    var aiPhrases = ['Furthermore', 'Moreover', 'It is submitted', 'The applicant', 'It should be noted', 'going forward', 'it is important to note', 'In conclusion'];
+    aiPhrases.forEach(function(phrase) {
+      if (statement.indexOf(phrase) !== -1) tells.push(phrase);
+    });
+
+    prog.style.width = '100%';
+    await new Promise(function(r){ setTimeout(r, 400); });
+
+    // Show stage 3
+    document.getElementById('swStage2').style.display = 'none';
+    document.getElementById('swStage3').style.display = 'block';
+    document.getElementById('swStatementText').value = statement;
+
+    // Word count score
+    var words = statement.split(' ').length;
+    var scoreLabel = words < 400 ? 'Too short — add more detail to key sections' :
+                     words > 1000 ? 'Too long — consider trimming background sections' :
+                     'Good length — ' + words + ' words';
+    document.getElementById('swScoreLabel').textContent = scoreLabel;
+
+    // AI audit
+    if (tells.length > 0) {
+      document.getElementById('swAuditText').textContent = 'Guardian found ' + tells.length + ' phrase(s) that could read as AI-generated: ' + tells.join(', ') + '. Consider editing these in the statement above.';
+      document.getElementById('swAuditBox').style.display = 'block';
+    }
+
+    // Sending instructions
+    if (sendingInstructions) {
+      document.getElementById('swSendingText').innerHTML = sendingInstructions.replace(/\n/g, '<br>');
+      document.getElementById('swSendingInstructions').style.display = 'block';
+    }
+
+  } catch(e) {
+    document.getElementById('swStage2').style.display = 'none';
+    document.getElementById('swStage1').style.display = 'block';
+    toast('Something went wrong — please try again');
+  }
+}
+
+async function rescoreStatement() {
+  var text = document.getElementById('swStatementText').value;
+  if (!text) return;
+  load('Reviewing your edits...', '');
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: 'Review this family court position statement. Check for: AI tells (headers, bullets, furthermore, passive voice, formal phrases), word count, clarity, human voice, child focus, specific asks at the end. Return ONLY JSON: {"score":<0-10>,"feedback":"<2-3 sentences>","tells":["<any AI phrases found>"],"wordCount":<number>}\n\nSTATEMENT:\n' + text.substring(0, 1500) }]
+      })
+    });
+    var data = await res.json();
+    var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed = null;
+    try{parsed=JSON.parse(raw);}catch(e){}
+    unload();
+    if (parsed) {
+      var col = parsed.score >= 8 ? 'var(--green)' : parsed.score >= 6 ? 'var(--amber)' : 'var(--red)';
+      document.getElementById('swScoreLabel').innerHTML = '<span style="color:' + col + ';font-weight:700;">' + parsed.score + '/10</span> — ' + parsed.feedback;
+      if (parsed.tells && parsed.tells.length > 0) {
+        document.getElementById('swAuditText').textContent = 'AI tells found: ' + parsed.tells.join(', ');
+        document.getElementById('swAuditBox').style.display = 'block';
+      } else {
+        document.getElementById('swAuditBox').style.display = 'none';
+      }
+      toast('Statement re-scored: ' + parsed.score + '/10');
+    }
+  } catch(e) { unload(); toast('Could not re-score — try again'); }
+}
+
+function exportStatement(format) {
+  var text = document.getElementById('swStatementText').value;
+  if (!text) { toast('No statement to export'); return; }
+
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : '';
+  var myName = profile && profile.myName ? profile.myName : '';
+  var caseRef = '';
+  // Try to find case number from documents
+  caseDocuments.forEach(function(d){ if(d.extract && d.extract.match(/[A-Z]{2}[0-9]{2}[A-Z][0-9]{5}/)) { caseRef = d.extract.match(/[A-Z]{2}[0-9]{2}[A-Z][0-9]{5}/)[0]; } });
+
+  var header = 'POSITION STATEMENT\n' +
+    (myName ? 'Prepared by: ' + myName + '\n' : '') +
+    (caseRef ? 'Case reference: ' + caseRef + '\n' : '') +
+    'Date: ' + new Date().toLocaleDateString('en-GB') + '\n' +
+    '----------------------------------------' + '\n\n';
+
+  var footer = '\n\n----------------------------------------\nThis statement was prepared with the assistance of Guardian.\nGuardian is not a solicitor. This is not legal advice.\nguardian-xgzl.vercel.app';
+
+  var full = header + text + footer;
+
+  if (format === 'copy') {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(full).then(function(){
+        toast('✅ Copied — paste into Word or Google Docs');
+      });
+    }
+  } else if (format === 'pdf') {
+    // Open print dialog with clean formatting
+    var win = window.open('', '_blank');
+    win.document.write('<html><head><title>Position Statement</title><style>body{font-family:Georgia,serif;font-size:12pt;line-height:1.8;max-width:700px;margin:40px auto;color:#000;} p{margin-bottom:12pt;}</style></head><body>');
+    win.document.write('<pre style="font-family:Georgia,serif;font-size:12pt;line-height:1.8;white-space:pre-wrap;">' + full.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>');
+    win.document.write('</body></html>');
+    win.document.close();
+    win.print();
+    toast('Print dialog opened — save as PDF');
+  } else if (format === 'txt') {
+    var blob = new Blob([full], { type: 'text/plain' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'position-statement-' + new Date().toLocaleDateString('en-GB').replace(/\//g,'-') + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('✅ Downloaded — open in Word, Google Docs, or any text app');
+  }
 }
 
 function logSent(choice){
