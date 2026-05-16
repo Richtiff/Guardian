@@ -446,19 +446,19 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
       <span style="font-size:20px;">💬</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Message Coach</div><div style="font-size:12px;color:var(--muted-hi);">Every reply coached and court-ready</div></div>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Message Coach</div><div style="font-size:12px;color:var(--muted-hi);">When you don't know what to say — we do</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
-      <span style="font-size:20px;">📋</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Document Intelligence</div><div style="font-size:12px;color:var(--muted-hi);">Upload orders, Cafcass letters, chat history</div></div>
+      <span style="font-size:20px;">⚖️</span>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Court Guru</div><div style="font-size:12px;color:var(--muted-hi);">Someone who knows everything, standing next to you. Free.</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
-      <span style="font-size:20px;">🤖</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Court Guru Anything</div><div style="font-size:12px;color:var(--muted-hi);">Plain English answers — free forever</div></div>
+      <span style="font-size:20px;">📁</span>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Your Case. Your Evidence.</div><div style="font-size:12px;color:var(--muted-hi);">Documents, diary, statements. Safe and ready when you need it.</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
       <span style="font-size:20px;">🧠</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Never Forgets</div><div style="font-size:12px;color:var(--muted-hi);">Guardian learns your case and remembers everything</div></div>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">You're Not Alone</div><div style="font-size:12px;color:var(--muted-hi);">Thousands of parents. One Guardian. Getting stronger together.</div></div>
     </div>
   </div>
   <button type="button" class="btn-gold" onclick="go('sProfile1')">Set up my case →</button>
@@ -503,7 +503,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   </div>
   <div class="field-group">
     <label class="field-label">YOUR CONTACT SCHEDULE</label>
-    <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am to 6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
+    <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm — or skip and upload your order, Guardian will find it" onkeydown="if(event.key==='Enter')event.preventDefault()">
   </div>
   <button type="button" class="btn-gold" onclick="saveP2()" style="margin-top:8px;">Next →</button>
 </div>
@@ -633,15 +633,20 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
       <div class="home-btn-label">Court Guru</div>
       <div class="home-btn-sub">We can explain anything, anytime</div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDocs','docs')">
-      <div class="home-btn-icon">🗂</div>
-      <div class="home-btn-label">Case File</div>
-      <div class="home-btn-sub">Safe, stored and ready when you need it</div>
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sBrain','brain')">
+      <div class="home-btn-icon">🧠</div>
+      <div class="home-btn-label">Guardian Brain</div>
+      <div class="home-btn-sub">Your experience makes us stronger</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="showSection('sDiary','diary')">
       <div class="home-btn-icon">📓</div>
       <div class="home-btn-label">My Diary</div>
       <div class="home-btn-sub">Your memory. Your safety net.</div>
+    </button>
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDocs','docs')">
+      <div class="home-btn-icon">🗂</div>
+      <div class="home-btn-label">Case File</div>
+      <div class="home-btn-sub">Safe, stored and ready when you need it</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="showSection('sExplainer','explainer')">
       <div class="home-btn-icon">📩</div>
@@ -652,11 +657,6 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
       <div class="home-btn-icon">🔎</div>
       <div class="home-btn-label">Statement Scanner</div>
       <div class="home-btn-sub">See your case through the court's eyes</div>
-    </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sBrain','brain')">
-      <div class="home-btn-icon">🧠</div>
-      <div class="home-btn-label">Guardian Brain</div>
-      <div class="home-btn-sub">Your experience makes us stronger</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="go('sEditProfile')">
       <div class="home-btn-icon">⚙</div>
@@ -955,19 +955,18 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   </div>
   <div class="field-group">
     <label class="field-label">CONTACT SCHEDULE</label>
-    <input class="field-input" id="editContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
+    <input class="field-input" id="editContact" type="text" placeholder="e.g. Every Saturday 10am-6pm — or upload your order and Guardian will find it" onkeydown="if(event.key==='Enter')event.preventDefault()">
   </div>
   <div class="field-group">
     <label class="field-label">CASE TYPE</label>
-    <select class="field-select" id="editCaseType">
-      <option value="">Select...</option>
-      <option>No court yet</option>
-      <option>Active C100</option>
-      <option>Active C79</option>
-      <option>Non-mol order</option>
-      <option>Post order</option>
-      <option>Back in court</option>
-    </select>
+    <div class="opts" id="editCaseTypeOpts">
+      <button class="opt" onclick="pickEditCaseType(this,'No court yet')">No court proceedings yet</button>
+      <button class="opt" onclick="pickEditCaseType(this,'Active C100')">Active C100 — child arrangements</button>
+      <button class="opt" onclick="pickEditCaseType(this,'Active C79')">C79 — enforcing an existing order</button>
+      <button class="opt" onclick="pickEditCaseType(this,'Non-mol order')">Non-molestation order involved</button>
+      <button class="opt" onclick="pickEditCaseType(this,'Post order')">Order in place — post proceedings</button>
+      <button class="opt" onclick="pickEditCaseType(this,'Back in court')">Back in court — variation application</button>
+    </div>
   </div>
   <div class="field-group">
     <label class="field-label">CONFLICT LEVEL — <span id="editSliderVal">5</span> / 10</label>
@@ -975,12 +974,14 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
     <input type="range" class="conflict-slider" id="editConflict" min="1" max="10" value="5" oninput="updateEditSlider(this.value)">
   </div>
   <div class="field-group">
-    <label class="field-label">MAIN ALLEGATIONS AGAINST YOU</label>
+    <label class="field-label">WHAT ARE THEY SAYING ABOUT YOU?</label>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Guardian uses this to protect you — not to judge you.</div>
     <textarea class="field-input" rows="3" id="editAllegations" style="resize:none;" placeholder="What has been claimed against you..."></textarea>
   </div>
   <div class="field-group">
-    <label class="field-label">WHAT HAS BEEN DISMISSED OR RULED IN YOUR FAVOUR</label>
-    <textarea class="field-input" rows="3" id="editDismissed" style="resize:none;" placeholder="What the court or Cafcass has already found in your favour..."></textarea>
+    <label class="field-label">WHAT HAS ALREADY BEEN FOUND IN YOUR FAVOUR?</label>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">This is your strongest protection — the more Guardian knows, the better it defends you.</div>
+    <textarea class="field-input" rows="3" id="editDismissed" style="resize:none;" placeholder="e.g. KCC CFA found no safeguarding concerns, Cafcass letter cleared you..."></textarea>
   </div>
   <button type="button" class="btn-gold" onclick="saveEditProfile()" style="margin-top:8px;">Save changes</button>
   <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
@@ -991,6 +992,170 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
   <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
     <button type="button" onclick="doLogout()" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(239,68,68,0.3);border-radius:12px;color:var(--red);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Sign out</button>
   </div>
+</div>
+
+
+<!-- GUARDIAN BRAIN -->
+<div class="step" id="sBrain">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">🧠 Guardian Brain</div><div class="section-sub">Help Guardian learn from real experiences</div></div>
+  </div>
+  <div style="background:rgba(245,200,66,0.08);border:1.5px solid rgba(245,200,66,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:14px;line-height:1.7;color:var(--white);margin-bottom:8px;">The more parents share, the smarter Guardian gets — for everyone.</div>
+    <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;">Your feedback stays anonymous. No messages shared. Only outcomes.</div>
+  </div>
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">GUARDIAN KNOWS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="brainNumbers"></div>
+  </div>
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">YOUR RECENT MESSAGES</div>
+    <div id="brainLog" style="font-size:13px;color:var(--muted-hi);">No messages logged yet.</div>
+  </div>
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+    <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:12px;">How did your last reply go?</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button type="button" onclick="logBrainOutcome('positive')" style="padding:12px;background:var(--green-dim);border:1.5px solid rgba(34,201,122,0.3);border-radius:10px;color:var(--green);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">✅ She replied positively — it worked</button>
+      <button type="button" onclick="logBrainOutcome('neutral')" style="padding:12px;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:10px;color:var(--muted-hi);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">➡️ No reply or neutral response</button>
+      <button type="button" onclick="logBrainOutcome('negative')" style="padding:12px;background:var(--amber-dim);border:1.5px solid rgba(245,158,11,0.3);border-radius:10px;color:var(--amber);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">⚠️ It escalated or didn't help</button>
+      <button type="button" onclick="logBrainOutcome('edited')" style="padding:12px;background:var(--blue-dim);border:1.5px solid rgba(59,127,255,0.3);border-radius:10px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">✏️ I edited it before sending</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOCUMENT EXPLAINER -->
+<div class="step" id="sExplainer">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Understand Your Documents</div><div class="section-sub">Take the fear out of every letter</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:16px;">Upload any document — court order, Cafcass letter, solicitor letter, social services. Guardian reads it and tells you exactly what it means and what to do.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
+  </div>
+  <label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,image/*,.txt" onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
+  <div id="explainerResult" style="display:none;">
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT THIS DOCUMENT IS</div>
+      <div id="explainerType" style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;"></div>
+      <div id="explainerSummary" style="font-size:13px;color:var(--muted-hi);line-height:1.7;"></div>
+    </div>
+    <div style="background:var(--blue-dim);border:1.5px solid rgba(59,127,255,0.2);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin-bottom:10px;">WHAT YOU NEED TO DO</div>
+      <div id="explainerActions" style="font-size:13px;color:var(--white);line-height:1.7;"></div>
+    </div>
+    <div style="background:var(--amber-dim);border:1.5px solid rgba(245,158,11,0.2);border-radius:16px;padding:16px;margin-bottom:14px;display:none;" id="explainerDeadlineBox">
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin-bottom:6px;">⏰ DEADLINE</div>
+      <div id="explainerDeadline" style="font-size:14px;font-weight:700;color:var(--white);"></div>
+    </div>
+    <button type="button" class="btn-blue" onclick="goQAWithDoc()" style="margin-bottom:10px;">Ask Court Guru about this document →</button>
+    <button type="button" class="btn-ghost" onclick="document.getElementById('explainerResult').style.display='none'">Explain another document</button>
+  </div>
+</div>
+
+<!-- STATEMENT SCANNER -->
+<div class="step" id="sScanner">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Statement Scanner</div><div class="section-sub">See your case through the court's eyes</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:16px;">Upload your statement or theirs. Guardian scores it, spots the weaknesses, and tells you exactly what needs fixing.</div>
+  <div style="display:flex;gap:10px;margin-bottom:16px;">
+    <button type="button" class="opt" id="scanMine" onclick="setScanType('mine')" style="flex:1;padding:14px;">📝 My statement</button>
+    <button type="button" class="opt" id="scanTheirs" onclick="setScanType('theirs')" style="flex:1;padding:14px;">⚔️ Their statement</button>
+  </div>
+  <label class="upload-item" style="margin-bottom:14px;">
+    <input type="file" accept=".pdf,image/*,.txt" id="scannerFile" onchange="scanStatement(event)">
+    <div class="upload-item-icon">📄</div>
+    <div class="upload-item-body"><div class="upload-item-name" id="scannerLabel">Upload statement</div><div class="upload-item-hint">PDF, image, or text file</div></div>
+    <div class="upload-status" id="scannerStatus">+</div>
+  </label>
+  <div id="scannerResult" style="display:none;">
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;">STATEMENT SCORE</div>
+        <div id="scanScore" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;"></div>
+      </div>
+      <div id="scanVerdict" style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:14px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">WEAKNESSES</div>
+      <div id="scanWeaknesses" style="font-size:13px;color:var(--muted-hi);line-height:1.8;margin-bottom:14px;"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">STRENGTHS</div>
+      <div id="scanStrengths" style="font-size:13px;color:var(--muted-hi);line-height:1.8;margin-bottom:14px;"></div>
+      <div id="scanResponseBox" style="display:none;">
+        <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin-bottom:8px;">HOW TO RESPOND</div>
+        <div id="scanResponse" style="font-size:13px;color:var(--muted-hi);line-height:1.8;"></div>
+      </div>
+    </div>
+    <div style="background:var(--gold-dim);border:1.5px solid rgba(245,200,66,0.2);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;">Want Guardian to write it properly?</div>
+      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:14px;line-height:1.6;">Guardian knows your full case. A court-ready statement built on everything.</div>
+      <button type="button" class="btn-gold" onclick="go('sPaywall')">Get my statement written — £79</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIARY -->
+<div class="step" id="sDiary">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">My Diary</div><div class="section-sub">Your memory. Your safety net.</div></div>
+  </div>
+  <button type="button" class="btn-gold" onclick="go('sDiaryEntry')" style="margin-bottom:16px;">+ New diary entry</button>
+  <div id="diaryList"><div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0;">No entries yet. Start logging your contact sessions.</div></div>
+</div>
+
+<!-- DIARY ENTRY -->
+<div class="step" id="sDiaryEntry">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">New Entry</div><div class="section-sub">Log what happened today</div></div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">DATE</label>
+    <input class="field-input" type="date" id="diaryDate">
+  </div>
+  <div class="field-group">
+    <label class="field-label">TYPE OF ENTRY</label>
+    <div class="opts" id="diaryTypeOpts">
+      <button class="opt" onclick="pickDiaryType(this,'contact')">Contact session with <span id="diaryChildName">child</span></button>
+      <button class="opt" onclick="pickDiaryType(this,'incident')">Incident or concern</button>
+      <button class="opt" onclick="pickDiaryType(this,'message')">Important message exchange</button>
+      <button class="opt" onclick="pickDiaryType(this,'hearing')">Hearing or meeting</button>
+      <button class="opt" onclick="pickDiaryType(this,'welfare')">Welfare concern raised</button>
+    </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">WHAT HAPPENED</label>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <button class="voice-btn" id="diaryVoiceBtn" onclick="toggleDiaryVoice()">🎤</button>
+      <textarea class="field-input" id="diaryText" rows="5" placeholder="Describe what happened. Be factual. Time, what was said, how the child was, what you did." style="resize:none;flex:1;min-height:100px;"></textarea>
+    </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">HOW WAS <span id="diaryChildName2">YOUR CHILD</span>?</label>
+    <div class="opts" id="diaryMoodOpts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="opt" onclick="pickDiaryMood(this,'happy')">😊 Happy and settled</button>
+      <button class="opt" onclick="pickDiaryMood(this,'okay')">😐 Okay, normal</button>
+      <button class="opt" onclick="pickDiaryMood(this,'upset')">😢 Upset or distressed</button>
+      <button class="opt" onclick="pickDiaryMood(this,'unwell')">🤒 Unwell</button>
+    </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">DID CONTACT HAPPEN AS AGREED?</label>
+    <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="opt" id="diaryContactYes" onclick="pickDiaryContact(this,'yes')">✅ Yes, as agreed</button>
+      <button class="opt" id="diaryContactNo" onclick="pickDiaryContact(this,'no')">❌ No — issue</button>
+    </div>
+  </div>
+  <div class="field-group" id="diaryContactIssueBox" style="display:none;">
+    <label class="field-label">WHAT WAS THE ISSUE?</label>
+    <textarea class="field-input" id="diaryContactIssue" rows="2" placeholder="What happened with contact?" style="resize:none;"></textarea>
+  </div>
+  <button type="button" class="btn-gold" onclick="saveDiaryEntry()" style="margin-top:8px;">Save entry →</button>
 </div>
 
 </div><!-- end .app -->
@@ -1499,7 +1664,23 @@ function renderSummary(parsed) {
 }
 
 function confirmSummary() {
-  profile.complete=true; save(); showHome();
+  profile.complete=true; save();
+  // Show home first then prompt diary
+  showHome();
+  setTimeout(function(){
+    var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+    var banner = document.createElement('div');
+    banner.id = 'setupDiaryPrompt';
+    banner.style.cssText = 'background:rgba(245,200,66,0.1);border:1.5px solid rgba(245,200,66,0.25);border-radius:14px;padding:14px 16px;margin-bottom:16px;';
+    banner.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px;">One last thing 📓</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Log today. What happened with ' + child + ' today? Your first diary entry starts your evidence trail.</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button onclick="logTodayDiary()" style="flex:1;padding:10px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:10px;color:#0a0800;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Log today →</button>' +
+        '<button onclick="dismissSetupDiary()" style="padding:10px 14px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;">Later</button>' +
+      '</div>';
+    var homeEl = document.getElementById('sHome');
+    if (homeEl) homeEl.insertBefore(banner, homeEl.firstChild);
+  }, 500);
 }
 
 function showHome() {
@@ -1701,6 +1882,9 @@ async function sendQA() {
     qaHistory.push({role:'assistant',content:fullReply});
     // Upsell after deep conversation (4+ exchanges)
     if (qaHistory.length >= 8) checkUpsellTriggers('deepqa');
+    // Passive learning — scan conversation for new case facts
+    var qaTxt = qaHistory.slice(-4).map(function(m){return m.content;}).join(' ');
+    if (qaHistory.length % 4 === 0) extractCaseFacts(qaTxt, 'Court Guru conversation');
     // Generate contextual follow-ups in background
     addFollowUps(msg, fullReply);
 
@@ -2454,6 +2638,7 @@ async function explainDoc(event, docType) {
       unload();
       if (parsed) {
         lastExplainedDoc = parsed;
+        extractCaseFacts((parsed.summary||'') + ' ' + (parsed.actions||''), 'document: ' + (parsed.documentType||'uploaded document'));
         document.getElementById('explainerType').textContent = parsed.documentType || 'Document';
         document.getElementById('explainerSummary').innerHTML = (parsed.summary || '').replace(/\n/g,'<br>');
         document.getElementById('explainerActions').innerHTML = (parsed.actions || '').replace(/\n/g,'<br>');
@@ -2552,16 +2737,20 @@ var diaryVoiceRecog = null;
 var isDiaryRec = false;
 
 function loadDiaryScreen() {
-  // Set child name in entry screen
+  // If no entries yet — go straight to entry screen
+  if (!diaryEntries.length) {
+    loadDiaryEntry();
+    go('sDiaryEntry');
+    return;
+  }
+  // Set child name
   var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'child';
   var els = document.querySelectorAll('#diaryChildName, #diaryChildName2');
   els.forEach(function(el){ el.textContent = child; });
-  // Set today's date
-  document.getElementById('diaryDate').value = new Date().toISOString().split('T')[0];
   // Render list
   var list = document.getElementById('diaryList');
   if (!diaryEntries.length) {
-    list.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0;">No entries yet. Start logging your contact sessions.</div>';
+    list.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0;">No entries yet.</div>';
     return;
   }
   var sorted = diaryEntries.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
@@ -2580,6 +2769,33 @@ function loadDiaryScreen() {
       '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;">'+entry.text.substring(0,150)+(entry.text.length>150?'...':'')+'</div>' +
     '</div>';
   }).join('');
+}
+
+function logTodayDiary() {
+  var el = document.getElementById('setupDiaryPrompt');
+  if (el) el.remove();
+  loadDiaryEntry(); go('sDiaryEntry');
+}
+function dismissSetupDiary() {
+  var el = document.getElementById('setupDiaryPrompt');
+  if (el) el.remove();
+}
+
+function loadDiaryEntry(prefill) {
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'child';
+  document.querySelectorAll('#diaryChildName, #diaryChildName2').forEach(function(el){ el.textContent = child; });
+  document.getElementById('diaryDate').value = new Date().toISOString().split('T')[0];
+  // Reset form
+  document.getElementById('diaryText').value = prefill && prefill.text ? prefill.text : '';
+  document.getElementById('diaryContactIssue').value = '';
+  document.getElementById('diaryContactIssueBox').style.display = 'none';
+  document.querySelectorAll('#diaryTypeOpts .opt, #diaryMoodOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  diaryType = ''; diaryMood = ''; diaryContact = '';
+  // If prefilled from message check — auto select contact type
+  if (prefill && prefill.type) {
+    var btn = document.querySelector('#diaryTypeOpts .opt[data-type="'+prefill.type+'"]');
+    if (btn) { btn.classList.add('sel'); diaryType = prefill.type; }
+  }
 }
 
 function pickDiaryType(btn, val) {
@@ -2654,7 +2870,120 @@ function saveDiaryEntry() {
   document.getElementById('diaryContactIssueBox').style.display = 'none';
   diaryType=''; diaryMood=''; diaryContact='';
   toast('✅ Diary entry saved');
+  extractCaseFacts(entry.text, 'diary entry');
   go('sDiary');
+}
+
+
+// ── PASSIVE LEARNING LAYER ──
+// Scans every interaction for new case facts and prompts to update profile
+
+async function extractCaseFacts(text, source) {
+  if (!text || text.length < 20) return;
+  if (!profile) return;
+  try {
+    var ctx = getCTX();
+    var res = await fetch(API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:300,
+        messages:[{role:'user', content:ctx + '\n\nSource: ' + source + '\nContent: ' + text.substring(0,500) + '\n\nScan this for NEW case facts not already in the profile above. Only flag genuinely new information.\nReturn ONLY JSON: {"newFacts":[{"field":"<profile field name>","value":"<new value>","question":"<one line asking if we should update it>"}],"empty":true|false}\nFields can be: caseType, contact, allegations, dismissed, commStyle, childName, conflict\nIf nothing new return empty:true'}]
+      })
+    });
+    var data = await res.json();
+    var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed = null;
+    try{parsed=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    if (parsed && !parsed.empty && parsed.newFacts && parsed.newFacts.length > 0) {
+      showLearningPrompt(parsed.newFacts);
+    }
+  } catch(e) {}
+}
+
+var pendingFacts = [];
+
+function showLearningPrompt(facts) {
+  if (!facts || !facts.length) return;
+  pendingFacts = facts;
+  var fact = facts[0];
+  // Show as a subtle toast-style prompt
+  var el = document.getElementById('learningPrompt');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'learningPrompt';
+    el.style.cssText = 'position:fixed;bottom:90px;left:16px;right:16px;max-width:448px;margin:0 auto;background:var(--card);border:1.5px solid rgba(59,127,255,0.3);border-radius:14px;padding:14px 16px;z-index:55;display:none;animation:fadeUp 0.3s ease;box-shadow:0 8px 32px rgba(0,0,0,0.4);';
+    document.body.appendChild(el);
+  }
+  el.innerHTML = '<div style="font-size:12px;color:var(--blue);font-family:DM Sans,sans-serif;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">🧠 GUARDIAN NOTICED</div>' +
+    '<div style="font-size:13px;color:var(--white);margin-bottom:12px;line-height:1.5;">' + fact.question + '</div>' +
+    '<div style="display:flex;gap:8px;">' +
+      '<button onclick="acceptFact()" style="flex:1;padding:9px;background:var(--blue-dim);border:1px solid rgba(59,127,255,0.3);border-radius:8px;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">Yes, update it</button>' +
+      '<button onclick="dismissFact()" style="padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;cursor:pointer;">Not now</button>' +
+    '</div>';
+  el.style.display = 'block';
+}
+
+function acceptFact() {
+  if (!pendingFacts.length) return;
+  var fact = pendingFacts.shift();
+  if (!profile) profile = {};
+  // Update the relevant profile field
+  var fieldMap = {
+    caseType:'caseType', contact:'contact', allegations:'allegations',
+    dismissed:'dismissed', commStyle:'commStyle', childName:'childName', conflict:'conflict'
+  };
+  var key = fieldMap[fact.field];
+  if (key && fact.value) {
+    if (key === 'allegations' && profile.allegations) {
+      profile.allegations = profile.allegations + '; ' + fact.value;
+    } else {
+      profile[key] = fact.value;
+    }
+    save();
+    toast('✅ Profile updated — Guardian knows more now');
+  }
+  // Show next fact if any
+  if (pendingFacts.length > 0) {
+    showLearningPrompt(pendingFacts);
+  } else {
+    dismissFact();
+  }
+}
+
+function dismissFact() {
+  pendingFacts = [];
+  var el = document.getElementById('learningPrompt');
+  if (el) el.style.display = 'none';
+}
+
+function showDiaryPrompt() {
+  var existing = document.getElementById('diaryPromptBanner');
+  if (existing) return;
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+  var banner = document.createElement('div');
+  banner.id = 'diaryPromptBanner';
+  banner.style.cssText = 'background:var(--green-dim);border:1.5px solid rgba(34,201,122,0.25);border-radius:12px;padding:12px 14px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
+  banner.innerHTML = '<div style="font-size:13px;color:var(--white);flex:1;line-height:1.5;">Log this in your diary?<br><span style="font-size:11px;color:var(--muted-hi);">Builds your evidence automatically.</span></div>' +
+    '<button onclick="logInDiary()" style="padding:8px 14px;background:var(--green);border:none;border-radius:8px;color:#041209;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Log it</button>' +
+    '<button onclick="dismissDiaryPrompt()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;flex-shrink:0;">×</button>';
+  var sentCard = document.getElementById('sentCard');
+  if (sentCard && sentCard.parentNode) {
+    sentCard.parentNode.insertBefore(banner, sentCard);
+  }
+}
+
+function dismissDiaryPrompt() { var el=document.getElementById("diaryPromptBanner"); if(el) el.remove(); }
+
+function logInDiary() {
+  var banner = document.getElementById('diaryPromptBanner');
+  if (banner) banner.remove();
+  loadDiaryEntry({
+    type: 'message',
+    text: 'Message checked: ' + (st.flagText || '') + '. Reply sent via Guardian.'
+  });
+  go('sDiaryEntry');
 }
 
 function logSent(choice){
@@ -2856,11 +3185,19 @@ async function addDoc(event, docType) {
 // EDIT PROFILE
 function loadEditProfile() {
   if (!profile) return;
-  var fields = { editMyName:'myName', editTheirName:'theirName', editChildName:'childName', editContact:'contact', editCaseType:'caseType', editAllegations:'allegations', editDismissed:'dismissed' };
+  var fields = { editMyName:'myName', editTheirName:'theirName', editChildName:'childName', editContact:'contact', editAllegations:'allegations', editDismissed:'dismissed' };
   Object.keys(fields).forEach(function(id) {
     var el = document.getElementById(id);
     if (el && profile[fields[id]]) el.value = profile[fields[id]];
   });
+  // Set case type button
+  if (profile.caseType) {
+    document.querySelectorAll('#editCaseTypeOpts .opt').forEach(function(b){
+      if (b.textContent.indexOf(profile.caseType) !== -1 || profile.caseType.indexOf(b.textContent.split(' ')[0]) !== -1) {
+        b.classList.add('sel');
+      }
+    });
+  }
   if (profile.conflict) {
     document.getElementById('editConflict').value = profile.conflict;
     document.getElementById('editSliderVal').textContent = profile.conflict;
@@ -2875,13 +3212,19 @@ function updateEditSlider(v) {
   document.getElementById('editConflict').style.background = 'linear-gradient(to right,'+col+' '+pct+'%,rgba(255,255,255,0.1) '+pct+'%)';
 }
 
+function pickEditCaseType(btn, val) {
+  document.querySelectorAll('#editCaseTypeOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+}
+
 function saveEditProfile() {
   if (!profile) profile = {};
   profile.myName = document.getElementById('editMyName').value.trim() || profile.myName;
   profile.theirName = document.getElementById('editTheirName').value.trim() || profile.theirName;
   profile.childName = document.getElementById('editChildName').value.trim() || profile.childName;
   profile.contact = document.getElementById('editContact').value.trim() || profile.contact;
-  profile.caseType = document.getElementById('editCaseType').value || profile.caseType;
+  var selCT = document.querySelector('#editCaseTypeOpts .opt.sel');
+  profile.caseType = selCT ? selCT.textContent.trim() : (profile.caseType || '');
   profile.conflict = document.getElementById('editConflict').value;
   profile.allegations = document.getElementById('editAllegations').value.trim() || profile.allegations;
   profile.dismissed = document.getElementById('editDismissed').value.trim() || profile.dismissed;
