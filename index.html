@@ -14,13 +14,21 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #080d14; --card: #131c28; --border: rgba(255,255,255,0.07);
-  --white: #f0f4ff; --muted: #4a5568; --muted-hi: #8896aa;
-  --gold: #f5c842; --gold-dim: rgba(245,200,66,0.15);
-  --blue: #3b7fff; --blue-dim: rgba(59,127,255,0.12);
-  --green: #22c97a; --green-dim: rgba(34,201,122,0.12);
-  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.12);
-  --red: #ef4444; --red-dim: rgba(239,68,68,0.12);
+  --bg:#0a0f1a; --card:#111827; --card2:#1a2438;
+  --border:rgba(255,255,255,0.08);
+  --white:#e8edf5; --muted:#4a5878; --muted-hi:#7a8aaa;
+  --gold:#d4a843; --gold-dim:rgba(212,168,67,0.12);
+  --blue:#3478d4; --blue-dim:rgba(52,120,212,0.12);
+  --green:#1a9e72; --green-dim:rgba(26,158,114,0.12);
+  --amber:#c9943a; --amber-dim:rgba(201,148,58,0.12);
+  --red:#b84444; --red-dim:rgba(184,68,68,0.12);
+
+  /* TYPOGRAPHY SCALE */
+  --text-heading: 28px;
+  --text-section: 20px;
+  --text-body: 16px;
+  --text-support: 14px;
+  --text-label: 13px;
 }
 html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
 .app { max-width:480px; margin:0 auto; padding:0 16px 80px; }
@@ -48,7 +56,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .setup-title { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; margin-bottom:6px; }
 .setup-sub { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:22px; }
 .field-group { margin-bottom:16px; }
-.field-label { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:8px; display:block; }
+.field-label { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:8px; display:block; }
 .field-input { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:10px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:12px 14px; outline:none; }
 .field-input:focus { border-color:rgba(245,200,66,0.4); }
 .field-input::placeholder { color:var(--muted); }
@@ -106,8 +114,8 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .home-btn-card { background:var(--card); border:1.5px solid var(--border) !important; color:var(--muted-hi); }
 .home-btn-card:hover { border-color:rgba(59,127,255,0.4) !important; color:var(--white); }
 .home-btn-icon { font-size:26px; }
-.home-btn-label { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; }
-.home-btn-sub { font-size:11px; opacity:0.75; }
+.home-btn-label { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; }
+.home-btn-sub { font-size:13px; opacity:0.75; }
 .trial-banner { background:var(--gold-dim); border:1.5px solid rgba(245,200,66,0.2); border-radius:12px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
 .trial-text { font-size:12px; color:var(--gold); }
 .trial-count { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; color:var(--gold); }
@@ -130,7 +138,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 /* QA */
 .qa-wrap { display:flex; flex-direction:column; height:calc(100vh - 140px); }
 .qa-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding-bottom:12px; scroll-behavior:smooth; }
-.qa-msg { max-width:92%; font-size:14px; line-height:1.8; }
+.qa-msg { max-width:92%; font-size:16px; line-height:1.8; }
 .qa-user { align-self:flex-end; background:var(--blue); color:white; padding:11px 14px; border-radius:16px 16px 4px 16px; }
 .qa-guardian { align-self:flex-start; color:var(--white); padding:4px 0; }
 .qa-guardian-name { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:0.5px; margin-bottom:8px; }
@@ -149,7 +157,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .conf-text { flex:1; }
 .conf-label { font-weight:700; font-family:'DM Sans',sans-serif; }
 .qa-row { display:flex; gap:6px; align-items:center; }
-.qa-input { flex:1; min-width:0; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; padding:11px 12px; outline:none; }
+.qa-input { flex:1; min-width:0; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:16px; padding:12px 14px; outline:none; }
 .qa-input:focus { border-color:rgba(59,127,255,0.4); }
 .qa-input::placeholder { color:var(--muted); font-size:13px; }
 .qa-send { width:42px; height:42px; border-radius:10px; background:var(--blue); border:none; color:white; font-size:18px; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
@@ -319,10 +327,10 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .floating-back.show { display:flex; }
 .auth-screen { text-align:center; padding:40px 0 20px; }
 .auth-icon { font-size:48px; margin-bottom:16px; }
-.auth-title { font-family:'DM Sans',sans-serif; font-size:24px; font-weight:800; margin-bottom:8px; }
-.auth-sub { font-size:14px; color:var(--muted-hi); line-height:1.6; margin-bottom:32px; max-width:280px; margin-left:auto; margin-right:auto; }
+.auth-title { font-family:'DM Sans',sans-serif; font-size:28px; font-weight:800; margin-bottom:8px; }
+.auth-sub { font-size:16px; color:var(--muted-hi); line-height:1.6; margin-bottom:32px; max-width:280px; margin-left:auto; margin-right:auto; }
 .auth-form { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
-.auth-input { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:15px; padding:14px 16px; outline:none; text-align:left; }
+.auth-input { width:100%; background:var(--card); border:1.5px solid var(--border); border-radius:12px; color:var(--white); font-family:'Inter',sans-serif; font-size:16px; padding:14px 16px; outline:none; text-align:left; }
 .auth-input:focus { border-color:rgba(245,200,66,0.4); }
 .auth-input::placeholder { color:var(--muted); }
 .auth-error { font-size:13px; color:var(--red); text-align:center; padding:8px; background:var(--red-dim); border-radius:8px; display:none; }
@@ -361,7 +369,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .section-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
 .back-btn { background:none; border:none; color:var(--muted-hi); font-size:22px; cursor:pointer; padding:0; line-height:1; }
 .section-title { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:800; }
-.section-sub { font-size:12px; color:var(--muted-hi); }
+.section-sub { font-size:14px; color:var(--muted-hi); }
 .section-intro { position:fixed; inset:0; background:rgba(8,13,20,0.9); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
 .section-intro.show { display:flex; }
 .section-intro-card { background:var(--card); border:1.5px solid var(--border); border-radius:20px; padding:24px; max-width:400px; width:100%; }
@@ -376,6 +384,22 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .overlay.show { display:flex; pointer-events:all; }
 .overlay-text { font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; margin-top:16px; }
 .overlay-sub { font-size:12px; color:var(--muted-hi); margin-top:5px; }
+
+/* TYPOGRAPHY SCALE */
+.section-title { font-size: 20px !important; }
+.section-sub { font-size: 14px !important; }
+.field-label { font-size: 13px !important; }
+.home-btn-label { font-size: 14px !important; }
+.home-btn-sub { font-size: 13px !important; }
+.qa-guardian-name { font-size: 13px !important; }
+.auth-title { font-size: 28px !important; }
+.auth-sub { font-size: 16px !important; }
+.btn-gold, .btn-ghost, .btn-blue { font-size: 16px !important; }
+.field-input, .auth-input, .qa-input { font-size: 16px !important; }
+.qa-msg { font-size: 16px !important; }
+p, .body-text { font-size: 16px !important; }
+.supporting-text, .hint-text, small { font-size: 14px !important; }
+
 </style>
 </head>
 <body>
