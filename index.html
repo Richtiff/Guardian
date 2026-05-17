@@ -378,6 +378,23 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .section-intro-body { font-size:14px; color:var(--muted-hi); line-height:1.7; margin-bottom:20px; text-align:center; }
 .section-intro-close { width:100%; padding:13px; background:linear-gradient(135deg,#c9a030,var(--gold)); border:none; border-radius:12px; color:#0a0800; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:800; cursor:pointer; }
 .section-intro-skip { width:100%; padding:10px; background:transparent; border:none; color:var(--muted); font-size:12px; cursor:pointer; margin-top:8px; }
+.contact-calendar { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
+.cal-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); }
+.cal-title { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; color:var(--white); }
+.cal-nav { display:flex; gap:8px; }
+.cal-nav-btn { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--muted-hi); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); padding:10px 8px; gap:2px; }
+.cal-day-name { text-align:center; font-size:10px; font-weight:700; color:var(--muted); padding:4px 0; font-family:'DM Sans',sans-serif; letter-spacing:0.3px; }
+.cal-day { text-align:center; padding:6px 2px; border-radius:8px; cursor:pointer; position:relative; }
+.cal-day-num { font-size:13px; font-weight:400; color:var(--muted); }
+.cal-day.contact .cal-day-num { font-size:14px; font-weight:800; color:var(--white); }
+.cal-day.contact { background:rgba(212,168,67,0.08); border:1px solid rgba(212,168,67,0.2); }
+.cal-day.logged .cal-day-num::after { content:''; display:block; width:4px; height:4px; border-radius:50%; background:var(--green); margin:2px auto 0; }
+.cal-day.today .cal-day-num { color:var(--gold); }
+.cal-day.other-month .cal-day-num { color:rgba(255,255,255,0.1); }
+.cal-legend { display:flex; gap:12px; padding:8px 16px 12px; border-top:1px solid var(--border); }
+.cal-legend-item { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted-hi); }
+.cal-legend-dot { width:8px; height:8px; border-radius:2px; }
 .hearing-opt { background:var(--card); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; transition:border-color 0.15s; }
 .hearing-opt:hover { border-color:rgba(212,168,67,0.3); }
 .hearing-opt.sel { border-color:var(--gold); background:var(--gold-dim); }
@@ -391,6 +408,24 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .hearing-opt-what { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:8px; }
 .hearing-opt-goal { font-size:13px; color:var(--white); line-height:1.6; padding:10px 12px; background:rgba(212,168,67,0.08); border:1px solid rgba(212,168,67,0.15); border-radius:8px; }
 .hearing-opt-goal::before { content:"Your statement needs to: "; font-weight:700; color:var(--gold); font-size:11px; display:block; margin-bottom:4px; letter-spacing:0.5px; font-family:'DM Sans',sans-serif; }
+.gn-strip { margin-bottom:16px; }
+.gn-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.gn-title { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:var(--gold); letter-spacing:0.5px; }
+.gn-count { font-size:11px; color:var(--muted); }
+.gn-item { display:flex; align-items:flex-start; gap:10px; padding:11px 13px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; margin-bottom:7px; cursor:pointer; transition:border-color 0.15s; }
+.gn-item:hover { border-color:rgba(212,168,67,0.3); }
+.gn-item.gn-urgent { border-color:rgba(184,68,68,0.25); background:var(--red-dim); }
+.gn-item.gn-warning { border-color:rgba(201,148,58,0.25); background:var(--amber-dim); }
+.gn-item.gn-positive { border-color:rgba(26,158,114,0.25); background:var(--green-dim); }
+.gn-item.gn-info { border-color:rgba(52,120,212,0.2); background:var(--blue-dim); }
+.gn-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.gn-urgent .gn-dot { background:var(--red); }
+.gn-warning .gn-dot { background:var(--amber); }
+.gn-positive .gn-dot { background:var(--green); }
+.gn-info .gn-dot { background:var(--blue); }
+.gn-text { font-size:13px; color:var(--white); line-height:1.5; flex:1; }
+.gn-action { font-size:11px; color:var(--muted-hi); margin-top:3px; }
+.gn-arrow { font-size:14px; color:var(--muted); flex-shrink:0; margin-top:2px; }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
 .overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
@@ -659,7 +694,8 @@ p, .body-text { font-size: 16px !important; }
     <div class="trial-text">Free message checks remaining</div>
     <div class="trial-count" id="trialCount">5</div>
   </div>
-  <div class="home-grid">
+  <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
+  <div class="home-grid" style="margin-bottom:20px;">
     <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')">
       <div class="home-btn-icon">💬</div>
       <div class="home-btn-label">Message Coach</div>
@@ -670,30 +706,33 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-label">Court Guru</div>
       <div class="home-btn-sub">We can explain anything, anytime</div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sBrain','brain')">
-      <div class="home-btn-icon">🧠</div>
-      <div class="home-btn-label">Guardian Brain</div>
-      <div class="home-btn-sub">Your experience makes us stronger</div>
-    </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDiary','diary')">
-      <div class="home-btn-icon">📓</div>
-      <div class="home-btn-label">My Diary</div>
-      <div class="home-btn-sub">Your memory. Your safety net.</div>
-    </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDocs','docs')">
-      <div class="home-btn-icon">🗂</div>
-      <div class="home-btn-label">Case File</div>
-      <div class="home-btn-sub">Safe, stored and ready when you need it</div>
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sStatements','scanner')">
+      <div class="home-btn-icon">📋</div>
+      <div class="home-btn-label">Statements</div>
+      <div class="home-btn-sub">Read, check and write statements</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="showSection('sExplainer','explainer')">
       <div class="home-btn-icon">📩</div>
       <div class="home-btn-label">Understand Your Documents</div>
       <div class="home-btn-sub">Take the fear out of every letter</div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sStatements','scanner')">
-      <div class="home-btn-icon">📋</div>
-      <div class="home-btn-label">Statements</div>
-      <div class="home-btn-sub">See your case through the court's eyes</div>
+  </div>
+  <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">YOUR CASE</div>
+  <div class="home-grid">
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDocs','docs')">
+      <div class="home-btn-icon">🗂</div>
+      <div class="home-btn-label">Case File</div>
+      <div class="home-btn-sub">Safe, stored and ready when you need it</div>
+    </button>
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDiary','diary')">
+      <div class="home-btn-icon">📓</div>
+      <div class="home-btn-label">My Diary</div>
+      <div class="home-btn-sub">Your memory. Your safety net.</div>
+    </button>
+    <button type="button" class="home-btn home-btn-card" onclick="showSection('sBrain','brain')">
+      <div class="home-btn-icon">🧠</div>
+      <div class="home-btn-label">Guardian Brain</div>
+      <div class="home-btn-sub">Your experience makes us stronger</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="go('sEditProfile')">
       <div class="home-btn-icon">⚙</div>
@@ -701,9 +740,12 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-sub">Your profile. Always up to date.</div>
     </button>
   </div>
-  <div class="memory-strip" id="memoryStrip" style="display:none;">
-    <div class="memory-title">GUARDIAN REMEMBERS</div>
-    <div id="memoryItems"></div>
+  <div class="gn-strip" id="gnStrip" style="display:none;">
+    <div class="gn-header">
+      <div class="gn-title">🧠 GUARDIAN NOTICED</div>
+      <div class="gn-count" id="gnCount"></div>
+    </div>
+    <div id="gnItems"></div>
   </div>
 </div>
 
@@ -1216,8 +1258,34 @@ p, .body-text { font-size: 16px !important; }
     <button class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">My Diary</div><div class="section-sub">Your memory. Your safety net.</div></div>
   </div>
-  <button type="button" class="btn-gold" onclick="go('sDiaryEntry')" style="margin-bottom:16px;">+ New diary entry</button>
-  <div id="diaryList"><div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0;">No entries yet. Start logging your contact sessions.</div></div>
+
+  <!-- Contact Calendar -->
+  <div class="contact-calendar" id="contactCalendar">
+    <div class="cal-header">
+      <div class="cal-title" id="calMonthTitle"></div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+        <button class="cal-nav-btn" onclick="calNext()">›</button>
+      </div>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-day-name">MON</div>
+      <div class="cal-day-name">TUE</div>
+      <div class="cal-day-name">WED</div>
+      <div class="cal-day-name">THU</div>
+      <div class="cal-day-name">FRI</div>
+      <div class="cal-day-name">SAT</div>
+      <div class="cal-day-name">SUN</div>
+    </div>
+    <div class="cal-grid" id="calDays"></div>
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:rgba(212,168,67,0.4);border:1px solid rgba(212,168,67,0.4);"></div> Contact day</div>
+      <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--green);border-radius:50%;"></div> Entry logged</div>
+    </div>
+  </div>
+
+  <button type="button" class="btn-gold" onclick="go('sDiaryEntry')" style="margin-bottom:14px;">+ Log a session</button>
+  <div id="diaryList"><div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0;">No entries yet. Tap a contact day above to start logging.</div></div>
 </div>
 
 <!-- DIARY ENTRY -->
@@ -1710,7 +1778,7 @@ function go(id) {
   if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); }, 50); }
   if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
   if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
-  if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); }, 50); }
+  if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
   if (id==='sStatements') {}
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
@@ -1952,6 +2020,109 @@ function confirmSummary() {
   }, 500);
 }
 
+function generateGuardianNoticed() {
+  var notices = [];
+  var now = new Date();
+
+  // Pattern detection — multiple welfare messages in one day
+  var recentMsgs = msgLog.slice(-20);
+  var byDay = {};
+  recentMsgs.forEach(function(m){
+    if (!m.ts) return;
+    var day = m.ts.substring(0,10);
+    if (!byDay[day]) byDay[day] = [];
+    byDay[day].push(m);
+  });
+  Object.keys(byDay).forEach(function(day){
+    var dayMsgs = byDay[day];
+    var welfare = dayMsgs.filter(function(m){ return m.flag==='amber'||m.flag==='red'; });
+    if (welfare.length >= 3) {
+      notices.push({ type:'warning', text: welfare.length + ' welfare or monitoring messages in one day — ' + new Date(day).toLocaleDateString('en-GB',{day:'numeric',month:'short'}), action:'Tap to review in Message Coach', screen:'sCoach' });
+    }
+  });
+
+  // Contact refused
+  var refusals = brainLog.filter(function(b){ return b.type==='contact' && b.outcome==='refused'; });
+  if (refusals.length >= 2) {
+    notices.push({ type:'urgent', text:'Contact has been refused ' + refusals.length + ' times. This is a pattern — document every instance.', action:'Tap to log in diary', screen:'sDiaryEntry' });
+  }
+
+  // Positive streak
+  var lastFive = msgLog.slice(-5);
+  if (lastFive.length >= 5 && lastFive.every(function(m){ return m.score >= 7; })) {
+    var avg = Math.round(lastFive.reduce(function(a,m){return a+m.score;},0)/5);
+    notices.push({ type:'positive', text:'Your last 5 replies all scored ' + avg + '/10 or above. Strong run — the long game is working.', action:'', screen:'' });
+  }
+
+  // Allegation dismissed
+  var dismissed = brainLog.filter(function(b){ return b.type==='allegation' && b.outcome==='dismissed'; });
+  if (dismissed.length > 0 && (!profile || !profile.dismissed || profile.dismissed.length < 5)) {
+    notices.push({ type:'info', text:'You logged a dismissed allegation but it may not be in your case profile. Make sure Guardian knows about it.', action:'Tap to update profile', screen:'sEditProfile' });
+  }
+
+  // Documents uploaded but no diary entries
+  if (caseDocuments.length > 0 && diaryEntries.length === 0) {
+    notices.push({ type:'info', text:'You have ' + caseDocuments.length + ' document' + (caseDocuments.length>1?'s':'') + ' uploaded but no diary entries yet. Start logging contact sessions.', action:'Tap to add first diary entry', screen:'sDiaryEntry' });
+  }
+
+  // Low conflict messages being checked
+  var recentAmber = msgLog.slice(-10).filter(function(m){ return m.flag==='amber'; }).length;
+  if (recentAmber >= 3) {
+    notices.push({ type:'warning', text: recentAmber + ' amber flagged messages in your last 10 checks. Guardian is tracking a monitoring pattern.', action:'Tap to open Court Guru and discuss', screen:'sQA' });
+  }
+
+  // No activity in 7 days
+  if (msgLog.length > 0) {
+    var lastMsg = msgLog[msgLog.length-1];
+    if (lastMsg.ts) {
+      var daysSince = (now - new Date(lastMsg.ts)) / (1000*60*60*24);
+      if (daysSince >= 7) {
+        notices.push({ type:'info', text:"It's been " + Math.floor(daysSince) + " days since your last message check. Your case is still live — Guardian is here when you need it.", action:'', screen:'' });
+      }
+    }
+  }
+
+  // Statement not updated before hearing
+  var hearingLogs = brainLog.filter(function(b){ return b.type==='hearing'; });
+  if (hearingLogs.length === 0 && msgLog.length >= 10) {
+    notices.push({ type:'info', text:'Guardian has helped you through ' + msgLog.length + ' messages. Have you prepared your statement for your next hearing?', action:'Tap to go to Statements', screen:'sStatements' });
+  }
+
+  // Profile incomplete
+  if (profile && (!profile.allegations || profile.allegations.length < 5)) {
+    notices.push({ type:'warning', text:"Guardian doesn't know what allegations you are facing. Add them to your profile so every feature can protect you properly.", action:'Tap to update My Case', screen:'sEditProfile' });
+  }
+
+  return notices;
+}
+
+function renderGuardianNoticed() {
+  var notices = generateGuardianNoticed();
+  var strip = document.getElementById('gnStrip');
+  var items = document.getElementById('gnItems');
+  var count = document.getElementById('gnCount');
+  if (!strip || !items) return;
+
+  if (notices.length === 0) {
+    strip.style.display = 'none';
+    return;
+  }
+
+  strip.style.display = 'block';
+  count.textContent = notices.length + ' notice' + (notices.length>1?'s':'');
+
+  items.innerHTML = notices.slice(0,4).map(function(n){
+    var onclick = n.screen ? "go(\""+n.screen+"\")" : "";
+    return '<div class="gn-item gn-' + n.type + '" onclick="' + onclick + '">' +
+      '<div style="flex:1;">' +
+        '<div class="gn-text">' + n.text + '</div>' +
+        (n.action ? '<div class="gn-action">' + n.action + ' →</div>' : '') +
+      '</div>' +
+      (n.screen ? '<div class="gn-arrow">›</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
 function showHome() {
   var h=new Date().getHours();
   var g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
@@ -1989,6 +2160,7 @@ function showHome() {
   }
   go('sHome');
   checkSevenDayUpsell();
+  setTimeout(function(){ renderGuardianNoticed(); }, 100);
 }
 
 function goQA() {
@@ -2825,17 +2997,18 @@ function checkSevenDayUpsell() {
 var brainLog = JSON.parse(localStorage.getItem('gBrainLog') || '[]');
 
 function loadBrainScreen() {
-  var total = msgLog.length;
-  var red = msgLog.filter(function(m){return m.flag==='red';}).length;
-  var amber = msgLog.filter(function(m){return m.flag==='amber';}).length;
-  var docs = caseDocuments.length;
-  var diary = diaryEntries.length;
-  var outcomes = brainLog.length;
-  var contactRefused = brainLog.filter(function(b){return b.type==='contact'&&b.outcome==='refused';}).length;
-  var hearings = brainLog.filter(function(b){return b.type==='hearing';}).length;
+  var total = msgLog ? msgLog.length : 0;
+  var red = msgLog ? msgLog.filter(function(m){return m.flag==='red';}).length : 0;
+  var amber = msgLog ? msgLog.filter(function(m){return m.flag==='amber';}).length : 0;
+  var docs = caseDocuments ? caseDocuments.length : 0;
+  var diary = diaryEntries ? diaryEntries.length : 0;
+  var outcomes = brainLog ? brainLog.length : 0;
+  var contactRefused = brainLog ? brainLog.filter(function(b){return b.type==='contact'&&b.outcome==='refused';}).length : 0;
+  var hearings = brainLog ? brainLog.filter(function(b){return b.type==='hearing';}).length : 0;
 
   // Stats grid
   var nums = document.getElementById('brainNumbers');
+  if (!nums) return;
   nums.innerHTML = [
     {label:'Messages coached', val:total, col:'var(--gold)'},
     {label:'Diary entries', val:diary, col:'var(--green)'},
@@ -2852,6 +3025,7 @@ function loadBrainScreen() {
 
   // Case summary
   var summary = document.getElementById('brainCaseSummary');
+  if (!summary) return;
   var lines = [];
   if (profile) {
     if (profile.childName) lines.push('Child: ' + profile.childName.split(',')[0].trim());
@@ -2868,6 +3042,7 @@ function loadBrainScreen() {
 
   // Activity log - combine messages, diary, brain outcomes
   var logEl = document.getElementById('brainLog');
+  if (!logEl) return;
   var activities = [];
 
   msgLog.slice(-3).forEach(function(m){
@@ -2923,6 +3098,47 @@ function logBrainHearing(outcome) {
 }
 
 function logContactRefusalDiary() { loadDiaryEntry({type:"contact"}); go("sDiaryEntry"); }
+
+function goToEditProfile() { go("sEditProfile"); }
+
+function logBrainCafcass(outcome) {
+  var entry = { type:'cafcass', outcome:outcome, ts:new Date().toISOString() };
+  brainLog.push(entry);
+  localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
+  var msgs = {
+    supportive: '✅ Logged. Cafcass support is powerful — Guardian will reference this.',
+    neutral: '📝 Logged. Further assessment is common at this stage.',
+    against: '⚠️ Logged. This is hard but it is not the end. Guardian will help you respond.'
+  };
+  toast(msgs[outcome] || 'Cafcass update logged');
+  loadBrainScreen();
+}
+
+function logBrainAllegation(outcome) {
+  var entry = { type:'allegation', outcome:outcome, ts:new Date().toISOString() };
+  brainLog.push(entry);
+  localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
+  var msgs = {
+    dismissed: '✅ Logged. Every dismissed allegation strengthens your position. Make sure it is in your profile.',
+    new: '⚠️ Logged. Update your case profile with the details so Guardian can protect you.',
+    escalated: '📝 Logged. Guardian will factor this into your message coaching.'
+  };
+  toast(msgs[outcome] || 'Allegation update logged');
+  if (outcome === 'dismissed') {
+    setTimeout(function(){
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:12px;padding:12px 14px;margin-top:12px;display:flex;align-items:center;gap:10px;';
+      banner.innerHTML = '<div style="flex:1;font-size:13px;color:var(--white);line-height:1.5;">Add this to your profile so Guardian uses it everywhere.</div>' +
+        '<button onclick="goToEditProfile()" style="padding:8px 12px;background:var(--green);border:none;border-radius:8px;color:#041209;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">Update now</button>';
+      var brainEl = document.getElementById('sBrain');
+      if (brainEl) brainEl.insertBefore(banner, brainEl.children[1]);
+    }, 500);
+  }
+  if (outcome === 'new') {
+    setTimeout(function(){ go('sEditProfile'); }, 1500);
+  }
+  loadBrainScreen();
+}
 
 function logBrainContact(outcome) {
   var entry = { type:'contact', outcome:outcome, ts:new Date().toISOString() };
@@ -3082,10 +3298,10 @@ var diaryVoiceRecog = null;
 var isDiaryRec = false;
 
 function loadDiaryScreen() {
-  // If no entries yet — go straight to entry screen
+  // Render calendar first
+  renderCalendar();
+  // If no entries yet — still show calendar, don't redirect
   if (!diaryEntries.length) {
-    loadDiaryEntry();
-    go('sDiaryEntry');
     return;
   }
   // Set child name
@@ -3595,6 +3811,137 @@ function exportStatement(format) {
   }
 }
 
+
+// ── CONTACT CALENDAR ──
+var calCurrentDate = new Date();
+var contactDays = []; // days of week that are contact days (0=Sun, 1=Mon etc)
+
+function parseContactDaysFromProfile() {
+  contactDays = [];
+  if (!profile || !profile.contact) return;
+  var contact = profile.contact.toLowerCase();
+  var days = { monday:1, tuesday:2, wednesday:3, thursday:4, friday:5, saturday:6, sunday:0,
+               mon:1, tue:2, wed:3, thu:4, fri:5, sat:6, sun:0 };
+  Object.keys(days).forEach(function(d){
+    if (contact.indexOf(d) !== -1) {
+      if (contactDays.indexOf(days[d]) === -1) contactDays.push(days[d]);
+    }
+  });
+  // Also check uploaded documents for contact schedule
+  caseDocuments.forEach(function(doc){
+    if (!doc.extract) return;
+    var extract = doc.extract.toLowerCase();
+    Object.keys(days).forEach(function(d){
+      if (extract.indexOf(d) !== -1 && contactDays.indexOf(days[d]) === -1) {
+        contactDays.push(days[d]);
+      }
+    });
+  });
+}
+
+function renderCalendar() {
+  parseContactDaysFromProfile();
+  var now = new Date();
+  var year = calCurrentDate.getFullYear();
+  var month = calCurrentDate.getMonth();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  
+  var titleEl = document.getElementById('calMonthTitle');
+  if (titleEl) titleEl.textContent = months[month] + ' ' + year;
+
+  var daysEl = document.getElementById('calDays');
+  if (!daysEl) return;
+
+  // Get logged diary dates for this month
+  var loggedDates = {};
+  diaryEntries.forEach(function(e){
+    loggedDates[e.date] = true;
+  });
+
+  // First day of month
+  var firstDay = new Date(year, month, 1);
+  var startOffset = (firstDay.getDay() + 6) % 7; // Monday = 0
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  var html = '';
+  var totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+
+  for (var i = 0; i < totalCells; i++) {
+    var dayNum, isCurrentMonth = true;
+    if (i < startOffset) {
+      dayNum = daysInPrevMonth - startOffset + i + 1;
+      isCurrentMonth = false;
+    } else if (i >= startOffset + daysInMonth) {
+      dayNum = i - startOffset - daysInMonth + 1;
+      isCurrentMonth = false;
+    } else {
+      dayNum = i - startOffset + 1;
+    }
+
+    var date = new Date(year, isCurrentMonth ? month : (i < startOffset ? month-1 : month+1), dayNum);
+    var dateStr = date.toISOString().split('T')[0];
+    var isContact = isCurrentMonth && contactDays.indexOf(date.getDay()) !== -1;
+    var isLogged = loggedDates[dateStr];
+    var isToday = isCurrentMonth && date.toDateString() === now.toDateString();
+
+    var classes = 'cal-day';
+    if (!isCurrentMonth) classes += ' other-month';
+    if (isContact) classes += ' contact';
+    if (isLogged) classes += ' logged';
+    if (isToday) classes += ' today';
+
+    var onclick = isContact ? ("data-date=\"" + dateStr + "\" onclick=\"calDayTap(this.dataset.date)\"") : "";
+    html += '<div class="' + classes + '" ' + onclick + '><div class="cal-day-num">' + dayNum + '</div></div>';
+  }
+
+  daysEl.innerHTML = html;
+
+  // Check if today is a contact day and prompt
+  if (contactDays.indexOf(now.getDay()) !== -1) {
+    var todayStr = now.toISOString().split('T')[0];
+    var alreadyLogged = loggedDates[todayStr];
+    if (!alreadyLogged) {
+      var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'the kids';
+      var prompt = document.getElementById('contactDayPrompt');
+      if (!prompt) {
+        prompt = document.createElement('div');
+        prompt.id = 'contactDayPrompt';
+        prompt.style.cssText = 'background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.3);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;';
+        prompt.innerHTML = '<span style="font-size:20px;">📓</span>' +
+          '<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--gold);font-family:DM Sans,sans-serif;">Contact day</div>' +
+          '<div style="font-size:12px;color:var(--muted-hi);">How was ' + child + ' today?</div></div>' +
+          '<button onclick="startContactDayLog()" style="padding:8px 12px;background:var(--gold);border:none;border-radius:8px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Log it</button>';
+        var cal = document.getElementById('contactCalendar');
+        if (cal) cal.parentNode.insertBefore(prompt, cal);
+      }
+    }
+  }
+}
+
+function calPrev() {
+  calCurrentDate.setMonth(calCurrentDate.getMonth() - 1);
+  renderCalendar();
+}
+
+function calNext() {
+  calCurrentDate.setMonth(calCurrentDate.getMonth() + 1);
+  renderCalendar();
+}
+
+function startContactDayLog() { loadDiaryEntry(); go("sDiaryEntry"); }
+
+function calDayTap(dateStr) {
+  var existing = diaryEntries.find(function(e){ return e.date === dateStr; });
+  if (existing) {
+    toast('Entry already logged for this date');
+    return;
+  }
+  loadDiaryEntry();
+  document.getElementById('diaryDate').value = dateStr;
+  go('sDiaryEntry');
+}
+
 function logSent(choice){
   var msgs={yes:'✅ Logged — well done.',no:'📝 Noted — send when ready.',different:'📝 Logged — try the coached version next time.'};
   document.getElementById('sentCard').innerHTML='<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">'+msgs[choice]+'</div>';
@@ -3787,6 +4134,7 @@ async function addDoc(event, docType) {
   }
   document.getElementById('docsProcessing').style.display = 'none';
   renderTimeline();
+  parseContactDaysFromProfile();
   toast('✅ Document added to your timeline');
   checkUpsellTriggers('document');
 }
