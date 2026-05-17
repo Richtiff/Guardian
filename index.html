@@ -636,7 +636,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="upload-section-title">YOUR DOCUMENTS</div>
     <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Upload anything you have — court orders, Cafcass letters, statements, messages. Guardian works out what each document is and files it automatically. Or skip this and add documents later from Case File.</div>
     <label class="upload-item" style="margin-bottom:8px;">
-      <input type="file" accept=".pdf,image/*" multiple onchange="handleDoc(event,'other')">
+      <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="handleDoc(event,'other')">
       <div class="upload-item-icon">📄</div>
       <div class="upload-item-body">
         <div class="upload-item-name">Court documents</div>
@@ -645,7 +645,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="upload-status" id="stOrder">+</div>
     </label>
     <label class="upload-item" style="margin-bottom:8px;">
-      <input type="file" accept=".pdf,image/*" multiple onchange="handleDoc(event,'other')">
+      <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="handleDoc(event,'other')">
       <div class="upload-item-icon">📦</div>
       <div class="upload-item-body">
         <div class="upload-item-name">Court bundle</div>
@@ -1145,12 +1145,12 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:16px;">Upload any document — court order, Cafcass letter, solicitor letter, social services. Guardian reads it and tells you exactly what it means and what to do.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,image/*" onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
   </div>
-  <label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,image/*,.txt" onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
+  <label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,.doc,.docx,image/*,.txt" onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
   <div id="explainerResult" style="display:none;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
       <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT THIS DOCUMENT IS</div>
@@ -1224,7 +1224,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload whatever they have filed — position statement, witness statement, Cafcass letter, solicitor letter. Guardian reads every word and tells you what it means and how to respond.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,image/*,.txt" onchange="scanStatement(event,'theirs')">
+    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" onchange="scanStatement(event,'theirs')">
     <div class="upload-item-icon">📨</div>
     <div class="upload-item-body"><div class="upload-item-name">Upload their document</div><div class="upload-item-hint">Position statement, Cafcass letter, solicitor letter, anything filed</div></div>
     <div class="upload-status" id="theirsScanStatus">+</div>
@@ -1261,7 +1261,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload your draft statement. Guardian scores it out of 10, finds the weaknesses, flags any AI tells, and tells you exactly what to fix before you file it.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,image/*,.txt" onchange="scanStatement(event,'mine')">
+    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" onchange="scanStatement(event,'mine')">
     <div class="upload-item-icon">🔍</div>
     <div class="upload-item-body"><div class="upload-item-name">Upload my statement</div><div class="upload-item-hint">PDF, image, or text file</div></div>
     <div class="upload-status" id="mineScanStatus">+</div>
@@ -1588,7 +1588,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
 
   <label class="upload-item" style="margin-bottom:8px;" id="bundleUploadLabel">
-    <input type="file" accept=".pdf,image/*" id="bundleFile" onchange="processBundleUpload(event)">
+    <input type="file" accept=".pdf,.doc,.docx,image/*" id="bundleFile" onchange="processBundleUpload(event)">
     <div class="upload-item-icon">📦</div>
     <div class="upload-item-body">
       <div class="upload-item-name">Upload court bundle</div>
@@ -2171,7 +2171,7 @@ async function processDocs() {
       var msgContent=[];
       if(doc.type&&doc.type.startsWith('image/')){
         msgContent=[{type:'image',source:{type:'base64',media_type:doc.type,data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
-      } else if(doc.type==='application/pdf'){
+      } else if(doc.type==='application/pdf'||doc.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'||doc.type==='application/msword'){
         msgContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
       } else {
         var txt=atob(doc.data).substring(0,2000);
@@ -2209,6 +2209,7 @@ async function skipDocs() {
 }
 
 async function buildSummary() {
+  console.log('buildSummary called, profile:', JSON.stringify(profile).substring(0,100));
   load('Building your case profile...','Almost ready');
   var ctx=getCTX();
   try {
@@ -2224,8 +2225,11 @@ async function buildSummary() {
 }
 
 function renderSummary(parsed) {
+  console.log('renderSummary called, parsed:', parsed);
+  unload();
+  go('sSummary');
   var c=document.getElementById('summaryContent');
-  if (!c) { go('sHome'); return; }
+  if (!c) { console.warn('summaryContent not found'); return; }
   var html='';
   if(profile.myName) html+='<div class="summary-row"><span class="summary-key">Your name</span><span class="summary-val">'+profile.myName+'</span></div>';
   if(profile.childName) html+='<div class="summary-row"><span class="summary-key">Child</span><span class="summary-val">'+profile.childName+'</span></div>';
@@ -2235,24 +2239,25 @@ function renderSummary(parsed) {
   if(parsed&&parsed.overview) html+='<div style="padding:10px 0;font-size:13px;color:var(--muted-hi);line-height:1.6;">'+parsed.overview+'</div>';
   c.innerHTML=html;
   var tags=document.getElementById('knowledgeTags');
-  var known=[]; var missing=[];
-  if(profile.allegations) known.push('Allegations');
-  if(profile.dismissed) known.push('Dismissed findings');
-  if(profile.contact) known.push('Contact schedule');
-  if(docs['order0']) known.push('Court order');
-  if(docs['cafcass0']) known.push('Cafcass report');
-  if(docs['whatsapp0']) known.push('Message history');
-  if(profile.voice) known.push('Voice description');
-  if(!docs['order0']) missing.push('Court order');
-  if(!docs['cafcass0']) missing.push('Cafcass report');
-  tags.innerHTML=known.map(function(t){return '<span class="ktag">'+t+'</span>';}).join('')+missing.map(function(t){return '<span class="ktag miss">'+t+'</span>';}).join('');
-  go('sSummary');
+  if (tags) {
+    var known=[]; var missing=[];
+    if(profile.allegations) known.push('Allegations');
+    if(profile.dismissed) known.push('Dismissed findings');
+    if(profile.contact) known.push('Contact schedule');
+    if(docs['order0']) known.push('Court order');
+    if(docs['cafcass0']) known.push('Cafcass report');
+    if(docs['whatsapp0']) known.push('Message history');
+    if(profile.voice) known.push('Voice description');
+    if(!docs['order0']) missing.push('Court order');
+    if(!docs['cafcass0']) missing.push('Cafcass report');
+    tags.innerHTML=known.map(function(t){return '<span class="ktag">'+t+'</span>';}).join('')+missing.map(function(t){return '<span class="ktag miss">'+t+'</span>';}).join('');
+  }
 }
 
 function confirmSummary() {
   profile.complete=true;
   save();
-  saveProfileToSupabase();
+  try { saveProfileToSupabase(); } catch(e) { console.warn('Supabase sync failed on confirm:', e); }
   // Show home first then prompt diary
   showHome();
   setTimeout(function(){
