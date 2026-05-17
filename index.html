@@ -426,6 +426,14 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .gn-text { font-size:13px; color:var(--white); line-height:1.5; flex:1; }
 .gn-action { font-size:11px; color:var(--muted-hi); margin-top:3px; }
 .gn-arrow { font-size:14px; color:var(--muted); flex-shrink:0; margin-top:2px; }
+.bundle-progress { background:var(--card); border:1.5px solid var(--border); border-radius:16px; padding:16px; margin-bottom:14px; }
+.bundle-progress-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; margin:10px 0; }
+.bundle-progress-fill { height:100%; background:var(--gold); border-radius:2px; transition:width 0.4s ease; }
+.bundle-doc-item { display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:7px; }
+.bundle-doc-icon { font-size:18px; flex-shrink:0; }
+.bundle-doc-name { flex:1; font-size:13px; color:var(--white); font-weight:600; }
+.bundle-doc-type { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; flex-shrink:0; }
+.bundle-doc-author { font-size:11px; color:var(--muted-hi); margin-top:2px; }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
 .overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
@@ -567,11 +575,13 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div class="field-group" style="margin-top:16px;">
     <label class="field-label">HOW LONG HAS THIS BEEN GOING ON?</label>
-    <select class="field-select" id="iDuration">
-      <option value="">Select...</option>
-      <option>Under 6 months</option><option>6 to 12 months</option>
-      <option>1 to 2 years</option><option>Over 2 years</option>
-    </select>
+    <div class="opts" id="durationOpts">
+      <button class="opt" onclick="pickOpt('durationOpts',this,'iDuration','Under 6 months')">Under 6 months</button>
+      <button class="opt" onclick="pickOpt('durationOpts',this,'iDuration','6 to 12 months')">6 to 12 months</button>
+      <button class="opt" onclick="pickOpt('durationOpts',this,'iDuration','1 to 2 years')">1 to 2 years</button>
+      <button class="opt" onclick="pickOpt('durationOpts',this,'iDuration','Over 2 years')">Over 2 years</button>
+    </div>
+    <input type="hidden" id="iDuration">
   </div>
   <div class="field-group">
     <label class="field-label">YOUR CONTACT SCHEDULE</label>
@@ -1034,7 +1044,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div class="field-group">
     <label class="field-label">CONTACT SCHEDULE</label>
-    <input class="field-input" id="editContact" type="text" placeholder="e.g. Every Saturday 10am-6pm — or upload your order and Guardian will find it" onkeydown="if(event.key==='Enter')event.preventDefault()">
+    <input class="field-input" id="editContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
   </div>
   <div class="field-group">
     <label class="field-label">CASE TYPE</label>
@@ -1486,6 +1496,56 @@ p, .body-text { font-size: 16px !important; }
   </div>
 </div>
 
+
+<!-- BUNDLE UPLOAD -->
+<div class="step" id="sBundleUpload">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Court Bundle</div><div class="section-sub">Upload once. Guardian files everything.</div></div>
+  </div>
+
+  <div style="background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:14px;color:var(--white);line-height:1.7;margin-bottom:8px;">Upload your full court bundle and Guardian will read every document inside it, identify each one separately, and file them all to your Case File automatically.</div>
+    <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;">Guardian will identify who filed each document — the court, Cafcass, their solicitor, or you. Best results with digital PDFs from HMCTS. Scanned documents may take longer.</div>
+  </div>
+
+  <label class="upload-item" style="margin-bottom:8px;" id="bundleUploadLabel">
+    <input type="file" accept=".pdf,image/*" id="bundleFile" onchange="processBundleUpload(event)">
+    <div class="upload-item-icon">📦</div>
+    <div class="upload-item-body">
+      <div class="upload-item-name">Upload court bundle</div>
+      <div class="upload-item-hint">PDF — Guardian reads and separates every document inside</div>
+    </div>
+    <div class="upload-status" id="bundleStatus">+</div>
+  </label>
+  <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:16px;">Best results with digital PDFs. Scanned documents may take longer to read.</div>
+
+  <!-- Processing -->
+  <div id="bundleProcessing" style="display:none;">
+    <div class="bundle-progress">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">Reading your bundle</div>
+      <div style="font-size:12px;color:var(--muted-hi);" id="bundleStatusText">Identifying documents...</div>
+      <div class="bundle-progress-bar">
+        <div class="bundle-progress-fill" id="bundleProgressFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="bundleResults" style="display:none;">
+    <div style="background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">✅</span>
+      <div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--green);" id="bundleResultTitle">Bundle processed</div>
+        <div style="font-size:12px;color:var(--muted-hi);" id="bundleResultSub"></div>
+      </div>
+    </div>
+    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">DOCUMENTS FOUND</div>
+    <div id="bundleDocList"></div>
+    <button type="button" class="btn-gold" onclick="go('sDocs')" style="margin-top:14px;">View in Case File →</button>
+  </div>
+</div>
+
 </div><!-- end .app -->
 
 <!-- UPSELL TOAST -->
@@ -1654,7 +1714,7 @@ window.onload = async function() {
   }
 };
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload'];
 
 var stepHistory = [];
 var navLock = false;
@@ -1879,22 +1939,76 @@ function toggleObVoice() {
 }
 function startObVoice() {
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  obRecog=new SR(); obRecog.continuous=true; obRecog.interimResults=true; obRecog.lang='en-GB';
-  var fin=document.getElementById('obTranscript').value.trim(); if(fin) fin+=' ';
+  if(!SR){toast('Voice not supported on this browser');return;}
+  obRecog=new SR();
+  obRecog.continuous=false; // Single utterance — stops automatically
+  obRecog.interimResults=true;
+  obRecog.lang='en-GB';
+  var fin=document.getElementById('obTranscript').value.trim();
+  if(fin) fin+=' ';
+  var silenceTimer = null;
+
   obRecog.onresult=function(e){
     var interim='';
-    for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}else{interim+=e.results[i][0].transcript;}}
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}
+      else{interim+=e.results[i][0].transcript;}
+    }
     document.getElementById('obTranscript').value=(fin+interim).trim();
+    // Reset silence timer
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(function(){
+      if(isObRec) stopObVoice();
+    }, 2000); // Stop after 2 seconds of silence
   };
-  obRecog.onend=function(){if(isObRec){try{obRecog.start();}catch(err){}}};
-  obRecog.onerror=function(e){if(e.error!=='no-speech'){stopObVoice();toast('Could not hear you');}};
+
+  obRecog.onend=function(){
+    stopObVoice();
+    showVoiceConfirm();
+  };
+
+  obRecog.onerror=function(e){
+    if(e.error!=='no-speech'){stopObVoice();toast('Could not hear you — try again');}
+  };
+
   obRecog.start(); isObRec=true;
-  var b=document.getElementById('obMicBtn'); b.classList.add('rec'); b.textContent='⏹';
+  var b=document.getElementById('obMicBtn');
+  if(b){b.classList.add('rec'); b.textContent='⏹ Tap to stop';}
 }
+
 function stopObVoice() {
   if(obRecog){try{obRecog.stop();}catch(e){} obRecog=null;}
   isObRec=false;
-  var b=document.getElementById('obMicBtn'); b.classList.remove('rec'); b.textContent='🎤';
+  var b=document.getElementById('obMicBtn');
+  if(b){b.classList.remove('rec'); b.textContent='🎤 Speak your case';}
+}
+
+function showVoiceConfirm() {
+  var text = document.getElementById('obTranscript').value.trim();
+  if (!text) return;
+  // Show use/redo buttons
+  var existing = document.getElementById('voiceConfirmBtns');
+  if (existing) existing.remove();
+  var div = document.createElement('div');
+  div.id = 'voiceConfirmBtns';
+  div.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
+  div.innerHTML = '<button onclick="useVoiceInput()" style="flex:1;padding:10px;background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.3);border-radius:10px;color:var(--green);font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">✅ Use this</button>' +
+    '<button onclick="redoVoiceInput()" style="flex:1;padding:10px;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:10px;color:var(--muted-hi);font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🔄 Say it again</button>';
+  var transcript = document.getElementById('obTranscript');
+  if(transcript && transcript.parentNode) transcript.parentNode.appendChild(div);
+}
+
+function useVoiceInput() {
+  var div = document.getElementById('voiceConfirmBtns');
+  if(div) div.remove();
+  toast('✅ Guardian heard you');
+}
+
+function redoVoiceInput() {
+  document.getElementById('obTranscript').value = '';
+  var div = document.getElementById('voiceConfirmBtns');
+  if(div) div.remove();
+  startObVoice();
 }
 
 // DOCUMENT UPLOAD
@@ -3940,6 +4054,136 @@ function calDayTap(dateStr) {
   loadDiaryEntry();
   document.getElementById('diaryDate').value = dateStr;
   go('sDiaryEntry');
+}
+
+
+// ── COURT BUNDLE UPLOAD ──
+
+async function processBundleUpload(event) {
+  var file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  document.getElementById('bundleStatus').textContent = '⏳';
+  document.getElementById('bundleProcessing').style.display = 'block';
+  document.getElementById('bundleResults').style.display = 'none';
+
+  var statuses = [
+    'Reading bundle contents...',
+    'Identifying document boundaries...',
+    'Extracting court documents...',
+    'Identifying authors and filers...',
+    'Reading Cafcass reports...',
+    'Extracting case details...',
+    'Filing documents to Case File...',
+    'Building your timeline...'
+  ];
+
+  var prog = document.getElementById('bundleProgressFill');
+  var stat = document.getElementById('bundleStatusText');
+
+  // Animate progress while reading
+  var statIdx = 0;
+  var progressInterval = setInterval(function(){
+    if (statIdx < statuses.length - 1) {
+      statIdx++;
+      stat.textContent = statuses[statIdx];
+      prog.style.width = ((statIdx / statuses.length) * 80) + '%';
+    }
+  }, 800);
+
+  try {
+    var reader = new FileReader();
+    reader.onload = async function(e) {
+      var b64 = e.target.result.split(',')[1];
+      var ctx = getCTX();
+
+      var res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 3000,
+          system: 'You are reading a family court bundle for a parent in proceedings in England and Wales. Extract every separate document you can identify within this bundle. For each document identify: what it is, who filed or authored it, the date, and the key facts it contains. Be specific about authorship — identify if it is from the court, Cafcass, the other parent, their solicitor, or the user themselves.',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
+              { type: 'text', text: ctx + '\n\nThis is a court bundle. Read every page and identify every separate document within it. For each document extract all key information.\n\nReturn ONLY JSON:\n{"bundleSummary":"<one sentence describing the bundle>","documents":[{"name":"<document name>","type":"court|cafcass|theirs|mine|other","author":"<who filed or wrote this>","date":"<date if found>","keyFacts":"<2-3 most important facts>","icon":"<emoji that fits the document type>"}]}' }
+            ]
+          }]
+        })
+      });
+
+      clearInterval(progressInterval);
+      prog.style.width = '90%';
+      stat.textContent = 'Filing documents...';
+
+      var data = await res.json();
+      var raw = ((data.content || []).map(function(b){ return b.text || ''; }).join('').trim()).replace(/```json|```/g, '').trim();
+      var parsed = null;
+      try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
+
+      prog.style.width = '100%';
+
+      if (parsed && parsed.documents && parsed.documents.length > 0) {
+        // File each document to caseDocuments
+        var typeMap = { court:'court', cafcass:'cafcass', theirs:'other', mine:'other', other:'other' };
+        parsed.documents.forEach(function(doc){
+          caseDocuments.push({
+            id: Date.now() + Math.random(),
+            type: typeMap[doc.type] || 'other',
+            name: doc.name,
+            date: doc.date || new Date().toLocaleDateString('en-GB'),
+            extract: doc.keyFacts + (doc.author ? ' Filed by: ' + doc.author + '.' : ''),
+            author: doc.author || '',
+            uploadedAt: new Date().toISOString(),
+            fromBundle: true
+          });
+        });
+        localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+        saveProfileToSupabase();
+
+        // Show results
+        document.getElementById('bundleProcessing').style.display = 'none';
+        document.getElementById('bundleResults').style.display = 'block';
+        document.getElementById('bundleStatus').textContent = '✅';
+        document.getElementById('bundleResultTitle').textContent = 'Bundle processed — ' + parsed.documents.length + ' documents found';
+        document.getElementById('bundleResultSub').textContent = parsed.bundleSummary || '';
+
+        var typeColors = { court:'ttype-court', cafcass:'ttype-cafcass', other:'ttype-other' };
+        document.getElementById('bundleDocList').innerHTML = parsed.documents.map(function(doc){
+          var tClass = typeColors[doc.type] || 'ttype-other';
+          return '<div class="bundle-doc-item">' +
+            '<div class="bundle-doc-icon">' + (doc.icon || '📄') + '</div>' +
+            '<div style="flex:1;">' +
+              '<div class="bundle-doc-name">' + doc.name + '</div>' +
+              (doc.author ? '<div class="bundle-doc-author">Filed by: ' + doc.author + (doc.date ? ' · ' + doc.date : '') + '</div>' : '') +
+              '<div style="font-size:12px;color:var(--muted-hi);margin-top:3px;line-height:1.5;">' + (doc.keyFacts || '') + '</div>' +
+            '</div>' +
+            '<span class="bundle-doc-type ' + tClass + '">' + (doc.type||'').toUpperCase() + '</span>' +
+          '</div>';
+        }).join('');
+
+        // Trigger passive learning
+        var allFacts = parsed.documents.map(function(d){ return d.name + ': ' + d.keyFacts; }).join('. ');
+        extractCaseFacts(allFacts, 'court bundle');
+        checkUpsellTriggers('document');
+        renderGuardianNoticed();
+
+      } else {
+        document.getElementById('bundleProcessing').style.display = 'none';
+        document.getElementById('bundleStatus').textContent = '❌';
+        toast('Could not read bundle — try a clearer PDF or upload documents individually');
+      }
+    };
+    reader.readAsDataURL(file);
+  } catch(e) {
+    clearInterval(progressInterval);
+    document.getElementById('bundleProcessing').style.display = 'none';
+    document.getElementById('bundleStatus').textContent = '❌';
+    toast('Something went wrong — please try again');
+  }
 }
 
 function logSent(choice){
