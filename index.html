@@ -10,7 +10,7 @@
 <title>Guardian — Case Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -1648,7 +1648,7 @@ p, .body-text { font-size: 16px !important; }
 <script>
 const API = '/api/anthropic';
 const SUPA_URL = 'https://khgfladykvpfarkllwmd.supabase.co';
-const SUPA_KEY = 'sb_publishable_gEibzvtjKL-0wE0xMz91pw_raDbu-wp';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoZ2ZsYWR5a3ZwZmFya2xsd21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MzA1MDcsImV4cCI6MjA5NDUwNjUwN30.-BOoXZQNlMnpg1R5Djc6pjJy4ckHF_xOVerPvS7nmyU';
 var supabase = null;
 var currentUser = null;
 
@@ -1657,6 +1657,10 @@ function initSupabase() {
     if (window.supabase && window.supabase.createClient) {
       supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
       console.log('Supabase ready');
+      return true;
+    } else if (window.supabaseJs && window.supabaseJs.createClient) {
+      supabase = window.supabaseJs.createClient(SUPA_URL, SUPA_KEY);
+      console.log('Supabase ready (alt)');
       return true;
     }
   } catch(e) {
@@ -1766,11 +1770,15 @@ window.onload = async function() {
   // Push initial state
   history.pushState({step:'init'}, '');
 
-  // Init Supabase now that all scripts are loaded
-  initSupabase();
+  // Wait for Supabase library to load — retry up to 20 times
+  var attempts = 0;
+  while (!initSupabase() && attempts < 20) {
+    await new Promise(function(r){ setTimeout(r, 100); });
+    attempts++;
+  }
 
-  // Check Supabase session
   if (supabase) {
+    console.log('Supabase connected after', attempts, 'attempts');
     try {
       var sessionResult = await supabase.auth.getSession();
       if (sessionResult.data && sessionResult.data.session) {
@@ -1783,10 +1791,24 @@ window.onload = async function() {
     }
     go('sLogin');
   } else {
-    // Fallback to localStorage if Supabase unavailable
+    console.warn('Supabase not available — falling back to localStorage');
     if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
   }
 };
+
+// Listen for auth state changes
+if (supabase) {
+  supabase.auth.onAuthStateChange(async function(event, session) {
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user;
+      if (!profile || !profile.complete) {
+        await loadProfileFromSupabase();
+      }
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+    }
+  });
+}
 
 var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload'];
 
@@ -2189,7 +2211,9 @@ function renderSummary(parsed) {
 }
 
 function confirmSummary() {
-  profile.complete=true; save();
+  profile.complete=true;
+  save();
+  saveProfileToSupabase();
   // Show home first then prompt diary
   showHome();
   setTimeout(function(){
@@ -4804,6 +4828,29 @@ function saveEditProfile() {
   toast('✅ Profile updated');
   showHome();
 }
+</script>
+<script>
+// Load Supabase with fallback CDNs
+(function() {
+  var cdns = [
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js',
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js'
+  ];
+  var idx = 0;
+  function tryLoad() {
+    if (idx >= cdns.length) {
+      console.warn('All Supabase CDNs failed');
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = cdns[idx];
+    s.onload = function() { console.log('Supabase loaded from', cdns[idx]); };
+    s.onerror = function() { idx++; tryLoad(); };
+    document.head.appendChild(s);
+  }
+  tryLoad();
+})();
 </script>
 </body>
 </html>
