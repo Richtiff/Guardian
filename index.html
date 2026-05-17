@@ -564,13 +564,14 @@ p, .body-text { font-size: 16px !important; }
   <div class="setup-sub">Guardian needs to know your case type to give you the right coaching.</div>
   <div class="field-group">
     <label class="field-label">CASE TYPE</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select all that apply</div>
     <div class="opts" id="caseTypeOpts">
-      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','No court yet')">No court proceedings yet</button>
-      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C100')">Active C100 — child arrangements</button>
-      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Active C79')">C79 — enforcing an existing order</button>
-      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Non-mol order')">Non-molestation order involved</button>
-      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Post order')">Order in place — post proceedings</button>
-      <button type="button" class="opt" onclick="pickOpt('caseTypeOpts',this,'caseType','Back in court')">Back in court — variation application</button>
+      <button type="button" class="opt" onclick="toggleCaseType(this,'No court yet')">No court proceedings yet</button>
+      <button type="button" class="opt" onclick="toggleCaseType(this,'Active C100')">Active C100 — child arrangements</button>
+      <button type="button" class="opt" onclick="toggleCaseType(this,'Active C79')">C79 — enforcing an existing order</button>
+      <button type="button" class="opt" onclick="toggleCaseType(this,'Non-mol order')">Non-molestation order involved</button>
+      <button type="button" class="opt" onclick="toggleCaseType(this,'Post order')">Order in place — post proceedings</button>
+      <button type="button" class="opt" onclick="toggleCaseType(this,'Back in court')">Back in court — variation application</button>
     </div>
   </div>
   <div class="field-group" style="margin-top:16px;">
@@ -585,7 +586,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div class="field-group">
     <label class="field-label">YOUR CONTACT SCHEDULE</label>
-    <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm — or skip and upload your order, Guardian will find it" onkeydown="if(event.key==='Enter')event.preventDefault()">
+    <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
   </div>
   <button type="button" class="btn-gold" onclick="saveP2()" style="margin-top:8px;">Next →</button>
 </div>
@@ -628,27 +629,46 @@ p, .body-text { font-size: 16px !important; }
   <div class="setup-title">Upload your case documents</div>
   <div class="setup-sub">The more Guardian reads, the smarter it gets. Everything stays on your device.</div>
   <div class="upload-section">
-    <div class="upload-section-title">COURT DOCUMENTS</div>
-    <label class="upload-item" id="uOrder"><input type="file" accept=".pdf,image/*" onchange="handleDoc(event,'order')"><div class="upload-item-icon">📄</div><div class="upload-item-body"><div class="upload-item-name">Court Order / Child Arrangements Order</div><div class="upload-item-hint">PDF or screenshot</div></div><div class="upload-status" id="stOrder">+</div></label>
-    <label class="upload-item" id="uCafcass"><input type="file" accept=".pdf,image/*" onchange="handleDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass Letter or Report</div><div class="upload-item-hint">PDF or screenshot</div></div><div class="upload-status" id="stCafcass">+</div></label>
-    <label class="upload-item" id="uCNF"><input type="file" accept=".pdf,image/*" onchange="handleDoc(event,'cnf')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">CNF / C1A / Position Statement</div><div class="upload-item-hint">PDF or screenshot</div></div><div class="upload-status" id="stCNF">+</div></label>
-    <label class="upload-item" id="uOther"><input type="file" accept=".pdf,image/*" multiple onchange="handleDoc(event,'other')"><div class="upload-item-icon">📁</div><div class="upload-item-body"><div class="upload-item-name">Any Other Court Document</div><div class="upload-item-hint">Multiple files OK</div></div><div class="upload-status" id="stOther">+</div></label>
+    <div class="upload-section-title">YOUR DOCUMENTS</div>
+    <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Upload anything you have — court orders, Cafcass letters, statements, messages. Guardian works out what each document is and files it automatically. Or skip this and add documents later from Case File.</div>
+    <label class="upload-item" style="margin-bottom:8px;">
+      <input type="file" accept=".pdf,image/*" multiple onchange="handleDoc(event,'other')">
+      <div class="upload-item-icon">📄</div>
+      <div class="upload-item-body">
+        <div class="upload-item-name">Court documents</div>
+        <div class="upload-item-hint">Orders, Cafcass letters, position statements, CNF, C1A</div>
+      </div>
+      <div class="upload-status" id="stOrder">+</div>
+    </label>
+    <label class="upload-item" style="margin-bottom:8px;">
+      <input type="file" accept=".pdf,image/*" multiple onchange="handleDoc(event,'other')">
+      <div class="upload-item-icon">📦</div>
+      <div class="upload-item-body">
+        <div class="upload-item-name">Court bundle</div>
+        <div class="upload-item-hint">One PDF — Guardian reads and files every document inside</div>
+      </div>
+      <div class="upload-status" id="stBundle">+</div>
+    </label>
   </div>
   <div class="upload-section">
-    <div class="upload-section-title">COMMUNICATION HISTORY</div>
-    <div class="upload-item" style="cursor:pointer;" onclick="toggleGuide('gWA')"><div class="upload-item-icon">📱</div><div class="upload-item-body"><div class="upload-item-name">WhatsApp Chat Export</div><div class="upload-item-hint">Tap to see how to export your chat</div></div><div class="upload-status">›</div></div>
+    <div class="upload-section-title">MESSAGE HISTORY</div>
+    <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Upload your message history with the other parent. Guardian reads it and builds a picture of the communication pattern.</div>
+    <div class="upload-item" style="cursor:pointer;" onclick="toggleGuide('gWA')">
+      <div class="upload-item-icon">📱</div>
+      <div class="upload-item-body"><div class="upload-item-name">WhatsApp export</div><div class="upload-item-hint">Tap to see how</div></div>
+      <div class="upload-status">›</div>
+    </div>
     <div class="guide" id="gWA">
       <div class="guide-title">HOW TO EXPORT WHATSAPP</div>
       <div class="guide-steps">1. Open the chat with the other parent<br>2. Tap the three dots → More → Export Chat<br>3. Choose Without Media<br>4. Share the .txt file and upload below</div>
       <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".txt" onchange="handleDoc(event,'whatsapp')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload WhatsApp .txt file</div></div><div class="upload-status" id="stWA">+</div></label>
     </div>
-    <div class="upload-item" style="cursor:pointer;" onclick="toggleGuide('gFB')"><div class="upload-item-icon">💬</div><div class="upload-item-body"><div class="upload-item-name">Facebook Messenger Export</div><div class="upload-item-hint">Tap to see how to export</div></div><div class="upload-status">›</div></div>
-    <div class="guide" id="gFB">
-      <div class="guide-title">HOW TO EXPORT MESSENGER</div>
-      <div class="guide-steps">1. Facebook Settings → Your Facebook Information<br>2. Download Your Information → select Messages<br>3. Request Download — Facebook emails you a link<br>4. Download and upload the HTML file below</div>
-      <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".html,.txt,.json" onchange="handleDoc(event,'messenger')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload Messenger export</div></div><div class="upload-status" id="stFB">+</div></label>
-    </div>
-    <label class="upload-item"><input type="file" accept="image/*" multiple onchange="handleDoc(event,'screenshots')"><div class="upload-item-icon">📷</div><div class="upload-item-body"><div class="upload-item-name">Message Screenshots</div><div class="upload-item-hint">AppClose, iMessage, SMS — multiple OK</div></div><div class="upload-status" id="stScreenshots">+</div></label>
+    <label class="upload-item">
+      <input type="file" accept="image/*" multiple onchange="handleDoc(event,'screenshots')">
+      <div class="upload-item-icon">📷</div>
+      <div class="upload-item-body"><div class="upload-item-name">Message screenshots</div><div class="upload-item-hint">Any app — WhatsApp, iMessage, SMS, AppClose</div></div>
+      <div class="upload-status" id="stScreenshots">+</div>
+    </label>
   </div>
   <div class="upload-section">
     <div class="upload-section-title">OR JUST TELL US YOUR CASE</div>
@@ -1356,21 +1376,74 @@ p, .body-text { font-size: 16px !important; }
     <div><div class="section-title">Statement Writer</div><div class="section-sub">Court-ready. Human. Yours.</div></div>
   </div>
 
-  <!-- STAGE 1: Pre-build info -->
+  <!-- STAGE 1: Quick or guided -->
   <div id="swStage1">
-    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
-      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">BEFORE WE START</div>
-      <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:12px;">Guardian will build your position statement using everything it knows about your case — your diary entries, uploaded documents, message history, dismissed findings, and case profile.</div>
-      <div style="font-size:13px;color:var(--muted-hi);line-height:1.7;">The stronger your case file, the stronger your statement. Make sure you have uploaded your key documents before continuing.</div>
+    <div id="swStepA">
+
+      <!-- What do you need -->
+      <div class="field-group">
+        <label class="field-label">WHAT DO YOU NEED?</label>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="swTypeOpts">
+          <button class="opt" onclick="swPickType(this,'responding')" style="text-align:left;padding:13px 14px;">
+            <div style="font-weight:700;margin-bottom:2px;">Respond to their statement or application</div>
+            <div style="font-size:12px;color:var(--muted-hi);font-weight:400;">They have filed something — I need to respond to it</div>
+          </button>
+          <button class="opt" onclick="swPickType(this,'applying')" style="text-align:left;padding:13px 14px;">
+            <div style="font-weight:700;margin-bottom:2px;">Apply for contact — first time</div>
+            <div style="font-size:12px;color:var(--muted-hi);font-weight:400;">I want to start proceedings or make an application</div>
+          </button>
+          <button class="opt" onclick="swPickType(this,'enforce')" style="text-align:left;padding:13px 14px;">
+            <div style="font-weight:700;margin-bottom:2px;">Enforce an existing order</div>
+            <div style="font-size:12px;color:var(--muted-hi);font-weight:400;">There is already an order but it is not being followed</div>
+          </button>
+          <button class="opt" onclick="swPickType(this,'hearing')" style="text-align:left;padding:13px 14px;">
+            <div style="font-weight:700;margin-bottom:2px;">Prepare for a hearing</div>
+            <div style="font-size:12px;color:var(--muted-hi);font-weight:400;">I have a hearing coming up and need a position statement</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Guidance box — shown if they want it -->
+      <div id="swGuidanceBox" style="display:none;"></div>
+
+      <!-- Upload prompt for responding -->
+      <div id="swUploadPrompt" style="display:none;">
+        <label style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);border-radius:12px;cursor:pointer;margin-bottom:8px;">
+          <span style="font-size:22px;flex-shrink:0;">📨</span>
+          <div style="flex:1;">
+            <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;">Upload their statement first</div>
+            <div style="font-size:12px;color:var(--muted-hi);">Guardian reads every allegation and builds your response around each one</div>
+          </div>
+          <input type="file" accept=".pdf,image/*" style="display:none;" onchange="swUploadTheirDocs(event)">
+        </label>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px;">Or continue without — Guardian will still build your statement</div>
+      </div>
+
+      <!-- Not sure link -->
+      <div id="swNotSureBox" style="display:none;margin-bottom:14px;">
+        <button type="button" onclick="swToggleGuide()" style="width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted-hi);font-size:13px;cursor:pointer;" id="swGuideToggle">
+          ℹ️ Not sure what you need? Tap for guidance
+        </button>
+        <div id="swFullGuide" style="display:none;margin-top:10px;"></div>
+      </div>
+
+      <div class="field-group" id="swAskBox" style="display:none;">
+        <label class="field-label">WHAT ARE YOU ASKING THE COURT FOR?</label>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">One sentence is enough. Guardian does the rest.</div>
+        <textarea class="field-input" id="swCourtAsk" rows="2" style="resize:none;" placeholder="e.g. I want contact to resume immediately and the order to be enforced."></textarea>
+      </div>
+
+      <button type="button" class="btn-gold" id="swContinueBtn" onclick="swContinueToStatement()" style="display:none;margin-top:4px;">Build my statement →</button>
     </div>
 
-    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;" id="swCaseCheck"></div>
-
-    <div class="field-group">
-      <label class="field-label">WHAT ARE YOU ASKING THE COURT FOR?</label>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Be specific. Guardian will make sure every section of your statement builds towards this.</div>
-      <textarea class="field-input" id="swCourtAsk" rows="3" style="resize:none;" placeholder="e.g. I am asking the court to confirm the existing contact order and enforce it under C79. I want contact to resume immediately."></textarea>
-    </div>
+    <!-- Step B: Hearing type (shown after continue) -->
+    <div id="swStepB" style="display:none;">
+      <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;" id="swCaseCheck"></div>
+      <div class="field-group">
+        <label class="field-label">WHAT ARE YOU ASKING THE COURT FOR?</label>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Be specific. Guardian will make sure every section of your statement builds towards this.</div>
+        <textarea class="field-input" id="swCourtAsk" rows="3" style="resize:none;" placeholder="e.g. I am asking the court to confirm the existing contact order and enforce it under C79. I want contact to resume immediately."></textarea>
+      </div>
 
     <div class="field-group">
       <label class="field-label">WHICH HEARING IS THIS FOR?</label>
@@ -1436,6 +1509,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
 
     <button type="button" class="btn-gold" onclick="startStatementBuild()" style="margin-top:8px;">Build my statement →</button>
+    </div><!-- end swStepB -->
   </div>
 
   <!-- STAGE 2: Building -->
@@ -3691,12 +3765,261 @@ function addTheirsToProfile() {
   }
 }
 
+
+// ── STATEMENT WRITER GUIDANCE ──
+var swCourtYet = '';
+var swApplying = '';
+var swType = '';
+
+function swPickType(btn, type) {
+  document.querySelectorAll('#swTypeOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  swType = type;
+
+  // Show upload prompt for responding
+  var uploadPrompt = document.getElementById('swUploadPrompt');
+  var askBox = document.getElementById('swAskBox');
+  var notSure = document.getElementById('swNotSureBox');
+  var continueBtn = document.getElementById('swContinueBtn');
+
+  if (uploadPrompt) uploadPrompt.style.display = type === 'responding' ? 'block' : 'none';
+  if (notSure) notSure.style.display = 'block';
+  if (askBox) askBox.style.display = 'block';
+  if (continueBtn) continueBtn.style.display = 'block';
+
+  // Auto-set swHearingType based on selection
+  var hearingMap = { responding:'Contested hearing', applying:'First hearing directions', enforce:'Enforcement hearing C79', hearing:'Contested hearing' };
+  swHearingType = hearingMap[type] || 'hearing';
+}
+
+function swToggleGuide() {
+  var guide = document.getElementById('swFullGuide');
+  var btn = document.getElementById('swGuideToggle');
+  if (!guide) return;
+  var isHidden = guide.style.display === 'none';
+  guide.style.display = isHidden ? 'block' : 'none';
+  btn.textContent = isHidden ? 'ℹ️ Hide guidance' : 'ℹ️ Not sure what you need? Tap for guidance';
+  if (isHidden && guide.innerHTML === '') {
+    guide.innerHTML = renderSwGuide();
+  }
+}
+
+function renderSwGuide() {
+  var guides = {
+    responding: { title:"RESPONDING TO AN APPLICATION", body:"They have made an application to court and served it on you. You need to respond. Your statement should address every claim they have made, state your position on contact, and explain why your proposal is in your child's best interests. Upload their application or statement above and Guardian will build your response around each allegation." },
+    applying: { title:"APPLYING FOR THE FIRST TIME", body:"Before you apply for a C100 you must first attend a MIAM — Mediation Information and Assessment Meeting. Exceptions apply if there is domestic abuse, urgent risk to a child, or the other parent refuses to attend. Once you have your MIAM certificate you file the C100 at your local family court. Your first hearing will be a FHDRA — it rarely resolves things immediately. It sets directions for what happens next.", warning:"A without notice application is only granted for urgent risk of harm or abduction — not as a way to get a faster hearing." },
+    enforce: { title:"ENFORCING AN EXISTING ORDER", body:"There is a sealed court order and the other parent is not following it. You apply using a C79. Your statement must document every specific breach with dates and times, show the impact on your child, and demonstrate you have tried to resolve it without court intervention.", warning:"A timestamped diary and message record is your strongest evidence for enforcement." },
+    hearing: { title:"PREPARING FOR A HEARING", body:"Your statement should be tailored to what the judge needs to decide at this specific hearing. At a first hearing they are setting directions. At a contested hearing they are trying to help you reach agreement. At a final hearing they are making a binding order. Guardian will ask you which hearing this is for and build accordingly." }
+  };
+
+  var g = guides[swType] || guides.hearing;
+  return '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;">' +
+    '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">' + g.title + '</div>' +
+    '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:' + (g.warning ? '10px' : '0') + ';">' + g.body + '</div>' +
+    (g.warning ? '<div style="background:var(--amber-dim);border:1px solid rgba(201,148,58,0.2);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--amber);line-height:1.5;">⚠️ ' + g.warning + '</div>' : '') +
+  '</div>';
+}
+
+function showSwGuidance() {}
+
+function getSwGuidance() {
+  // No court yet
+  if (swCourtYet === 'no') {
+    if (!swApplying) {
+      return {
+        title: 'BEFORE YOU GO TO COURT',
+        body: 'Before you can apply for a Child Arrangements Order (C100) you must first attempt mediation. This is called a MIAM — Mediation Information and Assessment Meeting. It is a legal requirement unless an exemption applies.',
+        steps: [
+          'MIAM — attend a mediation assessment or get a certificate of exemption. Exemptions include domestic abuse, urgent risk, or the other parent refusing to attend.',
+          'C100 application — complete the form and file at your local family court. You can do this online at gov.uk.',
+          'Court allocates the case and Cafcass is notified. A safeguarding letter is requested.',
+          'First hearing — FHDRA — usually listed 4 to 6 weeks after filing.',
+          'Directions made — Cafcass report ordered if needed, next hearing listed.'
+        ],
+        warning: 'A without notice application — where the other parent is not told — is only granted in urgent situations involving immediate risk of harm or abduction. This is not a way to get a faster hearing.',
+        canProceed: false
+      };
+    }
+    if (swApplying === 'applying') {
+      return {
+        title: 'YOU ARE MAKING THE APPLICATION',
+        body: "You are taking the step to apply to court. This takes courage. Your statement for the first hearing needs to explain who you are, your relationship with your child, what contact you are asking for, and why it is in your child's best interests. Keep it focused and child-centred.",
+        steps: [
+          'Complete your MIAM first if you have not already done so.',
+          'File your C100 at your local family court or online.',
+          'Cafcass will contact you for a safeguarding check before the first hearing.',
+          'Your statement for the FHDRA should be calm, factual, and forward-looking.'
+        ],
+        canProceed: true
+      };
+    }
+    if (swApplying === 'responding') {
+      var hasTheirDocs = caseDocuments && caseDocuments.some(function(d){ return d.type==='other'||d.type==='cafcass'; });
+      return {
+        title: 'YOU ARE RESPONDING TO THEIR APPLICATION',
+        body: "They have applied to court and you are responding. Your statement needs to address their application directly, state your position on contact, and respond to every concern they have raised. Do not ignore anything they have claimed — address each point calmly and factually." +
+          (!hasTheirDocs ? '<br><br><strong style="color:var(--gold);">Before Guardian builds your response statement — upload what they have filed.</strong> Their application, their position statement, or any Cafcass letter. Guardian will read every allegation and build your statement around each one.' : '<br><br><span style="color:var(--green);">✅ Guardian has documents to work from.</span> Your statement will be built around what they have filed.'),
+        uploadPrompt: !hasTheirDocs,
+        canProceed: true
+      };
+    }
+  }
+
+  // Been to court
+  if (swCourtYet === 'yes') {
+    if (!swApplying) return null;
+    return {
+      title: 'YOU HAVE BEEN TO COURT BEFORE',
+      body: "Your statement for this hearing builds on everything that has happened so far. Guardian will use your full case history — previous findings, Cafcass reports, dismissed allegations, and your message record — to build the strongest possible statement for your next hearing.",
+      canProceed: true
+    };
+  }
+
+  // Order in place
+  if (swCourtYet === 'order') {
+    if (!swApplying) return null;
+    if (swApplying === 'applying') {
+      return {
+        title: 'THERE IS AN ORDER IN PLACE',
+        body: "You have a sealed court order. If the other parent is not following it you can apply for enforcement under C79. Your statement needs to document every breach with specific dates and times, show the impact on your child, and ask the court to enforce the order.",
+        steps: [
+          'Document every breach — date, time, what happened, how your child was affected.',
+          'Show you have tried to resolve it without court intervention.',
+          'File a C79 application at the court that made the original order.',
+          "Your statement should be specific, factual, and focused on the child's welfare."
+        ],
+        warning: "Courts take contact refusal seriously. A pattern of breaches supported by a timestamped diary and message record is powerful evidence.",
+        canProceed: true
+      };
+    }
+    return {
+      title: 'ORDER IN PLACE — VARIATION OR REVIEW',
+      body: "There is already an order but circumstances have changed and you need to go back to court. Your statement should explain what has changed since the order was made and why a variation is in your child's best interests.",
+      canProceed: true
+    };
+  }
+
+  return null;
+}
+
+function swUploadTheirDocs(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  load('Reading their document...', 'Guardian is finding every allegation');
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(',')[1];
+    try {
+      var res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 800,
+          system: 'You are reading a family court document filed by the other parent or their solicitor. Extract every allegation, concern, or claim made about the responding parent.',
+          messages: [{ role: 'user', content: [
+            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
+            { type: 'text', text: 'Read this document. Extract every allegation or concern raised about the other parent. Return ONLY JSON: {"docType":"<what this document is>","allegations":["<allegation 1>","<allegation 2>"],"summary":"<plain English summary>"}' }
+          ]}]
+        })
+      });
+      var data = await res.json();
+      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+      var parsed = null;
+      try{parsed=JSON.parse(raw);}catch(err){}
+      unload();
+      if (parsed) {
+        // Save to case documents
+        caseDocuments.push({ id:Date.now(), type:'other', name:parsed.docType||file.name, date:new Date().toLocaleDateString('en-GB'), extract:parsed.summary, uploadedAt:new Date().toISOString() });
+        localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+        // Add allegations to profile
+        if (parsed.allegations && parsed.allegations.length > 0 && profile) {
+          var newAllegations = parsed.allegations.join('; ');
+          profile.allegations = profile.allegations ? profile.allegations + '; ' + newAllegations : newAllegations;
+          save();
+        }
+        toast('✅ Document read — ' + (parsed.allegations||[]).length + ' allegations found. Guardian will address each one.');
+        // Refresh guidance
+        swPickApplying(document.querySelector('#swApplyingOpts .opt.sel'), swApplying);
+      } else {
+        toast('Document saved — Guardian will use it for your statement');
+      }
+    } catch(err) { unload(); toast('Could not read document — continue and Guardian will still help'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function swContinueToStatement() {
+  // Get the ask from StepA and copy to StepB if needed
+  var askA = document.getElementById('swCourtAsk');
+  document.getElementById('swStepA').style.display = 'none';
+  document.getElementById('swStepB').style.display = 'block';
+  // Rebuild case check
+  var caseCheck = document.getElementById('swCaseCheck');
+  if (caseCheck) {
+    var diary = diaryEntries ? diaryEntries.length : 0;
+    var docs = caseDocuments ? caseDocuments.length : 0;
+    var hasMsgs = msgLog && msgLog.length > 0;
+    var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
+    var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
+    caseCheck.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>' +
+      [{ label:diary+' diary entries',ok:diary>0,tip:'Log contact sessions in My Diary' },
+       { label:docs+' documents',ok:docs>0,tip:'Upload to Case File' },
+       { label:'Message history',ok:hasMsgs,tip:'Check messages through Message Coach' },
+       { label:'Allegations',ok:hasAllegations,tip:'Update in My Case' },
+       { label:'Dismissed findings',ok:hasDismissed,tip:'Update in My Case' }]
+      .map(function(c){ return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);"><span style="font-size:14px;">'+(c.ok?'✅':'⚠️')+'</span><div style="flex:1;font-size:13px;color:'+(c.ok?'var(--white)':'var(--muted-hi)')+';">'+c.label+(c.ok?'':'<div style="font-size:11px;color:var(--muted);">'+c.tip+'</div>')+'</div></div>'; }).join('');
+  }
+}
+
 function loadStatementWriter() {
   document.getElementById('swStage1').style.display = 'block';
   document.getElementById('swStage2').style.display = 'none';
   document.getElementById('swStage3').style.display = 'none';
   swHearingType = '';
   swBuiltStatement = '';
+  swCourtYet = '';
+  swApplying = '';
+  swType = '';
+
+  var stepA = document.getElementById('swStepA');
+  var stepB = document.getElementById('swStepB');
+  if (stepA) stepA.style.display = 'block';
+  if (stepB) stepB.style.display = 'none';
+
+  document.querySelectorAll('#swTypeOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
+  var els = ['swUploadPrompt','swNotSureBox','swAskBox','swContinueBtn'];
+  els.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  var guidanceBox = document.getElementById('swGuidanceBox');
+  if (guidanceBox) { guidanceBox.style.display='none'; guidanceBox.innerHTML=''; }
+  var fullGuide = document.getElementById('swFullGuide');
+  if (fullGuide) { fullGuide.style.display='none'; fullGuide.innerHTML=''; }
+  var courtAsk = document.getElementById('swCourtAsk');
+  if (courtAsk) courtAsk.value = '';
+
+  // Load case check for StepB
+  var caseCheck = document.getElementById('swCaseCheck');
+  if (!caseCheck) return;
+  var diary = diaryEntries ? diaryEntries.length : 0;
+  var docs = caseDocuments ? caseDocuments.length : 0;
+  var hasMsgs = msgLog && msgLog.length > 0;
+  var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
+  var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
+  var checkHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>';
+  checkHtml += [
+    { label: diary + ' diary entries', ok: diary > 0, tip: 'Log contact sessions in My Diary' },
+    { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
+    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Message Coach' },
+    { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
+    { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
+  ].map(function(c) {
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">' +
+      '<span style="font-size:14px;">' + (c.ok ? '✅' : '⚠️') + '</span>' +
+      '<div style="flex:1;"><div style="font-size:13px;color:' + (c.ok ? 'var(--white)' : 'var(--muted-hi)') + ';">' + c.label + '</div>' +
+      (!c.ok ? '<div style="font-size:11px;color:var(--muted);">' + c.tip + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+  caseCheck.innerHTML = checkHtml;
 }
 
 function goStatementWriter() {
@@ -4391,12 +4714,16 @@ function loadEditProfile() {
     var el = document.getElementById(id);
     if (el && profile[fields[id]]) el.value = profile[fields[id]];
   });
-  // Set case type button
+  // Set case type buttons — multi-select
   if (profile.caseType) {
+    var types = profile.caseType.split(',').map(function(t){ return t.trim().toLowerCase(); });
     document.querySelectorAll('#editCaseTypeOpts .opt').forEach(function(b){
-      if (b.textContent.indexOf(profile.caseType) !== -1 || profile.caseType.indexOf(b.textContent.split(' ')[0]) !== -1) {
-        b.classList.add('sel');
-      }
+      var btnText = b.textContent.trim().toLowerCase();
+      types.forEach(function(t){
+        if (btnText.indexOf(t.substring(0,8)) !== -1 || t.indexOf(btnText.substring(0,8)) !== -1) {
+          b.classList.add('sel');
+        }
+      });
     });
   }
   if (profile.conflict) {
@@ -4418,14 +4745,58 @@ function pickEditCaseType(btn, val) {
   btn.classList.add('sel');
 }
 
+function toggleCaseType(btn, val) {
+  // Multi-select — toggle on/off
+  // Special case: if No court yet is selected, deselect everything else
+  if (val === 'No court yet') {
+    document.querySelectorAll('#caseTypeOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
+    btn.classList.add('sel');
+    return;
+  }
+  // Deselect No court yet if anything else is selected
+  document.querySelectorAll('#caseTypeOpts .opt').forEach(function(b){
+    if (b.textContent.indexOf('No court') !== -1) b.classList.remove('sel');
+  });
+  btn.classList.toggle('sel');
+}
+
+function getSelectedCaseTypes() {
+  var selected = [];
+  document.querySelectorAll('#caseTypeOpts .opt.sel').forEach(function(b){
+    // Extract just the first part before the dash
+    var text = b.textContent.trim();
+    selected.push(text);
+  });
+  return selected.join(', ');
+}
+
+function toggleEditCaseType(btn, val) {
+  if (val === 'No court yet') {
+    document.querySelectorAll('#editCaseTypeOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
+    btn.classList.add('sel');
+    return;
+  }
+  document.querySelectorAll('#editCaseTypeOpts .opt').forEach(function(b){
+    if (b.textContent.indexOf('No court') !== -1) b.classList.remove('sel');
+  });
+  btn.classList.toggle('sel');
+}
+
+function getSelectedEditCaseTypes() {
+  var selected = [];
+  document.querySelectorAll('#editCaseTypeOpts .opt.sel').forEach(function(b){
+    selected.push(b.textContent.trim());
+  });
+  return selected.join(', ');
+}
+
 function saveEditProfile() {
   if (!profile) profile = {};
   profile.myName = document.getElementById('editMyName').value.trim() || profile.myName;
   profile.theirName = document.getElementById('editTheirName').value.trim() || profile.theirName;
   profile.childName = document.getElementById('editChildName').value.trim() || profile.childName;
   profile.contact = document.getElementById('editContact').value.trim() || profile.contact;
-  var selCT = document.querySelector('#editCaseTypeOpts .opt.sel');
-  profile.caseType = selCT ? selCT.textContent.trim() : (profile.caseType || '');
+  profile.caseType = getSelectedEditCaseTypes() || profile.caseType || '';
   profile.conflict = document.getElementById('editConflict').value;
   profile.allegations = document.getElementById('editAllegations').value.trim() || profile.allegations;
   profile.dismissed = document.getElementById('editDismissed').value.trim() || profile.dismissed;
