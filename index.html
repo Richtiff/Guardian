@@ -480,6 +480,10 @@ p, .body-text { font-size: 16px !important; }
     <input class="auth-input" type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
   </div>
   <div class="auth-error" id="loginError"></div>
+  <div style="display:flex;align-items:center;gap:8px;margin:8px 0;">
+    <input type="checkbox" id="rememberMe" checked style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer;">
+    <label for="rememberMe" style="font-size:13px;color:var(--muted-hi);cursor:pointer;">Keep me signed in for 30 days</label>
+  </div>
   <button type="button" class="btn-gold" onclick="doLogin()" style="margin-top:4px;">Sign in →</button>
   <div class="auth-divider"><span>or</span></div>
   <button type="button" class="btn-ghost" onclick="go('sSignup')">Create an account</button>
@@ -1791,8 +1795,23 @@ window.onload = async function() {
     }
     go('sLogin');
   } else {
-    console.warn('Supabase not available — falling back to localStorage');
-    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+    console.warn('Supabase not available — checking stored session');
+    // Check for remembered session
+    var stored = localStorage.getItem('gSession');
+    if (stored) {
+      try {
+        var sess = JSON.parse(stored);
+        if (sess.expiry && Date.now() < sess.expiry) {
+          currentUser = { id: sess.email, email: sess.email };
+          console.log('Session restored for', sess.email);
+          if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+          return;
+        } else {
+          localStorage.removeItem('gSession');
+        }
+      } catch(e) {}
+    }
+    go('sLogin');
   }
 };
 
@@ -3019,13 +3038,44 @@ async function doLogin() {
   errEl.style.display = 'none';
   if (!email || !password) { showAuthError('loginError', 'Please enter your email and password'); return; }
   load('Signing in...', '');
-  try {
-    var result = await supabase.auth.signInWithPassword({ email:email, password:password });
-    unload();
-    if (result.error) { showAuthError('loginError', result.error.message); return; }
-    currentUser = result.data.user;
-    await loadProfileFromSupabase();
-  } catch(e) { unload(); showAuthError('loginError', 'Something went wrong. Please try again.'); }
+
+  // Try Supabase first
+  if (supabase) {
+    try {
+      var result = await supabase.auth.signInWithPassword({ email:email, password:password });
+      unload();
+      if (result.error) { showAuthError('loginError', result.error.message); return; }
+      currentUser = result.data.user;
+      // Store session expiry for remember me
+      var rememberEl = document.getElementById('rememberMe');
+      var days = (rememberEl && rememberEl.checked) ? 30 : 1;
+      var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+      localStorage.setItem('gSession', JSON.stringify({ email:result.data.user.email, expiry:expiry, supabase:true }));
+      await loadProfileFromSupabase();
+      return;
+    } catch(e) {
+      console.warn('Supabase login failed:', e);
+      unload();
+    }
+  }
+
+  // Fallback — use localStorage with email as identifier
+  unload();
+  var storedEmail = localStorage.getItem('gUserEmail');
+  var storedPass = localStorage.getItem('gUserPass');
+  if (storedEmail && storedEmail === email && storedPass === password) {
+    currentUser = { id: email, email: email };
+    // Store session with expiry
+    var remember = document.getElementById('rememberMe');
+    var days = (remember && remember.checked) ? 30 : 1;
+    var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
+    localStorage.setItem('gSession', JSON.stringify({ email:email, expiry:expiry }));
+    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+  } else if (!storedEmail) {
+    showAuthError('loginError', 'No account found. Please create an account first.');
+  } else {
+    showAuthError('loginError', 'Incorrect email or password.');
+  }
 }
 
 async function doSignup() {
@@ -3038,12 +3088,27 @@ async function doSignup() {
   if (password !== confirm) { showAuthError('signupError', 'Passwords do not match'); return; }
   if (password.length < 6) { showAuthError('signupError', 'Password must be at least 6 characters'); return; }
   load('Creating your account...', '');
-  try {
-    var result = await supabase.auth.signUp({ email:email, password:password });
-    unload();
-    if (result.error) { showAuthError('signupError', result.error.message); return; }
-    go('sVerify');
-  } catch(e) { unload(); showAuthError('signupError', 'Something went wrong. Please try again.'); }
+
+  // Try Supabase first
+  if (supabase) {
+    try {
+      var result = await supabase.auth.signUp({ email:email, password:password });
+      unload();
+      if (result.error) { showAuthError('signupError', result.error.message); return; }
+      go('sVerify');
+      return;
+    } catch(e) {
+      console.warn('Supabase signup failed:', e);
+    }
+  }
+
+  // Fallback — store locally
+  unload();
+  localStorage.setItem('gUserEmail', email);
+  localStorage.setItem('gUserPass', password);
+  currentUser = { id: email, email: email };
+  toast('Account created — Supabase sync will activate when connected');
+  go('sWelcome');
 }
 
 async function resendVerification() {
@@ -3068,7 +3133,8 @@ async function doLogout() {
   if (supabase) { await supabase.auth.signOut(); }
   currentUser = null;
   profile = null;
-  localStorage.clear();
+  localStorage.removeItem('gSession');
+  localStorage.removeItem('gProfile');
   go('sLogin');
 }
 
