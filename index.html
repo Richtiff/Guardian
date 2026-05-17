@@ -2016,9 +2016,14 @@ function saveP1() {
 }
 
 function saveP2() {
-  if (!selCaseType){toast('Please select your case type');return;}
-  profile.caseType=selCaseType; profile.duration=document.getElementById('iDuration').value;
-  profile.contact=document.getElementById('iContact').value.trim();
+  var caseType = getSelectedCaseTypes();
+  if (!caseType){ toast('Please select your case type'); return; }
+  var duration = document.querySelector('#durationOpts .opt.sel') ?
+    document.querySelector('#durationOpts .opt.sel').textContent.trim() :
+    document.getElementById('iDuration').value;
+  profile.caseType = caseType;
+  profile.duration = duration;
+  profile.contact = document.getElementById('iContact').value.trim();
   save(); go('sProfile3');
 }
 
