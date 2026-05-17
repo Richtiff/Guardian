@@ -3243,26 +3243,45 @@ async function loadProfileFromSupabase() {
   try {
     var result = await supabase.from('profiles').select('*').eq('user_id', currentUser.id).single();
     if (result.data) {
-      // Load profile from Supabase
-      profile = {
-        myName: result.data.my_name || '',
-        theirName: result.data.their_name || '',
-        childName: result.data.child_name || '',
-        otherKids: result.data.other_kids || '',
-        caseType: result.data.case_type || '',
-        duration: result.data.duration || '',
-        contact: result.data.contact || '',
-        conflict: result.data.conflict || '5',
-        allegations: result.data.allegations || '',
-        dismissed: result.data.dismissed || '',
-        commStyle: result.data.comm_style || '',
-        voiceContext: result.data.voice_context || '',
-        complete: result.data.complete || false
-      };
+      // Try full JSON blob first — most reliable
+      if (result.data.profile_json) {
+        try {
+          profile = JSON.parse(result.data.profile_json);
+        } catch(e) {
+          profile = {};
+        }
+      } else {
+        // Fall back to individual columns
+        profile = {
+          myName: result.data.my_name || '',
+          theirName: result.data.their_name || '',
+          childName: result.data.child_name || '',
+          otherKids: result.data.other_kids || '',
+          caseType: result.data.case_type || '',
+          duration: result.data.duration || '',
+          contact: result.data.contact || '',
+          conflict: result.data.conflict || '5',
+          allegations: result.data.allegations || '',
+          dismissed: result.data.dismissed || '',
+          commStyle: result.data.comm_style || '',
+          voiceContext: result.data.voice_context || '',
+          complete: result.data.complete || false
+        };
+      }
       if (result.data.doc_extracts) { try { docs = JSON.parse(result.data.doc_extracts); } catch(e){} }
       if (result.data.message_log) { try { msgLog = JSON.parse(result.data.message_log); } catch(e){} }
       localStorage.setItem('gProfile', JSON.stringify(profile));
-      if (profile.complete) { showHome(); } else { go('sWelcome'); }
+      // Consider setup complete if they have a name and child name — don't rely solely on complete flag
+      var isComplete = profile.complete || (profile.myName && profile.childName && profile.caseType);
+      if (isComplete) {
+        profile.complete = true;
+        showHome();
+      } else if (profile.setupStep) {
+        var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
+        go(stepMap[profile.setupStep] || 'sWelcome');
+      } else {
+        go('sWelcome');
+      }
     } else {
       // New user — no profile yet
       go('sWelcome');
@@ -3295,6 +3314,8 @@ async function saveProfileToSupabase() {
       complete: profile.complete || false,
       updated_at: new Date().toISOString()
     };
+    // Also save full profile as JSON blob for reliable restore
+    data.profile_json = JSON.stringify(profile);
     await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
   } catch(e) { console.warn('Supabase save failed:', e); }
 }
