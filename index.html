@@ -668,7 +668,7 @@ p, .body-text { font-size: 16px !important; }
       <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".txt" onchange="handleDoc(event,'whatsapp')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload WhatsApp .txt file</div></div><div class="upload-status" id="stWA">+</div></label>
     </div>
     <label class="upload-item">
-      <input type="file" accept="image/*" multiple onchange="handleDoc(event,'screenshots')">
+      <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="handleDocMultiple(event,'screenshots')">
       <div class="upload-item-icon">📷</div>
       <div class="upload-item-body"><div class="upload-item-name">Message screenshots</div><div class="upload-item-hint">Any app — WhatsApp, iMessage, SMS, AppClose</div></div>
       <div class="upload-status" id="stScreenshots">+</div>
@@ -1010,12 +1010,12 @@ p, .body-text { font-size: 16px !important; }
     <div class="upload-section-title">ADD A DOCUMENT</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".pdf,image/*" onchange="addDoc(event,'court')">
+        <input type="file" accept=".pdf,.doc,.docx,image/*" onchange="addDoc(event,'court')">
         <div class="upload-item-icon">⚖️</div>
         <div class="upload-item-body"><div class="upload-item-name">Court Document</div><div class="upload-item-hint">Order, CNF, C1A</div></div>
       </label>
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".pdf,image/*" onchange="addDoc(event,'cafcass')">
+        <input type="file" accept=".pdf,.doc,.docx,image/*" onchange="addDoc(event,'cafcass')">
         <div class="upload-item-icon">👥</div>
         <div class="upload-item-body"><div class="upload-item-name">Cafcass</div><div class="upload-item-hint">Letter or report</div></div>
       </label>
@@ -1031,7 +1031,7 @@ p, .body-text { font-size: 16px !important; }
       </label>
     </div>
     <label class="upload-item">
-      <input type="file" accept=".pdf,image/*,.txt" onchange="addDoc(event,'other')">
+      <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="addDoc(event,'other')">
       <div class="upload-item-icon">📎</div>
       <div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">Letter, statement, report</div></div>
     </label>
@@ -1793,6 +1793,11 @@ window.onload = async function() {
     } catch(e) {
       console.warn('Session check failed:', e);
     }
+    // Check if setup was in progress
+    if (profile && profile.setupStep && !profile.complete) {
+      resumeSetup(profile.setupStep);
+      return;
+    }
     go('sLogin');
   } else {
     console.warn('Supabase not available — checking stored session');
@@ -1804,7 +1809,14 @@ window.onload = async function() {
         if (sess.expiry && Date.now() < sess.expiry) {
           currentUser = { id: sess.email, email: sess.email };
           console.log('Session restored for', sess.email);
-          if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+          if (profile && profile.complete) {
+            showHome();
+          } else if (profile && profile.setupStep) {
+            var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
+            go(stepMap[profile.setupStep] || 'sWelcome');
+          } else {
+            go('sWelcome');
+          }
           return;
         } else {
           localStorage.removeItem('gSession');
@@ -2005,6 +2017,18 @@ function pickOpt(grp, btn, key, val) {
   }
 }
 
+
+function resumeSetup(step) {
+  var screens = ['sProfile1','sProfile2','sProfile3','sProfile4'];
+  var target = screens[Math.min((step||1)-1, screens.length-1)];
+  go(target);
+  // Restore filled fields
+  if (profile.myName) { var el = document.getElementById('iMyName'); if(el) el.value = profile.myName; }
+  if (profile.childName) { var el2 = document.getElementById('iChildName'); if(el2) el2.value = profile.childName; }
+  if (profile.otherName) { var el3 = document.getElementById('iOtherName'); if(el3) el3.value = profile.otherName; }
+  toast('Welcome back — continuing where you left off');
+}
+
 function saveP1() {
   var n=document.getElementById('iMyName').value.trim();
   var c=document.getElementById('iChildName').value.trim();
@@ -2012,6 +2036,7 @@ function saveP1() {
   if (!profile) profile={};
   profile.myName=n; profile.theirName=document.getElementById('iTheirName').value.trim();
   profile.childName=c; profile.otherKids=document.getElementById('iOtherKids').value.trim();
+  profile.setupStep = 2;
   save(); go('sProfile2');
 }
 
@@ -2024,6 +2049,7 @@ function saveP2() {
   profile.caseType = caseType;
   profile.duration = duration;
   profile.contact = document.getElementById('iContact').value.trim();
+  profile.setupStep = 3;
   save(); go('sProfile3');
 }
 
@@ -2039,6 +2065,7 @@ function saveP3() {
   profile.allegations=document.getElementById('iAllegations').value.trim();
   profile.dismissed=document.getElementById('iDismissed').value.trim();
   profile.commStyle=selCommStyle;
+  profile.setupStep = 4;
   save(); go('sProfile4');
 }
 
@@ -2186,6 +2213,22 @@ async function processDocs() {
     }
   }
   docs=extracts; localStorage.setItem('gDocs',JSON.stringify(docs));
+  // Also save processed docs to caseDocuments for Case File
+  Object.keys(uploadedDocs).forEach(function(key){
+    var d = uploadedDocs[key];
+    if (d && d.name) {
+      var docType = key.replace(/[0-9]/g,'');
+      caseDocuments.push({
+        id: Date.now() + Math.random(),
+        type: docType,
+        name: d.name,
+        date: new Date().toLocaleDateString('en-GB'),
+        extract: extracts[key] || '',
+        uploadedAt: new Date().toISOString()
+      });
+    }
+  });
+  localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
   try {
     await buildSummary();
   } catch(e) {
@@ -2491,10 +2534,17 @@ async function sendQA() {
         { type:'text', text: msg }
       ];
     } else {
-      // PDF or text
-      var docType = qaAttachment.type === 'application/pdf' ? 'application/pdf' : 'text/plain';
+      // PDF — truncate large documents to prevent API timeout
+      var docData = qaAttachment.data;
+      var docName = qaAttachment.name || 'document';
+      if (docData.length > 800000) {
+        // Too large — summarise from what we can
+        docData = docData.substring(0, 800000);
+        toast('Large document — reading first section only');
+      }
+      var docType = 'application/pdf';
       msgContent = [
-        { type:'document', source:{ type:'base64', media_type:docType, data:qaAttachment.data } },
+        { type:'document', source:{ type:'base64', media_type:docType, data:docData } },
         { type:'text', text: msg }
       ];
     }
@@ -2504,7 +2554,19 @@ async function sendQA() {
   }
 
   // Update history with correct content format
-  qaHistory[qaHistory.length-1].content = msgContent;
+  // Store a compact version in history to prevent context overflow
+  if (Array.isArray(msgContent)) {
+    var compactContent = msgContent.map(function(item) {
+      if (item.type === 'document') {
+        // Replace document data with a text reference to keep history small
+        return { type:'text', text:'[Document attached and read by Guardian — ' + (qaAttachment ? qaAttachment.name || 'document' : 'document') + ']' };
+      }
+      return item;
+    });
+    qaHistory[qaHistory.length-1].content = compactContent;
+  } else {
+    qaHistory[qaHistory.length-1].content = msgContent;
+  }
 
   try {
     var res=await fetch(API,{
@@ -3071,7 +3133,6 @@ async function doLogin() {
       unload();
       if (result.error) { showAuthError('loginError', result.error.message); return; }
       currentUser = result.data.user;
-      // Store session expiry for remember me
       var rememberEl = document.getElementById('rememberMe');
       var days = (rememberEl && rememberEl.checked) ? 30 : 1;
       var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
@@ -3538,7 +3599,8 @@ async function scanStatement(event, forcedType) {
   var file = event.target.files[0];
   event.target.value = '';
   if (!file) return;
-  var type = forcedType || scanType || 'mine';
+  var type = forcedType || 'mine';
+  console.log('Scanning statement, type:', type);
   var statusId = type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus';
   var statusEl = document.getElementById(statusId);
   if (statusEl) statusEl.textContent = '⏳';
@@ -3570,21 +3632,30 @@ async function scanStatement(event, forcedType) {
       if (statusEl2) statusEl2.textContent = '✅';
       if (parsed) {
         if (type === 'theirs') {
-          document.getElementById('theirsVerdict').innerHTML = (parsed.verdict||'').replace(/\n/g,'<br>');
-          document.getElementById('theirsAllegations').innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-weight:700;color:var(--red);">Allegation '+(i+1)+':</span> '+w+'</div>';}).join('');
-          document.getElementById('theirsResponse').innerHTML = (parsed.response||'').replace(/\n/g,'<br>');
-          document.getElementById('theirsWeaknesses').innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
-          document.getElementById('theirsResult').style.display = 'block';
+          var tv = document.getElementById('theirsVerdict');
+          var ta = document.getElementById('theirsAllegations');
+          var tr = document.getElementById('theirsResponse');
+          var tw = document.getElementById('theirsWeaknesses');
+          var tres = document.getElementById('theirsResult');
+          if (tv) tv.innerHTML = (parsed.verdict||'').replace(/\n/g,'<br>');
+          if (ta) ta.innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="font-weight:700;color:var(--red);">Allegation '+(i+1)+':</span> '+w+'</div>';}).join('');
+          if (tr) tr.innerHTML = (parsed.response||'').replace(/\n/g,'<br>');
+          if (tw) tw.innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
+          if (tres) tres.style.display = 'block';
         } else {
           var scoreEl = document.getElementById('mineScanScore');
-          if (parsed.score !== null && parsed.score !== undefined) {
+          if (scoreEl && parsed.score !== null && parsed.score !== undefined) {
             var col = parsed.score>=7?'var(--green)':parsed.score>=5?'var(--amber)':'var(--red)';
             scoreEl.innerHTML = '<span style="color:'+col+'">' + parsed.score + '</span><span style="font-size:14px;color:var(--muted-hi)">/10</span>';
           }
-          document.getElementById('mineScanVerdict').textContent = parsed.verdict || '';
-          document.getElementById('mineScanWeaknesses').innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:6px 0;border-bottom:1px solid var(--border);">'+(i+1)+'. '+w+'</div>';}).join('');
-          document.getElementById('mineScanStrengths').innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
-          document.getElementById('mineResult').style.display = 'block';
+          var mv = document.getElementById('mineScanVerdict');
+          var mw = document.getElementById('mineScanWeaknesses');
+          var ms = document.getElementById('mineScanStrengths');
+          var mres = document.getElementById('mineResult');
+          if (mv) mv.textContent = parsed.verdict || '';
+          if (mw) mw.innerHTML = (parsed.weaknesses||[]).map(function(w,i){return '<div style="padding:6px 0;border-bottom:1px solid var(--border);">'+(i+1)+'. '+w+'</div>';}).join('');
+          if (ms) ms.innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
+          if (mres) mres.style.display = 'block';
         }
       } else { toast('Could not analyse — please try again'); }
     } catch(err) { unload(); toast('Something went wrong — please try again'); }
