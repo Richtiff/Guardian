@@ -2044,7 +2044,7 @@ function saveP3() {
 
 function save() {
   localStorage.setItem('gProfile',JSON.stringify(profile));
-  saveProfileToSupabase();
+  try { saveProfileToSupabase(); } catch(e) { console.warn('Profile sync failed:', e); }
 }
 
 function toggleGuide(id) {
@@ -2186,12 +2186,26 @@ async function processDocs() {
     }
   }
   docs=extracts; localStorage.setItem('gDocs',JSON.stringify(docs));
-  await buildSummary();
+  try {
+    await buildSummary();
+  } catch(e) {
+    console.warn('buildSummary error:', e);
+    unload();
+    renderSummary(null);
+  }
 }
 
 async function skipDocs() {
-  profile.voice=document.getElementById('obTranscript').value.trim();
-  save(); await buildSummary();
+  try {
+    var el = document.getElementById('obTranscript');
+    profile.voice = el ? el.value.trim() : '';
+    save();
+    await buildSummary();
+  } catch(e) {
+    console.warn('skipDocs error:', e);
+    unload();
+    renderSummary(null);
+  }
 }
 
 async function buildSummary() {
@@ -2211,6 +2225,7 @@ async function buildSummary() {
 
 function renderSummary(parsed) {
   var c=document.getElementById('summaryContent');
+  if (!c) { go('sHome'); return; }
   var html='';
   if(profile.myName) html+='<div class="summary-row"><span class="summary-key">Your name</span><span class="summary-val">'+profile.myName+'</span></div>';
   if(profile.childName) html+='<div class="summary-row"><span class="summary-key">Child</span><span class="summary-val">'+profile.childName+'</span></div>';
