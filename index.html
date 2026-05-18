@@ -1931,11 +1931,25 @@ var currentUser = null;
 function initSupabase() {
   try {
     if (window.supabase && window.supabase.createClient) {
-      supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+      supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+        auth: {
+          storage: window.localStorage,
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: false
+        }
+      });
       console.log('Supabase ready');
       return true;
     } else if (window.supabaseJs && window.supabaseJs.createClient) {
-      supabase = window.supabaseJs.createClient(SUPA_URL, SUPA_KEY);
+      supabase = window.supabaseJs.createClient(SUPA_URL, SUPA_KEY, {
+        auth: {
+          storage: window.localStorage,
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: false
+        }
+      });
       console.log('Supabase ready (alt)');
       return true;
     }
@@ -2079,31 +2093,41 @@ window.onload = function() { (async function() {
         } else { localStorage.removeItem('gSession'); }
       } catch(e) {}
     }
-    go('sLogin');
-  } else {
-    console.warn('Supabase not available — checking stored session');
-    // Check for remembered session
-    var stored = localStorage.getItem('gSession');
-    if (stored) {
-      try {
-        var sess = JSON.parse(stored);
-        if (sess.expiry && Date.now() < sess.expiry) {
-          currentUser = { id: sess.email, email: sess.email };
-          console.log('Session restored for', sess.email);
-          if (profile && profile.complete) {
-            showHome();
-          } else if (profile && profile.setupStep) {
-            var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
-            go(stepMap[profile.setupStep] || 'sWelcome');
-          } else {
-            go('sWelcome');
-          }
-          return;
+
+  // ── PRIMARY FALLBACK: localStorage session ──
+  var stored = localStorage.getItem('gSession');
+  if (stored) {
+    try {
+      var sess = JSON.parse(stored);
+      if (sess.expiry && Date.now() < sess.expiry) {
+        currentUser = { id: sess.email, email: sess.email };
+        console.log('Session valid:', sess.email);
+        var isComplete = profile && (profile.complete || (profile.myName && profile.childName && profile.caseType));
+        if (isComplete) {
+          profile.complete = true;
+          showHome();
+        } else if (profile && profile.setupStep) {
+          var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
+          go(stepMap[profile.setupStep] || 'sWelcome');
         } else {
-          localStorage.removeItem('gSession');
+          go('sWelcome');
         }
-      } catch(e) {}
-    }
+        return;
+      } else {
+        localStorage.removeItem('gSession');
+      }
+    } catch(e) { console.warn('Session error:', e); }
+  }
+
+  // ── LAST RESORT: Profile exists without session ──
+  if (profile && (profile.complete || (profile.myName && profile.childName && profile.caseType))) {
+    console.log('Profile in localStorage — restoring without session');
+    profile.complete = true;
+    showHome();
+    return;
+  }
+
+  go('sLogin');
     go('sLogin');
   }
   })();
