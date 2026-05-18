@@ -2453,7 +2453,7 @@ async function handleBundleInSetup(event) {
   if (!file) return;
   var status = document.getElementById('stBundle');
   var result = document.getElementById('bundleSetupResult');
-  if (status) status.textContent = '⏳';
+  if (status) { status.textContent = ''; status.innerHTML = '<span style="font-size:11px;color:var(--gold);">Reading...</span>'; }
   load('Reading your bundle...', 'Guardian is identifying every document inside');
 
   var reader = new FileReader();
@@ -2497,13 +2497,18 @@ async function handleBundleInSetup(event) {
         }
         toast('✅ Bundle read — ' + parsed.documents.length + ' documents found');
       } else {
-        if (status) status.textContent = '❌';
-        toast('Bundle could not be read. Make sure it is a digital PDF not a scanned image. Try uploading documents individually from Case File.');
+        if (status) status.innerHTML = '<span style="font-size:11px;color:var(--amber);">⚠️ Failed</span>';
+        if (result) {
+          result.style.display = 'block';
+          result.style.color = 'var(--amber)';
+          result.innerHTML = '⚠️ Could not read this bundle. Check it is a digital PDF (not scanned). You can upload documents individually from Case File after setup.';
+        }
+        unload();
       }
     } catch(err) {
       unload();
-      if (status) status.textContent = '❌';
-      toast('Could not read bundle — file may be too large or corrupted. Try uploading individual documents instead.');
+      if (status) status.innerHTML = '<span style="font-size:10px;color:var(--red);">Error</span>';
+      if (result) { result.style.display='block'; result.style.color='var(--red)'; result.innerHTML='❌ Something went wrong. The file may be too large. Try uploading individual documents from Case File after setup.'; }
     }
   };
   reader.readAsDataURL(file);
@@ -2529,22 +2534,23 @@ function handleDoc(event, docType) {
         if (!existing) {
           existing = document.createElement('div');
           existing.id = confirmId;
-          existing.style.cssText = 'font-size:12px;color:var(--green);padding:6px 0 2px;line-height:1.5;';
+          existing.style.cssText = 'margin-top:6px;padding:8px 10px;background:rgba(26,158,114,0.1);border:1px solid rgba(26,158,114,0.25);border-radius:8px;font-size:13px;color:var(--green);font-weight:600;';
           if (uEl && uEl.parentNode) uEl.parentNode.insertBefore(existing, uEl.nextSibling);
         }
         var count = Object.keys(uploadedDocs).filter(function(k){ return k.startsWith(dt); }).length;
         var totalAll = Object.keys(uploadedDocs).length;
-        existing.innerHTML = '✅ ' + count + ' document' + (count>1?'s':'') + ' ready — Guardian will read ' + (count>1?'these':'this') + ' when you continue';
-        // Update overall counter too
+        existing.style.cssText = 'margin-top:6px;padding:8px 10px;background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:8px;font-size:13px;color:var(--green);font-weight:600;';
+        existing.innerHTML = '✅ ' + count + ' file' + (count>1?'s':'') + ' ready';
+        // Update overall counter prominently
         var totalEl = document.getElementById('setupDocTotal');
         if (!totalEl) {
           totalEl = document.createElement('div');
           totalEl.id = 'setupDocTotal';
-          totalEl.style.cssText = 'font-size:13px;color:var(--gold);font-weight:600;text-align:center;padding:8px 0;';
+          totalEl.style.cssText = 'margin:12px 0 4px;padding:14px 16px;background:var(--gold-dim);border:2px solid rgba(212,168,67,0.4);border-radius:12px;font-size:15px;color:var(--gold);font-weight:800;text-align:center;';
           var nextBtn = document.querySelector('#sProfile4 .btn-gold');
           if (nextBtn) nextBtn.parentNode.insertBefore(totalEl, nextBtn);
         }
-        totalEl.textContent = '📎 ' + totalAll + ' document' + (totalAll>1?'s':'') + ' queued for Guardian to read';
+        totalEl.innerHTML = '📎 ' + totalAll + ' document' + (totalAll>1?'s':'') + ' queued — Guardian will read ' + (totalAll>1?'these':'this') + ' when you continue';
       };
       r.readAsDataURL(file);
     })(f,docType,i);
@@ -2614,7 +2620,11 @@ async function skipDocs() {
   try {
     var el = document.getElementById('obTranscript');
     profile.voice = el ? el.value.trim() : '';
+    profile.complete = false; // Will be set true in confirmSummary
     save();
+    // Save caseDocuments to Supabase now
+    localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+    try { saveProfileToSupabase(); } catch(e){}
     await buildSummary();
   } catch(e) {
     console.warn('skipDocs error:', e);
@@ -2645,6 +2655,8 @@ function renderSummary(parsed) {
   go('sSummary');
   var c=document.getElementById('summaryContent');
   if (!c) { console.warn('summaryContent not found'); return; }
+  var docCount = caseDocuments ? caseDocuments.length : 0;
+  var uploadedDocCount = Object.keys(uploadedDocs).length;
   var html='';
   if(profile.myName) html+='<div class="summary-row"><span class="summary-key">Your name</span><span class="summary-val">'+profile.myName+'</span></div>';
   if(profile.childName) html+='<div class="summary-row"><span class="summary-key">Child</span><span class="summary-val">'+profile.childName+'</span></div>';
@@ -2652,6 +2664,25 @@ function renderSummary(parsed) {
   if(profile.contact) html+='<div class="summary-row"><span class="summary-key">Contact</span><span class="summary-val">'+profile.contact+'</span></div>';
   if(profile.conflict) html+='<div class="summary-row"><span class="summary-key">Conflict level</span><span class="summary-val">'+profile.conflict+'/10</span></div>';
   if(parsed&&parsed.overview) html+='<div style="padding:10px 0;font-size:13px;color:var(--muted-hi);line-height:1.6;">'+parsed.overview+'</div>';
+  // Add what Guardian actually read
+  var totalDocsRead = docCount + uploadedDocCount;
+  if (totalDocsRead > 0) {
+    html += '<div style="background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;">';
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:10px;">✅ GUARDIAN HAS READ</div>';
+    if (caseDocuments && caseDocuments.length > 0) {
+      html += caseDocuments.map(function(d){
+        return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(26,158,114,0.1);font-size:13px;color:var(--white);">✅ ' + (d.name || 'Document') + (d.author ? ' <span style="color:var(--muted-hi);font-size:11px;">— ' + d.author + '</span>' : '') + '</div>';
+      }).join('');
+    }
+    if (Object.keys(uploadedDocs).length > 0) {
+      Object.keys(uploadedDocs).forEach(function(key){
+        if (uploadedDocs[key].name) {
+          html += '<div style="padding:5px 0;border-bottom:1px solid rgba(26,158,114,0.1);font-size:13px;color:var(--white);">✅ ' + uploadedDocs[key].name + '</div>';
+        }
+      });
+    }
+    html += '</div>';
+  }
   c.innerHTML=html;
   var tags=document.getElementById('knowledgeTags');
   if (tags) {
@@ -2802,6 +2833,8 @@ function checkContactDayReminder() {
   var todayStr = today.toISOString().split('T')[0];
   var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
 
+  // Only check if contact schedule has been set AND contact days parsed
+  if (!profile || !profile.contact || contactDays.length === 0) return; // No schedule set yet
   // Check if today is a contact day and not logged
   var contactDayToday = contactDays.length > 0 && contactDays.indexOf(today.getDay()) !== -1;
   if (contactDayToday) {
