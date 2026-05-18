@@ -601,12 +601,13 @@ p, .body-text { font-size: 16px !important; }
     <input type="hidden" id="iDuration">
   </div>
   <div class="field-group">
-    <label class="field-label">YOUR CONTACT SCHEDULE</label>
+    <label class="field-label">YOUR CONTACT SCHEDULE <span style="font-size:11px;color:var(--muted);font-weight:400;">— optional, skip if unsure</span></label>
     <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
+    <div style="font-size:11px;color:var(--muted);margin-top:4px;">Not sure? Upload your court order later and Guardian will find it.</div>
   </div>
   <div class="field-group">
-    <label class="field-label">WHEN DID CONTACT FIRST START?</label>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">This anchors your diary so Guardian knows where your case history begins.</div>
+    <label class="field-label">WHEN DID CONTACT FIRST START? <span style="font-size:11px;color:var(--muted);font-weight:400;">— optional</span></label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Helps Guardian anchor your diary history. Skip if you don't know or it's disputed.</div>
     <input class="field-input" id="iFirstContact" type="date" style="color-scheme:dark;">
   </div>
   <button type="button" class="btn-gold" onclick="saveP2()" style="margin-top:8px;">Next →</button>
@@ -661,15 +662,16 @@ p, .body-text { font-size: 16px !important; }
       </div>
       <div class="upload-status" id="stOrder">+</div>
     </label>
-    <label class="upload-item" style="margin-bottom:8px;">
-      <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="handleDoc(event,'other')">
+    <label class="upload-item" style="margin-bottom:4px;">
+      <input type="file" accept=".pdf" onchange="handleBundleInSetup(event)">
       <div class="upload-item-icon">📦</div>
       <div class="upload-item-body">
         <div class="upload-item-name">Court bundle</div>
-        <div class="upload-item-hint">One PDF — Guardian reads and files every document inside</div>
+        <div class="upload-item-hint">Full bundle PDF — Guardian extracts every document inside</div>
       </div>
       <div class="upload-status" id="stBundle">+</div>
     </label>
+    <div id="bundleSetupResult" style="display:none;font-size:12px;color:var(--green);padding:4px 0 8px;"></div>
   </div>
   <div class="upload-section">
     <div class="upload-section-title">MESSAGE HISTORY</div>
@@ -867,8 +869,8 @@ p, .body-text { font-size: 16px !important; }
     <div><div class="section-title">Message Coach</div><div class="section-sub">Every reply coached and court-ready</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-    <button type="button" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">📩</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
-    <button type="button" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">✏️</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
+    <button type="button" id="btnIn" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">📩</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
+    <button type="button" id="btnOut" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">✏️</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
   </div>
   <div id="inPanel" style="display:none;">
     <div class="msg-upload-grid">
@@ -2006,7 +2008,7 @@ function getCTX() {
   return lines.join('\n');
 }
 
-window.onload = async function() {
+window.onload = function() { (async function() {
   // Safety — always hide overlay on load
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('overlay').style.display = 'none';
@@ -2036,10 +2038,19 @@ window.onload = async function() {
     } catch(e) {
       console.warn('Session check failed:', e);
     }
-    // Check if setup was in progress
-    if (profile && profile.setupStep && !profile.complete) {
-      resumeSetup(profile.setupStep);
-      return;
+    // Check localStorage session before sending to login
+    var stored = localStorage.getItem('gSession');
+    if (stored) {
+      try {
+        var sess = JSON.parse(stored);
+        if (sess.expiry && Date.now() < sess.expiry) {
+          currentUser = { id: sess.email, email: sess.email };
+          var isComplete = profile && (profile.complete || (profile.myName && profile.childName && profile.caseType));
+          if (isComplete) { profile.complete = true; showHome(); return; }
+          if (profile && profile.setupStep) { resumeSetup(profile.setupStep); return; }
+          go('sWelcome'); return;
+        } else { localStorage.removeItem('gSession'); }
+      } catch(e) {}
     }
     go('sLogin');
   } else {
@@ -2068,6 +2079,7 @@ window.onload = async function() {
     }
     go('sLogin');
   }
+  })();
 };
 
 // Listen for auth state changes
@@ -2404,7 +2416,69 @@ function redoVoiceInput() {
 }
 
 // DOCUMENT UPLOAD
-async function handleDoc(event, docType) {
+async function handleBundleInSetup(event) {
+  var file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  var status = document.getElementById('stBundle');
+  var result = document.getElementById('bundleSetupResult');
+  if (status) status.textContent = '⏳';
+  load('Reading your bundle...', 'Guardian is identifying every document inside');
+
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(',')[1];
+    try {
+      var res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2000,
+          messages: [{ role: 'user', content: [
+            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
+            { type: 'text', text: 'This is a family court bundle. Identify every separate document inside it. For each one: what it is, who filed it, the date, and the 2-3 most important facts. Return ONLY JSON: {"documents":[{"name":"<doc name>","author":"<who filed>","date":"<date or unknown>","facts":"<key facts>","type":"court|cafcass|theirs|mine|other"}]}' }
+          ]}]
+        })
+      });
+      var data = await res.json();
+      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+      var parsed = null;
+      try{parsed=JSON.parse(raw);}catch(err){var m=raw.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+      unload();
+
+      if (parsed && parsed.documents && parsed.documents.length > 0) {
+        // Add each document to uploadedDocs
+        parsed.documents.forEach(function(doc, i) {
+          uploadedDocs['bundle' + i] = {
+            name: doc.name,
+            type: 'application/pdf',
+            data: b64,
+            extract: doc.facts + (doc.author ? ' Filed by: ' + doc.author : ''),
+            fromBundle: true
+          };
+        });
+        if (status) status.textContent = '✅';
+        if (result) {
+          result.style.display = 'block';
+          result.innerHTML = '✅ ' + parsed.documents.length + ' documents found in bundle: ' +
+            parsed.documents.map(function(d){ return d.name; }).join(', ');
+        }
+        toast('✅ Bundle read — ' + parsed.documents.length + ' documents found');
+      } else {
+        if (status) status.textContent = '❌';
+        toast('Could not read bundle — try uploading documents individually');
+      }
+    } catch(err) {
+      unload();
+      if (status) status.textContent = '❌';
+      toast('Something went wrong reading the bundle');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleDoc(event, docType) {
   var files=event.target.files; if(!files||!files.length) return;
   var stId='st'+docType.charAt(0).toUpperCase()+docType.slice(1);
   var stEl=document.getElementById(stId);
@@ -2428,7 +2502,18 @@ async function handleDoc(event, docType) {
           if (uEl && uEl.parentNode) uEl.parentNode.insertBefore(existing, uEl.nextSibling);
         }
         var count = Object.keys(uploadedDocs).filter(function(k){ return k.startsWith(dt); }).length;
+        var totalAll = Object.keys(uploadedDocs).length;
         existing.innerHTML = '✅ ' + count + ' document' + (count>1?'s':'') + ' ready — Guardian will read ' + (count>1?'these':'this') + ' when you continue';
+        // Update overall counter too
+        var totalEl = document.getElementById('setupDocTotal');
+        if (!totalEl) {
+          totalEl = document.createElement('div');
+          totalEl.id = 'setupDocTotal';
+          totalEl.style.cssText = 'font-size:13px;color:var(--gold);font-weight:600;text-align:center;padding:8px 0;';
+          var nextBtn = document.querySelector('#sProfile4 .btn-gold');
+          if (nextBtn) nextBtn.parentNode.insertBefore(totalEl, nextBtn);
+        }
+        totalEl.textContent = '📎 ' + totalAll + ' document' + (totalAll>1?'s':'') + ' queued for Guardian to read';
       };
       r.readAsDataURL(file);
     })(f,docType,i);
@@ -3446,13 +3531,12 @@ function addQAGuardianMsg(text) {
   c.appendChild(d); scrollQA();
   var lines = text.split('\n').filter(function(l){return l.trim().length>0;});
   if (lines.length === 0) lines = [text];
-  (async function(){
-    for(var i=0;i<lines.length;i++){
-      await new Promise(function(r){setTimeout(r,120);});
-      textEl.innerHTML += (i > 0 ? '<br><br>' : '') + lines[i];
-      scrollQA();
-    }
-  })();
+  (function revealLines(idx){
+    if (idx >= lines.length) return;
+    textEl.innerHTML += (idx > 0 ? '<br><br>' : '') + lines[idx];
+    scrollQA();
+    setTimeout(function(){ revealLines(idx + 1); }, 120);
+  })(0);
   return d;
 }
 function scrollQA(){ var c=document.getElementById('qaMsgs'); c.scrollTop=c.scrollHeight; }
@@ -3501,11 +3585,31 @@ function stopQAVoice() {
 }
 
 // MESSAGE COACH
-function showIn() { document.getElementById('inPanel').style.display='block'; document.getElementById('outPanel').style.display='none'; }
-function showOut() { document.getElementById('outPanel').style.display='block'; document.getElementById('inPanel').style.display='none'; }
+function showIn() {
+  document.getElementById('inPanel').style.display='block';
+  document.getElementById('outPanel').style.display='none';
+  var btnIn = document.getElementById('btnIn');
+  var btnOut = document.getElementById('btnOut');
+  if (btnIn) { btnIn.className='home-btn home-btn-gold'; }
+  if (btnOut) { btnOut.className='home-btn home-btn-card'; }
+  st.outgoing = false;
+}
+function showOut() {
+  document.getElementById('outPanel').style.display='block';
+  document.getElementById('inPanel').style.display='none';
+  var btnIn = document.getElementById('btnIn');
+  var btnOut = document.getElementById('btnOut');
+  if (btnIn) { btnIn.className='home-btn home-btn-card'; }
+  if (btnOut) { btnOut.className='home-btn home-btn-gold'; }
+  st.outgoing = true;
+}
 
 async function handleUpload(event) {
-  var file=event.target.files[0]; event.target.value=''; if(!file) return;
+  var files = Array.from(event.target.files);
+  event.target.value = '';
+  if (!files.length) return;
+  var file = files[0]; // Process first image — combine if multiple
+  if (files.length > 1) toast('Reading ' + files.length + ' screenshots...');
   load('Reading screenshot...','Identifying who sent what');
   var reader=new FileReader();
   reader.onload=async function(e){
@@ -3531,7 +3635,9 @@ function confirmType() {
 function checkOut() {
   var v=document.getElementById('outIn').value.trim();
   if(!v){toast('Type what you want to send first');return;}
-  st.outMsg=v; st.outgoing=true; go('sNeedCheck');
+  st.outMsg=v; st.outgoing=true;
+  st.msg='[OUTGOING] Parent wants to send: '+v;
+  askQ(); // Go straight to analysis — skip the need-to-send question
 }
 function outYes(){st.msg='[OUTGOING] Parent wants to send: '+st.outMsg;askQ();}
 function outCheckin(){go('sSilence');}
@@ -3568,11 +3674,17 @@ function resetTrial(){
 
 async function askQ() {
   if(!checkTrial()) return;
-  var isOut = st.outgoing || false;
+  var isOut = st.outgoing === true;
   load(isOut ? 'Checking your message...' : 'Reading it...', isOut ? 'Scoring before you send' : 'Working out what to ask you');
   if (!isOut) {
     document.getElementById('qTheirText').textContent = st.msg;
     document.getElementById('rTheirText').textContent = st.msg;
+  } else {
+    // For outgoing — update the reply screen to show their message
+    var rLabel = document.getElementById('msgBubbleLabel');
+    var rText = document.getElementById('rTheirText');
+    if (rLabel) rLabel.textContent = 'Your message to send';
+    if (rText) rText.textContent = st.outMsg || '';
   }
   var ctx = getCTX();
   try {
