@@ -657,7 +657,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="upload-item-icon">📄</div>
       <div class="upload-item-body">
         <div class="upload-item-name">Court documents</div>
-        <div class="upload-item-hint">Orders, Cafcass letters, position statements, CNF, C1A</div>
+        <div class="upload-item-hint">Orders, Cafcass letters, statements — PDF, Word, or photos. Multiple OK.</div>
       </div>
       <div class="upload-status" id="stOrder">+</div>
     </label>
@@ -872,7 +872,8 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div id="inPanel" style="display:none;">
     <div class="msg-upload-grid">
-      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Take photo<input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)"></label>
+      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera<input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)"></label>
+      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Gallery<input type="file" accept="image/*" multiple onchange="handleUpload(event)"></label>
       <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Screenshot<input type="file" accept="image/*" onchange="handleUpload(event)"></label>
     </div>
     <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · any app</div>
@@ -1044,12 +1045,12 @@ p, .body-text { font-size: 16px !important; }
     <div class="upload-section-title">ADD A DOCUMENT</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".pdf,.doc,.docx,image/*" onchange="addDoc(event,'court')">
+        <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="addDoc(event,'court')">
         <div class="upload-item-icon">⚖️</div>
-        <div class="upload-item-body"><div class="upload-item-name">Court Document</div><div class="upload-item-hint">Order, CNF, C1A</div></div>
+        <div class="upload-item-body"><div class="upload-item-name">Court Document</div><div class="upload-item-hint">Order, CNF, C1A — multiple OK</div></div>
       </label>
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".pdf,.doc,.docx,image/*" onchange="addDoc(event,'cafcass')">
+        <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="addDoc(event,'cafcass')">
         <div class="upload-item-icon">👥</div>
         <div class="upload-item-body"><div class="upload-item-name">Cafcass</div><div class="upload-item-hint">Letter or report</div></div>
       </label>
@@ -1060,6 +1061,13 @@ p, .body-text { font-size: 16px !important; }
       </label>
       <label class="upload-item" style="margin-bottom:0;">
         <input type="file" accept="image/*" multiple onchange="addDoc(event,'screenshot')">
+        <div class="upload-item-icon">🖼️</div>
+        <div class="upload-item-body"><div class="upload-item-name">Gallery</div><div class="upload-item-hint">Select multiple photos</div></div>
+      </label>
+      <label class="upload-item" style="margin-bottom:0;">
+        <input type="file" accept="image/*" capture="environment" onchange="addDoc(event,'screenshot')">
+        <div class="upload-item-icon">📷</div>
+        <div class="upload-item-body"><div class="upload-item-name">Camera</div><div class="upload-item-hint">Take a photo now</div></div>
         <div class="upload-item-icon">📷</div>
         <div class="upload-item-body"><div class="upload-item-name">Screenshot</div><div class="upload-item-hint">Any app</div></div>
       </label>
@@ -1104,11 +1112,11 @@ p, .body-text { font-size: 16px !important; }
     <label class="field-label">CONTACT SCHEDULE</label>
     <input class="field-input" id="editContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
   </div>
-  </div>
   <div class="field-group">
     <label class="field-label">FIRST CONTACT DATE</label>
     <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">When did contact first begin? Guardian uses this to anchor your diary.</div>
     <input class="field-input" id="editFirstContact" type="date" style="color-scheme:dark;">
+  </div>
   <div class="field-group">
     <label class="field-label">CASE TYPE</label>
     <div class="opts" id="editCaseTypeOpts">
@@ -1182,6 +1190,33 @@ p, .body-text { font-size: 16px !important; }
       </div>
     </div>
   </div>
+
+  <!-- Evidence upload section -->
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+    <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">Add evidence to your case</div>
+    <div style="font-size:13px;color:var(--muted-hi);margin-bottom:12px;line-height:1.5;">Upload photos, screenshots, or documents directly to your Case File from here.</div>
+    <div style="display:flex;gap:8px;">
+      <label style="flex:1;padding:10px 8px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;text-align:center;">
+        <span style="font-size:20px;">🖼️</span>
+        <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Gallery</span>
+        <span style="font-size:10px;color:var(--muted);">Multiple OK</span>
+        <input type="file" accept="image/*" multiple style="display:none;" onchange="addBrainEvidence(event)">
+      </label>
+      <label style="flex:1;padding:10px 8px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;text-align:center;">
+        <span style="font-size:20px;">📷</span>
+        <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Camera</span>
+        <span style="font-size:10px;color:var(--muted);">Take photo</span>
+        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="addBrainEvidence(event)">
+      </label>
+      <label style="flex:1;padding:10px 8px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;text-align:center;">
+        <span style="font-size:20px;">📄</span>
+        <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Document</span>
+        <span style="font-size:10px;color:var(--muted);">PDF or file</span>
+        <input type="file" accept=".pdf,.doc,.docx" multiple style="display:none;" onchange="addBrainEvidence(event)">
+      </label>
+    </div>
+    <div id="brainEvidenceStatus" style="display:none;margin-top:8px;font-size:12px;color:var(--green);text-align:center;"></div>
+  </div>
 </div>
 
 <!-- DOCUMENT EXPLAINER -->
@@ -1192,12 +1227,12 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:16px;">Upload any document — court order, Cafcass letter, solicitor letter, social services. Guardian reads it and tells you exactly what it means and what to do.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A — multiple OK</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document — multiple OK</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
+    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
   </div>
-  <label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,.doc,.docx,image/*,.txt" onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
+  <label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
   <div id="explainerResult" style="display:none;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
       <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT THIS DOCUMENT IS</div>
@@ -1610,7 +1645,7 @@ p, .body-text { font-size: 16px !important; }
             <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;">Upload their statement first</div>
             <div style="font-size:12px;color:var(--muted-hi);">Guardian reads every allegation and builds your response around each one</div>
           </div>
-          <input type="file" accept=".pdf,image/*" style="display:none;" onchange="swUploadTheirDocs(event)">
+          <input type="file" accept=".pdf,.doc,.docx,image/*" multiple style="display:none;" onchange="swUploadTheirDocs(event)">
         </label>
         <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px;">Or continue without — Guardian will still build your statement</div>
       </div>
@@ -2580,6 +2615,40 @@ function scheduleContactDayReminder() {
       icon: '/favicon.ico'
     });
   }
+}
+
+function addBrainEvidence(event) {
+  var files = event.target.files;
+  if (!files || !files.length) return;
+  var status = document.getElementById('brainEvidenceStatus');
+  if (status) status.textContent = '⏳';
+  var count = files.length;
+  Array.from(files).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      // Add to case documents as evidence
+      caseDocuments.push({
+        id: Date.now() + Math.random(),
+        type: 'other',
+        name: 'Evidence: ' + file.name,
+        originalName: file.name,
+        fileType: file.type,
+        date: new Date().toLocaleDateString('en-GB'),
+        extract: 'Evidence uploaded from Guardian Brain on ' + new Date().toLocaleDateString('en-GB'),
+        uploadedAt: new Date().toISOString(),
+        originalData: e.target.result.split(',')[1] ? e.target.result.split(',')[1].substring(0, 500000) : ''
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+  setTimeout(function() {
+    localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+    try { saveProfileToSupabase(); } catch(err) {}
+    if (status) status.textContent = '✅ ' + count + ' file' + (count > 1 ? 's' : '') + ' saved to Case File';
+    toast('✅ ' + count + ' file' + (count > 1 ? 's' : '') + ' added to your Case File');
+    renderIntelBar();
+  }, 500);
+  event.target.value = '';
 }
 
 function dismissContactReminder() { var b=document.getElementById("contactReminderBanner"); if(b) b.remove(); }
