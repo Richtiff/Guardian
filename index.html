@@ -571,9 +571,7 @@ p, .body-text { font-size: 16px !important; }
   <div class="field-group"><label class="field-label">CHILD'S NAME AND AGE</label><input class="field-input" id="iChildName" type="text" placeholder="e.g. William, 6" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
   <div class="field-group"><label class="field-label">ANY OTHER CHILDREN?</label><input class="field-input" id="iOtherKids" type="text" placeholder="e.g. Sophie, 9 — or leave blank" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
   <button type="button" class="btn-gold" onclick="saveP1()" style="margin-top:8px;">Next →</button>
-  <div style="text-align:center;margin-top:10px;">
-    <button type="button" onclick="skipSetupToHome()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;">Skip setup — I'll add details later</button>
-  </div>
+
 </div>
 
 <!-- PROFILE 2 -->
@@ -626,6 +624,7 @@ p, .body-text { font-size: 16px !important; }
     <input class="field-input" id="iFirstContact" type="date" style="color-scheme:dark;">
   </div>
   <button type="button" class="btn-gold" onclick="saveP2()" style="margin-top:8px;">Next →</button>
+
 </div>
 
 <!-- PROFILE 3 -->
@@ -660,6 +659,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
   <button type="button" class="btn-gold" onclick="saveP3()" style="margin-top:8px;">Next →</button>
+
 </div>
 
 <!-- PROFILE 4 — DOCUMENTS -->
@@ -2089,9 +2089,9 @@ window.onload = function() { (async function() {
         var sess = JSON.parse(stored);
         if (sess.expiry && Date.now() < sess.expiry) {
           currentUser = { id: sess.email, email: sess.email };
-          var isComplete = profile && (profile.complete || (profile.myName && profile.childName && profile.caseType));
+          var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
           if (isComplete) { profile.complete = true; showHome(); return; }
-          if (profile && profile.setupStep) { resumeSetup(profile.setupStep); return; }
+          // setupStep navigation removed
           go('sWelcome'); return;
         } else { localStorage.removeItem('gSession'); }
       } catch(e) {}
@@ -2109,9 +2109,8 @@ window.onload = function() { (async function() {
         if (isComplete) {
           profile.complete = true;
           showHome();
-        } else if (profile && profile.setupStep) {
           var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
-          go(stepMap[profile.setupStep] || 'sWelcome');
+          go('sWelcome');
         } else {
           go('sWelcome');
         }
@@ -2359,7 +2358,7 @@ function saveP1() {
   if (!profile) profile={};
   profile.myName=n; profile.theirName=document.getElementById('iTheirName').value.trim();
   profile.childName=c; profile.otherKids=document.getElementById('iOtherKids').value.trim();
-  profile.setupStep = 2;
+  // setupStep removed
   save(); go('sProfile2');
 }
 
@@ -2374,7 +2373,7 @@ function saveP2() {
   profile.contact = document.getElementById('iContact').value.trim();
   var firstContact = document.getElementById('iFirstContact');
   if (firstContact && firstContact.value) profile.firstContactDate = firstContact.value;
-  profile.setupStep = 3;
+  // setupStep removed
   save(); go('sProfile3');
 }
 
@@ -2390,7 +2389,7 @@ function saveP3() {
   profile.allegations=document.getElementById('iAllegations').value.trim();
   profile.dismissed=document.getElementById('iDismissed').value.trim();
   profile.commStyle=selCommStyle;
-  profile.setupStep = 4;
+  // setupStep removed
   save(); go('sProfile4');
 }
 
@@ -2680,7 +2679,7 @@ async function skipDocs() {
   try {
     var el = document.getElementById('obTranscript');
     profile.voice = el ? el.value.trim() : '';
-    profile.complete = false; // Will be set true in confirmSummary
+    // complete flag never set false — only set true in confirmSummary
     save();
     // Save caseDocuments to Supabase now
     localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
@@ -4222,15 +4221,13 @@ async function loadProfileFromSupabase() {
       if (result.data.brain_log_json) { try { brainLog = JSON.parse(result.data.brain_log_json); localStorage.setItem('gBrainLog', result.data.brain_log_json); } catch(e){} }
       localStorage.setItem('gProfile', JSON.stringify(profile));
       // Consider setup complete if they have a name and child name — don't rely solely on complete flag
-      var isComplete = profile.complete || (profile.myName && profile.childName && profile.caseType);
+      // Complete if name AND child name set — caseType not required to get home
+      var isComplete = profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1);
+      console.log('Profile loaded from Supabase — name:', profile.myName, 'child:', profile.childName, 'complete:', isComplete);
       if (isComplete) {
         profile.complete = true;
         localStorage.setItem('gProfile', JSON.stringify(profile));
         showHome();
-        return;
-      } else if (profile.setupStep) {
-        var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
-        go(stepMap[profile.setupStep] || 'sWelcome');
         return;
       } else {
         go('sWelcome');
@@ -4247,35 +4244,53 @@ async function loadProfileFromSupabase() {
 }
 
 async function saveProfileToSupabase() {
-  if (!supabase || !currentUser || !profile) return;
+  if (!supabase || !currentUser || !profile) {
+    console.warn('Supabase save skipped — missing supabase/user/profile');
+    return;
+  }
+  // Auto-mark complete if key fields present
+  if (profile.myName && profile.childName && profile.caseType) profile.complete = true;
+
   try {
     var data = {
       user_id: currentUser.id,
       my_name: profile.myName || '',
       their_name: profile.theirName || '',
       child_name: profile.childName || '',
-      other_kids: profile.otherKids || '',
       case_type: profile.caseType || '',
-      duration: profile.duration || '',
       contact: profile.contact || '',
       conflict: profile.conflict || '5',
       allegations: profile.allegations || '',
       dismissed: profile.dismissed || '',
-      comm_style: profile.commStyle || '',
-      voice_context: profile.voiceContext || '',
-      doc_extracts: JSON.stringify(docs),
-      message_log: JSON.stringify(msgLog),
       complete: profile.complete || false,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
+      profile_json: JSON.stringify(profile)
     };
-    // Save full profile and all case data as JSON blobs
-    data.profile_json = JSON.stringify(profile);
-    data.diary_json = JSON.stringify(diaryEntries || []);
-    data.case_docs_json = JSON.stringify(caseDocuments || []);
-    data.brain_log_json = JSON.stringify(brainLog || []);
-    data.msg_log_json = JSON.stringify(msgLog || []);
-    await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
-  } catch(e) { console.warn('Supabase save failed:', e); }
+
+    // Add extra columns if they exist
+    try { data.diary_json = JSON.stringify(diaryEntries || []); } catch(e){}
+    try { data.case_docs_json = JSON.stringify(caseDocuments || []); } catch(e){}
+    try { data.brain_log_json = JSON.stringify(brainLog || []); } catch(e){}
+    try { data.msg_log_json = JSON.stringify(msgLog || []); } catch(e){}
+
+    console.log('Saving to Supabase — user:', currentUser.id, 'complete:', data.complete, 'name:', data.my_name);
+    var result = await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
+    if (result.error) {
+      console.warn('Supabase upsert error:', result.error.message);
+      // Try minimal save — just core columns
+      await supabase.from('profiles').upsert({
+        user_id: currentUser.id,
+        my_name: profile.myName || '',
+        child_name: profile.childName || '',
+        complete: profile.complete || false,
+        profile_json: JSON.stringify(profile),
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+      console.log('Minimal save attempted');
+    } else {
+      console.log('Supabase save OK');
+    }
+  } catch(e) { console.warn('Supabase save exception:', e.message || e); }
 }
 
 // ── UPSELL SYSTEM ──
