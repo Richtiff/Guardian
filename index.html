@@ -588,6 +588,18 @@ p, .body-text { font-size: 16px !important; }
       <button type="button" class="opt" onclick="toggleCaseType(this,'Non-mol order')">Non-molestation order involved</button>
       <button type="button" class="opt" onclick="toggleCaseType(this,'Post order')">Order in place — post proceedings</button>
       <button type="button" class="opt" onclick="toggleCaseType(this,'Back in court')">Back in court — variation application</button>
+      <button type="button" class="opt" onclick="showCaseTypeHelp()" style="grid-column:1/-1;background:var(--blue-dim);border-color:rgba(52,120,212,0.2);color:var(--blue);">🤔 Not sure where I am — help me figure it out</button>
+    </div>
+    <div id="caseTypeHelp" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-top:10px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:10px;">Let's figure out where you are</div>
+      <div style="font-size:13px;color:var(--muted-hi);line-height:1.8;">
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);">📬 <strong style="color:var(--white);">Received papers in the post?</strong> — They have made an application. Select Active C100.</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);">📋 <strong style="color:var(--white);">Already been to court?</strong> — There is an active case. Select Active C100 or Back in court.</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);">📄 <strong style="color:var(--white);">Have a court order but they're ignoring it?</strong> — Select C79 and Order in place.</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);">🚫 <strong style="color:var(--white);">Have a non-molestation order?</strong> — Select Non-molestation order involved.</div>
+        <div style="padding:6px 0;">🆕 <strong style="color:var(--white);">Nothing happened yet?</strong> — Select No court proceedings yet.</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:10px;">You can update this later in My Case as your situation changes.</div>
     </div>
   </div>
   <div class="field-group" style="margin-top:16px;">
@@ -601,12 +613,12 @@ p, .body-text { font-size: 16px !important; }
     <input type="hidden" id="iDuration">
   </div>
   <div class="field-group">
-    <label class="field-label">YOUR CONTACT SCHEDULE <span style="font-size:11px;color:var(--muted);font-weight:400;">— optional, skip if unsure</span></label>
+    <label class="field-label">YOUR CONTACT SCHEDULE <span style="font-size:13px;color:var(--muted);font-weight:400;">— optional</span></label>
     <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
     <div style="font-size:11px;color:var(--muted);margin-top:4px;">Not sure? Upload your court order later and Guardian will find it.</div>
   </div>
   <div class="field-group">
-    <label class="field-label">WHEN DID CONTACT FIRST START? <span style="font-size:11px;color:var(--muted);font-weight:400;">— optional</span></label>
+    <label class="field-label">WHEN DID CONTACT FIRST START? <span style="font-size:13px;color:var(--muted);font-weight:400;">— optional</span></label>
     <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Helps Guardian anchor your diary history. Skip if you don't know or it's disputed.</div>
     <input class="field-input" id="iFirstContact" type="date" style="color-scheme:dark;">
   </div>
@@ -619,18 +631,20 @@ p, .body-text { font-size: 16px !important; }
   <div class="setup-title">Tell Guardian what's been happening</div>
   <div class="setup-sub">The more Guardian knows, the better it can protect you. This stays on your device.</div>
   <div class="field-group">
-    <label class="field-label">CURRENT CONFLICT LEVEL</label>
+    <label class="field-label">CURRENT CONFLICT LEVEL <span style="font-size:12px;color:var(--muted);font-weight:400;">— your assessment, not extracted from documents</span></label>
     <div class="slider-labels"><span>Calm</span><span>Very difficult</span></div>
     <input type="range" class="conflict-slider" id="conflictSlider" min="1" max="10" value="5" oninput="updateSlider(this.value)">
     <div class="slider-val" id="sliderVal">5 / 10</div>
   </div>
   <div class="field-group">
     <label class="field-label">MAIN ALLEGATIONS MADE AGAINST YOU</label>
-    <textarea class="field-input" rows="3" id="iAllegations" placeholder="e.g. Returning children tired and hungry, welfare concerns, dysregulation claims..." style="resize:none;"></textarea>
+    <textarea class="field-input" rows="5" id="iAllegations" placeholder="e.g. They claim I have anger issues, that I am aggressive around the child. Write each allegation on a new line — no legal language needed." style="resize:vertical;min-height:120px;font-size:14px;line-height:1.6;"></textarea>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px;">Write it how you'd say it. One allegation per line. You can add more later.</div>
   </div>
   <div class="field-group">
     <label class="field-label">WHAT HAS ALREADY BEEN DISMISSED OR RULED IN YOUR FAVOUR?</label>
-    <textarea class="field-input" rows="3" id="iDismissed" placeholder="e.g. KCC CFA found no safeguarding concerns in April 2026..." style="resize:none;"></textarea>
+    <textarea class="field-input" rows="5" id="iDismissed" placeholder="e.g. Cafcass Section 7 found no concerns. The drug allegation was not upheld. Judge found I was a good parent in March 2025." style="resize:vertical;min-height:120px;font-size:14px;line-height:1.6;"></textarea>
+    <div style="font-size:13px;color:var(--muted);margin-top:4px;">Even small wins matter. Include everything that has gone in your favour.</div>
   </div>
   <div class="field-group">
     <label class="field-label">HOW WOULD YOU DESCRIBE THEIR COMMUNICATION STYLE?</label>
@@ -678,13 +692,26 @@ p, .body-text { font-size: 16px !important; }
     <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Upload your message history with the other parent. Guardian reads it and builds a picture of the communication pattern.</div>
     <div class="upload-item" style="cursor:pointer;" onclick="toggleGuide('gWA')">
       <div class="upload-item-icon">📱</div>
-      <div class="upload-item-body"><div class="upload-item-name">WhatsApp export</div><div class="upload-item-hint">Tap to see how</div></div>
+      <div class="upload-item-body"><div class="upload-item-name">WhatsApp export</div><div class="upload-item-hint">Tap here for step-by-step instructions</div></div>
       <div class="upload-status">›</div>
     </div>
     <div class="guide" id="gWA">
-      <div class="guide-title">HOW TO EXPORT WHATSAPP</div>
-      <div class="guide-steps">1. Open the chat with the other parent<br>2. Tap the three dots → More → Export Chat<br>3. Choose Without Media<br>4. Share the .txt file and upload below</div>
-      <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".txt" onchange="handleDoc(event,'whatsapp')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload WhatsApp .txt file</div></div><div class="upload-status" id="stWA">+</div></label>
+      <div class="guide-title">HOW TO EXPORT YOUR WHATSAPP CHAT</div>
+      <div class="guide-steps">
+        <strong style="color:var(--white);">On Android:</strong><br>
+        1. Open WhatsApp → open the chat with the other parent<br>
+        2. Tap the three dots (top right) → More → Export chat<br>
+        3. Tap Without media<br>
+        4. Share the .txt file to yourself (email, notes, files app)<br>
+        5. Upload the .txt file below<br><br>
+        <strong style="color:var(--white);">On iPhone:</strong><br>
+        1. Open WhatsApp → open the chat<br>
+        2. Tap the name at the top → Export Chat<br>
+        3. Choose Without Media<br>
+        4. Save to Files or share to yourself<br>
+        5. Upload below
+      </div>
+      <label class="upload-item" style="margin-top:10px;margin-bottom:0;"><input type="file" accept=".txt" onchange="handleDoc(event,'whatsapp')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Upload WhatsApp .txt file</div><div class="upload-item-hint">The exported chat file</div></div><div class="upload-status" id="stWA">+</div></label>
     </div>
     <label class="upload-item">
       <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="handleDocMultiple(event,'screenshots')">
@@ -2327,6 +2354,10 @@ function saveP3() {
 }
 
 function save() {
+  // Ensure complete flag persists correctly
+  if (profile && profile.myName && profile.childName && profile.caseType) {
+    profile.complete = true;
+  }
   localStorage.setItem('gProfile',JSON.stringify(profile));
   try { saveProfileToSupabase(); } catch(e) { console.warn('Profile sync failed:', e); }
 }
@@ -2363,7 +2394,7 @@ function startObVoice() {
     clearTimeout(silenceTimer);
     silenceTimer = setTimeout(function(){
       if(isObRec) stopObVoice();
-    }, 2000); // Stop after 2 seconds of silence
+    }, 3500); // 3.5s silence before stopping // Stop after 2 seconds of silence
   };
 
   obRecog.onend=function(){
@@ -2467,12 +2498,12 @@ async function handleBundleInSetup(event) {
         toast('✅ Bundle read — ' + parsed.documents.length + ' documents found');
       } else {
         if (status) status.textContent = '❌';
-        toast('Could not read bundle — try uploading documents individually');
+        toast('Bundle could not be read. Make sure it is a digital PDF not a scanned image. Try uploading documents individually from Case File.');
       }
     } catch(err) {
       unload();
       if (status) status.textContent = '❌';
-      toast('Something went wrong reading the bundle');
+      toast('Could not read bundle — file may be too large or corrupted. Try uploading individual documents instead.');
     }
   };
   reader.readAsDataURL(file);
@@ -2640,17 +2671,23 @@ function renderSummary(parsed) {
 
 function confirmSummary() {
   profile.complete=true;
+  profile.setupStep = null;
   save();
+  localStorage.setItem('gProfile', JSON.stringify(profile));
   try { saveProfileToSupabase(); } catch(e) { console.warn('Supabase sync failed on confirm:', e); }
   // Show home first then prompt diary
   showHome();
+  // Only show diary prompt if today is a contact day
   setTimeout(function(){
+    parseContactDaysFromProfile();
+    var todayIsContact = contactDays.length > 0 && contactDays.indexOf(new Date().getDay()) !== -1;
+    if (!todayIsContact && profile && profile.contact) return; // Skip if not a contact day
     var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
     var banner = document.createElement('div');
     banner.id = 'setupDiaryPrompt';
     banner.style.cssText = 'background:rgba(245,200,66,0.1);border:1.5px solid rgba(245,200,66,0.25);border-radius:14px;padding:14px 16px;margin-bottom:16px;';
-    banner.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px;">One last thing 📓</div>' +
-      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Log today. What happened with ' + child + ' today? Your first diary entry starts your evidence trail.</div>' +
+    banner.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px;">Today is a contact day 📓</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Log what happened with ' + child + ' today. Your first diary entry starts your evidence trail.</div>' +
       '<div style="display:flex;gap:8px;">' +
         '<button onclick="logTodayDiary()" style="flex:1;padding:10px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:10px;color:#0a0800;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Log today →</button>' +
         '<button onclick="dismissSetupDiary()" style="padding:10px 14px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;">Later</button>' +
@@ -4089,12 +4126,16 @@ async function loadProfileFromSupabase() {
       var isComplete = profile.complete || (profile.myName && profile.childName && profile.caseType);
       if (isComplete) {
         profile.complete = true;
+        localStorage.setItem('gProfile', JSON.stringify(profile));
         showHome();
+        return;
       } else if (profile.setupStep) {
         var stepMap = { 2:'sProfile2', 3:'sProfile3', 4:'sProfile4' };
         go(stepMap[profile.setupStep] || 'sWelcome');
+        return;
       } else {
         go('sWelcome');
+        return;
       }
     } else {
       // New user — no profile yet
@@ -5674,8 +5715,9 @@ async function processBundleUpload(event) {
         document.getElementById('bundleProcessing').style.display = 'none';
         document.getElementById('bundleResults').style.display = 'block';
         document.getElementById('bundleStatus').textContent = '✅';
-        document.getElementById('bundleResultTitle').textContent = 'Bundle processed — ' + parsed.documents.length + ' documents found';
-        document.getElementById('bundleResultSub').textContent = parsed.bundleSummary || '';
+        var docNames = parsed.documents.map(function(d){ return d.name; }).join(', ');
+        document.getElementById('bundleResultTitle').textContent = '✅ ' + parsed.documents.length + ' documents extracted from your bundle';
+        document.getElementById('bundleResultSub').textContent = (parsed.bundleSummary || '') + ' — All documents are now stored in your Case File.';
 
         var typeColors = { court:'ttype-court', cafcass:'ttype-cafcass', other:'ttype-other' };
         document.getElementById('bundleDocList').innerHTML = parsed.documents.map(function(doc){
@@ -5993,6 +6035,11 @@ function updateEditSlider(v) {
 function pickEditCaseType(btn, val) {
   document.querySelectorAll('#editCaseTypeOpts .opt').forEach(function(b){b.classList.remove('sel');});
   btn.classList.add('sel');
+}
+
+function showCaseTypeHelp() {
+  var el = document.getElementById('caseTypeHelp');
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleCaseType(btn, val) {
