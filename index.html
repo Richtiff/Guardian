@@ -437,6 +437,15 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .bundle-doc-name { flex:1; font-size:13px; color:var(--white); font-weight:600; }
 .bundle-doc-type { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; flex-shrink:0; }
 .bundle-doc-author { font-size:11px; color:var(--muted-hi); margin-top:2px; }
+.intel-step { display:flex; align-items:center; gap:10px; padding:9px 12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:border-color 0.15s; }
+.intel-step:hover { border-color:rgba(212,168,67,0.3); }
+.intel-step-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.intel-step-text { font-size:13px; color:var(--white); flex:1; line-height:1.4; }
+.intel-step-action { font-size:11px; color:var(--gold); flex-shrink:0; font-weight:600; }
+.reminder-banner { background:linear-gradient(135deg,rgba(212,168,67,0.15),rgba(212,168,67,0.05)); border:1.5px solid rgba(212,168,67,0.3); border-radius:14px; padding:14px 16px; margin-bottom:14px; }
+.reminder-banner-title { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:800; color:var(--gold); margin-bottom:4px; }
+.reminder-banner-body { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:10px; }
+.reminder-banner-btns { display:flex; gap:8px; }
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
 .overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
@@ -594,6 +603,11 @@ p, .body-text { font-size: 16px !important; }
   <div class="field-group">
     <label class="field-label">YOUR CONTACT SCHEDULE</label>
     <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
+  </div>
+  <div class="field-group">
+    <label class="field-label">WHEN DID CONTACT FIRST START?</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">This anchors your diary so Guardian knows where your case history begins.</div>
+    <input class="field-input" id="iFirstContact" type="date" style="color-scheme:dark;">
   </div>
   <button type="button" class="btn-gold" onclick="saveP2()" style="margin-top:8px;">Next →</button>
 </div>
@@ -777,6 +791,23 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-sub">Your profile. Always up to date.</div>
     </button>
   </div>
+  <!-- Intelligence Readiness — prominent until complete -->
+  <div id="intelBar" style="background:var(--card);border:2px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">🧠 Guardian Intelligence</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div id="intelLevel" style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;background:rgba(184,68,68,0.15);color:var(--red);">Basic</div>
+        <button onclick="hideIntelBar()" style="background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:0 4px;" title="Hide for now">✕</button>
+      </div>
+    </div>
+    <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+      <div id="intelFill" style="height:100%;border-radius:4px;transition:width 0.8s ease;width:0%;background:var(--red);"></div>
+    </div>
+    <div id="intelCapability" style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;"></div>
+    <div id="intelSteps" style="display:flex;flex-direction:column;gap:7px;"></div>
+    <button onclick="runCaseAssessment()" id="assessBtn" style="display:none;width:100%;margin-top:12px;padding:11px;background:linear-gradient(135deg,rgba(212,168,67,0.2),rgba(212,168,67,0.08));border:1.5px solid rgba(212,168,67,0.3);border-radius:10px;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">⚡ Get your live case assessment →</button>
+  </div>
+
   <div class="gn-strip" id="gnStrip" style="display:none;">
     <div class="gn-header">
       <div class="gn-title">🧠 GUARDIAN NOTICED</div>
@@ -936,7 +967,7 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- REPLY -->
 <div class="step" id="sReply">
-  <div class="their-bubble"><div class="their-label">Their message</div><div class="their-text" id="rTheirText"></div></div>
+  <div class="their-bubble" id="msgBubble"><div class="their-label" id="msgBubbleLabel">Their message</div><div class="their-text" id="rTheirText"></div></div>
   <div id="nuclearWarn" style="display:none;">
     <div class="nuclear-card">
       <div class="nuclear-title">⚠️ Do not send this yet</div>
@@ -1073,6 +1104,11 @@ p, .body-text { font-size: 16px !important; }
     <label class="field-label">CONTACT SCHEDULE</label>
     <input class="field-input" id="editContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
   </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">FIRST CONTACT DATE</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">When did contact first begin? Guardian uses this to anchor your diary.</div>
+    <input class="field-input" id="editFirstContact" type="date" style="color-scheme:dark;">
   <div class="field-group">
     <label class="field-label">CASE TYPE</label>
     <div class="opts" id="editCaseTypeOpts">
@@ -1135,7 +1171,15 @@ p, .body-text { font-size: 16px !important; }
       <button type="button" onclick="logBrainOutcome('positive')" style="padding:12px;background:var(--green-dim);border:1.5px solid rgba(34,201,122,0.3);border-radius:10px;color:var(--green);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">✅ She replied positively — it worked</button>
       <button type="button" onclick="logBrainOutcome('neutral')" style="padding:12px;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:10px;color:var(--muted-hi);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">➡️ No reply or neutral response</button>
       <button type="button" onclick="logBrainOutcome('negative')" style="padding:12px;background:var(--amber-dim);border:1.5px solid rgba(245,158,11,0.3);border-radius:10px;color:var(--amber);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">⚠️ It escalated or didn't help</button>
-      <button type="button" onclick="logBrainOutcome('edited')" style="padding:12px;background:var(--blue-dim);border:1.5px solid rgba(59,127,255,0.3);border-radius:10px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">✏️ I edited it before sending</button>
+      <button type="button" onclick="showEditCapture()" style="padding:12px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);border-radius:10px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;">✏️ I edited it before sending</button>
+      <div id="editCaptureBox" style="display:none;margin-top:8px;">
+        <div style="font-size:13px;color:var(--white);margin-bottom:8px;line-height:1.5;">Paste what you actually sent. Guardian learns your natural voice from every edit.</div>
+        <textarea id="editCaptureText" class="field-input" rows="4" placeholder="Paste your edited version here..." style="resize:none;margin-bottom:8px;font-size:14px;"></textarea>
+        <div style="display:flex;gap:8px;">
+          <button onclick="saveEditCapture()" style="flex:1;padding:10px;background:var(--blue);border:none;border-radius:8px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">✅ Save — Guardian will learn from this</button>
+          <button onclick="logBrainOutcome('edited');document.getElementById('editCaptureBox').style.display='none'" style="padding:10px 14px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted-hi);font-size:13px;cursor:pointer;">Skip</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1227,7 +1271,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload whatever they have filed — position statement, witness statement, Cafcass letter, solicitor letter. Guardian reads every word and tells you what it means and how to respond.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" onchange="scanStatement(event,'theirs')">
+    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="scanStatement(event,'theirs')">
     <div class="upload-item-icon">📨</div>
     <div class="upload-item-body"><div class="upload-item-name">Upload their document</div><div class="upload-item-hint">Position statement, Cafcass letter, solicitor letter, anything filed</div></div>
     <div class="upload-status" id="theirsScanStatus">+</div>
@@ -1264,7 +1308,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload your draft statement. Guardian scores it out of 10, finds the weaknesses, flags any AI tells, and tells you exactly what to fix before you file it.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" onchange="scanStatement(event,'mine')">
+    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="scanStatement(event,'mine')">
     <div class="upload-item-icon">🔍</div>
     <div class="upload-item-body"><div class="upload-item-name">Upload my statement</div><div class="upload-item-hint">PDF, image, or text file</div></div>
     <div class="upload-status" id="mineScanStatus">+</div>
@@ -1294,6 +1338,28 @@ p, .body-text { font-size: 16px !important; }
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">My Diary</div><div class="section-sub">Your memory. Your safety net.</div></div>
+  </div>
+
+  <!-- Phone diary backup instructions -->
+  <div id="phoneDiaryTip" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);">📅 Set a reminder in your phone diary</div>
+      <button onclick="togglePhoneDiaryTip()" id="phoneDiaryToggle" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;">›</button>
+    </div>
+    <div id="phoneDiaryInstructions" style="display:none;">
+      <div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:12px;">Until Guardian has full push notifications, set a repeating reminder in your phone calendar so you never forget to log a contact session.</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">HOW TO SET IT UP</div>
+      <div style="font-size:13px;color:var(--muted-hi);line-height:1.8;margin-bottom:12px;">
+        <div style="padding:5px 0;border-bottom:1px solid var(--border);">1. Open your phone calendar — Google Calendar, Samsung Calendar, or Apple Calendar</div>
+        <div style="padding:5px 0;border-bottom:1px solid var(--border);">2. Create a new repeating event on your contact day — e.g. every Saturday</div>
+        <div style="padding:5px 0;border-bottom:1px solid var(--border);">3. Title it: <strong style="color:var(--white);">"Log contact in Guardian"</strong></div>
+        <div style="padding:5px 0;border-bottom:1px solid var(--border);">4. Set the time to the evening — e.g. 7pm after the session</div>
+        <div style="padding:5px 0;">5. Set it to repeat every week on your contact day</div>
+      </div>
+      <div style="background:var(--gold-dim);border:1px solid rgba(212,168,67,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--gold);line-height:1.6;">
+        💡 Even a short entry is valuable. Date, how William was, whether contact happened. That is evidence. That is your record.
+      </div>
+    </div>
   </div>
 
   <!-- Contact Calendar -->
@@ -1329,50 +1395,173 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sDiaryEntry">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">New Entry</div><div class="section-sub">Log what happened today</div></div>
+    <div><div class="section-title">Log a Session</div><div class="section-sub" id="diaryEntrySubtitle">Contact day</div></div>
   </div>
+
   <div class="field-group">
     <label class="field-label">DATE</label>
     <input class="field-input" type="date" id="diaryDate">
   </div>
+
   <div class="field-group">
     <label class="field-label">TYPE OF ENTRY</label>
     <div class="opts" id="diaryTypeOpts">
-      <button class="opt" onclick="pickDiaryType(this,'contact')">Contact session with <span id="diaryChildName">child</span></button>
-      <button class="opt" onclick="pickDiaryType(this,'incident')">Incident or concern</button>
-      <button class="opt" onclick="pickDiaryType(this,'message')">Important message exchange</button>
-      <button class="opt" onclick="pickDiaryType(this,'hearing')">Hearing or meeting</button>
-      <button class="opt" onclick="pickDiaryType(this,'welfare')">Welfare concern raised</button>
+      <button class="opt" onclick="pickDiaryType(this,'contact')">👶 Contact session with <span id="diaryChildName">child</span></button>
+      <button class="opt" onclick="pickDiaryType(this,'incident')">⚠️ Incident or concern</button>
+      <button class="opt" onclick="pickDiaryType(this,'message')">💬 Important message</button>
+      <button class="opt" onclick="pickDiaryType(this,'hearing')">⚖️ Hearing or meeting</button>
+      <button class="opt" onclick="pickDiaryType(this,'welfare')">🛡️ Welfare concern</button>
     </div>
   </div>
+
+  <!-- Quick prompts — shown for contact sessions -->
+  <div id="diaryQuickPrompts" style="display:none;">
+
+    <div class="field-group">
+      <label class="field-label">DID CONTACT HAPPEN?</label>
+      <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="opt" id="diaryContactYes" onclick="pickDiaryContact(this,'yes')">✅ Yes, as agreed</button>
+        <button class="opt" id="diaryContactNo" onclick="pickDiaryContact(this,'no')">❌ No — issue</button>
+        <button class="opt" id="diaryContactLate" onclick="pickDiaryContact(this,'late')">⏱️ Late or disrupted</button>
+        <button class="opt" id="diaryContactWelfare" onclick="pickDiaryContact(this,'welfare')">⚠️ Concerns raised</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">HOW WAS <span id="diaryChildName2">WILLIAM</span>?</label>
+      <div class="opts" id="diaryMoodOpts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="opt" onclick="pickDiaryMood(this,'happy')">😊 Happy and settled</button>
+        <button class="opt" onclick="pickDiaryMood(this,'tired')">😴 Tired but okay</button>
+        <button class="opt" onclick="pickDiaryMood(this,'okay')">😐 Normal day</button>
+        <button class="opt" onclick="pickDiaryMood(this,'upset')">😢 Upset or unsettled</button>
+        <button class="opt" onclick="pickDiaryMood(this,'unwell')">🤒 Unwell</button>
+        <button class="opt" onclick="pickDiaryMood(this,'great')">🌟 Really great day</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">DID HE EAT WELL?</label>
+      <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="diaryEatOpts">
+        <button class="opt" onclick="pickPrompt('eat','Yes, ate well')">✅ Yes, ate well</button>
+        <button class="opt" onclick="pickPrompt('eat','Good meals throughout')">🍽️ Good meals</button>
+        <button class="opt" onclick="pickPrompt('eat','Refused food at times')">⚠️ Refused food</button>
+        <button class="opt" onclick="pickPrompt('eat','Not sure')">🤷 Not sure</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">DID HE SLEEP / NAP?</label>
+      <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="diarySleepOpts">
+        <button class="opt" onclick="pickPrompt('sleep','Normal nap, slept well')">✅ Normal nap</button>
+        <button class="opt" onclick="pickPrompt('sleep','Would not sleep')">❌ Refused to nap</button>
+        <button class="opt" onclick="pickPrompt('sleep','Slept longer than usual')">😴 Long sleep</button>
+        <button class="opt" onclick="pickPrompt('sleep','No nap needed — too old')">👍 No nap needed</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">WHAT DID YOU DO?</label>
+      <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="diaryActOpts">
+        <button class="opt" onclick="pickPrompt('activity','Went to the park')">🌳 Park</button>
+        <button class="opt" onclick="pickPrompt('activity','Indoor play at home')">🏠 Home play</button>
+        <button class="opt" onclick="pickPrompt('activity','Soft play')">🎪 Soft play</button>
+        <button class="opt" onclick="pickPrompt('activity','Day out / trip')">🚗 Day out</button>
+        <button class="opt" onclick="pickPrompt('activity','Normal quiet day')">😌 Quiet day</button>
+        <button class="opt" onclick="pickPrompt('activity','Family visit')">👨‍👩‍👧 Family visit</button>
+        <button class="opt" onclick="showDiaryActivityInput(this)" style="grid-column:1/-1;">✏️ Something different — tell us what you did</button>
+      </div>
+      <div id="diaryActivityInput" style="display:none;margin-top:8px;">
+        <input class="field-input" id="diaryActivityCustom" type="text" placeholder="e.g. Swimming, birthday party, visited grandparents..." oninput="pickPrompt('activity',this.value)">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">RETURN TIME</label>
+      <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="diaryReturnOpts">
+        <button class="opt" onclick="pickPrompt('return','Returned on time as agreed')">✅ On time</button>
+        <button class="opt" onclick="pickPrompt('return','Returned late')">⏱️ Late return</button>
+        <button class="opt" onclick="pickPrompt('return','Returned early')">⏩ Early return</button>
+        <button class="opt" onclick="pickPrompt('return','Collection refused')">❌ Refused</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">ANY CONCERNS?</label>
+      <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="diaryConcernOpts">
+        <button class="opt" onclick="pickPrompt('concerns','No concerns — good session')">✅ All fine</button>
+        <button class="opt" onclick="pickPrompt('concerns','Minor concern noted')">📝 Minor concern</button>
+        <button class="opt" onclick="pickPrompt('concerns','Welfare concern raised')">⚠️ Welfare concern</button>
+        <button class="opt" onclick="pickPrompt('concerns','Monitoring messages received')">📱 Monitoring messages</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Photo upload -->
   <div class="field-group">
-    <label class="field-label">WHAT HAPPENED</label>
-    <div style="display:flex;gap:8px;margin-bottom:8px;">
-      <button class="voice-btn" id="diaryVoiceBtn" onclick="toggleDiaryVoice()">🎤</button>
-      <textarea class="field-input" id="diaryText" rows="5" placeholder="Describe what happened. Be factual. Time, what was said, how the child was, what you did." style="resize:none;flex:1;min-height:100px;"></textarea>
+    <label class="field-label">ADD PHOTOS</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Photos, screenshots, anything relevant to this entry. Stored securely.</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <label style="flex:1;padding:10px 8px;background:var(--card);border:1.5px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;">
+        <span style="font-size:22px;">🖼️</span>
+        <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Gallery</span>
+        <span style="font-size:10px;color:var(--muted);">Select multiple</span>
+        <input type="file" accept="image/*" multiple style="display:none;" onchange="addDiaryPhotos(event)">
+      </label>
+      <label style="flex:1;padding:10px 8px;background:var(--card);border:1.5px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;">
+        <span style="font-size:22px;">📷</span>
+        <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Camera</span>
+        <span style="font-size:10px;color:var(--muted);">Take a photo</span>
+        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="addDiaryPhotos(event)">
+      </label>
+      <label style="flex:1;padding:10px 8px;background:var(--card);border:1.5px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;">
+        <span style="font-size:22px;">📄</span>
+        <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Document</span>
+        <span style="font-size:10px;color:var(--muted);">PDF or file</span>
+        <input type="file" accept=".pdf,.doc,.docx" multiple style="display:none;" onchange="addDiaryPhotos(event)">
+      </label>
     </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;" id="diaryPhotoRow"></div>
   </div>
+
+  <!-- Full text box — always visible, bigger -->
   <div class="field-group">
-    <label class="field-label">HOW WAS <span id="diaryChildName2">YOUR CHILD</span>?</label>
-    <div class="opts" id="diaryMoodOpts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button class="opt" onclick="pickDiaryMood(this,'happy')">😊 Happy and settled</button>
-      <button class="opt" onclick="pickDiaryMood(this,'okay')">😐 Okay, normal</button>
-      <button class="opt" onclick="pickDiaryMood(this,'upset')">😢 Upset or distressed</button>
-      <button class="opt" onclick="pickDiaryMood(this,'unwell')">🤒 Unwell</button>
+    <label class="field-label">WHAT HAPPENED — IN YOUR OWN WORDS</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Write naturally. Don't worry about legal language — Guardian will create a court-safe version for you.</div>
+    <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">
+      <button class="voice-btn" id="diaryVoiceBtn" onclick="toggleDiaryVoice()" style="margin-top:2px;">🎤</button>
+      <textarea class="field-input" id="diaryText" rows="6" placeholder="e.g. William was happy when I picked him up. He had eaten well and told me about his morning. We went to the park for two hours and he played on the swings. He seemed tired on the way home but settled quickly. Drop off was at 6pm as agreed. No issues." style="resize:none;flex:1;min-height:140px;font-size:15px;line-height:1.6;"></textarea>
     </div>
+    <div style="font-size:11px;color:var(--muted);">Voice works too — tap the mic and speak naturally.</div>
   </div>
-  <div class="field-group">
-    <label class="field-label">DID CONTACT HAPPEN AS AGREED?</label>
-    <div class="opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button class="opt" id="diaryContactYes" onclick="pickDiaryContact(this,'yes')">✅ Yes, as agreed</button>
-      <button class="opt" id="diaryContactNo" onclick="pickDiaryContact(this,'no')">❌ No — issue</button>
-    </div>
-  </div>
+
   <div class="field-group" id="diaryContactIssueBox" style="display:none;">
-    <label class="field-label">WHAT WAS THE ISSUE?</label>
-    <textarea class="field-input" id="diaryContactIssue" rows="2" placeholder="What happened with contact?" style="resize:none;"></textarea>
+    <label class="field-label">WHAT WAS THE ISSUE WITH CONTACT?</label>
+    <textarea class="field-input" id="diaryContactIssue" rows="3" placeholder="What happened? Be specific with times and what was said." style="resize:none;"></textarea>
   </div>
+
   <button type="button" class="btn-gold" onclick="saveDiaryEntry()" style="margin-top:8px;">Save entry →</button>
+
+  <!-- Court safe conversion - shown after save -->
+  <div id="courtSafePanel" style="display:none;margin-top:12px;">
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">⚖️ Create a court-safe version?</div>
+      <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Guardian will convert your entry into factual, court-appropriate language — removing emotion and opinion. Your original entry stays exactly as written.</div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" onclick="makeCourtSafe()" style="flex:1;padding:10px;background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.3);border-radius:8px;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">✅ Yes — create court-safe version</button>
+        <button type="button" onclick="document.getElementById('courtSafePanel').style.display='none'" style="padding:10px 14px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted-hi);font-size:13px;cursor:pointer;">Later</button>
+      </div>
+    </div>
+    <div id="courtSafeResult" style="display:none;margin-top:10px;background:var(--card);border:1.5px solid rgba(26,158,114,0.25);border-radius:14px;padding:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">COURT-SAFE VERSION</div>
+      <div id="courtSafeText" style="font-size:14px;color:var(--white);line-height:1.8;margin-bottom:12px;white-space:pre-wrap;"></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="copyCourtSafe()" style="flex:1;padding:9px;background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:8px;color:var(--green);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">📋 Copy</button>
+        <button onclick="saveCourtSafeToDiary()" style="flex:1;padding:9px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:8px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">💾 Save to entry</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 
@@ -1627,6 +1816,22 @@ p, .body-text { font-size: 16px !important; }
   </div>
 </div>
 
+
+<!-- CASE ASSESSMENT -->
+<div class="step" id="sCaseAssessment">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Your Case Today</div><div class="section-sub">Guardian's full assessment</div></div>
+  </div>
+  <div id="caseAssessmentContent">
+    <div style="text-align:center;padding:40px 20px;">
+      <div style="font-size:32px;margin-bottom:12px;">🧠</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;">Running case assessment...</div>
+      <div style="font-size:13px;color:var(--muted-hi);">Guardian is analysing everything it knows about your case</div>
+    </div>
+  </div>
+</div>
+
 </div><!-- end .app -->
 
 <!-- UPSELL TOAST -->
@@ -1844,7 +2049,7 @@ if (supabase) {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment'];
 
 var stepHistory = [];
 var navLock = false;
@@ -2052,6 +2257,8 @@ function saveP2() {
   profile.caseType = caseType;
   profile.duration = duration;
   profile.contact = document.getElementById('iContact').value.trim();
+  var firstContact = document.getElementById('iFirstContact');
+  if (firstContact && firstContact.value) profile.firstContactDate = firstContact.value;
   profile.setupStep = 3;
   save(); go('sProfile3');
 }
@@ -2176,6 +2383,17 @@ async function handleDoc(event, docType) {
         var uEl=document.getElementById('u'+dt.charAt(0).toUpperCase()+dt.slice(1));
         if(uEl) uEl.classList.add('uploaded');
         if(stEl) stEl.textContent='✅';
+        // Show confirmation below the upload box
+        var confirmId = 'docConfirm_' + dt;
+        var existing = document.getElementById(confirmId);
+        if (!existing) {
+          existing = document.createElement('div');
+          existing.id = confirmId;
+          existing.style.cssText = 'font-size:12px;color:var(--green);padding:6px 0 2px;line-height:1.5;';
+          if (uEl && uEl.parentNode) uEl.parentNode.insertBefore(existing, uEl.nextSibling);
+        }
+        var count = Object.keys(uploadedDocs).filter(function(k){ return k.startsWith(dt); }).length;
+        existing.innerHTML = '✅ ' + count + ' document' + (count>1?'s':'') + ' ready — Guardian will read ' + (count>1?'these':'this') + ' when you continue';
       };
       r.readAsDataURL(file);
     })(f,docType,i);
@@ -2322,6 +2540,123 @@ function confirmSummary() {
   }, 500);
 }
 
+function requestNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    // Only ask once
+    if (localStorage.getItem('gNotifAsked')) return;
+    localStorage.setItem('gNotifAsked', '1');
+    // Show a friendly prompt first rather than browser default
+    var banner = document.getElementById('notifPermBanner');
+    if (banner) banner.style.display = 'block';
+  }
+}
+
+function askNotifPermission() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(function(perm){
+      var banner = document.getElementById('notifPermBanner');
+      if (banner) banner.style.display = 'none';
+      if (perm === 'granted') {
+        toast('✅ Reminders enabled. Guardian will remind you on contact days.');
+        scheduleContactDayReminder();
+      }
+    });
+  }
+}
+
+function scheduleContactDayReminder() {
+  // Show browser notification if on a contact day and diary not logged
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  var today = new Date();
+  var contactDayToday = contactDays.indexOf(today.getDay()) !== -1;
+  if (!contactDayToday) return;
+  var todayStr = today.toISOString().split('T')[0];
+  var alreadyLogged = diaryEntries.some(function(e){ return e.date === todayStr; });
+  if (!alreadyLogged) {
+    var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'the kids';
+    new Notification('Guardian — Log today', {
+      body: 'Contact day with ' + child + '. Tap to log the session.',
+      icon: '/favicon.ico'
+    });
+  }
+}
+
+function dismissContactReminder() { var b=document.getElementById("contactReminderBanner"); if(b) b.remove(); }
+
+function startLogContact(dateStr) {
+  var banner = document.getElementById('contactReminderBanner');
+  if (banner) banner.remove();
+  loadDiaryEntry({type:"contact"});
+  go("sDiaryEntry");
+  setTimeout(function(){
+    var d = document.getElementById("diaryDate");
+    if (d && dateStr) d.value = dateStr;
+  }, 100);
+}
+
+function togglePhoneDiaryTip() {
+  var el = document.getElementById('phoneDiaryInstructions');
+  var btn = document.getElementById('phoneDiaryToggle');
+  if (!el) return;
+  var isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (btn) btn.textContent = isOpen ? '›' : '⌄';
+}
+
+function checkContactDayReminder() {
+  var homeEl = document.getElementById('sHome');
+  if (!homeEl || homeEl.classList.contains('hidden')) return;
+  var today = new Date();
+  var todayStr = today.toISOString().split('T')[0];
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+
+  // Check if today is a contact day and not logged
+  var contactDayToday = contactDays.length > 0 && contactDays.indexOf(today.getDay()) !== -1;
+  if (contactDayToday) {
+    var alreadyLogged = diaryEntries.some(function(e){ return e.date === todayStr; });
+    if (!alreadyLogged) {
+      showContactReminder('today', child, todayStr);
+      return;
+    }
+  }
+
+  // Check if yesterday was a contact day and not logged
+  var yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  var yesterdayStr = yesterday.toISOString().split('T')[0];
+  var contactDayYesterday = contactDays.length > 0 && contactDays.indexOf(yesterday.getDay()) !== -1;
+  if (contactDayYesterday) {
+    var yesterdayLogged = diaryEntries.some(function(e){ return e.date === yesterdayStr; });
+    if (!yesterdayLogged) {
+      showContactReminder('yesterday', child, yesterdayStr);
+    }
+  }
+}
+
+function showContactReminder(when, child, dateStr) {
+  var existing = document.getElementById('contactReminderBanner');
+  if (existing) return;
+  var banner = document.createElement('div');
+  banner.id = 'contactReminderBanner';
+  banner.className = 'reminder-banner';
+  var title = when === 'today' ? '📓 Contact day — log today' : '📓 Did you log yesterday?';
+  var body = when === 'today'
+    ? 'Today is a contact day with ' + child + '. Log the session while it is fresh.'
+    : 'Yesterday was a contact day with ' + child + '. You have not logged it yet. It only takes a minute.';
+  banner.innerHTML = '<div class="reminder-banner-title">' + title + '</div>' +
+    '<div class="reminder-banner-body">' + body + '</div>' +
+    '<div class="reminder-banner-btns">' +
+    '<button onclick="startLogContact(\'" + dateStr + "\')" style="flex:1;padding:9px;background:var(--gold);border:none;border-radius:8px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Log it now →</button>' +
+    '<button onclick="dismissContactReminder()" style="padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted-hi);font-size:13px;cursor:pointer;">Later</button>' +
+    '</div>';
+  // Insert at top of home screen content
+  var homeContent = document.querySelector('#sHome .home-greeting');
+  if (homeContent && homeContent.parentNode) {
+    homeContent.parentNode.insertBefore(banner, homeContent.nextSibling);
+  }
+}
+
 function generateGuardianNoticed() {
   var notices = [];
   var now = new Date();
@@ -2425,6 +2760,250 @@ function renderGuardianNoticed() {
   }).join('');
 }
 
+
+// ══════════════════════════════════════════
+// GUARDIAN INTELLIGENCE SYSTEM
+// ══════════════════════════════════════════
+
+function calcIntelScore() {
+  var score = 0;
+  if (profile) {
+    if (profile.myName) score += 3;
+    if (profile.childName) score += 3;
+    if (profile.caseType) score += 4;
+    if (profile.contact) score += 5;
+    if (profile.firstContactDate) score += 3;
+    if (profile.allegations && profile.allegations.length > 10) score += 4;
+    if (profile.dismissed && profile.dismissed.length > 10) score += 3;
+  }
+  var numDocs = caseDocuments ? caseDocuments.length : 0;
+  if (numDocs >= 1) score += 8;
+  if (numDocs >= 3) score += 8;
+  if (numDocs >= 5) score += 9;
+  var numDiary = diaryEntries ? diaryEntries.length : 0;
+  if (numDiary >= 1) score += 8;
+  if (numDiary >= 5) score += 9;
+  if (numDiary >= 10) score += 8;
+  var numMsgs = msgLog ? msgLog.length : 0;
+  if (numMsgs >= 1) score += 5;
+  if (numMsgs >= 5) score += 5;
+  if (numMsgs >= 10) score += 5;
+  var numOutcomes = brainLog ? brainLog.length : 0;
+  if (numOutcomes >= 1) score += 4;
+  if (numOutcomes >= 5) score += 6;
+  return Math.min(score, 100);
+}
+
+function renderIntelBar() {
+  var bar = document.getElementById('intelBar');
+  if (!bar) return;
+
+  // Show bar unless user has hidden it at 100%
+  var hidden = localStorage.getItem('gIntelHidden');
+  var score = calcIntelScore();
+  if (hidden && score >= 100) { bar.style.display = 'none'; return; }
+  bar.style.display = 'block';
+
+  var fill = document.getElementById('intelFill');
+  var level = document.getElementById('intelLevel');
+  var capability = document.getElementById('intelCapability');
+  var steps = document.getElementById('intelSteps');
+  var assessBtn = document.getElementById('assessBtn');
+
+  fill.style.width = score + '%';
+
+  var levelData;
+  if (score < 25) {
+    levelData = { label:'Basic', color:'var(--red)', bg:'rgba(184,68,68,0.15)',
+      cap:'Guardian can answer general questions but does not yet know enough about your case to give personalised advice. Complete the steps below to unlock full intelligence.' };
+  } else if (score < 50) {
+    levelData = { label:'Developing', color:'var(--amber)', bg:'rgba(201,148,58,0.15)',
+      cap:'Guardian is building a picture of your case. Message coaching is personalised. Add documents and diary entries to unlock case-specific intelligence.' };
+  } else if (score < 75) {
+    levelData = { label:'Strong', color:'var(--gold)', bg:'rgba(212,168,67,0.15)',
+      cap:'Guardian has strong case knowledge. Every response is built on your specific situation. Keep logging to build your evidence record and unlock your live case assessment.' };
+  } else {
+    levelData = { label:'Full Intelligence', color:'var(--green)', bg:'rgba(26,158,114,0.15)',
+      cap:'Guardian has everything it needs. Every response is built on your complete case history. Your live case assessment is ready.' };
+  }
+
+  fill.style.background = levelData.color;
+  level.textContent = levelData.label;
+  level.style.background = levelData.bg;
+  level.style.color = levelData.color;
+  capability.textContent = levelData.cap;
+
+  // Build next steps — specific, actionable, tappable
+  var nextSteps = [];
+  if (!profile || !profile.allegations || profile.allegations.length < 10) {
+    nextSteps.push({ text:'What are they saying about you? Tell Guardian the allegations.', action:'My Case →', screen:'sEditProfile', dot:'var(--red)' });
+  }
+  if (!caseDocuments || caseDocuments.length === 0) {
+    nextSteps.push({ text:'Upload your court order — Guardian finds your contact schedule automatically.', action:'Case File →', screen:'sDocs', dot:'var(--amber)' });
+  } else if (caseDocuments.length < 3) {
+    nextSteps.push({ text:'Upload a Cafcass letter or position statement for deeper analysis.', action:'Case File →', screen:'sDocs', dot:'var(--amber)' });
+  }
+  if (!diaryEntries || diaryEntries.length === 0) {
+    nextSteps.push({ text:'Log your first contact session — every entry is evidence.', action:'My Diary →', screen:'sDiary', dot:'var(--blue)' });
+  } else if (diaryEntries.length < 5) {
+    nextSteps.push({ text:'Guardian spots patterns after 5 diary entries. Keep logging.', action:'My Diary →', screen:'sDiary', dot:'var(--blue)' });
+  }
+  if (!profile || !profile.firstContactDate) {
+    nextSteps.push({ text:'When did contact first start? Anchors your full case history.', action:'My Case →', screen:'sEditProfile', dot:'var(--muted-hi)' });
+  }
+  if (!profile || !profile.dismissed || profile.dismissed.length < 5) {
+    nextSteps.push({ text:'What has already been found in your favour? This is powerful evidence.', action:'My Case →', screen:'sEditProfile', dot:'var(--green)' });
+  }
+
+  steps.innerHTML = nextSteps.slice(0,3).map(function(s){
+    var onclick = "go(\"" + s.screen + "\")";
+    return '<div class="intel-step" onclick="' + onclick + '">' +
+      '<div class="intel-step-dot" style="background:' + s.dot + ';"></div>' +
+      '<div class="intel-step-text">' + s.text + '</div>' +
+      '<div class="intel-step-action">' + s.action + '</div>' +
+    '</div>';
+  }).join('');
+
+  // Show assessment button when strong enough
+  if (assessBtn) assessBtn.style.display = score >= 50 ? 'block' : 'none';
+}
+
+function hideIntelBar() {
+  var score = calcIntelScore();
+  if (score >= 100) localStorage.setItem('gIntelHidden', '1');
+  var bar = document.getElementById('intelBar');
+  if (bar) bar.style.display = 'none';
+}
+
+// ── LIVE CASE ASSESSMENT ──
+
+async function runCaseAssessment() {
+  go('sCaseAssessment');
+  var ctx = getCTX();
+  var numDiary = diaryEntries ? diaryEntries.length : 0;
+  var numDocs = caseDocuments ? caseDocuments.length : 0;
+  var numMsgs = msgLog ? msgLog.length : 0;
+  var refused = brainLog ? brainLog.filter(function(b){ return b.type==='contact'&&b.outcome==='refused'; }).length : 0;
+  var positive = brainLog ? brainLog.filter(function(b){ return b.outcome==='positive'||b.outcome==='good'||b.outcome==='happened'; }).length : 0;
+  var avgScore = numMsgs > 0 ? Math.round(msgLog.reduce(function(a,m){ return a+(m.score||0); },0)/numMsgs*10)/10 : 0;
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+  var name = profile && profile.myName ? profile.myName : 'you';
+
+  var dataStr = 'Diary entries logged: ' + numDiary + '. Documents uploaded: ' + numDocs + '. Messages coached: ' + numMsgs + '. Average message score: ' + avgScore + '/10. Contact refusals recorded: ' + refused + '. Positive outcomes: ' + positive + '.';
+
+  var el = document.getElementById('caseAssessmentContent');
+
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        system: ctx,
+        messages: [{ role: 'user', content: "Give " + name + " a live assessment of where their case stands today. Be specific, honest, and practical. Use their name and " + child + "'s name throughout.\n\nCase data: " + dataStr + "\n\nStructure your response clearly with these sections:\n\nWHERE YOUR CASE STANDS TODAY\n(2-3 honest sentences about their current position)\n\nWHAT IS WORKING\n(2-3 specific things that are going in their favour)\n\nWHAT NEEDS ATTENTION\n(1-2 specific risks or gaps to address)\n\nYOUR THREE PRIORITIES THIS WEEK\n(specific, actionable, numbered)\n\nOVERALL POSITION\n(One clear sentence)\n\nBe direct. Be specific to this case. Do not be vague." }]
+
+      })
+    });
+    var data = await res.json();
+    var assessment = ((data.content||[]).map(function(b){ return b.text||''; }).join('').trim());
+
+    if (el && assessment) {
+      // Format the assessment nicely
+      var formatted = assessment
+        .replace(/WHERE YOUR CASE STANDS TODAY/g, '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:16px 0 8px;">WHERE YOUR CASE STANDS TODAY</div>')
+        .replace(/WHAT IS WORKING/g, '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin:16px 0 8px;">WHAT IS WORKING</div>')
+        .replace(/WHAT NEEDS ATTENTION/g, '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin:16px 0 8px;">WHAT NEEDS ATTENTION</div>')
+        .replace(/YOUR THREE PRIORITIES THIS WEEK/g, '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin:16px 0 8px;">YOUR THREE PRIORITIES THIS WEEK</div>')
+        .replace(/OVERALL POSITION/g, '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:0.5px;margin:16px 0 8px;">OVERALL POSITION</div>')
+        .replace(/\n/g, '<br>');
+
+      el.innerHTML = '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;">' +
+        '<div style="font-size:14px;color:var(--white);line-height:1.9;">' + formatted + '</div>' +
+        '</div>' +
+        '<button onclick="runCaseAssessment()" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted-hi);font-size:13px;cursor:pointer;margin-bottom:14px;">🔄 Refresh assessment</button>' +
+        '<div style="padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6;text-align:center;">The more complete your diary and case file, the more accurate this becomes. Guardian updates this every time you add new information.</div>';
+    }
+  } catch(e) {
+    if (el) el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted-hi);">Could not generate assessment. Check your connection and try again.</div>';
+  }
+}
+
+// ── GUARDIAN BRAIN INSIGHTS ──
+
+function showBrainInsight(text) {
+  // Show insight in a prominent card in Guardian Brain
+  var existing = document.getElementById('brainInsightCard');
+  if (existing) existing.remove();
+  var card = document.createElement('div');
+  card.id = 'brainInsightCard';
+  card.style.cssText = 'background:var(--card);border:1.5px solid rgba(212,168,67,0.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;animation:fadeIn 0.3s ease;';
+  card.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GUARDIAN NOTICED</div>' +
+    '<div style="font-size:14px;color:var(--white);line-height:1.7;">' + text + '</div>';
+  var brain = document.getElementById('sBrain');
+  if (brain) {
+    var firstChild = brain.querySelector('.field-group') || brain.children[1];
+    brain.insertBefore(card, firstChild);
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function getBrainInsight(type, outcome) {
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+  var refusals = brainLog ? brainLog.filter(function(b){ return b.type==='contact'&&b.outcome==='refused'; }).length : 0;
+  var escalations = brainLog ? brainLog.filter(function(b){ return b.type==='message'&&b.outcome==='negative'; }).length : 0;
+  var positives = brainLog ? brainLog.filter(function(b){ return b.outcome==='positive'; }).length : 0;
+
+  var insights = {
+    message: {
+      positive: positives >= 3
+        ? '✅ ' + positives + ' positive responses in a row. Natural mode is working well for you. Guardian will keep this as your default.'
+        : '✅ Logged. Every positive outcome helps Guardian learn what works for your specific situation.',
+      neutral: '➡️ Logged. Neutral responses are common. Guardian notes this and will factor it into future suggestions.',
+      negative: escalations >= 2
+        ? '⚠️ This is the ' + escalations + getOrdinal(escalations) + ' escalation logged. Guardian is switching your default mode to Protective for high-tension messages.'
+        : '⚠️ Logged. When a message escalates it usually means tone or timing. Guardian will adjust your next reply suggestion.',
+      edited: '✏️ Logged. Every edit you make helps Guardian understand your natural voice. Your replies will sound more like you over time.'
+    },
+    contact: {
+      happened: '✅ Logged. Consistent contact builds a strong evidence record. Keep logging every session.',
+      late: '⏱️ Logged. Late or disrupted contact is worth recording consistently. After 3 instances Guardian will flag it as a pattern.',
+      refused: refusals >= 3
+        ? '⚠️ Contact has now been refused ' + refusals + ' times. Guardian has a full record with dates and circumstances. You have grounds to discuss a C79 enforcement application with your McKenzie Friend.'
+        : refusals === 2
+        ? '⚠️ Second contact refusal logged. If this happens again you will have grounds for enforcement. Keep the diary entries going.'
+        : '⚠️ Logged. One refusal on its own is difficult to act on. If it happens again Guardian will flag the pattern.',
+      welfare: '⚠️ Logged. Welfare concerns raised during contact should always be documented in your diary with specific details and times.'
+    },
+    hearing: {
+      good: '✅ Logged. A positive hearing outcome is significant. Guardian has noted what was working in your case at this point — calm communication, documented contact, child-focused position.',
+      partial: '⚖️ Logged. Directions hearings rarely resolve things immediately. This is normal. Guardian will help you prepare for the next stage.',
+      difficult: '⚠️ Logged. A difficult hearing is not the end. Guardian has noted this and will help you understand what to focus on before the next hearing.',
+      adjourned: '📅 Logged. Adjournments are frustrating but common. Use the time to strengthen your evidence record.'
+    },
+    cafcass: {
+      supportive: '✅ Logged. Cafcass support is powerful evidence. Make sure this is reflected in your profile and referenced in any future statements.',
+      neutral: '📝 Logged. Neutral Cafcass findings are common at this stage. Guardian will focus your next statement on demonstrating stability and consistency — the two things Cafcass looks for most.',
+      against: '⚠️ Logged. This is difficult but it is not the end. Cafcass findings can be challenged. Guardian will help you understand what they found and how to address it in your next statement.'
+    },
+    allegation: {
+      dismissed: '✅ Logged. Every dismissed allegation strengthens your position. Make sure it is in your profile so Guardian references it in every message and statement.',
+      new: '⚠️ Logged. Guardian has recorded this. Go to My Case now and add the details — the more Guardian knows, the better it can protect you.',
+      escalated: '📈 Logged. An escalating allegation needs a direct, evidenced response in your next statement. Guardian will flag this in your message coaching too.'
+    }
+  };
+
+  var typeInsights = insights[type];
+  if (!typeInsights) return 'Logged. Guardian is learning from every outcome you share.';
+  return typeInsights[outcome] || 'Logged. Guardian has recorded this outcome.';
+}
+
+function getOrdinal(n) {
+  var s = ['th','st','nd','rd'];
+  var v = n % 100;
+  return s[(v-20)%10]||s[v]||s[0];
+}
+
 function showHome() {
   var h=new Date().getHours();
   var g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
@@ -2463,6 +3042,9 @@ function showHome() {
   go('sHome');
   checkSevenDayUpsell();
   setTimeout(function(){ renderGuardianNoticed(); }, 100);
+  setTimeout(function(){ checkContactDayReminder(); }, 300);
+  setTimeout(function(){ renderIntelBar(); }, 150);
+  setTimeout(function(){ requestNotificationPermission(); }, 2000);
 }
 
 function goQA() {
@@ -2621,11 +3203,21 @@ async function sendQA() {
     msgDiv.appendChild(textDiv);
     var lines = fullReply.split('\n').filter(function(l){return l.trim().length>0;});
     if (lines.length === 0) lines = [fullReply];
+    var qaMsgsEl = document.getElementById('qaMsgs');
     for(var i=0;i<lines.length;i++){
-      await new Promise(function(r){setTimeout(r,150);});
+      await new Promise(function(r){setTimeout(r,180);});
       textDiv.innerHTML += (i > 0 ? '<br><br>' : '') + lines[i];
-      scrollQA();
+      // Smooth scroll only — don't jump to bottom, just follow the new line
+      if (msgDiv.getBoundingClientRect && qaMsgsEl) {
+        var msgBottom = msgDiv.offsetTop + msgDiv.offsetHeight;
+        var containerHeight = qaMsgsEl.clientHeight;
+        var scrollTarget = msgBottom - containerHeight + 40;
+        if (scrollTarget > qaMsgsEl.scrollTop) {
+          qaMsgsEl.scrollTop = scrollTarget;
+        }
+      }
     }
+    scrollQA();
 
     // Show confidence indicator after text appears
     var confLabels = {
@@ -2642,8 +3234,8 @@ async function sendQA() {
 
     qaTyping=false;
     qaHistory.push({role:'assistant',content:fullReply});
-    // Upsell after deep conversation (4+ exchanges)
-    if (qaHistory.length >= 8) checkUpsellTriggers('deepqa');
+    // Upsell only after deep conversation (6+ exchanges minimum)
+    if (qaHistory.length >= 12) checkUpsellTriggers('deepqa');
     // Passive learning — scan conversation for new case facts
     var qaTxt = qaHistory.slice(-4).map(function(m){return m.content;}).join(' ');
     if (qaHistory.length % 4 === 0) extractCaseFacts(qaTxt, 'Court Guru conversation');
@@ -2907,12 +3499,18 @@ function resetTrial(){
 
 async function askQ() {
   if(!checkTrial()) return;
-  load('Reading it...','Working out what to ask you');
-  document.getElementById('qTheirText').textContent=st.msg;
-  document.getElementById('rTheirText').textContent=st.msg;
-  var ctx=getCTX();
+  var isOut = st.outgoing || false;
+  load(isOut ? 'Checking your message...' : 'Reading it...', isOut ? 'Scoring before you send' : 'Working out what to ask you');
+  if (!isOut) {
+    document.getElementById('qTheirText').textContent = st.msg;
+    document.getElementById('rTheirText').textContent = st.msg;
+  }
+  var ctx = getCTX();
   try {
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:SYS+'\n\n'+ctx,messages:[{role:'user',content:'A parent received: "'+st.msg+'"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.'}]})});
+    var prompt = isOut
+      ? 'A parent wants to send this message: "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
+      : 'A parent received: "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:SYS+'\n\n'+ctx,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
@@ -2951,6 +3549,14 @@ function doQuestion(p) {
     document.getElementById('continueBtn').style.display='block';
   }
   autoSetMode();
+  // Update reply screen label for outgoing
+  var lbl = document.getElementById('msgBubbleLabel');
+  if (lbl) lbl.textContent = st.outgoing ? 'Your message to send' : 'Their message';
+  var bubble = document.getElementById('msgBubble');
+  if (bubble) bubble.style.background = st.outgoing ? 'rgba(52,120,212,0.12)' : '';
+  if (st.outgoing) {
+    document.getElementById('rTheirText').textContent = st.outMsg || '';
+  }
   go('sQuestion');
 }
 
@@ -3015,8 +3621,8 @@ async function _gen(ctx) {
       localStorage.setItem('gLog',JSON.stringify(msgLog));
       saveProfileToSupabase();
       // Upsell triggers
-      if (checks === 3) checkUpsellTriggers('check3');
-      if (checks === 5) checkUpsellTriggers('check5');
+      if (checks === 6) checkUpsellTriggers('check3');
+      if (checks === 10) checkUpsellTriggers('check5');
       // Pattern upsell - if 3+ red flags in last 10 messages
       var recentRed = msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
       if (recentRed >= 3) checkUpsellTriggers('pattern');
@@ -3218,6 +3824,29 @@ async function showForgotPassword() {
   } catch(e) { toast('Could not send reset email — please try again'); }
 }
 
+function dismissDocBanner() { var b = document.getElementById("docContactBanner"); if(b) b.remove(); }
+
+function showDocContactPrompt(doc) {
+  // Don't show if we already have contact schedule and first contact date
+  if (profile && profile.contact && profile.firstContactDate) return;
+  var banner = document.getElementById('docContactBanner');
+  if (banner) return; // Already showing
+  banner = document.createElement('div');
+  banner.id = 'docContactBanner';
+  banner.style.cssText = 'background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;padding:14px;margin-bottom:14px;';
+  banner.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;">📅 Guardian found contact information in this document</div>' +
+    '<div style="font-size:13px;color:var(--muted-hi);margin-bottom:10px;line-height:1.5;">' + (doc.extract ? doc.extract.substring(0, 120) + '...' : 'Contact schedule or order details detected.') + '</div>' +
+    '<div style="display:flex;gap:8px;">' +
+    '<button onclick="goToEditProfile()" style="flex:1;padding:9px;background:var(--blue);border:none;border-radius:8px;color:white;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Update contact schedule →</button>' +
+    '<button onclick="dismissDocBanner()" style="padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted-hi);font-family:DM Sans,sans-serif;font-size:12px;cursor:pointer;">Later</button>' +
+    '</div>';
+  var docsEl = document.getElementById('sDocs');
+  if (docsEl) {
+    var timeline = document.getElementById('docsTimeline');
+    if (timeline) docsEl.insertBefore(banner, timeline);
+  }
+}
+
 async function doLogout() {
   if (supabase) { await supabase.auth.signOut(); }
   currentUser = null;
@@ -3269,7 +3898,11 @@ async function loadProfileFromSupabase() {
         };
       }
       if (result.data.doc_extracts) { try { docs = JSON.parse(result.data.doc_extracts); } catch(e){} }
-      if (result.data.message_log) { try { msgLog = JSON.parse(result.data.message_log); } catch(e){} }
+      if (result.data.msg_log_json) { try { msgLog = JSON.parse(result.data.msg_log_json); localStorage.setItem('gLog', result.data.msg_log_json); } catch(e){} }
+      else if (result.data.message_log) { try { msgLog = JSON.parse(result.data.message_log); } catch(e){} }
+      if (result.data.diary_json) { try { diaryEntries = JSON.parse(result.data.diary_json); localStorage.setItem('gDiary', result.data.diary_json); } catch(e){} }
+      if (result.data.case_docs_json) { try { caseDocuments = JSON.parse(result.data.case_docs_json); localStorage.setItem('gCaseDocs', result.data.case_docs_json); } catch(e){} }
+      if (result.data.brain_log_json) { try { brainLog = JSON.parse(result.data.brain_log_json); localStorage.setItem('gBrainLog', result.data.brain_log_json); } catch(e){} }
       localStorage.setItem('gProfile', JSON.stringify(profile));
       // Consider setup complete if they have a name and child name — don't rely solely on complete flag
       var isComplete = profile.complete || (profile.myName && profile.childName && profile.caseType);
@@ -3314,8 +3947,12 @@ async function saveProfileToSupabase() {
       complete: profile.complete || false,
       updated_at: new Date().toISOString()
     };
-    // Also save full profile as JSON blob for reliable restore
+    // Save full profile and all case data as JSON blobs
     data.profile_json = JSON.stringify(profile);
+    data.diary_json = JSON.stringify(diaryEntries || []);
+    data.case_docs_json = JSON.stringify(caseDocuments || []);
+    data.brain_log_json = JSON.stringify(brainLog || []);
+    data.msg_log_json = JSON.stringify(msgLog || []);
     await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
   } catch(e) { console.warn('Supabase save failed:', e); }
 }
@@ -3458,31 +4095,78 @@ function loadBrainScreen() {
     '<div style="font-size:13px;color:var(--muted);">No activity yet. Start using Guardian and your activity will appear here.</div>';
 }
 
+function showEditCapture() {
+  var box = document.getElementById('editCaptureBox');
+  if (box) {
+    box.style.display = 'block';
+    var ta = document.getElementById('editCaptureText');
+    if (ta) ta.focus();
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function saveEditCapture() {
+  var edited = document.getElementById('editCaptureText');
+  var editedText = edited ? edited.value.trim() : '';
+
+  // Get the original suggested reply
+  var originalReply = document.getElementById('replyText') ?
+    document.getElementById('replyText').textContent.trim() : '';
+
+  if (editedText) {
+    // Store the edit for learning
+    var editRecord = {
+      ts: new Date().toISOString(),
+      original: originalReply.substring(0, 500),
+      edited: editedText.substring(0, 500),
+      msgFlag: st ? st.flag : '',
+      msgMode: st ? st.mode : ''
+    };
+
+    // Save edit history to localStorage
+    var editHistory = JSON.parse(localStorage.getItem('gEditHistory') || '[]');
+    editHistory.push(editRecord);
+    if (editHistory.length > 50) editHistory = editHistory.slice(-50); // Keep last 50
+    localStorage.setItem('gEditHistory', JSON.stringify(editHistory));
+
+    // Update passive case facts with the edited message
+    extractCaseFacts(editedText, 'edited reply');
+
+    // Show insight
+    var insight = '✏️ Logged. Guardian has saved your edit. ';
+    if (editHistory.length >= 3) {
+      insight += 'After ' + editHistory.length + ' edits Guardian is building a picture of your natural voice. Your suggestions will start sounding more like you.';
+    } else {
+      insight += 'Every edit teaches Guardian how you naturally communicate. Keep sharing and your suggestions will start sounding more like you.';
+    }
+    toast(insight);
+  }
+
+  logBrainOutcome('edited');
+  var box = document.getElementById('editCaptureBox');
+  if (box) box.style.display = 'none';
+  if (edited) edited.value = '';
+}
+
 function logBrainOutcome(outcome) {
   var entry = { type:'message', outcome:outcome, ts:new Date().toISOString(), msgCount:msgLog.length };
   brainLog.push(entry);
   localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
-  var msgs = {
-    positive:'✅ Logged. Guardian learns from every good outcome.',
-    neutral:'📝 Logged. Noted for Guardian Brain.',
-    negative:'⚠️ Logged. This helps Guardian improve.',
-    edited:'✏️ Logged. Your edit helps Guardian sound more human.'
-  };
-  toast(msgs[outcome] || 'Logged');
+  try { saveProfileToSupabase(); } catch(e){}
+  var insight = getBrainInsight('message', outcome);
+  showBrainInsight(insight);
   loadBrainScreen();
+  renderIntelBar();
 }
 
 function logBrainHearing(outcome) {
   var entry = { type:'hearing', outcome:outcome, ts:new Date().toISOString(), caseType: profile&&profile.caseType||'' };
   brainLog.push(entry);
   localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
-  var msgs = {
-    good:'✅ Logged. Every positive outcome strengthens Guardian Brain.',
-    partial:'⚖️ Logged. Directions hearings are part of the journey.',
-    difficult:'⚠️ Logged. Guardian learns from every outcome, good or hard.'
-  };
-  toast(msgs[outcome] || 'Hearing outcome logged');
+  try { saveProfileToSupabase(); } catch(e){}
+  showBrainInsight(getBrainInsight('hearing', outcome));
   loadBrainScreen();
+  renderIntelBar();
 }
 
 function logContactRefusalDiary() { loadDiaryEntry({type:"contact"}); go("sDiaryEntry"); }
@@ -3532,6 +4216,9 @@ function logBrainContact(outcome) {
   var entry = { type:'contact', outcome:outcome, ts:new Date().toISOString() };
   brainLog.push(entry);
   localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
+  try { saveProfileToSupabase(); } catch(e){}
+  showBrainInsight(getBrainInsight('contact', outcome));
+  renderIntelBar();
   if (outcome === 'refused') {
     toast('⚠️ Logged. Contact refusal recorded. Consider logging this in your diary too.');
     setTimeout(function(){
@@ -3620,11 +4307,14 @@ function setScanType(type) {
 }
 
 async function scanStatement(event, forcedType) {
-  var file = event.target.files[0];
+  var files = event.target.files;
   event.target.value = '';
-  if (!file) return;
+  if (!files || !files.length) return;
   var type = forcedType || 'mine';
-  console.log('Scanning statement, type:', type);
+  var file = files[0]; // Process first file — if multiple, combine
+  console.log('Scanning statement, type:', type, 'files:', files.length);
+  // If multiple images, toast to say we'll process the first
+  if (files.length > 1) toast('Reading ' + files.length + ' files — processing together');
   var statusId = type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus';
   var statusEl = document.getElementById(statusId);
   if (statusEl) statusEl.textContent = '⏳';
@@ -3757,10 +4447,26 @@ function loadDiaryEntry(prefill) {
   }
 }
 
+var diaryPrompts = {};
+
+function pickPrompt(category, value) {
+  diaryPrompts[category] = value;
+  document.querySelectorAll('.opt').forEach(function(b){
+    var oc = b.getAttribute('onclick') || '';
+    if (oc.indexOf("pickPrompt('" + category + "'") !== -1) b.classList.remove('sel');
+    if (oc === "pickPrompt('" + category + "','" + value + "')") b.classList.add('sel');
+  });
+}
+
 function pickDiaryType(btn, val) {
   document.querySelectorAll('#diaryTypeOpts .opt').forEach(function(b){b.classList.remove('sel');});
   btn.classList.add('sel');
   diaryType = val;
+  // Show quick prompts for contact sessions only
+  var qp = document.getElementById('diaryQuickPrompts');
+  if (qp) qp.style.display = val === 'contact' ? 'block' : 'none';
+  diaryPrompts = {};
+  document.querySelectorAll('#diaryQuickPrompts .opt').forEach(function(b){ b.classList.remove('sel'); });
 }
 
 function pickDiaryMood(btn, val) {
@@ -3802,11 +4508,113 @@ function stopDiaryVoice() {
   if(b){b.classList.remove('rec');b.textContent='🎤';}
 }
 
+
+function showDiaryActivityInput(btn) {
+  btn.classList.add('sel');
+  var box = document.getElementById('diaryActivityInput');
+  if (box) {
+    box.style.display = 'block';
+    var input = document.getElementById('diaryActivityCustom');
+    if (input) input.focus();
+  }
+}
+
+function addDiaryPhotos(event) {
+  var files = event.target.files;
+  if (!files || !files.length) return;
+  var row = document.getElementById('diaryPhotoRow');
+  if (!row) return;
+  Array.from(files).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var thumb = document.createElement('div');
+      thumb.style.cssText = 'width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;';
+      thumb.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">' +
+        '<button onclick="this.parentNode.remove()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>';
+      // Store photo data
+      if (!diaryPhotos) diaryPhotos = [];
+      diaryPhotos.push({ data: e.target.result, name: file.name });
+      row.insertBefore(thumb, row.lastElementChild);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+var diaryPhotos = [];
+var lastSavedEntryId = null;
+var lastSavedEntryText = '';
+
+async function makeCourtSafe() {
+  var text = lastSavedEntryText;
+  if (!text) {
+    text = document.getElementById('diaryText').value.trim();
+  }
+  if (!text) { toast('No entry text to convert'); return; }
+  load('Converting...', 'Guardian is removing emotion and making this court-ready');
+  var ctx = getCTX();
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        system: ctx + '\n\nYou convert personal diary entries into court-appropriate witness statement language. Remove all emotion, opinion, and subjective language. Keep all factual content. Use third person where appropriate. Use precise language a judge would find credible. Start with date and time where available.',
+        messages: [{ role: 'user', content: 'Convert this diary entry to court-safe language. Keep all facts, remove all emotion and opinion:\n\n' + text }]
+      })
+    });
+    var data = await res.json();
+    var courtText = ((data.content || []).map(function(b){ return b.text || ''; }).join('').trim());
+    unload();
+    if (courtText) {
+      document.getElementById('courtSafeText').textContent = courtText;
+      document.getElementById('courtSafeResult').style.display = 'block';
+    } else {
+      toast('Could not convert — try again');
+    }
+  } catch(e) {
+    unload();
+    toast('Something went wrong — please try again');
+  }
+}
+
+function copyCourtSafe() {
+  var text = document.getElementById('courtSafeText').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){
+      toast('✅ Court-safe version copied');
+    });
+  }
+}
+
+function saveCourtSafeToDiary() {
+  var courtText = document.getElementById('courtSafeText').textContent;
+  if (!courtText || !lastSavedEntryId) return;
+  // Find the entry and add court-safe version
+  var entry = diaryEntries.find(function(e){ return e.id === lastSavedEntryId; });
+  if (entry) {
+    entry.courtSafe = courtText;
+    localStorage.setItem('gDiary', JSON.stringify(diaryEntries));
+    toast('✅ Court-safe version saved to this entry');
+    document.getElementById('courtSafeResult').style.display = 'none';
+    document.getElementById('courtSafePanel').style.display = 'none';
+  }
+}
+
 function saveDiaryEntry() {
+  // Build summary from quick prompts
+  var rawText = document.getElementById('diaryText').value.trim();
+  var promptParts = [];
+  if (diaryPrompts.eat) promptParts.push('Food: ' + diaryPrompts.eat);
+  if (diaryPrompts.sleep) promptParts.push('Sleep: ' + diaryPrompts.sleep);
+  if (diaryPrompts.activity) promptParts.push('Activity: ' + diaryPrompts.activity);
+  if (diaryPrompts['return']) promptParts.push('Return: ' + diaryPrompts['return']);
+  if (diaryPrompts.concerns) promptParts.push('Concerns: ' + diaryPrompts.concerns);
+  var promptSummary = promptParts.join(' | ');
   stopDiaryVoice();
-  var text = document.getElementById('diaryText').value.trim();
+  var text = promptSummary ? (promptSummary + (rawText ? '\n\n' + rawText : '')) : rawText;
   var date = document.getElementById('diaryDate').value;
-  if (!text) { toast('Please describe what happened'); return; }
+  if (!text && promptParts.length === 0) { toast('Please add some details or tap a prompt above'); return; }
   if (!date) { toast('Please select a date'); return; }
   var typeLabels = { contact:'Contact session', incident:'Incident', message:'Message exchange', hearing:'Hearing', welfare:'Welfare concern' };
   var entry = {
@@ -4489,6 +5297,10 @@ function parseContactDaysFromProfile() {
 function renderCalendar() {
   parseContactDaysFromProfile();
   var now = new Date();
+  // If we have a first contact date, default to that month on first load
+  if (profile && profile.firstContactDate && calCurrentDate.getTime() === new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime()) {
+    // Keep current month but note the start date for display
+  }
   var year = calCurrentDate.getFullYear();
   var month = calCurrentDate.getMonth();
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4726,11 +5538,53 @@ function logSent(choice){
 }
 
 // EXPORT DOCUMENT SUMMARY
+function downloadOriginalDoc(docId) {
+  var doc = caseDocuments.find(function(d){ return d.id === docId; });
+  if (!doc || !doc.originalData) { toast('Original file not available — find it in your Downloads folder'); return; }
+  try {
+    var mime = doc.fileType || 'application/octet-stream';
+    var blob = b64toBlob(doc.originalData, mime);
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = doc.originalName || doc.name;
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast('✅ Downloading ' + (doc.originalName || doc.name));
+  } catch(e) {
+    toast('Could not download — find the original in your Downloads folder');
+  }
+}
+
+function b64toBlob(b64, mime) {
+  var byteStr = atob(b64);
+  var ab = new ArrayBuffer(byteStr.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+  return new Blob([ab], { type: mime });
+}
+
+function deleteDoc(docId) {
+  var doc = caseDocuments.find(function(d){ return d.id === docId; });
+  if (!doc) return;
+  if (!confirm('Remove "' + doc.name + '" from your Case File?')) return;
+  caseDocuments = caseDocuments.filter(function(d){ return d.id !== docId; });
+  localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+  renderTimeline();
+  toast('Document removed');
+}
+
 function exportDoc(docId) {
   var doc = caseDocuments.find(function(d){ return d.id === docId; });
   if (!doc) { toast('Document not found'); return; }
 
   var typeLabels = { court:'Court Document', cafcass:'Cafcass Report', messages:'Message History', screenshot:'Screenshot', other:'Document' };
+
+  var extract = doc.extract || '';
+  if (!extract || extract === 'Could not read document') {
+    toast('No summary available for this document yet');
+    return;
+  }
 
   var text = [
     'GUARDIAN CASE SUMMARY',
@@ -4741,34 +5595,26 @@ function exportDoc(docId) {
     'Document date: ' + (doc.date || 'Unknown'),
     'Uploaded: ' + new Date(doc.uploadedAt).toLocaleDateString('en-GB'),
     '',
-    'GUARDIAN READING',
+    'WHAT GUARDIAN READ',
     '------------------',
-    doc.extract || 'No summary available',
+    extract,
     '',
     '=====================',
-    "IMPORTANT: This is Guardian reading of the document.",
-    "Always refer to the original document for court proceedings.",
-    "The original file was not modified and remains in your device storage.",
+    "This is Guardian's reading of the document.",
+    'Always use the original document in court proceedings.',
     '',
-    "Generated by Guardian",
-    "guardian-xgzl.vercel.app",
+    'Generated by Guardian — guardian-xgzl.vercel.app',
     new Date().toLocaleDateString('en-GB')
-  ].join("\n");
+  ].join('\n');
 
-  // Try native share first (mobile)
   if (navigator.share) {
-    navigator.share({
-      title: 'Guardian Summary — ' + doc.name,
-      text: text
-    }).catch(function(){});
+    navigator.share({ title: 'Guardian — ' + doc.name, text: text }).catch(function(){});
   } else {
-    // Fallback — copy to clipboard
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(function(){
-        toast('✅ Summary copied — paste into email or WhatsApp');
+        toast('✅ Summary copied — paste into email or notes');
       });
     } else {
-      // Last resort — download as text file
       var blob = new Blob([text], { type: 'text/plain' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
@@ -4847,6 +5693,8 @@ function renderTimeline() {
         '<div class="doc-disclaimer">Guardian summary only — always use the original document in court proceedings</div>' +
         '<div class="doc-actions">' +
           '<button class="doc-export-btn" onclick="exportDoc(' + JSON.stringify(doc.id) + ')">↗ Share summary</button>' +
+          (doc.originalData ? '<button class="doc-export-btn" style="margin-left:6px;" onclick="downloadOriginalDoc(' + JSON.stringify(doc.id) + ')">⬇ Download original</button>' : '') +
+          '<button class="doc-export-btn" style="margin-left:6px;color:var(--red);border-color:rgba(184,68,68,0.3);" onclick="deleteDoc(' + JSON.stringify(doc.id) + ')">🗑 Remove</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -4891,9 +5739,12 @@ async function addDoc(event, docType) {
             id: Date.now() + i,
             type: docType,
             name: parsed ? (parsed.title || file.name) : file.name,
+            originalName: file.name,
+            fileType: file.type,
             date: parsed ? (parsed.date || new Date().toLocaleDateString('en-GB')) : new Date().toLocaleDateString('en-GB'),
             extract: parsed ? (parsed.extract || '') : '',
-            uploadedAt: new Date().toISOString()
+            uploadedAt: new Date().toISOString(),
+            originalData: b64.substring(0, 500000) // Store first 500KB for download
           };
           caseDocuments.push(entry);
           localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
@@ -4914,6 +5765,12 @@ async function addDoc(event, docType) {
   parseContactDaysFromProfile();
   toast('✅ Document added to your timeline');
   checkUpsellTriggers('document');
+  // Check if any document had contact/order info — prompt to update profile
+  caseDocuments.slice(-files.length).forEach(function(doc){
+    if (doc.extract && (doc.extract.toLowerCase().indexOf('contact') !== -1 || doc.extract.toLowerCase().indexOf('order') !== -1 || doc.extract.toLowerCase().indexOf('saturday') !== -1 || doc.extract.toLowerCase().indexOf('sunday') !== -1)) {
+      showDocContactPrompt(doc);
+    }
+  });
 }
 
 // EDIT PROFILE
@@ -4924,6 +5781,8 @@ function loadEditProfile() {
     var el = document.getElementById(id);
     if (el && profile[fields[id]]) el.value = profile[fields[id]];
   });
+  var editFC = document.getElementById('editFirstContact');
+  if (editFC && profile.firstContactDate) editFC.value = profile.firstContactDate;
   // Set case type buttons — multi-select
   if (profile.caseType) {
     var types = profile.caseType.split(',').map(function(t){ return t.trim().toLowerCase(); });
@@ -5007,6 +5866,8 @@ function saveEditProfile() {
   profile.childName = document.getElementById('editChildName').value.trim() || profile.childName;
   profile.contact = document.getElementById('editContact').value.trim() || profile.contact;
   profile.caseType = getSelectedEditCaseTypes() || profile.caseType || '';
+  var editFC2 = document.getElementById('editFirstContact');
+  if (editFC2 && editFC2.value) profile.firstContactDate = editFC2.value;
   profile.conflict = document.getElementById('editConflict').value;
   profile.allegations = document.getElementById('editAllegations').value.trim() || profile.allegations;
   profile.dismissed = document.getElementById('editDismissed').value.trim() || profile.dismissed;
