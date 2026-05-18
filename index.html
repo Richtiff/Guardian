@@ -571,6 +571,9 @@ p, .body-text { font-size: 16px !important; }
   <div class="field-group"><label class="field-label">CHILD'S NAME AND AGE</label><input class="field-input" id="iChildName" type="text" placeholder="e.g. William, 6" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
   <div class="field-group"><label class="field-label">ANY OTHER CHILDREN?</label><input class="field-input" id="iOtherKids" type="text" placeholder="e.g. Sophie, 9 — or leave blank" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
   <button type="button" class="btn-gold" onclick="saveP1()" style="margin-top:8px;">Next →</button>
+  <div style="text-align:center;margin-top:10px;">
+    <button type="button" onclick="skipSetupToHome()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;">Skip setup — I'll add details later</button>
+  </div>
 </div>
 
 <!-- PROFILE 2 -->
@@ -2335,6 +2338,20 @@ function resumeSetup(step) {
   toast('Welcome back — continuing where you left off');
 }
 
+function skipSetupToHome() {
+  if (!profile) profile = {};
+  var name = document.getElementById('iMyName');
+  if (name && name.value.trim()) profile.myName = name.value.trim();
+  if (!profile.myName) profile.myName = 'Guardian User';
+  profile.complete = true;
+  profile.setupSkipped = true;
+  save();
+  showHome();
+  setTimeout(function(){
+    toast('You can complete your profile anytime from My Case');
+  }, 800);
+}
+
 function saveP1() {
   var n=document.getElementById('iMyName').value.trim();
   var c=document.getElementById('iChildName').value.trim();
@@ -2400,7 +2417,7 @@ function startObVoice() {
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){toast('Voice not supported on this browser');return;}
   obRecog=new SR();
-  obRecog.continuous=false; // Single utterance — stops automatically
+  obRecog.continuous=true; // Keep listening until silence
   obRecog.interimResults=true;
   obRecog.lang='en-GB';
   var fin=document.getElementById('obTranscript').value.trim();
@@ -2418,12 +2435,19 @@ function startObVoice() {
     clearTimeout(silenceTimer);
     silenceTimer = setTimeout(function(){
       if(isObRec) stopObVoice();
-    }, 3500); // 3.5s silence before stopping // Stop after 2 seconds of silence
+    }, 6000); // 6s silence before stopping — allows thinking pauses
   };
 
   obRecog.onend=function(){
-    stopObVoice();
-    showVoiceConfirm();
+    if (isObRec) {
+      // Try to restart if still recording
+      try { obRecog.start(); } catch(e) {
+        stopObVoice();
+        showVoiceConfirm();
+      }
+    } else {
+      showVoiceConfirm();
+    }
   };
 
   obRecog.onerror=function(e){
@@ -2483,16 +2507,24 @@ async function handleBundleInSetup(event) {
   var reader = new FileReader();
   reader.onload = async function(e) {
     var b64 = e.target.result.split(',')[1];
+    // Truncate large PDFs — API has size limits
+    var maxSize = 900000; // ~900KB base64
+    var truncated = false;
+    if (b64.length > maxSize) {
+      b64 = b64.substring(0, maxSize);
+      truncated = true;
+      console.log('Bundle truncated from', e.target.result.length, 'to', maxSize);
+    }
     try {
       var res = await fetch(API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 2000,
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1500,
           messages: [{ role: 'user', content: [
             { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
-            { type: 'text', text: 'This is a family court bundle. Identify every separate document inside it. For each one: what it is, who filed it, the date, and the 2-3 most important facts. Return ONLY JSON: {"documents":[{"name":"<doc name>","author":"<who filed>","date":"<date or unknown>","facts":"<key facts>","type":"court|cafcass|theirs|mine|other"}]}' }
+            { type: 'text', text: 'This is a family court bundle' + (truncated ? ' (first section only due to size)' : '') + '. Identify every separate document inside it. For each one: what it is, who filed it, the date, and the 2-3 most important facts. Return ONLY JSON: {"documents":[{"name":"<doc name>","author":"<who filed>","date":"<date or unknown>","facts":"<key facts>","type":"court|cafcass|theirs|mine|other"}]}' }
           ]}]
         })
       });
@@ -2590,30 +2622,34 @@ async function processDocs() {
   go('sProcessing');
   var items=document.getElementById('procItems');
   var extracts={};
-  for(var i=0;i<keys.length;i++){
-    var key=keys[i]; var doc=uploadedDocs[key];
-    var div=document.createElement('div');
-    div.style.cssText='display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white);';
-    div.innerHTML='<div style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);animation:spin 0.8s linear infinite;flex-shrink:0;"></div><span>Reading '+doc.name+'...</span>';
-    items.appendChild(div);
-    try {
-      var msgContent=[];
-      if(doc.type&&doc.type.startsWith('image/')){
-        msgContent=[{type:'image',source:{type:'base64',media_type:doc.type,data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
-      } else if(doc.type==='application/pdf'||doc.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'||doc.type==='application/msword'){
-        msgContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
-      } else {
-        var txt=atob(doc.data).substring(0,2000);
-        msgContent=[{type:'text',text:'Text export of messages. Extract key patterns: allegations made, aggressive messages, key dates. Summary in 100 words. Text: '+txt}];
+  // Process ALL documents in parallel for speed
+  var procPromises = keys.map(function(key) {
+    return (async function() {
+      var doc=uploadedDocs[key];
+      var div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white);';
+      div.innerHTML='<div style="width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--gold);animation:spin 0.8s linear infinite;flex-shrink:0;"></div><span>Reading '+doc.name+'...</span>';
+      if (items) items.appendChild(div);
+      try {
+        var msgContent=[];
+        if(doc.type&&doc.type.startsWith('image/')){
+          msgContent=[{type:'image',source:{type:'base64',media_type:doc.type,data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
+        } else if(doc.type==='application/pdf'||doc.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'||doc.type==='application/msword'){
+          msgContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:doc.data}},{type:'text',text:'Extract key legal facts: document type, key dates, findings, orders made, allegations, outcomes. Plain English. Max 150 words.'}];
+        } else {
+          var txt=atob(doc.data).substring(0,2000);
+          msgContent=[{type:'text',text:'Text export of messages. Extract key patterns: allegations made, aggressive messages, key dates. Summary in 100 words. Text: '+txt}];
+        }
+        var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:250,messages:[{role:'user',content:msgContent}]})});
+        var data=await res.json();
+        extracts[key]=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+        div.innerHTML='<span style="color:var(--green)">✓</span><span style="color:var(--muted-hi)">'+doc.name+'</span>';
+      } catch(e) {
+        div.innerHTML='<span style="color:var(--muted)">—</span><span style="color:var(--muted)">Could not read '+doc.name+'</span>';
       }
-      var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:250,messages:[{role:'user',content:msgContent}]})});
-      var data=await res.json();
-      extracts[key]=((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
-      div.innerHTML='<span style="color:var(--green)">✓</span><span style="color:var(--muted-hi)">'+doc.name+'</span>';
-    } catch(e) {
-      div.innerHTML='<span style="color:var(--muted)">—</span><span style="color:var(--muted)">Could not read '+doc.name+'</span>';
-    }
-  }
+    })();
+  });
+  await Promise.all(procPromises);
   docs=extracts; localStorage.setItem('gDocs',JSON.stringify(docs));
   // Also save processed docs to caseDocuments for Case File
   Object.keys(uploadedDocs).forEach(function(key){
@@ -2663,7 +2699,7 @@ async function buildSummary() {
   var ctx=getCTX();
   try {
     var summaryPrompt = ctx + '\n\nBased on the above case context, produce a plain English case summary. Return ONLY valid JSON with these exact keys: overview (2-3 sentence overview as a string) and keyFacts (array of 3 strings). No other text.';
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:summaryPrompt}]})});
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:summaryPrompt}]})});
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed=null;
@@ -2711,16 +2747,22 @@ function renderSummary(parsed) {
   var tags=document.getElementById('knowledgeTags');
   if (tags) {
     var known=[]; var missing=[];
-    if(profile.allegations) known.push('Allegations');
-    if(profile.dismissed) known.push('Dismissed findings');
+    // Only show GREEN for docs that were actually successfully extracted
+    if(profile.allegations && profile.allegations.length > 3) known.push('Allegations');
+    if(profile.dismissed && profile.dismissed.length > 3) known.push('Dismissed findings');
     if(profile.contact) known.push('Contact schedule');
-    if(docs['order0']) known.push('Court order');
-    if(docs['cafcass0']) known.push('Cafcass report');
-    if(docs['whatsapp0']) known.push('Message history');
-    if(profile.voice) known.push('Voice description');
-    if(!docs['order0']) missing.push('Court order');
-    if(!docs['cafcass0']) missing.push('Cafcass report');
-    tags.innerHTML=known.map(function(t){return '<span class="ktag">'+t+'</span>';}).join('')+missing.map(function(t){return '<span class="ktag miss">'+t+'</span>';}).join('');
+    if(profile.voice && profile.voice.length > 10) known.push('Voice description');
+    // Only show doc types that were successfully read (have real extract text)
+    var successKeys = Object.keys(docs).filter(function(k){ return docs[k] && docs[k].length > 20 && docs[k] !== 'Could not read this document'; });
+    if(successKeys.some(function(k){return k.startsWith('order');})) known.push('Court order');
+    else missing.push('Court order');
+    if(successKeys.some(function(k){return k.startsWith('cafcass');})) known.push('Cafcass report');
+    else missing.push('Cafcass report');
+    if(successKeys.some(function(k){return k.startsWith('whatsapp');})) known.push('Message history');
+    if(successKeys.length > 0) known.push(successKeys.length + ' document' + (successKeys.length>1?'s':'') + ' read');
+    var failCount = Object.keys(uploadedDocs).length - successKeys.length;
+    if(failCount > 0) missing.push(failCount + ' doc' + (failCount>1?'s':'') + ' could not be read');
+    if (tags) tags.innerHTML=known.map(function(t){return '<span class="ktag">'+t+'</span>';}).join('')+missing.map(function(t){return '<span class="ktag miss">'+t+'</span>';}).join('');
   }
 }
 
@@ -3146,7 +3188,7 @@ async function runCaseAssessment() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1200,
         system: ctx,
         messages: [{ role: 'user', content: "Give " + name + " a live assessment of where their case stands today. Be specific, honest, and practical. Use their name and " + child + "'s name throughout.\n\nCase data: " + dataStr + "\n\nStructure your response clearly with these sections:\n\nWHERE YOUR CASE STANDS TODAY\n(2-3 honest sentences about their current position)\n\nWHAT IS WORKING\n(2-3 specific things that are going in their favour)\n\nWHAT NEEDS ATTENTION\n(1-2 specific risks or gaps to address)\n\nYOUR THREE PRIORITIES THIS WEEK\n(specific, actionable, numbered)\n\nOVERALL POSITION\n(One clear sentence)\n\nBe direct. Be specific to this case. Do not be vague." }]
@@ -4539,7 +4581,7 @@ async function explainDoc(event, docType) {
           { type:'text', text:ctx + '\n\nThis parent has uploaded a document. Read it and explain it in plain English as if talking to a worried parent who has never dealt with the legal system before.\n\nReturn ONLY JSON:\n{"documentType":"<what type of document this is>","summary":"<plain English explanation — 3-4 sentences, no jargon>","actions":"<what the parent needs to do now>","deadline":"<any deadline mentioned, or blank>","urgency":"high|medium|low"}' }
         ];
       }
-      var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:600, system:'You are Guardian, explaining legal and official documents to parents in family court proceedings in England and Wales. Always use plain English. Never use legal jargon without explaining it. Be warm, direct, and reassuring. Focus on what the parent needs to understand and do.', messages:[{ role:'user', content:msgContent }] }) });
+      var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, system:'You are Guardian, explaining legal and official documents to parents in family court proceedings in England and Wales. Always use plain English. Never use legal jargon without explaining it. Be warm, direct, and reassuring. Focus on what the parent needs to understand and do.', messages:[{ role:'user', content:msgContent }] }) });
       var data = await res.json();
       var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
       var parsed = null;
@@ -4615,7 +4657,7 @@ async function scanStatement(event, forcedType) {
       } else {
         msgContent = [{ type:'document', source:{type:'base64',media_type:'application/pdf',data:b64}},{ type:'text', text:prompt }];
       }
-      var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:800, system:'You are Guardian, analysing family court position statements for parents in England and Wales. Be forensic, specific, and practical. Focus on what will actually help in court.', messages:[{ role:'user', content:msgContent }] }) });
+      var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:500, system:'You are Guardian, analysing family court position statements for parents in England and Wales. Be forensic, specific, and practical. Focus on what will actually help in court.', messages:[{ role:'user', content:msgContent }] }) });
       var data = await res.json();
       var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
       var parsed = null;
@@ -5720,6 +5762,8 @@ async function processBundleUpload(event) {
     var reader = new FileReader();
     reader.onload = async function(e) {
       var b64 = e.target.result.split(',')[1];
+      // Truncate if too large
+      if (b64.length > 900000) { b64 = b64.substring(0, 900000); }
       var ctx = getCTX();
 
       var res = await fetch(API, {
