@@ -2134,9 +2134,27 @@ window.onload = function() { (async function() {
   }
 
   // ── LAST RESORT: Profile exists without session ──
-  if (profile && (profile.complete || (profile.myName && profile.childName && profile.caseType))) {
-    console.log('Profile in localStorage — restoring without session');
+  if (profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1))) {
+    console.log('Profile in localStorage — attempting silent Supabase re-auth');
     profile.complete = true;
+    // Try to silently re-authenticate with stored credentials
+    var storedEmail = localStorage.getItem('gUserEmail');
+    var storedPass = localStorage.getItem('gUserPass');
+    if (supabase && storedEmail && storedPass) {
+      try {
+        var reauth = await supabase.auth.signInWithPassword({ email: storedEmail, password: storedPass });
+        if (reauth.data && reauth.data.user) {
+          currentUser = reauth.data.user;
+          console.log('Silent re-auth successful:', currentUser.id);
+          // Now save profile to Supabase with real user ID
+          setTimeout(function(){ saveProfileToSupabase(); }, 500);
+        } else {
+          console.warn('Silent re-auth failed — continuing without Supabase');
+        }
+      } catch(e) {
+        console.warn('Silent re-auth error:', e.message);
+      }
+    }
     showHome();
     return;
   }
