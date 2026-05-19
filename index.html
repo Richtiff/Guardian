@@ -557,7 +557,7 @@ p, .body-text { font-size: 16px !important; }
       <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">You're Not Alone</div><div style="font-size:12px;color:var(--muted-hi);">Thousands of parents. One Guardian. Getting stronger together.</div></div>
     </div>
   </div>
-  <button type="button" class="btn-gold" onclick="go('sProfile1')">Set up my case →</button>
+  <button type="button" class="btn-gold" onclick="startSetupOrHome()">Set up my case →</button>
   <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">5 free message checks — no card needed</div>
 </div>
 
@@ -657,6 +657,9 @@ p, .body-text { font-size: 16px !important; }
       <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses the children to communicate')">Uses the children to communicate</button>
       <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Mostly civil with occasional flare-ups')">Mostly civil with occasional flare-ups</button>
     </div>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','No communication — non-contact order or undertaking')">No communication — non-contact order or undertaking in place</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Trying to re-establish communication — they won't respond')">Trying to re-establish — they won't respond to messages</button>
+      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Communication only through solicitors')">Communication only through solicitors</button>
   </div>
   <button type="button" class="btn-gold" onclick="saveP3()" style="margin-top:8px;">Next →</button>
 
@@ -2337,6 +2340,15 @@ function resumeSetup(step) {
   toast('Welcome back — continuing where you left off');
 }
 
+function startSetupOrHome() {
+  // If profile already complete, skip setup entirely
+  if (profile && profile.complete) {
+    showHome();
+    return;
+  }
+  go('sProfile1');
+}
+
 function skipSetupToHome() {
   if (!profile) profile = {};
   var name = document.getElementById('iMyName');
@@ -3334,6 +3346,11 @@ function showHome() {
   setTimeout(function(){ checkContactDayReminder(); }, 300);
   setTimeout(function(){ renderIntelBar(); }, 150);
   setTimeout(function(){ requestNotificationPermission(); }, 2000);
+  // Only show setup button if profile incomplete
+  var setupBtn = document.getElementById('setupCaseBtn');
+  if (setupBtn) {
+    setupBtn.style.display = (profile && profile.complete) ? 'none' : 'block';
+  }
 }
 
 function goQA() {
