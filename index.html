@@ -2791,7 +2791,7 @@ function confirmSummary() {
   profile.setupStep = null;
   save();
   localStorage.setItem('gProfile', JSON.stringify(profile));
-  try { saveProfileToSupabase(); } catch(e) { console.warn('Supabase sync failed on confirm:', e); }
+  saveProfileToSupabase().then(function(){ console.log('Profile saved on confirm'); }).catch(function(e){ console.error('Save failed on confirm:', e); if(typeof toast==='function') toast('Could not save to cloud: ' + (e.message||'unknown error')); });
   // Show home first then prompt diary
   showHome();
   // Only show diary prompt if today is a contact day
@@ -4303,8 +4303,9 @@ async function saveProfileToSupabase() {
     var result = await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
     if (result.error) {
       console.warn('Supabase upsert error:', result.error.message);
+      if (typeof toast === 'function') toast('Save error: ' + result.error.message.substring(0, 80));
       // Try minimal save — just core columns
-      await supabase.from('profiles').upsert({
+      var minResult = await supabase.from('profiles').upsert({
         user_id: currentUser.id,
         my_name: profile.myName || '',
         child_name: profile.childName || '',
@@ -4312,7 +4313,12 @@ async function saveProfileToSupabase() {
         profile_json: JSON.stringify(profile),
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
-      console.log('Minimal save attempted');
+      if (minResult.error) {
+        console.error('Minimal save also failed:', minResult.error.message);
+        if (typeof toast === 'function') toast('Minimal save failed: ' + minResult.error.message.substring(0, 60));
+      } else {
+        console.log('Minimal save succeeded');
+      }
     } else {
       console.log('Supabase save OK');
     }
