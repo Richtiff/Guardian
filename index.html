@@ -614,12 +614,12 @@ p, .body-text { font-size: 16px !important; }
     <input type="hidden" id="iDuration">
   </div>
   <div class="field-group">
-    <label class="field-label">YOUR CONTACT SCHEDULE <span style="font-size:13px;color:var(--muted);font-weight:400;">— optional</span></label>
+    <label class="field-label">YOUR CONTACT SCHEDULE <span style="font-size:13px;color:var(--muted-hi);font-weight:400;"> — optional, skip if unsure</span></label>
     <input class="field-input" id="iContact" type="text" placeholder="e.g. Every Saturday 10am-6pm" onkeydown="if(event.key==='Enter')event.preventDefault()">
     <div style="font-size:11px;color:var(--muted);margin-top:4px;">Not sure? Upload your court order later and Guardian will find it.</div>
   </div>
   <div class="field-group">
-    <label class="field-label">WHEN DID CONTACT FIRST START? <span style="font-size:13px;color:var(--muted);font-weight:400;">— optional</span></label>
+    <label class="field-label">WHEN DID CONTACT FIRST START? <span style="font-size:13px;color:var(--muted-hi);font-weight:400;"> — optional, skip if unsure</span></label>
     <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Helps Guardian anchor your diary history. Skip if you don't know or it's disputed.</div>
     <input class="field-input" id="iFirstContact" type="date" style="color-scheme:dark;">
   </div>
@@ -723,7 +723,7 @@ p, .body-text { font-size: 16px !important; }
       <input type="file" accept="image/*,.pdf,.doc,.docx" multiple onchange="handleDocMultiple(event,'screenshots')">
       <div class="upload-item-icon">📷</div>
       <div class="upload-item-body"><div class="upload-item-name">Message screenshots</div><div class="upload-item-hint">Any app — WhatsApp, iMessage, SMS, AppClose</div></div>
-      <div class="upload-status" id="stScreenshots">+</div>
+    <div id="stScreenshots" style="font-size:13px;color:var(--muted);text-align:center;padding:4px 0;"></div>
     </label>
   </div>
   <div class="upload-section">
@@ -2533,7 +2533,21 @@ function redoVoiceInput() {
 }
 
 // DOCUMENT UPLOAD
-async function handleBundleInSetup(event) {
+async function showScreenshotCount(event) {
+  var count = event.target.files.length;
+  if (count === 0) return;
+  var el = document.getElementById('stScreenshots');
+  if (el) {
+    el.style.display = 'block';
+    el.style.color = 'var(--green)';
+    el.style.fontWeight = '700';
+    el.style.fontSize = '13px';
+    el.textContent = '✅ ' + count + ' photo' + (count>1?'s':'') + ' selected';
+  }
+  toast(count + ' screenshot' + (count>1?'s':'') + ' ready to upload');
+}
+
+function handleBundleInSetup(event) {
   var file = event.target.files[0];
   event.target.value = '';
   if (!file) return;
@@ -2546,12 +2560,12 @@ async function handleBundleInSetup(event) {
   reader.onload = async function(e) {
     var b64 = e.target.result.split(',')[1];
     // Truncate large PDFs — API has size limits
-    var maxSize = 900000; // ~900KB base64
+    var maxSize = 700000; // ~700KB base64 — stays within API limits
     var truncated = false;
     if (b64.length > maxSize) {
       b64 = b64.substring(0, maxSize);
       truncated = true;
-      console.log('Bundle truncated from', e.target.result.length, 'to', maxSize);
+      console.log('Bundle truncated to', maxSize, 'chars');
     }
     try {
       var res = await fetch(API, {
@@ -2815,9 +2829,10 @@ function confirmSummary() {
   // Only show diary prompt if today is a contact day
   setTimeout(function(){
     parseContactDaysFromProfile();
-    var todayIsContact = contactDays.length > 0 && contactDays.indexOf(new Date().getDay()) !== -1;
-    if (!todayIsContact && profile && profile.contact) return; // Skip if not a contact day
-    var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+    parseContactDaysFromProfile();
+    var hasSchedule = profile && profile.contact && profile.contact.length > 2;
+    var todayIsContact = hasSchedule && contactDays.length > 0 && contactDays.indexOf(new Date().getDay()) !== -1;
+    if (!todayIsContact) return; // Only show if schedule set AND today matches
     var banner = document.createElement('div');
     banner.id = 'setupDiaryPrompt';
     banner.style.cssText = 'background:rgba(245,200,66,0.1);border:1.5px solid rgba(245,200,66,0.25);border-radius:14px;padding:14px 16px;margin-bottom:16px;';
