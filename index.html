@@ -662,10 +662,10 @@ p, .body-text { font-size: 16px !important; }
       <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Uses the children to communicate')">Uses the children to communicate</button>
       <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Mostly civil with occasional flare-ups')">Mostly civil with occasional flare-ups</button>
     </div>
-      <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','No communication — non-contact order or undertaking')">No communication — non-contact order or undertaking in place</button>
       <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Trying to re-establish communication — they won't respond')">Trying to re-establish — they won't respond to messages</button>
       <button type="button" class="opt" onclick="pickOpt('commOpts',this,'commStyle','Communication only through solicitors')">Communication only through solicitors</button>
   </div>
+    </div>
   <button type="button" class="btn-gold" onclick="saveP3()" style="margin-top:8px;">Next →</button>
 
 </div>
@@ -1091,6 +1091,7 @@ p, .body-text { font-size: 16px !important; }
     <button class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Case File</div><div class="section-sub">Everything Guardian knows about your case</div></div>
   </div>
+  <div id="docsCountBanner" style="display:none;padding:10px 12px;background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:10px;margin-bottom:12px;font-size:13px;color:var(--green);font-weight:700;text-align:center;"></div>
   <div class="upload-section">
     <div class="upload-section-title">ADD A DOCUMENT</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
@@ -2475,51 +2476,27 @@ function toggleObVoice() {
   if (isObRec){stopObVoice();}else{startObVoice();}
 }
 function startObVoice() {
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){toast('Voice not supported — try typing instead');return;}
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('Voice not supported on this browser');return;}
   obRecog=new SR();
-  obRecog.continuous=true; // Keep listening until silence
-  obRecog.interimResults=true;
+  obRecog.continuous=false;
+  obRecog.interimResults=false;
   obRecog.lang='en-GB';
-  var fin=document.getElementById('obTranscript').value.trim();
-  if(fin) fin+=' ';
-  var silenceTimer = null;
-
+  var prevText = document.getElementById('obText') ? document.getElementById('obText').value.trim() : '';
   obRecog.onresult=function(e){
-    var interim='';
-    for(var i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal){fin+=e.results[i][0].transcript+' ';}
-      else{interim+=e.results[i][0].transcript;}
-    }
-    document.getElementById('obTranscript').value=(fin+interim).trim();
-    // Reset silence timer
-    clearTimeout(silenceTimer);
-    silenceTimer = setTimeout(function(){
-      if(isObRec) stopObVoice();
-    }, 6000); // 6s silence before stopping — allows thinking pauses
+    var t='';
+    for(var i=0;i<e.results.length;i++){if(e.results[i].isFinal)t+=e.results[i][0].transcript+' ';}
+    t=t.trim();
+    if(t){var v=document.getElementById('obText');if(v){v.value=(prevText?prevText+' '+t:t).trim();prevText=v.value;}}
   };
-
   obRecog.onend=function(){
-    if (isObRec) {
-      // Try to restart if still recording
-      try { obRecog.start(); } catch(e) {
-        stopObVoice();
-        showVoiceConfirm();
-      }
-    } else {
-      showVoiceConfirm();
-    }
+    if(isObRec){try{obRecog.start();}catch(er){isObRec=false;var b=document.getElementById('obVoiceBtn');if(b){b.classList.remove('rec');b.textContent='🎤';}}}
+    else{showVoiceConfirm();}
   };
-
-  obRecog.onerror=function(e){
-    if(e.error!=='no-speech'){stopObVoice();toast('Could not hear you — try again');}
-  };
-
-  obRecog.start(); isObRec=true;
-  var b=document.getElementById('obMicBtn');
-  if(b){b.classList.add('rec'); b.textContent='⏹ Tap to stop';}
+  obRecog.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;stopObVoice();toast('Could not hear — tap mic and try again');};
+  obRecog.start();isObRec=true;
+  var b=document.getElementById('obVoiceBtn');if(b){b.classList.add('rec');b.textContent='⏹ Tap to stop';}
 }
-
 function stopObVoice() {
   if(obRecog){try{obRecog.stop();}catch(e){} obRecog=null;}
   isObRec=false;
@@ -2828,15 +2805,16 @@ function renderSummary(parsed) {
     if(profile.contact) known.push('Contact schedule');
     if(profile.voice && profile.voice.length > 10) known.push('Voice description');
     // Only show doc types that were successfully read (have real extract text)
+    // Only show docs that Guardian successfully read (not just uploaded)
     var successKeys = Object.keys(docs).filter(function(k){ return docs[k] && docs[k].length > 20 && docs[k] !== 'Could not read this document'; });
-    if(successKeys.some(function(k){return k.startsWith('order');})) known.push('Court order');
-    else missing.push('Court order');
-    if(successKeys.some(function(k){return k.startsWith('cafcass');})) known.push('Cafcass report');
-    else missing.push('Cafcass report');
-    if(successKeys.some(function(k){return k.startsWith('whatsapp');})) known.push('Message history');
-    if(successKeys.length > 0) known.push(successKeys.length + ' document' + (successKeys.length>1?'s':'') + ' read');
-    var failCount = Object.keys(uploadedDocs).length - successKeys.length;
-    if(failCount > 0) missing.push(failCount + ' doc' + (failCount>1?'s':'') + ' could not be read');
+    var totalUploaded = Object.keys(uploadedDocs).length;
+    if(successKeys.length > 0) known.push(successKeys.length + ' of ' + totalUploaded + ' document' + (totalUploaded>1?'s':'') + ' read');
+    var failCount = totalUploaded - successKeys.length;
+    if(failCount > 0) missing.push(failCount + ' document' + (failCount>1?'s':'') + ' could not be read — upload individually from Case File');
+    // Only add court order / cafcass if actually successfully read
+    if(successKeys.some(function(k){return k.startsWith('order') && docs[k].length>50;})) known.push('Court order ✓');
+    if(successKeys.some(function(k){return k.startsWith('cafcass') && docs[k].length>50;})) known.push('Cafcass report ✓');
+    if(successKeys.some(function(k){return k.startsWith('whatsapp');})) known.push('Message history ✓');
     if (tags) tags.innerHTML=known.map(function(t){return '<span class="ktag">'+t+'</span>';}).join('')+missing.map(function(t){return '<span class="ktag miss">'+t+'</span>';}).join('');
   }
 }
@@ -4445,7 +4423,16 @@ async function loadProfileFromSupabase() {
       if (result.data.msg_log_json) { try { msgLog = JSON.parse(result.data.msg_log_json); localStorage.setItem('gLog', result.data.msg_log_json); } catch(e){} }
       else if (result.data.message_log) { try { msgLog = JSON.parse(result.data.message_log); } catch(e){} }
       if (result.data.diary_json) { try { diaryEntries = JSON.parse(result.data.diary_json); localStorage.setItem('gDiary', result.data.diary_json); } catch(e){} }
-      if (result.data.case_docs_json) { try { caseDocuments = JSON.parse(result.data.case_docs_json); localStorage.setItem('gCaseDocs', result.data.case_docs_json); } catch(e){} }
+      if (result.data.case_docs_json) {
+        try {
+          var cloudDocs = JSON.parse(result.data.case_docs_json);
+          // Only use cloud docs if they have MORE data than local
+          if (cloudDocs.length >= caseDocuments.length) {
+            caseDocuments = cloudDocs;
+            localStorage.setItem('gCaseDocs', result.data.case_docs_json);
+          }
+        } catch(e){}
+      }
       if (result.data.brain_log_json) { try { brainLog = JSON.parse(result.data.brain_log_json); localStorage.setItem('gBrainLog', result.data.brain_log_json); } catch(e){} }
       localStorage.setItem('gProfile', JSON.stringify(profile));
       // Consider setup complete if they have a name and child name — don't rely solely on complete flag
@@ -6210,6 +6197,17 @@ try { if (_rawCaseDocs && _rawCaseDocs.trim()) caseDocuments = JSON.parse(_rawCa
 function renderTimeline() {
   var container = document.getElementById('docsTimeline');
   if (!container) return;
+
+  // Update count banner
+  var banner = document.getElementById('docsCountBanner');
+  if (banner) {
+    if (caseDocuments.length > 0) {
+      banner.style.display = 'block';
+      banner.textContent = '📎 ' + caseDocuments.length + ' document' + (caseDocuments.length > 1 ? 's' : '') + ' in your Case File';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
 
   if (!caseDocuments.length) {
     container.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0 10px;">No documents yet.<br>Upload your first one above.</div>';
