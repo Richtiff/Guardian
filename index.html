@@ -2090,24 +2090,58 @@ var SYS = [
 function getCTX() {
   if (!profile) return '';
   var lines = ['CASE CONTEXT:'];
+  // Core profile
   if (profile.myName) lines.push('Parent: ' + profile.myName);
   if (profile.theirName) lines.push('Other parent: ' + profile.theirName);
   if (profile.childName) lines.push('Child: ' + profile.childName);
   if (profile.otherKids) lines.push('Other children: ' + profile.otherKids);
   if (profile.caseType) lines.push('Case type: ' + profile.caseType);
-  if (profile.contact) lines.push('Contact: ' + profile.contact);
+  if (profile.contact) lines.push('Current contact: ' + profile.contact);
   if (profile.duration) lines.push('Duration: ' + profile.duration);
   if (profile.conflict) lines.push('Conflict level: ' + profile.conflict + '/10');
   if (profile.allegations) lines.push('Allegations against parent: ' + profile.allegations);
-  if (profile.dismissed) lines.push('Already dismissed/ruled in favour: ' + profile.dismissed);
+  if (profile.dismissed) lines.push('Dismissed or ruled in favour: ' + profile.dismissed);
   if (profile.commStyle) lines.push('Other parent communication style: ' + profile.commStyle);
-  if (profile.voice) lines.push('Parent described: ' + profile.voice);
-  Object.keys(docs).forEach(function(k) { if (docs[k]) lines.push('From ' + k + ': ' + docs[k].substring(0,300)); });
+  if (profile.voice) lines.push('Parent voice/described as: ' + profile.voice);
+  // Legacy doc extracts
+  Object.keys(docs).forEach(function(k) { if (docs[k]) lines.push('Document extract (' + k + '): ' + docs[k].substring(0,200)); });
+  // Case file documents
+  if (caseDocuments && caseDocuments.length > 0) {
+    lines.push('\nCASE FILE DOCUMENTS (' + caseDocuments.length + ' uploaded):');
+    caseDocuments.forEach(function(doc) {
+      if (doc.extract) lines.push('  [' + (doc.type||'document') + '] ' + doc.name + ' (' + (doc.date||'') + '): ' + doc.extract.substring(0,300));
+    });
+  }
+  // Guardian Brain extracted facts
+  if (brainLog && brainLog.length > 0) {
+    var facts = brainLog.filter(function(b){ return b.summary||b.text; }).slice(-15);
+    if (facts.length > 0) {
+      lines.push('\nGUARDIAN BRAIN — EXTRACTED FACTS:');
+      facts.forEach(function(f){ lines.push('  - ' + (f.summary||f.text||'').substring(0,150)); });
+    }
+  }
+  // Diary entries
+  if (diaryEntries && diaryEntries.length > 0) {
+    lines.push('\nDIARY (' + diaryEntries.length + ' total entries, most recent 12):');
+    var sorted = diaryEntries.slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+    sorted.slice(0,12).forEach(function(e){
+      lines.push('  [' + e.date + '] ' + (e.typeLabel||e.type||'entry') + ': ' + (e.text||'').substring(0,120));
+    });
+  }
+  // Upcoming hearing deadlines
+  if (profile.hearingDeadlines && profile.hearingDeadlines.length > 0) {
+    var upcoming = profile.hearingDeadlines.filter(function(d){ try{ return daysUntil(d.date)>=0; }catch(e){ return false; } });
+    if (upcoming.length > 0) {
+      lines.push('\nUPCOMING COURT DEADLINES:');
+      upcoming.forEach(function(d){ lines.push('  - ' + d.label + ': ' + d.date + ' (' + daysUntil(d.date) + ' days away)'); });
+    }
+  }
+  // Message pattern
   if (msgLog.length > 3) {
     var r = msgLog.slice(-10);
     var red = r.filter(function(m){return m.flag==='red';}).length;
     var amb = r.filter(function(m){return m.flag==='amber';}).length;
-    if (red+amb > 0) lines.push('Recent pattern: ' + red + ' serious allegations, ' + amb + ' loaded messages in last ' + r.length + ' messages.');
+    if (red+amb > 0) lines.push('\nRecent message pattern: ' + red + ' serious allegations, ' + amb + ' loaded messages in last ' + r.length + ' checked.');
   }
   return lines.join('\n');
 }
@@ -3110,6 +3144,55 @@ function generateGuardianNoticed() {
   // Profile incomplete
   if (profile && (!profile.allegations || profile.allegations.length < 5)) {
     notices.push({ type:'warning', text:"Guardian doesn't know what allegations you are facing. Add them to your profile so every feature can protect you properly.", action:'Tap to update My Case', screen:'sEditProfile' });
+  }
+
+  // ── CROSS-DATA INTELLIGENCE ──
+
+  // Docs uploaded but no diary entries — suggest logging
+  if (caseDocuments && caseDocuments.length > 0 && (!diaryEntries || diaryEntries.length === 0)) {
+    notices.push({ type:'tip', text: 'You have ' + caseDocuments.length + ' document' + (caseDocuments.length>1?'s':'') + ' uploaded but no diary entries. Every contact session logged is evidence.', action:'Start your diary', screen:'sDiary' });
+  }
+
+  // Upcoming position statement deadline with no doc work
+  if (profile && profile.hearingDeadlines) {
+    var posDeadline = profile.hearingDeadlines.filter(function(d){
+      try { return d.label && d.label.indexOf('Position')!==-1 && daysUntil(d.date) >= 0 && daysUntil(d.date) <= 21; } catch(e){ return false; }
+    });
+    if (posDeadline.length > 0) {
+      var days = daysUntil(posDeadline[0].date);
+      notices.push({ type:'urgent', text: 'Position statement due in ' + days + ' day' + (days===1?'':'s') + '. Guardian can write it from your full case history.', action:'Write my statement — £79', screen:'sStatementWriter' });
+    }
+  }
+
+  // Diary: missed contacts pattern
+  if (diaryEntries && diaryEntries.length >= 3) {
+    var recentDiary = diaryEntries.slice(-20);
+    var incidents = recentDiary.filter(function(e){ return e.type==='incident'||e.type==='welfare'; });
+    if (incidents.length >= 3) {
+      notices.push({ type:'warning', text: incidents.length + ' incidents or welfare concerns logged recently — this pattern is important evidence for your statement.', action:'View diary', screen:'sDiary' });
+    }
+    // Contact entries this month
+    var thisMonth = new Date().toISOString().substring(0,7);
+    var monthContact = recentDiary.filter(function(e){ return e.type==='contact' && e.date && e.date.startsWith(thisMonth); });
+    if (monthContact.length > 0) {
+      notices.push({ type:'info', text: monthContact.length + ' contact session' + (monthContact.length>1?'s':'') + ' logged this month — keep it up, consistency matters to the court.', action:'', screen:'' });
+    }
+  }
+
+  // Brain facts with allegations — surface key ones
+  if (brainLog && brainLog.length > 0) {
+    var allegationFacts = brainLog.filter(function(b){ return (b.summary||b.text||'').toLowerCase().indexOf('allegat') !== -1; });
+    if (allegationFacts.length > 0) {
+      notices.push({ type:'warning', text: 'Guardian has noted ' + allegationFacts.length + ' allegation-related fact' + (allegationFacts.length>1?'s':'') + ' from your case. These are stored in Guardian Brain.', action:'Review in Brain', screen:'sBrain' });
+    }
+  }
+
+  // Documents: C100 or orders found but no hearing logged
+  if (caseDocuments && caseDocuments.length > 0 && (!profile.hearingDeadlines || profile.hearingDeadlines.length === 0)) {
+    var hasCourtDoc = caseDocuments.some(function(d){ return (d.extract||'').toLowerCase().match(/c100|cafcass|order|hearing|court/); });
+    if (hasCourtDoc) {
+      notices.push({ type:'tip', text: 'Court documents detected in your case file. Log your next hearing in the diary to track deadlines automatically.', action:'Log a hearing', screen:'sDiary' });
+    }
   }
 
   return notices;
@@ -4969,6 +5052,9 @@ async function scanStatement(event, forcedType) {
           if (ms) ms.innerHTML = (parsed.strengths||[]).map(function(s){return '<div style="padding:4px 0;">✓ '+s+'</div>';}).join('');
           if (mres) mres.style.display = 'block';
         }
+        // Feed analysis into Guardian Brain
+        var scanFacts = (parsed.verdict||'') + '. ' + (parsed.weaknesses||[]).join('. ') + '. ' + (parsed.response||'');
+        if (scanFacts.trim().length > 20) extractCaseFacts(scanFacts, type==='theirs' ? 'their position statement' : 'my position statement');
       } else { toast('Could not analyse — please try again'); }
     } catch(err) { unload(); toast('Something went wrong — please try again'); }
   };
@@ -6619,7 +6705,7 @@ function renderDeadlineBanner() {
     '<div style="font-size:11px;color:var(--muted-hi);">'+fmtDeadlineDate(next.date)+extra+'</div></div></div>' +
     '<div style="display:flex;gap:8px;">' +
     '<button onclick="'+ctaFn+'" style="flex:1;padding:10px;background:'+cols[urg]+';border:none;border-radius:10px;color:'+(urg==='gold'?'#0a0600':'white')+';font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">'+ctaLabel+'</button>' +
-    '<button onclick="go('sKeyDates')" style="padding:10px 12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;">All dates</button>' +
+    '<button onclick="go(\'sKeyDates\')" style="padding:10px 12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;">All dates</button>' +
     '</div></div>';
 }
 
@@ -6631,7 +6717,7 @@ function renderKeyDates() {
     el.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:32px;margin-bottom:12px;">⏰</div>' +
       '<div style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;">No deadlines yet</div>' +
       '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:20px;">Log a hearing in your diary and Guardian will calculate all your deadlines automatically.</div>' +
-      '<button class="btn-gold" onclick="go('sDiary')">Go to Diary →</button></div>';
+      '<button class="btn-gold" onclick="go(\'sDiary\')">Go to Diary →</button></div>';
     return;
   }
   var sorted = deadlines.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
@@ -6705,17 +6791,17 @@ function showHearingActionCard(deadlines, orders) {
       '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">⏰ YOUR STATEMENT IS DUE IN '+days+' DAYS</div>' +
       '<div style="font-size:16px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">This is the part that matters most.</div>' +
       '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Guardian has read your documents, your diary, and knows every allegation you are facing. It can write your position statement now — built on your case, in your voice, court-ready.</div>' +
-      '<button onclick="goStatementWriter();document.getElementById('hearingActionCard').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px;">Guardian writes my statement — £79 →</button>' +
-      '<button onclick="go('sStatements');document.getElementById('hearingActionCard').remove();" style="width:100%;padding:11px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;color:var(--blue);font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">I want to write it with guidance →</button>' +
-      '<button onclick="document.getElementById('hearingActionCard').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Remind me later</button>' +
+      '<button onclick="goStatementWriter();document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px;">Guardian writes my statement — £79 →</button>' +
+      '<button onclick="go(\'sStatements\');document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:11px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;color:var(--blue);font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">I want to write it with guidance →</button>' +
+      '<button onclick="document.getElementById(\'hearingActionCard\').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Remind me later</button>' +
       '</div>';
   } else if (section7) {
     html = '<div style="background:var(--amber-dim);border:1.5px solid rgba(201,148,58,0.3);border-radius:16px;padding:18px;margin-bottom:14px;">' +
       '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin-bottom:8px;">⚠️ CAFCASS SECTION 7 ORDERED</div>' +
       '<div style="font-size:15px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">A Cafcass welfare report has been ordered.</div>' +
       '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Cafcass will contact you. Guardian can explain exactly what they are looking for, what questions to expect, and how to make sure your voice is heard in their report.</div>' +
-      '<button onclick="goQA();document.getElementById('hearingActionCard').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,var(--blue));border:none;border-radius:12px;color:#fff;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Ask Court Guru about Section 7 →</button>' +
-      '<button onclick="document.getElementById('hearingActionCard').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Got it</button>' +
+      '<button onclick="goQA();document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,var(--blue));border:none;border-radius:12px;color:#fff;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Ask Court Guru about Section 7 →</button>' +
+      '<button onclick="document.getElementById(\'hearingActionCard\').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Got it</button>' +
       '</div>';
   } else if (hearingDeadline) {
     var hdays = daysUntil(hearingDeadline.date);
@@ -6723,8 +6809,8 @@ function showHearingActionCard(deadlines, orders) {
       '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">⏰ HEARING IN '+hdays+' DAYS</div>' +
       '<div style="font-size:15px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">Your next hearing is logged.</div>' +
       '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Use the time well. Add any documents, keep logging contact sessions, and when you are ready Guardian will write your position statement from everything it knows about your case.</div>' +
-      '<button onclick="goStatementWriter();document.getElementById('hearingActionCard').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Start my position statement — £79 →</button>' +
-      '<button onclick="document.getElementById('hearingActionCard').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">I'll come back to this</button>' +
+      '<button onclick="goStatementWriter();document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Start my position statement — £79 →</button>' +
+      '<button onclick="document.getElementById(\'hearingActionCard\').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">I\'ll come back to this</button>' +
       '</div>';
   }
 
