@@ -3512,15 +3512,17 @@ function showHome() {
   if(msgLog.length>0){
     var strip=document.getElementById('memoryStrip');
     var items=document.getElementById('memoryItems');
-    items.innerHTML='';
-    msgLog.slice(-3).reverse().forEach(function(m){
-      var col=m.flag==='red'?'var(--red)':m.flag==='amber'?'var(--amber)':'var(--green)';
-      var d=document.createElement('div');
-      d.className='mem-item';
-      d.innerHTML='<div class="mem-dot" style="background:'+col+'"></div><span>'+m.summary+'</span>';
-      items.appendChild(d);
-    });
-    strip.style.display='block';
+    if(strip && items){
+      items.innerHTML='';
+      msgLog.slice(-3).reverse().forEach(function(m){
+        var col=m.flag==='red'?'var(--red)':m.flag==='amber'?'var(--amber)':'var(--green)';
+        var d=document.createElement('div');
+        d.className='mem-item';
+        d.innerHTML='<div class="mem-dot" style="background:'+col+'"></div><span>'+m.summary+'</span>';
+        items.appendChild(d);
+      });
+      strip.style.display='block';
+    }
   }
   go('sHome');
   checkSevenDayUpsell();
