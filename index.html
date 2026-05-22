@@ -784,6 +784,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="trial-text">Free message checks remaining</div>
     <div class="trial-count" id="trialCount">5</div>
   </div>
+  <div id="deadlineBanner"></div>
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
   <div class="home-grid" style="margin-bottom:20px;">
     <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')">
@@ -828,6 +829,13 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-icon">⚙</div>
       <div class="home-btn-label">My Case</div>
       <div class="home-btn-sub">Your profile. Always up to date.</div>
+    </button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates')">
+      <div class="home-btn-icon">⏰</div>
+      <div class="home-btn-label">Key Dates</div>
+      <div class="home-btn-sub">Deadlines &amp; countdowns</div>
     </button>
   </div>
   <!-- Intelligence Readiness — prominent until complete -->
@@ -1499,6 +1507,27 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
 
+  <!-- Hearing orders — shown when type is hearing -->
+  <div id="diaryHearingOrders" style="display:none;">
+    <div class="field-group">
+      <label class="field-label">WHAT WAS ORDERED?</label>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select all that apply — Guardian will calculate your deadlines</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="hearingOrderOpts">
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'section7')">⚖️ Section 7 / welfare report ordered</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'next_hearing')">📅 Next hearing date given</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'positions')">📋 Position statements required</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'contact_order')">👶 Contact order made</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'adjourned')">⏸️ Adjourned — no date yet</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'concluded')">✅ Case concluded</button>
+      </div>
+    </div>
+    <div id="nextHearingDateBox" class="field-group" style="display:none;">
+      <label class="field-label">NEXT HEARING DATE</label>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Guardian calculates your position statement deadline from this date</div>
+      <input class="field-input" type="date" id="nextHearingDate" style="color-scheme:dark;">
+    </div>
+  </div>
+
   <!-- Quick prompts — shown for contact sessions -->
   <div id="diaryQuickPrompts" style="display:none;">
 
@@ -1917,6 +1946,15 @@ p, .body-text { font-size: 16px !important; }
   </div>
 </div>
 
+<!-- KEY DATES -->
+<div class="step" id="sKeyDates">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Key Dates</div><div class="section-sub">Your deadlines and countdowns</div></div>
+  </div>
+  <div id="keyDatesContent"></div>
+</div>
+
 </div><!-- end .app -->
 
 <!-- UPSELL TOAST -->
@@ -2199,7 +2237,7 @@ if (supabase) {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates'];
 
 var stepHistory = [];
 var navLock = false;
@@ -2327,6 +2365,7 @@ function go(id) {
   if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
   if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
   if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
+  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
   if (id==='sStatements') {}
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
@@ -3525,6 +3564,7 @@ function showHome() {
     }
   }
   go('sHome');
+  setTimeout(function(){ renderDeadlineBanner(); }, 50);
   checkSevenDayUpsell();
   setTimeout(function(){ renderGuardianNoticed(); }, 100);
   setTimeout(function(){ checkContactDayReminder(); }, 300);
@@ -5023,6 +5063,13 @@ function pickDiaryType(btn, val) {
   // Show quick prompts for contact sessions only
   var qp = document.getElementById('diaryQuickPrompts');
   if (qp) qp.style.display = val === 'contact' ? 'block' : 'none';
+  // Show hearing orders for hearing type
+  var ho = document.getElementById('diaryHearingOrders');
+  if (ho) ho.style.display = val === 'hearing' ? 'block' : 'none';
+  hearingOrders = [];
+  document.querySelectorAll('#hearingOrderOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
+  var dateBox = document.getElementById('nextHearingDateBox');
+  if (dateBox) dateBox.style.display = 'none';
   diaryPrompts = {};
   document.querySelectorAll('#diaryQuickPrompts .opt').forEach(function(b){ b.classList.remove('sel'); });
 }
@@ -5196,6 +5243,23 @@ function saveDiaryEntry() {
   diaryType=''; diaryMood=''; diaryContact='';
   toast('✅ Diary entry saved');
   extractCaseFacts(entry.text, 'diary entry');
+  // Calculate deadlines for hearing entries
+  if (diaryType === 'hearing' && hearingOrders.length > 0) {
+    var nhEl = document.getElementById('nextHearingDate');
+    var nhDate = nhEl ? nhEl.value : '';
+    var newDeadlines = calcDeadlines(hearingOrders, nhDate, date);
+    newDeadlines.forEach(function(d){ d.hearingType = entry.typeLabel; d.fromDiaryId = entry.id; });
+    if (!profile.hearingDeadlines) profile.hearingDeadlines = [];
+    profile.hearingDeadlines = profile.hearingDeadlines.concat(newDeadlines);
+    save();
+    if (newDeadlines.length) {
+      setTimeout(function(){
+        toast('⏰ ' + newDeadlines.length + ' deadline' + (newDeadlines.length > 1 ? 's' : '') + ' saved to Key Dates');
+      }, 400);
+      setTimeout(function(){ showHearingActionCard(newDeadlines, hearingOrders); }, 900);
+    }
+  }
+  hearingOrders = [];
   go('sDiary');
 }
 
@@ -6459,6 +6523,221 @@ function saveEditProfile() {
 }
 </script>
 <script>
+// ── DEADLINE CALCULATOR ──
+var hearingOrders = [];
+
+function toggleHearingOrder(btn, val) {
+  btn.classList.toggle('sel');
+  if (btn.classList.contains('sel')) {
+    if (hearingOrders.indexOf(val) === -1) hearingOrders.push(val);
+  } else {
+    hearingOrders = hearingOrders.filter(function(o){ return o !== val; });
+  }
+  var needsDate = hearingOrders.indexOf('next_hearing') !== -1 || hearingOrders.indexOf('positions') !== -1;
+  var dateBox = document.getElementById('nextHearingDateBox');
+  if (dateBox) dateBox.style.display = needsDate ? 'block' : 'none';
+}
+
+function addWorkingDays(date, days) {
+  var d = new Date(date);
+  var dir = days < 0 ? -1 : 1;
+  var remaining = Math.abs(days);
+  while (remaining > 0) {
+    d.setDate(d.getDate() + dir);
+    var day = d.getDay();
+    if (day !== 0 && day !== 6) remaining--;
+  }
+  return d;
+}
+
+function calcDeadlines(orders, hearingDate, baseDate) {
+  var base = baseDate ? new Date(baseDate) : new Date();
+  var deadlines = [];
+  if (orders.indexOf('next_hearing') !== -1 && hearingDate) {
+    deadlines.push({ label: 'Next hearing', date: hearingDate, urgency: 'gold' });
+  }
+  if (orders.indexOf('section7') !== -1) {
+    var d = new Date(base); d.setDate(d.getDate() + 70);
+    deadlines.push({ label: 'Cafcass Section 7 due (estimated)', date: d.toISOString().split('T')[0], urgency: 'amber' });
+  }
+  if (hearingDate && (orders.indexOf('positions') !== -1 || orders.indexOf('next_hearing') !== -1)) {
+    var posDate = addWorkingDays(new Date(hearingDate), -3);
+    deadlines.push({ label: 'Position statement due', date: posDate.toISOString().split('T')[0], urgency: 'red' });
+  }
+  return deadlines;
+}
+
+function daysUntil(dateStr) {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var target = new Date(dateStr); target.setHours(0,0,0,0);
+  return Math.ceil((target - today) / (1000*60*60*24));
+}
+
+function fmtDeadlineDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+
+function renderDeadlineBanner() {
+  var banner = document.getElementById('deadlineBanner');
+  if (!banner) return;
+  var deadlines = (profile && profile.hearingDeadlines) ? profile.hearingDeadlines : [];
+  var upcoming = deadlines.filter(function(d){ return daysUntil(d.date) >= 0; })
+    .sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+  if (!upcoming.length) { banner.innerHTML=''; return; }
+  var next = upcoming[0];
+  var days = daysUntil(next.date);
+  var isPosition = next.label.indexOf('Position') !== -1;
+  var isHearing = next.label.indexOf('hearing') !== -1 || next.label.indexOf('Hearing') !== -1;
+  var isSection7 = next.label.indexOf('Section 7') !== -1 || next.label.indexOf('Cafcass') !== -1;
+  var urg = days <= 3 ? 'red' : days <= 14 ? 'amber' : 'gold';
+  var cols = {red:'var(--red)',amber:'var(--amber)',gold:'var(--gold)'};
+  var bgs = {red:'var(--red-dim)',amber:'var(--amber-dim)',gold:'var(--gold-dim)'};
+  var bords = {red:'rgba(184,68,68,0.3)',amber:'rgba(201,148,58,0.3)',gold:'rgba(212,168,67,0.3)'};
+  var dLabel = days===0?'TODAY':days===1?'Tomorrow':'In '+days+' days';
+  var extra = upcoming.length > 1 ? ' · '+(upcoming.length-1)+' more deadline'+(upcoming.length>2?'s':'') : '';
+
+  // CTA copy based on deadline type
+  var ctaLabel = '', ctaFn = "go('sKeyDates')";
+  if (isPosition && days <= 21) {
+    ctaLabel = 'Guardian can write it →';
+    ctaFn = "goStatementWriter()";
+  } else if (isHearing && days <= 14) {
+    ctaLabel = 'Prepare your statement →';
+    ctaFn = "goStatementWriter()";
+  } else if (isSection7) {
+    ctaLabel = 'Understand what happens next →';
+    ctaFn = "goQA()";
+  } else {
+    ctaLabel = 'View all deadlines →';
+  }
+
+  banner.innerHTML = '<div style="background:'+bgs[urg]+';border:1.5px solid '+bords[urg]+';border-radius:14px;padding:14px 16px;margin-bottom:14px;">' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">' +
+    '<div style="font-size:20px;">⏰</div>' +
+    '<div style="flex:1;"><div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:'+cols[urg]+';letter-spacing:0.5px;margin-bottom:2px;">'+dLabel.toUpperCase()+'</div>' +
+    '<div style="font-size:14px;font-weight:700;color:var(--white);">'+next.label+'</div>' +
+    '<div style="font-size:11px;color:var(--muted-hi);">'+fmtDeadlineDate(next.date)+extra+'</div></div></div>' +
+    '<div style="display:flex;gap:8px;">' +
+    '<button onclick="'+ctaFn+'" style="flex:1;padding:10px;background:'+cols[urg]+';border:none;border-radius:10px;color:'+(urg==='gold'?'#0a0600':'white')+';font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">'+ctaLabel+'</button>' +
+    '<button onclick="go('sKeyDates')" style="padding:10px 12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;">All dates</button>' +
+    '</div></div>';
+}
+
+function renderKeyDates() {
+  var el = document.getElementById('keyDatesContent');
+  if (!el) return;
+  var deadlines = (profile && profile.hearingDeadlines) ? profile.hearingDeadlines : [];
+  if (!deadlines.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:32px;margin-bottom:12px;">⏰</div>' +
+      '<div style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;">No deadlines yet</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:20px;">Log a hearing in your diary and Guardian will calculate all your deadlines automatically.</div>' +
+      '<button class="btn-gold" onclick="go('sDiary')">Go to Diary →</button></div>';
+    return;
+  }
+  var sorted = deadlines.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+  var upcoming = sorted.filter(function(d){ return daysUntil(d.date) >= 0; });
+  var past = sorted.filter(function(d){ return daysUntil(d.date) < 0; });
+  var cols = {red:'var(--red)',amber:'var(--amber)',gold:'var(--gold)',green:'var(--green)'};
+  var bgs = {red:'var(--red-dim)',amber:'var(--amber-dim)',gold:'var(--gold-dim)',green:'var(--green-dim)'};
+  var bords = {red:'rgba(184,68,68,0.25)',amber:'rgba(201,148,58,0.25)',gold:'rgba(212,168,67,0.25)',green:'rgba(26,158,114,0.25)'};
+  var html = '';
+  if (upcoming.length) {
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">UPCOMING</div>';
+    html += upcoming.map(function(d){
+      var days = daysUntil(d.date);
+      var urg = days===0?'red':days<=3?'red':days<=14?'amber':'green';
+      var dl = days===0?'⚠️ TODAY':days===1?'Tomorrow':days+' days';
+      var isPosition = d.label.indexOf('Position') !== -1;
+      var isHearing = d.label.indexOf('hearing') !== -1 || d.label.indexOf('Hearing') !== -1;
+      var isSection7 = d.label.indexOf('Section 7') !== -1 || d.label.indexOf('Cafcass') !== -1;
+      var actionBtn = '';
+      if (isPosition) {
+        actionBtn = '<button onclick="goStatementWriter()" style="width:100%;padding:11px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:10px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;">Guardian writes my statement — £79 →</button>';
+      } else if (isHearing && days <= 21) {
+        actionBtn = '<button onclick="goStatementWriter()" style="width:100%;padding:11px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:10px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;">Prepare my position statement →</button>';
+      } else if (isSection7) {
+        actionBtn = '<button onclick="goQA()" style="width:100%;padding:11px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);border-radius:10px;color:var(--blue);font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;">Ask Court Guru what happens next →</button>';
+      }
+      return '<div style="background:'+bgs[urg]+';border:1.5px solid '+bords[urg]+';border-radius:12px;padding:14px 16px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--white);">'+d.label+'</div>' +
+        '<div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:800;color:'+cols[urg]+';">'+dl+'</div></div>' +
+        '<div style="font-size:12px;color:var(--muted-hi);">'+fmtDeadlineDate(d.date)+(d.hearingType?' · '+d.hearingType:'')+'</div>' +
+        actionBtn+'</div>';
+    }).join('');
+  }
+  if (past.length) {
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--muted-hi);letter-spacing:0.5px;margin:16px 0 10px;">PAST</div>';
+    html += past.slice().reverse().map(function(d){
+      var days = Math.abs(daysUntil(d.date));
+      return '<div style="background:rgba(255,255,255,0.02);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+        '<div style="font-size:13px;font-weight:600;color:var(--muted-hi);">'+d.label+'</div>' +
+        '<div style="font-size:11px;color:var(--muted);">'+days+' days ago</div></div>' +
+        '<div style="font-size:12px;color:var(--muted);">'+fmtDeadlineDate(d.date)+'</div></div>';
+    }).join('');
+  }
+  html += '<button onclick="clearDeadlines()" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(184,68,68,0.3);border-radius:10px;color:var(--red);font-size:12px;cursor:pointer;margin-top:8px;">Clear all deadlines</button>';
+  el.innerHTML = html;
+}
+
+function clearDeadlines() {
+  if (!confirm('Clear all saved deadlines?')) return;
+  if (profile) { profile.hearingDeadlines = []; save(); }
+  renderKeyDates(); renderDeadlineBanner();
+  toast('Deadlines cleared');
+}
+
+function showHearingActionCard(deadlines, orders) {
+  var existing = document.getElementById('hearingActionCard');
+  if (existing) existing.remove();
+  var posDeadline = deadlines.find(function(d){ return d.label.indexOf('Position') !== -1; });
+  var hearingDeadline = deadlines.find(function(d){ return d.label.indexOf('hearing') !== -1 || d.label.indexOf('Hearing') !== -1; });
+  var section7 = orders.indexOf('section7') !== -1;
+  var child = profile && profile.childName ? profile.childName.split(',')[0].trim() : 'your child';
+  var card = document.createElement('div');
+  card.id = 'hearingActionCard';
+  var html = '';
+
+  if (posDeadline) {
+    var days = daysUntil(posDeadline.date);
+    html = '<div style="background:linear-gradient(135deg,rgba(212,168,67,0.12),rgba(212,168,67,0.05));border:2px solid rgba(212,168,67,0.35);border-radius:16px;padding:18px;margin-bottom:14px;">' +
+      '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">⏰ YOUR STATEMENT IS DUE IN '+days+' DAYS</div>' +
+      '<div style="font-size:16px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">This is the part that matters most.</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Guardian has read your documents, your diary, and knows every allegation you are facing. It can write your position statement now — built on your case, in your voice, court-ready.</div>' +
+      '<button onclick="goStatementWriter();document.getElementById('hearingActionCard').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px;">Guardian writes my statement — £79 →</button>' +
+      '<button onclick="go('sStatements');document.getElementById('hearingActionCard').remove();" style="width:100%;padding:11px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;color:var(--blue);font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">I want to write it with guidance →</button>' +
+      '<button onclick="document.getElementById('hearingActionCard').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Remind me later</button>' +
+      '</div>';
+  } else if (section7) {
+    html = '<div style="background:var(--amber-dim);border:1.5px solid rgba(201,148,58,0.3);border-radius:16px;padding:18px;margin-bottom:14px;">' +
+      '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin-bottom:8px;">⚠️ CAFCASS SECTION 7 ORDERED</div>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">A Cafcass welfare report has been ordered.</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Cafcass will contact you. Guardian can explain exactly what they are looking for, what questions to expect, and how to make sure your voice is heard in their report.</div>' +
+      '<button onclick="goQA();document.getElementById('hearingActionCard').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,var(--blue));border:none;border-radius:12px;color:#fff;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Ask Court Guru about Section 7 →</button>' +
+      '<button onclick="document.getElementById('hearingActionCard').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Got it</button>' +
+      '</div>';
+  } else if (hearingDeadline) {
+    var hdays = daysUntil(hearingDeadline.date);
+    html = '<div style="background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.25);border-radius:16px;padding:18px;margin-bottom:14px;">' +
+      '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">⏰ HEARING IN '+hdays+' DAYS</div>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">Your next hearing is logged.</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Use the time well. Add any documents, keep logging contact sessions, and when you are ready Guardian will write your position statement from everything it knows about your case.</div>' +
+      '<button onclick="goStatementWriter();document.getElementById('hearingActionCard').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Start my position statement — £79 →</button>' +
+      '<button onclick="document.getElementById('hearingActionCard').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">I'll come back to this</button>' +
+      '</div>';
+  }
+
+  if (!html) return;
+  card.innerHTML = html;
+  var homeEl = document.getElementById('sHome');
+  if (homeEl) {
+    var banner = document.getElementById('deadlineBanner');
+    homeEl.insertBefore(card, banner ? banner.nextSibling : homeEl.firstChild);
+  }
+  go('sHome');
+}
+
 // Load Supabase with fallback CDNs
 (function() {
   var cdns = [
