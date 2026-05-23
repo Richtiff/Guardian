@@ -547,7 +547,7 @@ p, .body-text { font-size: 16px !important; }
   <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
       <span style="font-size:20px;">💬</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Message Coach</div><div style="font-size:12px;color:var(--muted-hi);">When you don't know what to say — we do</div></div>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Reply Ready</div><div style="font-size:12px;color:var(--muted-hi);">Solicitors, Cafcass, co-parents — all covered</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
       <span style="font-size:20px;">⚖️</span>
@@ -790,7 +790,7 @@ p, .body-text { font-size: 16px !important; }
   <div class="home-grid" style="margin-bottom:20px;">
     <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')">
       <div class="home-btn-icon">💬</div>
-      <div class="home-btn-label">Message Coach</div>
+      <div class="home-btn-label">Reply Ready</div>
       <div class="home-btn-sub">When you don't know what to say</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="showSection('qa','qa')">
@@ -888,7 +888,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="paywall-price">£9.99</div>
     <div class="paywall-price-sub">per month — cancel anytime</div>
     <div class="paywall-feats">
-      <div class="paywall-feat">Unlimited message coaching</div>
+      <div class="paywall-feat">Unlimited reply readying</div>
       <div class="paywall-feat">Guardian remembers your full case</div>
       <div class="paywall-feat">Pattern detection across messages</div>
       <div class="paywall-feat">Court-ready replies every time</div>
@@ -926,11 +926,49 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sCoach">
   <div class="section-header">
     <button type="button" class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Message Coach</div><div class="section-sub">Every reply coached and court-ready</div></div>
+    <div><div class="section-title">Reply Ready</div><div class="section-sub">Every message, every correspondent</div></div>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
-    <button type="button" id="btnIn" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">📩</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
-    <button type="button" id="btnOut" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">✏️</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
+  <!-- TYPE SELECTOR — shown first -->
+  <div id="coachTypePanel">
+    <div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">WHO IS THIS WITH?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <button type="button" class="opt" onclick="setCoachType('coparent','Co-parent','&#128172;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#128172;</span><span style="font-size:12px;font-weight:700;">Co-parent</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('solicitor','Their solicitor','&#9878;&#65039;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#9878;&#65039;</span><span style="font-size:12px;font-weight:700;">Their solicitor</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('cafcass','Cafcass','&#128203;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#128203;</span><span style="font-size:12px;font-weight:700;">Cafcass</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('childservices','Child Services','&#127963;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#127963;</span><span style="font-size:12px;font-weight:700;">Child Services</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('school','School','&#127979;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#127979;</span><span style="font-size:12px;font-weight:700;">School</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('gp','GP / Medical','&#127973;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#127973;</span><span style="font-size:12px;font-weight:700;">GP / Medical</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('court','Court / HMCTS','&#9878;&#65039;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#127963;</span><span style="font-size:12px;font-weight:700;">Court / HMCTS</span>
+      </button>
+      <button type="button" class="opt" onclick="setCoachType('other','Other','&#128240;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:22px;">&#128240;</span><span style="font-size:12px;font-weight:700;">Other</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ACTION PANEL — shown after type selected -->
+  <div id="coachActionPanel" style="display:none;">
+    <div id="coachTypeBadge" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:14px;">
+      <div style="font-size:14px;font-weight:700;color:var(--white);" id="coachTypeBadgeText"></div>
+      <button onclick="resetCoachType()" style="font-size:12px;color:var(--gold);background:transparent;border:none;cursor:pointer;padding:0;">Change</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+      <button type="button" id="btnIn" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">&#128233;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
+      <button type="button" id="btnOut" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">&#9999;&#65039;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
+    </div>
   </div>
   <div id="inPanel" style="display:none;">
     <div class="msg-upload-grid">
@@ -942,7 +980,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="divider"><span>or type it</span></div>
     <div class="type-panel">
       <div class="type-header">THEIR MESSAGE</div>
-      <textarea class="type-textarea" id="typeIn" rows="4" placeholder="Paste or type what they sent you..."></textarea>
+      <textarea class="type-textarea" id="typeIn" rows="4" placeholder="Paste or type what they sent you..." id="typeInPlaceholder"></textarea>
       <button class="type-confirm" onclick="confirmType()">Check this message →</button>
     </div>
   </div>
@@ -1041,7 +1079,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div id="replyContent" style="display:none;">
     <div class="coach-card">
-      <div class="coach-header"><span class="coach-lbl">💬 Message Coach</span><span class="score-badge" id="scoreBadge"></span></div>
+      <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
       <div class="coach-body">
         <div class="breathe">Take a breath before you decide.</div>
         <div class="suggested" id="suggestedReply"></div>
@@ -1376,7 +1414,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
     <div id="theirsAddToProfile" style="background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;padding:14px;margin-bottom:14px;">
       <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;">🧠 Add to your case profile?</div>
-      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:10px;line-height:1.5;">Guardian found allegations in this document. Adding them to your profile means Message Coach, Diary, and Statement Writer all know what you are up against.</div>
+      <div style="font-size:13px;color:var(--muted-hi);margin-bottom:10px;line-height:1.5;">Guardian found allegations in this document. Adding them to your profile means Reply Ready, Diary, and Statement Writer all know what you are up against.</div>
       <button onclick="addTheirsToProfile()" style="padding:9px 16px;background:var(--blue);border:none;border-radius:8px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Yes — update my profile</button>
     </div>
     <div style="background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.2);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
@@ -2109,6 +2147,162 @@ var SYS = [
   '',
   'GOAL: Protect the child. Reduce conflict. Create a clean written record. Sound like a real human being.'
 ].join("\n");
+
+
+// ── REPLY READY — CORRESPONDENT TYPES ──
+var coachType = 'coparent';
+var coachTypeLabel = 'Co-parent';
+var coachTypeIcon = '&#128172;';
+
+var COACH_SYS_BY_TYPE = {
+  coparent: SYS,
+
+  solicitor: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user has received correspondence from the opposing party\'s solicitor.',
+    'Your role is to:',
+    '1. Explain in plain English what the solicitor is actually asking for — cut through the legal language',
+    '2. Identify any firm deadlines, legal threats, or without prejudice statements',
+    '3. Flag anything the user absolutely cannot ignore or miss',
+    '4. Advise whether a response is needed and within what timeframe',
+    '5. Draft a calm, professional reply that is brief and does not over-share',
+    '',
+    'Remember: solicitor letters are formal and intimidating by design. Most are standard practice.',
+    'Help the user see past the language to what is actually being asked.',
+    'Tone: formal, professional, factual, brief. One or two short paragraphs.',
+    'Never advise ignoring urgent legal correspondence.',
+    'Flag clearly when the user should consider seeking their own legal advice.'
+  ].join('\n'),
+
+  cafcass: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user is corresponding with Cafcass — the Children and Family Court Advisory and Support Service.',
+    'Cafcass advise the court on the child\'s welfare. They are not the enemy.',
+    'Your role is to:',
+    '1. Explain clearly what Cafcass are communicating or asking for',
+    '2. Advise on the appropriate response — cooperative, child-focused, professional',
+    '3. Help draft a response that presents the parent positively',
+    '4. Flag anything important in the communication',
+    '',
+    'KEY: Cafcass evaluate parental cooperation as part of their welfare assessment.',
+    'Tone, responsiveness, and child-focus in every communication with them matters enormously.',
+    'Tone: professional, cooperative, warm toward the child, concise.'
+  ].join('\n'),
+
+  childservices: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user is corresponding with Children\'s Services or a social worker.',
+    'Your role is to:',
+    '1. Identify what type of contact this is — s.17 support, s.47 enquiry, Child Protection Plan, or other',
+    '2. Explain clearly what it means and what typically happens next',
+    '3. Help draft a cooperative, transparent, professional response',
+    '4. Note relevant rights without being adversarial',
+    '',
+    'Rights context (share only if relevant):',
+    '- Parents can ask why a social worker is visiting and what powers they are using',
+    '- Entry cannot be required without consent or a court order except in genuine emergencies',
+    '- Parents may have a support person present',
+    '',
+    'Being cooperative and transparent is strongly advised.',
+    'Being defensive or hostile creates significant problems in both proceedings and assessments.',
+    'Tone: professional, cooperative, transparent, child-focused. Never hostile.'
+  ].join('\n'),
+
+  school: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user is corresponding with their child\'s school.',
+    'Your role is to:',
+    '1. Explain the school\'s communication clearly',
+    '2. Advise on relevant parental rights',
+    '3. Help draft a professional, collaborative response',
+    '4. Flag any issues regarding information sharing or court order implications',
+    '',
+    'Key rights: Both parents with Parental Responsibility have equal rights to information about',
+    'their child\'s education unless a court order specifically restricts this.',
+    'Schools cannot withhold information about a child from a PR-holding parent.',
+    'Tone: professional, collaborative, brief.'
+  ].join('\n'),
+
+  gp: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user is corresponding with a GP or medical professional about their child.',
+    'Your role is to:',
+    '1. Explain the medical communication clearly',
+    '2. Advise on parental rights regarding medical decisions and information',
+    '3. Help draft an appropriate professional response',
+    '4. Flag any welfare or safeguarding implications',
+    '',
+    'Key rights: Both parents with Parental Responsibility have the right to be',
+    'informed about and involved in their child\'s medical care unless a court order says otherwise.',
+    'Tone: professional, concise, cooperative.'
+  ].join('\n'),
+
+  court: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user is corresponding with or about the Family Court or HMCTS.',
+    'Your role is to:',
+    '1. Explain exactly what the communication means and what it requires',
+    '2. Flag any deadlines with urgency — court deadlines have serious consequences if missed',
+    '3. Advise on the appropriate response or action',
+    '4. Help draft any required response in the correct tone and format',
+    '',
+    'Court correspondence must be treated as urgent. Be clear about any time limits.',
+    'Tone: formal, respectful, precise, factual.'
+  ].join('\n'),
+
+  other: [
+    'You are Guardian, a family court communication advisor in England and Wales.',
+    'The user is corresponding with a professional or organisation related to their family court case.',
+    'Analyse the correspondence and help them respond professionally and appropriately,',
+    'considering the family court context and the child\'s welfare throughout.',
+    'Tone: professional, clear, measured.'
+  ].join('\n')
+};
+
+function setCoachType(type, label, icon) {
+  coachType = type;
+  coachTypeLabel = label;
+  coachTypeIcon = icon;
+  document.getElementById('coachTypePanel').style.display = 'none';
+  document.getElementById('coachActionPanel').style.display = 'block';
+  var badge = document.getElementById('coachTypeBadgeText');
+  if (badge) badge.innerHTML = icon + ' &nbsp;' + label;
+  // Update textarea placeholder
+  var ta = document.getElementById('typeInPlaceholder');
+  var placeholders = {
+    coparent: 'Paste or type what they sent you...',
+    solicitor: 'Paste or type the solicitor\'s letter or email...',
+    cafcass: 'Paste or type the Cafcass letter or email...',
+    childservices: 'Paste or type the letter or email from the social worker...',
+    school: 'Paste or type the message from school...',
+    gp: 'Paste or type the message from the GP or medical team...',
+    court: 'Paste or type the court correspondence...',
+    other: 'Paste or type what they sent you...'
+  };
+  if (ta) ta.placeholder = placeholders[type] || placeholders.other;
+  // Reset panels
+  document.getElementById('inPanel').style.display = 'none';
+  document.getElementById('outPanel').style.display = 'none';
+  var btnIn = document.getElementById('btnIn');
+  var btnOut = document.getElementById('btnOut');
+  if (btnIn) btnIn.className = 'home-btn home-btn-gold';
+  if (btnOut) btnOut.className = 'home-btn home-btn-card';
+}
+
+function resetCoachType() {
+  coachType = 'coparent';
+  coachTypeLabel = 'Co-parent';
+  document.getElementById('coachActionPanel').style.display = 'none';
+  document.getElementById('inPanel').style.display = 'none';
+  document.getElementById('outPanel').style.display = 'none';
+  document.getElementById('coachTypePanel').style.display = 'block';
+}
+
+function getCoachSysPrompt() {
+  var ctx = getCTX();
+  var sys = COACH_SYS_BY_TYPE[coachType] || SYS;
+  return sys + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
+}
 
 function getCTX() {
   if (!profile) return '';
@@ -3096,7 +3290,7 @@ function generateGuardianNoticed() {
     var dayMsgs = byDay[day];
     var welfare = dayMsgs.filter(function(m){ return m.flag==='amber'||m.flag==='red'; });
     if (welfare.length >= 3) {
-      notices.push({ type:'warning', text: welfare.length + ' welfare or monitoring messages in one day — ' + new Date(day).toLocaleDateString('en-GB',{day:'numeric',month:'short'}), action:'Tap to review in Message Coach', screen:'sCoach' });
+      notices.push({ type:'warning', text: welfare.length + ' welfare or monitoring messages in one day — ' + new Date(day).toLocaleDateString('en-GB',{day:'numeric',month:'short'}), action:'Tap to review in Reply Ready', screen:'sCoach' });
     }
   });
 
@@ -3476,7 +3670,7 @@ function getBrainInsight(type, outcome) {
     allegation: {
       dismissed: '✅ Logged. Every dismissed allegation strengthens your position. Make sure it is in your profile so Guardian references it in every message and statement.',
       new: '⚠️ Logged. Guardian has recorded this. Go to My Case now and add the details — the more Guardian knows, the better it can protect you.',
-      escalated: '📈 Logged. An escalating allegation needs a direct, evidenced response in your next statement. Guardian will flag this in your message coaching too.'
+      escalated: '📈 Logged. An escalating allegation needs a direct, evidenced response in your next statement. Guardian will flag this in your reply readying too.'
     }
   };
 
@@ -4089,6 +4283,7 @@ function stopQAVoice() {
 
 // MESSAGE COACH
 function showIn() {
+  if (!coachType) coachType = 'coparent';
   document.getElementById('inPanel').style.display='block';
   document.getElementById('outPanel').style.display='none';
   var btnIn = document.getElementById('btnIn');
@@ -4192,9 +4387,9 @@ async function askQ() {
   var ctx = getCTX();
   try {
     var prompt = isOut
-      ? 'A parent wants to send this message: "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
-      : 'A parent received: "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:SYS+'\n\n'+ctx,messages:[{role:'user',content:prompt}]})});
+      ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
+      : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
@@ -4692,7 +4887,7 @@ function showUpsell(context) {
   var messages = {
     check3: "<strong>Guardian has helped you through 3 messages.</strong> It knows your case, it spots the patterns, and it has your back. Keep it working for you — unlimited coaching for less than one call to a solicitor.",
     check5: "<strong>You have used your 5 free checks.</strong> Your case is still live. Guardian has been learning your situation. Do not face the next message without it.",
-    deepqa: "<strong>You have been asking exactly the right questions.</strong> Guardian knows your case well now. Keep that knowledge working for you — and get unlimited message coaching on top.",
+    deepqa: "<strong>You have been asking exactly the right questions.</strong> Guardian knows your case well now. Keep that knowledge working for you — and get unlimited reply readying on top.",
     document: "<strong>Guardian has read your documents.</strong> Every message reply is now built on what is in your case file. Unlock unlimited coaching to use it fully.",
     pattern: "<strong>Guardian has spotted a pattern in the messages.</strong> This has happened before. Unlimited coaching means Guardian keeps watching so you do not have to.",
     sevendays: "<strong>Guardian has been with you through this.</strong> Your case does not stop. Neither should your protection. £9.99 a month — less than one call to a solicitor."
@@ -4925,7 +5120,7 @@ function logBrainAllegation(outcome) {
   var msgs = {
     dismissed: '✅ Logged. Every dismissed allegation strengthens your position. Make sure it is in your profile.',
     new: '⚠️ Logged. Update your case profile with the details so Guardian can protect you.',
-    escalated: '📝 Logged. Guardian will factor this into your message coaching.'
+    escalated: '📝 Logged. Guardian will factor this into your reply readying.'
   };
   toast(msgs[outcome] || 'Allegation update logged');
   if (outcome === 'dismissed') {
@@ -5535,7 +5730,7 @@ function addTheirsToProfile() {
   if (allegations) {
     profile.allegations = profile.allegations ? profile.allegations + '; ' + allegations : allegations;
     save();
-    toast('Profile updated — Message Coach and Statement Writer now know what you are up against');
+    toast('Profile updated — Reply Ready and Statement Writer now know what you are up against');
     document.getElementById('theirsAddToProfile').style.display = 'none';
   }
 }
@@ -5740,7 +5935,7 @@ function swContinueToStatement() {
     caseCheck.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>' +
       [{ label:diary+' diary entries',ok:diary>0,tip:'Log contact sessions in My Diary' },
        { label:docs+' documents',ok:docs>0,tip:'Upload to Case File' },
-       { label:'Message history',ok:hasMsgs,tip:'Check messages through Message Coach' },
+       { label:'Message history',ok:hasMsgs,tip:'Check messages through Reply Ready' },
        { label:'Allegations',ok:hasAllegations,tip:'Update in My Case' },
        { label:'Dismissed findings',ok:hasDismissed,tip:'Update in My Case' }]
       .map(function(c){ return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);"><span style="font-size:14px;">'+(c.ok?'✅':'⚠️')+'</span><div style="flex:1;font-size:13px;color:'+(c.ok?'var(--white)':'var(--muted-hi)')+';">'+c.label+(c.ok?'':'<div style="font-size:11px;color:var(--muted);">'+c.tip+'</div>')+'</div></div>'; }).join('');
@@ -5784,7 +5979,7 @@ function loadStatementWriter() {
   checkHtml += [
     { label: diary + ' diary entries', ok: diary > 0, tip: 'Log contact sessions in My Diary' },
     { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
-    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Message Coach' },
+    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Reply Ready' },
     { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
     { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
   ].map(function(c) {
@@ -5816,7 +6011,7 @@ function goStatementWriter() {
   checkHtml += [
     { label: diary + ' diary entries', ok: diary > 0, tip: 'Log contact sessions in My Diary' },
     { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
-    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Message Coach' },
+    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Reply Ready' },
     { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
     { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
   ].map(function(c) {
