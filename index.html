@@ -785,6 +785,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="trial-count" id="trialCount">5</div>
   </div>
   <div id="deadlineBanner"></div>
+  <div id="caseStrengthCard"></div>
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
   <div class="home-grid" style="margin-bottom:20px;">
     <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')">
@@ -834,6 +835,13 @@ p, .body-text { font-size: 16px !important; }
   <div style="display:flex;gap:8px;margin-bottom:14px;">
     <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates')">
       <div class="home-btn-icon">⏰</div>
+      <div class="home-btn-label">Key Dates</div>
+      <div class="home-btn-sub">Deadlines &amp; countdowns</div>
+    </button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;">
+    <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates')">
+      <div class="home-btn-icon">&#9200;</div>
       <div class="home-btn-label">Key Dates</div>
       <div class="home-btn-sub">Deadlines &amp; countdowns</div>
     </button>
@@ -898,7 +906,7 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sQA">
   <div class="section-header">
     <button type="button" class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Court Guru</div><div class="section-sub">Free — know everything about your case</div></div>
+    <div><div class="section-title">Court Guru</div><div class="section-sub">The solicitor you couldn't afford</div></div>
   </div>
   <div class="qa-suggestions" id="qaSugs"></div>
   <div class="qa-msgs" id="qaMsgs" style="padding-bottom:8px;"></div>
@@ -1217,7 +1225,7 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sBrain">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">🧠 Guardian Brain</div><div class="section-sub">Help Guardian learn from real experiences</div></div>
+    <div><div class="section-title">🧠 Guardian Brain</div><div class="section-sub">Help Guardian learn from real experiences</div><div id="brainFactCount" style="font-size:11px;color:var(--gold);margin-top:3px;"></div></div>
   </div>
   <div style="background:rgba(245,200,66,0.08);border:1.5px solid rgba(245,200,66,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
     <div style="font-size:14px;line-height:1.7;color:var(--white);margin-bottom:8px;">The more parents share, the smarter Guardian gets — for everyone.</div>
@@ -1528,6 +1536,26 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
 
+  <!-- Hearing orders -->
+  <div id="diaryHearingOrders" style="display:none;">
+    <div class="field-group">
+      <label class="field-label">WHAT WAS ORDERED?</label>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select all that apply</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="hearingOrderOpts">
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'section7')">Section 7 / welfare report ordered</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'next_hearing')">Next hearing date given</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'positions')">Position statements required</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'contact_order')">Contact order made</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'adjourned')">Adjourned - no date yet</button>
+        <button type="button" class="opt" onclick="toggleHearingOrder(this,'concluded')">Case concluded</button>
+      </div>
+    </div>
+    <div id="nextHearingDateBox" class="field-group" style="display:none;">
+      <label class="field-label">NEXT HEARING DATE</label>
+      <input class="field-input" type="date" id="nextHearingDate" style="color-scheme:dark;">
+    </div>
+  </div>
+
   <!-- Quick prompts — shown for contact sessions -->
   <div id="diaryQuickPrompts" style="display:none;">
 
@@ -1739,6 +1767,14 @@ p, .body-text { font-size: 16px !important; }
 
       <div class="field-group" id="swAskBox" style="display:none;">
         <label class="field-label">WHAT ARE YOU ASKING THE COURT FOR?</label>
+        <div class="field-group" style="margin-bottom:14px;">
+          <label class="field-label">WHICH COURT?</label>
+          <div style="display:flex;gap:8px;" id="swCourtLevelOpts">
+            <button type="button" class="opt" onclick="swPickCourtLevel(this,'Magistrates Family Court')" style="flex:1;padding:10px 8px;font-size:12px;">Magistrates</button>
+            <button type="button" class="opt" onclick="swPickCourtLevel(this,'Family Court - Circuit Judge')" style="flex:1;padding:10px 8px;font-size:12px;">Circuit Judge</button>
+            <button type="button" class="opt sel" onclick="swPickCourtLevel(this,'Family Court')" style="flex:1;padding:10px 8px;font-size:12px;">Not sure</button>
+          </div>
+        </div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">One sentence is enough. Guardian does the rest.</div>
         <textarea class="field-input" id="swCourtAsk" rows="2" style="resize:none;" placeholder="e.g. I want contact to resume immediately and the order to be enforced."></textarea>
       </div>
@@ -1955,6 +1991,7 @@ p, .body-text { font-size: 16px !important; }
   <div id="keyDatesContent"></div>
 </div>
 
+<div class="step" id="sKeyDates"><div class="section-header"><button class="back-btn" onclick="goBack()">&#8592;</button><div><div class="section-title">Key Dates</div><div class="section-sub">Deadlines and countdowns</div></div></div><div id="keyDatesContent"></div></div>
 </div><!-- end .app -->
 
 <!-- UPSELL TOAST -->
@@ -2090,7 +2127,6 @@ var SYS = [
 function getCTX() {
   if (!profile) return '';
   var lines = ['CASE CONTEXT:'];
-  // Core profile
   if (profile.myName) lines.push('Parent: ' + profile.myName);
   if (profile.theirName) lines.push('Other parent: ' + profile.theirName);
   if (profile.childName) lines.push('Child: ' + profile.childName);
@@ -2100,48 +2136,31 @@ function getCTX() {
   if (profile.duration) lines.push('Duration: ' + profile.duration);
   if (profile.conflict) lines.push('Conflict level: ' + profile.conflict + '/10');
   if (profile.allegations) lines.push('Allegations against parent: ' + profile.allegations);
-  if (profile.dismissed) lines.push('Dismissed or ruled in favour: ' + profile.dismissed);
-  if (profile.commStyle) lines.push('Other parent communication style: ' + profile.commStyle);
-  if (profile.voice) lines.push('Parent voice/described as: ' + profile.voice);
-  // Legacy doc extracts
-  Object.keys(docs).forEach(function(k) { if (docs[k]) lines.push('Document extract (' + k + '): ' + docs[k].substring(0,200)); });
-  // Case file documents
+  if (profile.dismissed) lines.push('Dismissed/ruled in favour: ' + profile.dismissed);
+  if (profile.commStyle) lines.push('Communication style: ' + profile.commStyle);
+  if (profile.voice) lines.push('Parent described as: ' + profile.voice);
+  Object.keys(docs).forEach(function(k) { if (docs[k]) lines.push('Doc (' + k + '): ' + docs[k].substring(0,200)); });
   if (caseDocuments && caseDocuments.length > 0) {
-    lines.push('\nCASE FILE DOCUMENTS (' + caseDocuments.length + ' uploaded):');
-    caseDocuments.forEach(function(doc) {
-      if (doc.extract) lines.push('  [' + (doc.type||'document') + '] ' + doc.name + ' (' + (doc.date||'') + '): ' + doc.extract.substring(0,300));
-    });
+    lines.push('\nCASE FILE (' + caseDocuments.length + ' docs):');
+    caseDocuments.forEach(function(d){ if(d.extract) lines.push('  [' + (d.type||'doc') + '] ' + d.name + ': ' + d.extract.substring(0,300)); });
   }
-  // Guardian Brain extracted facts
   if (brainLog && brainLog.length > 0) {
     var facts = brainLog.filter(function(b){ return b.summary||b.text; }).slice(-15);
-    if (facts.length > 0) {
-      lines.push('\nGUARDIAN BRAIN — EXTRACTED FACTS:');
-      facts.forEach(function(f){ lines.push('  - ' + (f.summary||f.text||'').substring(0,150)); });
-    }
+    if (facts.length) { lines.push('\nGUARDIAN BRAIN FACTS:'); facts.forEach(function(f){ lines.push('  - ' + (f.summary||f.text||'').substring(0,150)); }); }
   }
-  // Diary entries
   if (diaryEntries && diaryEntries.length > 0) {
-    lines.push('\nDIARY (' + diaryEntries.length + ' total entries, most recent 12):');
-    var sorted = diaryEntries.slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-    sorted.slice(0,12).forEach(function(e){
-      lines.push('  [' + e.date + '] ' + (e.typeLabel||e.type||'entry') + ': ' + (e.text||'').substring(0,120));
+    lines.push('\nDIARY (last 10 of ' + diaryEntries.length + '):');
+    diaryEntries.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);}).slice(0,10).forEach(function(e){
+      lines.push('  [' + e.date + '] ' + (e.typeLabel||e.type||'') + ': ' + (e.text||'').substring(0,120));
     });
   }
-  // Upcoming hearing deadlines
   if (profile.hearingDeadlines && profile.hearingDeadlines.length > 0) {
-    var upcoming = profile.hearingDeadlines.filter(function(d){ try{ return daysUntil(d.date)>=0; }catch(e){ return false; } });
-    if (upcoming.length > 0) {
-      lines.push('\nUPCOMING COURT DEADLINES:');
-      upcoming.forEach(function(d){ lines.push('  - ' + d.label + ': ' + d.date + ' (' + daysUntil(d.date) + ' days away)'); });
-    }
+    var up = profile.hearingDeadlines.filter(function(d){ try{return daysUntil(d.date)>=0;}catch(e){return false;} });
+    if (up.length) { lines.push('\nDEADLINES:'); up.forEach(function(d){ lines.push('  - ' + d.label + ': ' + d.date + ' (' + daysUntil(d.date) + ' days)'); }); }
   }
-  // Message pattern
   if (msgLog.length > 3) {
-    var r = msgLog.slice(-10);
-    var red = r.filter(function(m){return m.flag==='red';}).length;
-    var amb = r.filter(function(m){return m.flag==='amber';}).length;
-    if (red+amb > 0) lines.push('\nRecent message pattern: ' + red + ' serious allegations, ' + amb + ' loaded messages in last ' + r.length + ' checked.');
+    var r=msgLog.slice(-10); var red=r.filter(function(m){return m.flag==='red';}).length; var amb=r.filter(function(m){return m.flag==='amber';}).length;
+    if (red+amb>0) lines.push('\nMessage pattern: ' + red + ' serious, ' + amb + ' loaded in last ' + r.length + ' checked.');
   }
   return lines.join('\n');
 }
@@ -2395,10 +2414,11 @@ function go(id) {
     homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
   }
   // Load screen data
-  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); }, 50); }
+  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); var fc=document.getElementById('brainFactCount'); if(fc&&brainLog) fc.textContent=brainLog.length>0?'&#129504; '+brainLog.length+' facts extracted':''; }, 50); }
   if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
   if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
   if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
+  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
   if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
   if (id==='sStatements') {}
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
@@ -3195,6 +3215,9 @@ function generateGuardianNoticed() {
     }
   }
 
+  if(caseDocuments&&caseDocuments.length>0&&(!diaryEntries||!diaryEntries.length)){notices.push({type:'tip',text:'You have '+caseDocuments.length+' document'+(caseDocuments.length>1?'s':'')+' uploaded but no diary entries. Every contact session is evidence.',action:'Start diary',screen:'sDiary'});}
+  if(profile&&profile.hearingDeadlines){var posD=profile.hearingDeadlines.filter(function(d){try{return d.label&&d.label.indexOf('Position')!==-1&&daysUntil(d.date)>=0&&daysUntil(d.date)<=21;}catch(e){return false;}});if(posD.length){var dd=daysUntil(posD[0].date);notices.push({type:'urgent',text:'Position statement due in '+dd+' days. Guardian can write it from your full case history.',action:'Write my statement',screen:'sStatementWriter'});}}
+  if(diaryEntries&&diaryEntries.length>=3){var inc=diaryEntries.slice(-20).filter(function(e){return e.type==='incident'||e.type==='welfare';});if(inc.length>=3)notices.push({type:'warning',text:inc.length+' incidents logged recently. Important evidence for your statement.',action:'View diary',screen:'sDiary'});}
   return notices;
 }
 
@@ -3650,6 +3673,7 @@ function showHome() {
   setTimeout(function(){ renderDeadlineBanner(); }, 50);
   checkSevenDayUpsell();
   setTimeout(function(){ renderGuardianNoticed(); }, 100);
+  setTimeout(function(){ renderIntelBar(); }, 150);
   setTimeout(function(){ checkContactDayReminder(); }, 300);
   setTimeout(function(){ renderIntelBar(); }, 150);
   // Show timeline section if there's data
@@ -3667,11 +3691,26 @@ function showHome() {
 }
 
 function goQA() {
-  qaHistory=[];
+  var lastQA=null; try{lastQA=JSON.parse(localStorage.getItem('gLastQA')||'null');}catch(e){}
   document.getElementById('qaMsgs').innerHTML='';
-  go('sQA');
-  // Guardian speaks first with a personalised opening
-  setTimeout(function(){ qaGreeting(); }, 300);
+  go('sQA'); loadCourtGuruSuggestions();
+  if(lastQA&&lastQA.length>=2){
+    setTimeout(function(){
+      var msgs=document.getElementById('qaMsgs'); if(!msgs)return;
+      var d=document.createElement('div'); d.id='qaRestorePrompt';
+      d.innerHTML='<div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;"><div style="flex:1;font-size:13px;color:var(--muted-hi);">Continue your last conversation?</div><button onclick="restoreQASession()" style="padding:7px 12px;background:var(--gold);border:none;border-radius:8px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Restore</button><button onclick="document.getElementById(\'qaRestorePrompt\').remove();qaHistory=[];qaGreeting();" style="padding:7px 10px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;cursor:pointer;">New chat</button></div>';
+      msgs.insertBefore(d,msgs.firstChild);
+    },150);
+  } else { qaHistory=[]; setTimeout(function(){qaGreeting();},300); }
+}
+
+function restoreQASession(){
+  var pr=document.getElementById('qaRestorePrompt'); if(pr)pr.remove();
+  try{
+    var lq=JSON.parse(localStorage.getItem('gLastQA')||'null');
+    if(lq&&lq.length>0){ qaHistory=lq; var msgs=document.getElementById('qaMsgs'); if(!msgs)return; msgs.innerHTML='';
+      qaHistory.slice(-6).forEach(function(m){ var d=document.createElement('div'); d.className=m.role==='user'?'qa-user':'qa-ai'; d.textContent=m.content; msgs.appendChild(d); }); msgs.scrollTop=msgs.scrollHeight; document.getElementById('qaSugs').innerHTML=''; }
+  }catch(e){}
 }
 
 async function qaGreeting() {
@@ -3853,6 +3892,7 @@ async function sendQA() {
 
     qaTyping=false;
     qaHistory.push({role:'assistant',content:fullReply});
+    try{localStorage.setItem('gLastQA',JSON.stringify(qaHistory.slice(-20)));}catch(e){}
     // Upsell only after deep conversation (6+ exchanges minimum)
     if (qaHistory.length >= 12) checkUpsellTriggers('deepqa');
     // Passive learning — scan conversation for new case facts
@@ -5055,6 +5095,8 @@ async function scanStatement(event, forcedType) {
         // Feed analysis into Guardian Brain
         var scanFacts = (parsed.verdict||'') + '. ' + (parsed.weaknesses||[]).join('. ') + '. ' + (parsed.response||'');
         if (scanFacts.trim().length > 20) extractCaseFacts(scanFacts, type==='theirs' ? 'their position statement' : 'my position statement');
+        var sf=(parsed.verdict||'')+'. '+(parsed.weaknesses||[]).join('. ');
+        if(sf.trim().length>20) extractCaseFacts(sf, type==='theirs'?'their statement':'my statement');
       } else { toast('Could not analyse — please try again'); }
     } catch(err) { unload(); toast('Something went wrong — please try again'); }
   };
@@ -5144,20 +5186,16 @@ function pickPrompt(category, value) {
 
 function pickDiaryType(btn, val) {
   document.querySelectorAll('#diaryTypeOpts .opt').forEach(function(b){b.classList.remove('sel');});
-  btn.classList.add('sel');
-  diaryType = val;
-  // Show quick prompts for contact sessions only
+  btn.classList.add('sel'); diaryType = val;
   var qp = document.getElementById('diaryQuickPrompts');
-  if (qp) qp.style.display = val === 'contact' ? 'block' : 'none';
-  // Show hearing orders for hearing type
+  if (qp) qp.style.display = val==='contact' ? 'block' : 'none';
   var ho = document.getElementById('diaryHearingOrders');
-  if (ho) ho.style.display = val === 'hearing' ? 'block' : 'none';
+  if (ho) ho.style.display = val==='hearing' ? 'block' : 'none';
   hearingOrders = [];
-  document.querySelectorAll('#hearingOrderOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
-  var dateBox = document.getElementById('nextHearingDateBox');
-  if (dateBox) dateBox.style.display = 'none';
+  document.querySelectorAll('#hearingOrderOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  var db = document.getElementById('nextHearingDateBox'); if (db) db.style.display='none';
   diaryPrompts = {};
-  document.querySelectorAll('#diaryQuickPrompts .opt').forEach(function(b){ b.classList.remove('sel'); });
+  document.querySelectorAll('#diaryQuickPrompts .opt').forEach(function(b){b.classList.remove('sel');});
 }
 
 function pickDiaryMood(btn, val) {
@@ -5748,6 +5786,12 @@ function loadStatementWriter() {
   caseCheck.innerHTML = checkHtml;
 }
 
+var swCourtLevel = 'Family Court';
+function swPickCourtLevel(btn, level) {
+  document.querySelectorAll('#swCourtLevelOpts .opt').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel'); swCourtLevel = level;
+}
+
 function goStatementWriter() {
   // Pre-flight check — show what Guardian has
   var checks = [];
@@ -5788,14 +5832,15 @@ function startStatementBuild() {
 
 async function buildStatement(courtAsk) {
   var statuses = [
-    'Reading your case history...',
-    'Reviewing your diary entries...',
-    'Analysing allegations...',
-    'Building your strongest arguments...',
-    'Ranking allegations by severity...',
-    'Writing your statement...',
-    'Checking for AI tells...',
-    'Final quality review...'
+    'Reading all case documents...',
+    'Reviewing diary entries for evidence...',
+    'Mapping welfare checklist factors...',
+    'Identifying your strongest arguments...',
+    'Applying legal framework (s.1 CA 1989)...',
+    'Citing specific evidence...',
+    'Writing court-ready statement...',
+    'Removing AI tells...',
+    'Final quality check...'
   ];
 
   var prog = document.getElementById('swProgress');
@@ -5827,16 +5872,15 @@ async function buildStatement(courtAsk) {
       '\n\nMESSAGE HISTORY:\n' + (msgText || 'None yet') +
       '\n\nWHAT THE PARENT IS ASKING FOR:\n' + courtAsk +
       '\n\nHEARING TYPE: ' + hearingType +
-
-      '\n\nWrite a position statement for this parent for their ' + hearingType + ' in England and Wales Family Court. CRITICAL RULES: NO headers, NO section titles, NO bold text, NO bullet points anywhere. NO Furthermore, Moreover, It is submitted, The applicant, It should be noted. NO passive voice. Write in first person. Sound like a real human being. Use specific dates and details from the case history. Rank allegations from most serious to least serious, address each one directly. Short paragraphs. End with numbered asks. 600 to 900 words. SECTION ORDER: Opening (who you are, your child, what you are asking for), Allegations (most serious first), Background (key findings in your favour), The child (what contact means for them), Closing asks (numbered, specific). After the statement write SENDING_INSTRUCTIONS: then provide specific sending instructions based on any case numbers, court names, or contact details found in the documents.';
+      '\n\nCOURT LEVEL: ' + (typeof swCourtLevel !== 'undefined' && swCourtLevel ? swCourtLevel : 'Family Court') + '\n\nWrite a position statement for this parent for their ' + hearingType + ' in the Family Court in England and Wales.\n\nSTRUCTURE (no headers, prose only, short paragraphs):\n1. Opening — who you are, your child name and age, the orders you seek and the legal basis\n2. Background — relevant factual history, specific dates, evidenced throughout\n3. Welfare — address all 7 factors of s.1(3) CA 1989 welfare checklist with specific evidence from this case\n4. Allegations — if any exist, address each directly and proportionately with evidence\n5. Orders sought — each order, why it serves the child welfare, legal basis\n6. Close with: I believe the facts stated in this statement are true.\n\nCRITICAL: Every factual claim must cite specific evidence — diary entry dates, document names, or communications. Judges dismiss statements without evidence. If a diary entry records a missed contact, cite the date. If a document contains a relevant finding, name it specifically.\n\nTARGET: 900-1200 words. Quality and specificity over length.\n\nAfter the statement write SENDING_INSTRUCTIONS: then provide specific sending instructions.';
 
     var res = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        system: "You are helping a litigant in person write a position statement for the Family Court in England and Wales. Sound like a real parent — human, specific, measured. No AI tells. Barrister quality, parent voice.",
+        max_tokens: 3000,
+        system: "You are a senior family law solicitor and barrister with 25 years experience in the Family Court in England and Wales. You write position statements that judges and magistrates immediately recognise as authoritative, credible and child-focused.\n\nTHE LAW:\n- Paramountcy principle: child welfare is paramount (s.1(1) Children Act 1989)\n- Welfare checklist (s.1(3) CA 1989) — address EVERY factor with specific case evidence\n- Presumption of parental involvement (s.1(2A) CA 1989) unless contrary to welfare\n- No order principle (s.1(5)) — orders only where better for the child\n- PD12J applies where domestic abuse is alleged\n\nWELFARE CHECKLIST s.1(3) CA 1989 — address each factor with evidence from this specific case:\n(a) The ascertainable wishes and feelings of the child\n(b) Physical, emotional and educational needs\n(c) Likely effect of any change in circumstances\n(d) Age, sex, background and relevant characteristics\n(e) Any harm suffered or risk of harm\n(f) Capability of each parent to meet the child needs\n(g) Range of powers available to the court\n\nWHAT JUDGES WANT TO SEE:\n- Every argument framed around child welfare not parent feelings\n- Specific evidence with dates — diary entries, document names, communications\n- Measured credible tone — no personal attacks or emotional language\n- Precise orders sought with legal basis\n- Acknowledge the other party position before rebutting\n- Proportionate length that respects the court time\n\nTONE CONVERSION RULES — always reframe around child welfare:\nShe is a terrible mother becomes There are documented welfare concerns regarding the child care\nHe is toxic becomes The pattern of behaviour documented raises serious welfare concerns\nShe is alienating my child becomes There are concerns about parental alienation impacting the child right to a relationship with both parents\nHe never shows up becomes Contact has been disrupted on X documented occasions causing the child distress and instability\n\nCRITICAL FORMAT RULES:\n- Write in first person — the parent voice\n- NO AI tells: no Furthermore, Moreover, It is submitted, It should be noted, In conclusion\n- NO headers, NO bullet points, NO bold text\n- Short focused paragraphs\n- Every factual claim must cite specific evidence — diary entry dates, document names\n- End with numbered orders sought and legal basis for each\n- Final line: I believe the facts stated in this statement are true.",
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -5851,9 +5895,12 @@ async function buildStatement(courtAsk) {
 
     swBuiltStatement = statement;
 
+    // Welfare checklist verification
+    var wFactors = ['wishes','feelings','needs','harm','capabilit','circumstances','characteristics'];
+    var wScore = wFactors.filter(function(f){ return statement.toLowerCase().indexOf(f) !== -1; }).length;
     // AI audit — check for tells
     var tells = [];
-    var aiPhrases = ['Furthermore', 'Moreover', 'It is submitted', 'The applicant', 'It should be noted', 'going forward', 'it is important to note', 'In conclusion'];
+    var aiPhrases = ['Furthermore', 'Moreover', 'It is submitted', 'The applicant', 'It should be noted', 'going forward', 'it is important to note', 'In conclusion', 'It is crucial', 'It is essential', 'I feel that', 'I believe that the court', 'delve into', 'underscore', 'paramount importance', 'It cannot be overstated', 'I would like to stress'];
     aiPhrases.forEach(function(phrase) {
       if (statement.indexOf(phrase) !== -1) tells.push(phrase);
     });
@@ -5868,9 +5915,8 @@ async function buildStatement(courtAsk) {
 
     // Word count score
     var words = statement.split(' ').length;
-    var scoreLabel = words < 400 ? 'Too short — add more detail to key sections' :
-                     words > 1000 ? 'Too long — consider trimming background sections' :
-                     'Good length — ' + words + ' words';
+    var wLabel = wScore >= 6 ? '  •  ✅ Welfare checklist covered' : wScore >= 4 ? '  •  ⚠️ Strengthen welfare checklist' : '  •  ⚠️ Add welfare checklist factors';
+    var scoreLabel = (words < 700 ? '⚠️ Add more evidence' : words > 1400 ? 'Long — focus on strongest points' : '✅ ' + words + ' words') + wLabel;
     document.getElementById('swScoreLabel').textContent = scoreLabel;
 
     // AI audit
@@ -6823,6 +6869,35 @@ function showHearingActionCard(deadlines, orders) {
   }
   go('sHome');
 }
+
+
+// ── DEADLINE CALCULATOR ──
+var hearingOrders = [];
+function toggleHearingOrder(btn,val){btn.classList.toggle('sel');if(btn.classList.contains('sel')){if(hearingOrders.indexOf(val)===-1)hearingOrders.push(val);}else{hearingOrders=hearingOrders.filter(function(o){return o!==val;});}var nd=hearingOrders.indexOf('next_hearing')!==-1||hearingOrders.indexOf('positions')!==-1;var db=document.getElementById('nextHearingDateBox');if(db)db.style.display=nd?'block':'none';}
+function addWorkingDays(date,days){var d=new Date(date);var dir=days<0?-1:1;var rem=Math.abs(days);while(rem>0){d.setDate(d.getDate()+dir);var day=d.getDay();if(day!==0&&day!==6)rem--;}return d;}
+function calcDeadlines(orders,hearingDate,baseDate){var base=baseDate?new Date(baseDate):new Date();var dl=[];if(orders.indexOf('next_hearing')!==-1&&hearingDate)dl.push({label:'Next hearing',date:hearingDate,urgency:'gold'});if(orders.indexOf('section7')!==-1){var d=new Date(base);d.setDate(d.getDate()+70);dl.push({label:'Cafcass Section 7 due (est.)',date:d.toISOString().split('T')[0],urgency:'amber'});}if(hearingDate&&(orders.indexOf('positions')!==-1||orders.indexOf('next_hearing')!==-1)){var pd=addWorkingDays(new Date(hearingDate),-3);dl.push({label:'Position statement due',date:pd.toISOString().split('T')[0],urgency:'red'});}return dl;}
+function daysUntil(dateStr){var t=new Date();t.setHours(0,0,0,0);var d=new Date(dateStr);d.setHours(0,0,0,0);return Math.ceil((d-t)/(1000*60*60*24));}
+function fmtD(dateStr){return new Date(dateStr).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+
+function renderDeadlineBanner(){var b=document.getElementById('deadlineBanner');if(!b)return;var dl=(profile&&profile.hearingDeadlines)?profile.hearingDeadlines:[];var up=dl.filter(function(d){return daysUntil(d.date)>=0;}).sort(function(a,b){return new Date(a.date)-new Date(b.date);});if(!up.length){b.innerHTML='';return;}var nx=up[0];var days=daysUntil(nx.date);var isPos=nx.label.indexOf('Position')!==-1;var isHear=nx.label.indexOf('hearing')!==-1||nx.label.indexOf('Hearing')!==-1;var isS7=nx.label.indexOf('Section 7')!==-1||nx.label.indexOf('Cafcass')!==-1;var urg=days<=3?'red':days<=14?'amber':'gold';var cols={red:'var(--red)',amber:'var(--amber)',gold:'var(--gold)'};var bgs={red:'var(--red-dim)',amber:'var(--amber-dim)',gold:'var(--gold-dim)'};var bords={red:'rgba(184,68,68,0.3)',amber:'rgba(201,148,58,0.3)',gold:'rgba(212,168,67,0.3)'};var dLabel=days===0?'TODAY':days===1?'Tomorrow':'In '+days+' days';var ext=up.length>1?' &middot; '+(up.length-1)+' more':'';var cta='View all &rarr;';var ctaFn="go(\'sKeyDates\')";if(isPos&&days<=21){cta='Guardian writes it &rarr;';ctaFn="goStatementWriter()";}else if(isHear&&days<=14){cta='Prepare statement &rarr;';ctaFn="goStatementWriter()";}else if(isS7){cta='Ask Court Guru &rarr;';ctaFn="goQA()";}b.innerHTML='<div style="background:'+bgs[urg]+';border:1.5px solid '+bords[urg]+';border-radius:14px;padding:14px 16px;margin-bottom:14px;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="font-size:20px;">&#9200;</div><div style="flex:1;"><div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:'+cols[urg]+';letter-spacing:0.5px;margin-bottom:2px;">'+dLabel.toUpperCase()+'</div><div style="font-size:14px;font-weight:700;color:var(--white);">'+nx.label+'</div><div style="font-size:11px;color:var(--muted-hi);">'+fmtD(nx.date)+ext+'</div></div></div><div style="display:flex;gap:8px;"><button onclick="'+ctaFn+'" style="flex:1;padding:10px;background:'+cols[urg]+';border:none;border-radius:10px;color:'+(urg==='gold'?'#0a0600':'white')+';font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;">'+cta+'</button><button onclick="go(\'sKeyDates\')" style="padding:10px 12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;">All dates</button></div></div>';}
+
+function renderKeyDates(){var el=document.getElementById('keyDatesContent');if(!el)return;var dl=(profile&&profile.hearingDeadlines)?profile.hearingDeadlines:[];if(!dl.length){el.innerHTML='<div style="text-align:center;padding:40px 20px;"><div style="font-size:32px;margin-bottom:12px;">&#9200;</div><div style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;">No deadlines yet</div><div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:20px;">Log a hearing in your diary and Guardian calculates your deadlines automatically.</div><button class="btn-gold" onclick="go(\'sDiary\')">Go to Diary &rarr;</button></div>';return;}var sorted=dl.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date);});var up=sorted.filter(function(d){return daysUntil(d.date)>=0;});var past=sorted.filter(function(d){return daysUntil(d.date)<0;});var cols={red:'var(--red)',amber:'var(--amber)',gold:'var(--gold)',green:'var(--green)'};var bgs={red:'var(--red-dim)',amber:'var(--amber-dim)',gold:'var(--gold-dim)',green:'var(--green-dim)'};var bords={red:'rgba(184,68,68,0.25)',amber:'rgba(201,148,58,0.25)',gold:'rgba(212,168,67,0.25)',green:'rgba(26,158,114,0.25)'};var h='';if(up.length){h+='<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">UPCOMING</div>';h+=up.map(function(d){var days=daysUntil(d.date);var urg=days<=3?'red':days<=14?'amber':'green';var dl2=days===0?'TODAY':days===1?'Tomorrow':days+' days';var isPos=d.label.indexOf('Position')!==-1;var isHear=d.label.indexOf('hearing')!==-1||d.label.indexOf('Hearing')!==-1;var isS7=d.label.indexOf('Section 7')!==-1||d.label.indexOf('Cafcass')!==-1;var btn='';if(isPos)btn='<button onclick="goStatementWriter()" style="width:100%;padding:11px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:10px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;">Guardian writes my statement &mdash; &pound;79 &rarr;</button>';else if(isHear&&days<=21)btn='<button onclick="goStatementWriter()" style="width:100%;padding:11px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:10px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;">Prepare my statement &rarr;</button>';else if(isS7)btn='<button onclick="goQA()" style="width:100%;padding:11px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);border-radius:10px;color:var(--blue);font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:10px;">Ask Court Guru &rarr;</button>';return '<div style="background:'+bgs[urg]+';border:1.5px solid '+bords[urg]+';border-radius:12px;padding:14px 16px;margin-bottom:8px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div style="font-size:13px;font-weight:700;color:var(--white);">'+d.label+'</div><div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:800;color:'+cols[urg]+';">'+dl2+'</div></div><div style="font-size:12px;color:var(--muted-hi);">'+fmtD(d.date)+(d.hearingType?' &middot; '+d.hearingType:'')+'</div>'+btn+'</div>';}).join('');}if(past.length){h+='<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--muted-hi);letter-spacing:0.5px;margin:16px 0 10px;">PAST</div>';h+=past.slice().reverse().map(function(d){var days=Math.abs(daysUntil(d.date));return '<div style="background:rgba(255,255,255,0.02);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:8px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div style="font-size:13px;font-weight:600;color:var(--muted-hi);">'+d.label+'</div><div style="font-size:11px;color:var(--muted);">'+days+' days ago</div></div><div style="font-size:12px;color:var(--muted);">'+fmtD(d.date)+'</div></div>';}).join('');}h+='<button onclick="clearDeadlines()" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(184,68,68,0.3);border-radius:10px;color:var(--red);font-size:12px;cursor:pointer;margin-top:8px;">Clear all deadlines</button>';el.innerHTML=h;}
+
+function clearDeadlines(){if(!confirm('Clear all saved deadlines?'))return;if(profile){profile.hearingDeadlines=[];save();}renderKeyDates();renderDeadlineBanner();toast('Deadlines cleared');}
+
+function showHearingActionCard(dl,orders){var ex=document.getElementById('hearingActionCard');if(ex)ex.remove();var posD=dl.find(function(d){return d.label.indexOf('Position')!==-1;});var hearD=dl.find(function(d){return d.label.indexOf('hearing')!==-1||d.label.indexOf('Hearing')!==-1;});var s7=orders.indexOf('section7')!==-1;var card=document.createElement('div');card.id='hearingActionCard';var h='';if(posD){var days=daysUntil(posD.date);h='<div style="background:linear-gradient(135deg,rgba(212,168,67,0.12),rgba(212,168,67,0.05));border:2px solid rgba(212,168,67,0.35);border-radius:16px;padding:18px;margin-bottom:14px;"><div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">YOUR STATEMENT IS DUE IN '+days+' DAYS</div><div style="font-size:16px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">This is the part that matters most.</div><div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Guardian has read your documents, your diary, and knows every allegation you are facing. It can write your position statement now - built on your case, in your voice, court-ready.</div><button onclick="goStatementWriter();document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px;">Guardian writes my statement - &pound;79 &rarr;</button><button onclick="document.getElementById(\'hearingActionCard\').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Remind me later</button></div>';}else if(s7){h='<div style="background:var(--amber-dim);border:1.5px solid rgba(201,148,58,0.3);border-radius:16px;padding:18px;margin-bottom:14px;"><div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin-bottom:8px;">CAFCASS SECTION 7 ORDERED</div><div style="font-size:15px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">A Cafcass welfare report has been ordered.</div><div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Cafcass will contact you. Guardian can explain what they are looking for and how to make your voice heard in their report.</div><button onclick="goQA();document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#2563eb,var(--blue));border:none;border-radius:12px;color:#fff;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Ask Court Guru about Section 7 &rarr;</button><button onclick="document.getElementById(\'hearingActionCard\').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Got it</button></div>';}else if(hearD){var hdays=daysUntil(hearD.date);h='<div style="background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.25);border-radius:16px;padding:18px;margin-bottom:14px;"><div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">HEARING IN '+hdays+' DAYS</div><div style="font-size:15px;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:8px;">Your next hearing is logged.</div><div style="font-size:13px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Use the time well. Keep logging contact sessions and when you are ready Guardian will write your position statement from everything it knows about your case.</div><button onclick="goStatementWriter();document.getElementById(\'hearingActionCard\').remove();" style="width:100%;padding:13px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Start my position statement - &pound;79 &rarr;</button><button onclick="document.getElementById(\'hearingActionCard\').remove()" style="width:100%;padding:9px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">I will come back to this</button></div>';}if(!h)return;card.innerHTML=h;var he=document.getElementById('sHome');if(he){var bn=document.getElementById('deadlineBanner');he.insertBefore(card,bn?bn.nextSibling:he.firstChild);}go('sHome');}
+
+// ── CASE STRENGTH ──
+function calcCaseStrength(){var s=0;var items=[];if(profile&&profile.complete){s+=15;items.push({label:'Case profile complete',pts:15,done:true});}else{items.push({label:'Set up your case profile',pts:15,done:false,screen:'sWelcome'});}var dc=(caseDocuments&&caseDocuments.length)||0;s+=Math.min(20,dc*5);items.push({label:dc+' document'+(dc!==1?'s':'')+' uploaded',pts:20,done:dc>=4,screen:'sDocs'});var ec=(diaryEntries&&diaryEntries.length)||0;s+=Math.min(20,ec*2);items.push({label:ec+' diary entr'+(ec!==1?'ies':'y')+' logged',pts:20,done:ec>=10,screen:'sDiary'});var fc=(brainLog&&brainLog.length)||0;s+=Math.min(10,fc);items.push({label:fc+' facts in Guardian Brain',pts:10,done:fc>=10,screen:'sBrain'});var mc=(msgLog&&msgLog.length)||0;s+=Math.min(10,mc*2);items.push({label:mc+' messages analysed',pts:10,done:mc>=5,screen:'sCoach'});var hh=profile&&profile.hearingDeadlines&&profile.hearingDeadlines.length>0;if(hh){s+=10;items.push({label:'Hearing logged',pts:10,done:true});}else{items.push({label:'Log your next hearing',pts:10,done:false,screen:'sDiary'});}var sd=localStorage.getItem('gStatementDone')==='true';if(sd){s+=15;items.push({label:'Position statement created',pts:15,done:true});}else{items.push({label:'Create your position statement',pts:15,done:false,screen:'sStatementWriter'});}return{score:Math.min(100,s),items:items};}
+
+function calcDiaryStreak(){if(!diaryEntries||!diaryEntries.length)return 0;var dates={};diaryEntries.forEach(function(e){if(e.date)dates[e.date]=true;});var sorted=Object.keys(dates).sort().reverse();if(!sorted.length)return 0;var streak=0;var check=new Date();check.setHours(0,0,0,0);for(var i=0;i<sorted.length;i++){var d=new Date(sorted[i]);d.setHours(0,0,0,0);var diff=Math.round((check-d)/(1000*60*60*24));if(diff<=1){streak++;check=new Date(sorted[i]);check.setHours(0,0,0,0);}else{break;}}return streak;}
+
+function renderCaseStrength(){var el=document.getElementById('caseStrengthCard');if(!el||!profile||!profile.complete){if(el)el.innerHTML='';return;}var r=calcCaseStrength();var pct=r.score;var streak=calcDiaryStreak();var col=pct>=70?'var(--green)':pct>=40?'var(--amber)':'var(--red)';var label=pct>=75?'Strong case foundation':pct>=50?'Building well':pct>=25?'Getting started':'Just getting going';var next=r.items.find(function(i){return !i.done;});var sh=streak>=2?'<span style="margin-left:8px;font-size:11px;color:var(--gold);">&#128293; '+streak+'-day streak</span>':'';el.innerHTML='<div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--muted-hi);letter-spacing:0.5px;">CASE STRENGTH'+sh+'</div><div style="font-family:DM Sans,sans-serif;font-size:20px;font-weight:800;color:'+col+';">'+pct+'<span style="font-size:12px;">%</span></div></div><div style="background:rgba(255,255,255,0.08);border-radius:6px;height:6px;margin-bottom:10px;"><div style="background:'+col+';width:'+pct+'%;height:6px;border-radius:6px;"></div></div><div style="font-size:12px;color:var(--muted-hi);margin-bottom:'+(next?'8px':'0')+';">'+label+'</div>'+(next?'<div style="font-size:12px;color:'+col+';cursor:pointer;font-weight:600;" onclick="if(this.dataset.s)go(this.dataset.s)" data-s="'+next.screen+'">Next: '+next.label+' +'+next.pts+'pts &rarr;</div>':'<div style="font-size:12px;color:var(--green);">&#9989; Case fully built</div>')+'</div>';}
+
+// ── COURT GURU SUGGESTIONS ──
+function loadCourtGuruSuggestions(){var el=document.getElementById('qaSugs');if(!el)return;var sug=[];var p=profile||{};if(p.hearingDeadlines){var h=p.hearingDeadlines.find(function(d){try{return(d.label.indexOf('hearing')!==-1||d.label.indexOf('Hearing')!==-1)&&daysUntil(d.date)>=0&&daysUntil(d.date)<=30;}catch(e){return false;}});if(h){var days=daysUntil(h.date);sug.push('What should I prepare for my hearing in '+days+' days?');sug.push('What will the judge look for at my next hearing?');}var s7=p.hearingDeadlines.find(function(d){return d.label&&d.label.indexOf('Section 7')!==-1;});if(s7){sug.push('What happens during a Cafcass Section 7 investigation?');sug.push('How do I prepare for my Cafcass home visit?');}}if(p.allegations&&sug.length<3)sug.push('How do I respond to false allegations in family court?');var gen=['What does the court prioritise in contact decisions?','How do I represent myself at a hearing?','What is a FHDRA and what happens at it?','What is parental alienation and can the court consider it?','What should I bring to court on the day?'];gen.forEach(function(q){if(sug.length<4)sug.push(q);});sug=sug.slice(0,4);if(!sug.length){el.innerHTML='';return;}el.innerHTML='<div style="padding:0 0 12px;"><div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--muted-hi);letter-spacing:0.5px;margin-bottom:8px;">SUGGESTED FOR YOUR CASE</div>'+sug.map(function(s){return '<button onclick="useCourtGuruSuggestion(this)" data-q="'+s.replace(/"/g,"&quot;")+'" style="display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--white);font-size:13px;cursor:pointer;margin-bottom:6px;">'+s+'</button>';}).join('')+'</div>';}
+
+function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.getElementById('qaSugs').innerHTML='';var inp=document.getElementById('qaInput')||document.getElementById('qaIn');if(inp){inp.value=q;sendQA();}}
 
 // Load Supabase with fallback CDNs
 (function() {
