@@ -4515,7 +4515,11 @@ function renderThreadImageGrid() {
   var remaining = MAX_THREAD_IMAGES - threadImages.length;
   var countCol = threadImages.length >= MAX_THREAD_IMAGES ? 'var(--amber)' : 'var(--green)';
   var addMoreHtml = remaining > 0 ?
-    '<label style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;color:var(--gold);cursor:pointer;">+ Add more files<input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml" multiple style="display:none;" onchange="handleThreadImageUpload(event)"></label>' :
+    '<label style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;color:var(--gold);cursor:pointer;">+ Add more files<input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml" multiple style="display:none;" onchange="handleThreadImageUpload(event)"></label>' +
+    '<div style="margin-top:10px;padding:10px 12px;background:var(--green-dim);border:1px solid rgba(26,158,114,0.3);border-radius:10px;display:flex;align-items:center;gap:8px;">' +
+    '<span style="color:var(--green);font-size:16px;">&#10003;</span>' +
+    '<span style="font-size:12px;color:var(--green);font-weight:600;">' + threadImages.length + ' file' + (threadImages.length !== 1 ? 's' : '') + ' ready — tap Analyse to continue</span>' +
+    '</div>' :
     '<div style="font-size:11px;color:var(--amber);margin-top:6px;">Maximum 15 screenshots reached</div>';
   grid.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
@@ -4533,6 +4537,7 @@ function renderThreadImageGrid() {
         thumb = '<div style="width:70px;height:70px;border-radius:8px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;"><span style="font-size:20px;">&#128221;</span><span style="font-size:9px;color:var(--muted-hi);text-align:center;padding:0 4px;word-break:break-all;">'+img.name.substring(0,10)+'</span></div>';
       }
       return '<div style="position:relative;width:70px;height:70px;">' + thumb +
+        '<div style="position:absolute;bottom:-4px;left:-4px;width:18px;height:18px;border-radius:50%;background:var(--green);border:2px solid var(--card);display:flex;align-items:center;justify-content:center;font-size:10px;">&#10003;</div>' +
         '<button onclick="removeThreadImage('+i+')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>' +
         '</div>';
     }).join('') +
@@ -4599,6 +4604,9 @@ async function analyseThread() {
     // Warn if payload is very large (Vercel 4.5MB limit)
     var bodySizeMB = (new TextEncoder().encode(bodyStr).length / (1024*1024)).toFixed(1);
     console.log('Thread analysis payload:', bodySizeMB + 'MB');
+    // Show size info in loading overlay so we can see it
+    var ls = document.getElementById('overlaySub');
+    if (ls) ls.textContent = 'Payload: ' + bodySizeMB + 'MB — ' + threadImages.length + ' files';
     if (parseFloat(bodySizeMB) > 2.0) {
       clearInterval(loadInt); unload();
       toast('Images still too large — try ' + Math.floor(threadImages.length * 0.6) + ' screenshots max'); return;
@@ -4609,8 +4617,8 @@ async function analyseThread() {
     });
     // Check response is ok
     if (!res.ok) {
-      var errData = await res.json().catch(function(){return {};});
-      throw new Error('API error ' + res.status + ': ' + JSON.stringify(errData).substring(0,100));
+      var errText = await res.text().catch(function(){return 'no response body';});
+      throw new Error('HTTP ' + res.status + ' from API: ' + errText.substring(0, 200));
     }
     var data = await res.json();
     if (data.error) throw new Error(data.error.message||JSON.stringify(data.error));
@@ -4621,11 +4629,22 @@ async function analyseThread() {
     else toast('Could not analyse the thread — please try again');
   } catch(e) {
     clearInterval(loadInt); unload();
-    console.error('Thread analysis error:', e);
-    var errMsg = 'Something went wrong — please try again';
-    if (e && e.message && e.message.includes('size')) errMsg = 'Request too large — try fewer screenshots or smaller images';
-    if (e && e.message && e.message.includes('network')) errMsg = 'Connection error — check your internet and try again';
-    toast(errMsg);
+    var errDetail = e ? (e.message || JSON.stringify(e)) : 'unknown';
+    console.error('Thread analysis error:', errDetail);
+    // Show full error on screen so we can diagnose
+    var el = document.getElementById('threadResult');
+    if (el) {
+      el.style.display = 'block';
+      document.getElementById('threadPanel').style.display = 'none';
+      el.innerHTML = '<div style="background:var(--red-dim);border:1.5px solid rgba(184,68,68,0.4);border-radius:14px;padding:16px;margin-bottom:12px;">' +
+        '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">ERROR — PLEASE SCREENSHOT THIS</div>' +
+        '<div style="font-size:12px;color:var(--white);word-break:break-all;margin-bottom:8px;">' + errDetail + '</div>' +
+        '<div style="font-size:11px;color:var(--muted-hi);">Images: ' + threadImages.length + ' | Size check passed</div>' +
+        '</div>' +
+        '<button onclick="resetThreadAnalysis()" style="width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted-hi);font-size:13px;cursor:pointer;">Try again</button>';
+    } else {
+      toast('Error: ' + errDetail.substring(0, 80));
+    }
   }
 }
 
@@ -7715,3 +7734,4 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
