@@ -839,16 +839,9 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-sub">Deadlines &amp; countdowns</div>
     </button>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:14px;">
-    <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates')">
-      <div class="home-btn-icon">&#9200;</div>
-      <div class="home-btn-label">Key Dates</div>
-      <div class="home-btn-sub">Deadlines &amp; countdowns</div>
-    </button>
-  </div>
   <!-- Intelligence Readiness — prominent until complete -->
   <div id="intelRestore" onclick="showIntelBar()" style="display:none;align-items:center;gap:6px;padding:7px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;margin-bottom:10px;font-size:12px;color:var(--muted-hi);font-family:DM Sans,sans-serif;font-weight:600;">🧠 Guardian Intelligence <span style="color:var(--gold);">Show →</span></div>
-  <div id="intelBar" style="background:var(--card);border:2px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;display:none;">
+  <div id="intelBar" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
       <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">🧠 Guardian Intelligence</div>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -873,12 +866,16 @@ p, .body-text { font-size: 16px !important; }
     <div id="homeTimelineContent" style="display:none;background:var(--card);border:1.5px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:10px 14px;max-height:300px;overflow-y:auto;"></div>
   </div>
 
-  <div class="gn-strip" id="gnStrip" style="display:none;">
-    <div class="gn-header">
-      <div class="gn-title">🧠 GUARDIAN NOTICED</div>
-      <div class="gn-count" id="gnCount"></div>
+  <div id="gnStrip" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;">
+    <div onclick="toggleGNStrip()" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:16px;">🧠</span>
+        <div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:700;color:var(--white);">Guardian Noticed</div>
+        <div id="gnCount" style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--gold);background:var(--gold-dim);padding:2px 7px;border-radius:10px;"></div>
+      </div>
+      <span id="gnChevron" style="color:var(--muted);font-size:16px;transition:transform 0.2s;">›</span>
     </div>
-    <div id="gnItems"></div>
+    <div id="gnItems" style="display:none;padding:0 14px 14px;"></div>
   </div>
 </div>
 
@@ -1227,18 +1224,7 @@ p, .body-text { font-size: 16px !important; }
     <button class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">🧠 Guardian Brain</div><div class="section-sub">Help Guardian learn from real experiences</div><div id="brainFactCount" style="font-size:11px;color:var(--gold);margin-top:3px;"></div></div>
   </div>
-  <div style="background:rgba(245,200,66,0.08);border:1.5px solid rgba(245,200,66,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
-    <div style="font-size:14px;line-height:1.7;color:var(--white);margin-bottom:8px;">The more parents share, the smarter Guardian gets — for everyone.</div>
-    <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;">Your feedback stays anonymous. No messages shared. Only outcomes.</div>
-  </div>
-  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
-    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">GUARDIAN KNOWS</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="brainNumbers"></div>
-  </div>
-  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
-    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">YOUR RECENT MESSAGES</div>
-    <div id="brainLog" style="font-size:13px;color:var(--muted-hi);">No messages logged yet.</div>
-  </div>
+  <div id="brainContent" style="margin-bottom:14px;"></div>
   <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
     <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:12px;">How did your last reply go?</div>
     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -3237,14 +3223,17 @@ function renderGuardianNoticed() {
   count.textContent = notices.length + ' notice' + (notices.length>1?'s':'');
 
   items.innerHTML = notices.slice(0,4).map(function(n){
-    var onclick = n.screen ? "go(\""+n.screen+"\")" : "";
-    return '<div class="gn-item gn-' + n.type + '" onclick="' + onclick + '">' +
-      '<div style="flex:1;">' +
-        '<div class="gn-text">' + n.text + '</div>' +
-        (n.action ? '<div class="gn-action">' + n.action + ' →</div>' : '') +
-      '</div>' +
-      (n.screen ? '<div class="gn-arrow">›</div>' : '') +
-    '</div>';
+    var typeColors = {urgent:'var(--red)',warning:'var(--amber)',tip:'var(--blue)',info:'var(--green)'};
+    var col = typeColors[n.type] || 'var(--muted-hi)';
+    var actionHtml = '';
+    if (n.action && n.screen) {
+      actionHtml = '<button onclick="go(\''+n.screen+'\')" style="margin-top:8px;padding:7px 12px;background:transparent;border:1px solid '+col+';border-radius:8px;color:'+col+';font-size:12px;font-weight:600;cursor:pointer;">'+n.action+' →</button>';
+    }
+    return '<div style="padding:10px 0;border-bottom:1px solid var(--border);">' +
+      '<div style="display:flex;align-items:flex-start;gap:8px;">' +
+      '<div style="width:6px;height:6px;border-radius:50%;background:'+col+';margin-top:5px;flex-shrink:0;"></div>' +
+      '<div style="flex:1;font-size:13px;color:var(--muted-hi);line-height:1.5;">'+n.text+'</div>' +
+      '</div>' + actionHtml + '</div>';
   }).join('');
 }
 
@@ -3502,6 +3491,15 @@ function getOrdinal(n) {
   return s[(v-20)%10]||s[v]||s[0];
 }
 
+
+function toggleGNStrip() {
+  var items = document.getElementById('gnItems');
+  var chevron = document.getElementById('gnChevron');
+  if (!items) return;
+  var open = items.style.display !== 'none';
+  items.style.display = open ? 'none' : 'block';
+  if (chevron) chevron.style.transform = open ? '' : 'rotate(90deg)';
+}
 
 function toggleHomeTimeline() {
   var content = document.getElementById('homeTimelineContent');
@@ -4743,77 +4741,90 @@ function checkSevenDayUpsell() {
 var brainLog = safeJSONParse(localStorage.getItem('gBrainLog'), []);
 
 function loadBrainScreen() {
-  var total = msgLog ? msgLog.length : 0;
-  var red = msgLog ? msgLog.filter(function(m){return m.flag==='red';}).length : 0;
-  var amber = msgLog ? msgLog.filter(function(m){return m.flag==='amber';}).length : 0;
-  var docs = caseDocuments ? caseDocuments.length : 0;
-  var diary = diaryEntries ? diaryEntries.length : 0;
-  var outcomes = brainLog ? brainLog.length : 0;
-  var contactRefused = brainLog ? brainLog.filter(function(b){return b.type==='contact'&&b.outcome==='refused';}).length : 0;
-  var hearings = brainLog ? brainLog.filter(function(b){return b.type==='hearing';}).length : 0;
+  var fc = document.getElementById('brainFactCount');
+  var facts = (brainLog||[]).filter(function(b){ return b.summary||b.text; });
+  if (fc) fc.textContent = facts.length > 0 ? facts.length + ' facts extracted' : '';
 
-  // Stats grid
-  var nums = document.getElementById('brainNumbers');
-  if (!nums) return;
-  nums.innerHTML = [
-    {label:'Messages coached', val:total, col:'var(--gold)'},
-    {label:'Diary entries', val:diary, col:'var(--green)'},
-    {label:'Documents uploaded', val:docs, col:'var(--blue)'},
-    {label:'Serious flags caught', val:red, col:'var(--red)'},
-    {label:'Monitoring flags', val:amber, col:'var(--amber)'},
-    {label:'Outcomes logged', val:outcomes, col:'var(--muted-hi)'}
-  ].map(function(s){
-    return '<div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center;">' +
-      '<div style="font-family:DM Sans,sans-serif;font-size:24px;font-weight:800;color:'+s.col+'">'+s.val+'</div>' +
-      '<div style="font-size:11px;color:var(--muted-hi);margin-top:3px;line-height:1.3;">'+s.label+'</div>' +
-    '</div>';
-  }).join('');
+  var el = document.getElementById('brainContent');
+  if (!el) return;
 
-  // Case summary
-  var summary = document.getElementById('brainCaseSummary');
-  if (!summary) return;
-  var lines = [];
+  var h = '';
+
+  // What Guardian knows
+  var knows = [];
   if (profile) {
-    if (profile.childName) lines.push('Child: ' + profile.childName.split(',')[0].trim());
-    if (profile.caseType) lines.push('Case type: ' + profile.caseType);
-    if (profile.conflict) lines.push('Conflict level: ' + profile.conflict + '/10');
-    if (profile.allegations && profile.allegations.length > 2) lines.push('Allegations on file: ' + profile.allegations.substring(0,100) + (profile.allegations.length > 100 ? '...' : ''));
-    if (profile.dismissed && profile.dismissed.length > 2) lines.push('Dismissed findings: ' + profile.dismissed.substring(0,100) + (profile.dismissed.length > 100 ? '...' : ''));
+    if (profile.childName) knows.push({ label:'Child', value:profile.childName.split(',')[0].trim(), col:'var(--blue)' });
+    if (profile.caseType) knows.push({ label:'Case type', value:profile.caseType, col:'var(--gold)' });
+    if (profile.contact) knows.push({ label:'Contact arrangement', value:profile.contact.substring(0,50), col:'var(--green)' });
+    if (profile.conflict) {
+      var cv = parseInt(profile.conflict)||5;
+      knows.push({ label:'Conflict level', value:cv+'/10', col:cv>7?'var(--red)':cv>4?'var(--amber)':'var(--green)' });
+    }
+    if (profile.allegations && profile.allegations.length > 2) knows.push({ label:'Allegations on file', value:profile.allegations.substring(0,70)+(profile.allegations.length>70?'...':''), col:'var(--red)' });
+    if (profile.dismissed && profile.dismissed.length > 2) knows.push({ label:'Dismissed / ruled in favour', value:profile.dismissed.substring(0,70)+(profile.dismissed.length>70?'...':''), col:'var(--green)' });
   }
-  if (contactRefused > 0) lines.push('Contact refused: ' + contactRefused + ' time(s) logged');
-  if (hearings > 0) lines.push('Hearings logged: ' + hearings);
-  summary.innerHTML = lines.length > 0 ?
-    lines.map(function(l){ return '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted-hi);">'+l+'</div>'; }).join('') :
-    '<div style="font-size:13px;color:var(--muted);">Complete your profile and start using Guardian to build your case picture.</div>';
+  var dc=(caseDocuments&&caseDocuments.length)||0, ec=(diaryEntries&&diaryEntries.length)||0, mc=(msgLog&&msgLog.length)||0;
+  if (dc>0) knows.push({label:'Documents in case file',value:dc+' uploaded',col:'var(--blue)'});
+  if (ec>0) knows.push({label:'Diary entries',value:ec+' logged',col:'var(--green)'});
+  if (mc>0) knows.push({label:'Messages analysed',value:mc+' checked',col:'var(--gold)'});
+  if (profile&&profile.hearingDeadlines&&profile.hearingDeadlines.length>0){
+    var up=profile.hearingDeadlines.filter(function(d){try{return daysUntil(d.date)>=0;}catch(e){return false;}});
+    if(up.length>0) knows.push({label:'Upcoming deadlines',value:up.length+' logged',col:'var(--amber)'});
+  }
 
-  // Activity log - combine messages, diary, brain outcomes
-  var logEl = document.getElementById('brainLog');
-  if (!logEl) return;
-  var activities = [];
+  if (knows.length > 0) {
+    h += '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN KNOWS ABOUT YOUR CASE</div>';
+    h += knows.map(function(k){
+      return '<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">' +
+        '<div style="font-size:12px;color:var(--muted-hi);flex:1;">' + k.label + '</div>' +
+        '<div style="font-size:12px;color:' + k.col + ';font-weight:600;text-align:right;max-width:55%;word-break:break-word;">' + k.value + '</div></div>';
+    }).join('');
+    h += '</div>';
+  }
 
-  msgLog.slice(-3).forEach(function(m){
-    var col = m.flag==='red'?'var(--red)':m.flag==='amber'?'var(--amber)':'var(--green)';
-    activities.push({ ts: m.ts||'', col:col, text:m.summary, score:m.score+'/10' });
+  // Extracted facts
+  if (facts.length > 0) {
+    h += '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">EXTRACTED FACTS (' + facts.length + ')</div>';
+    h += facts.slice(-12).reverse().map(function(f){
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--border);">' +
+        '<div style="font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px;">From ' + (f.source||f.type||'case') + '</div>' +
+        '<div style="font-size:13px;color:var(--muted-hi);line-height:1.5;">' + (f.summary||f.text||'').substring(0,160) + '</div></div>';
+    }).join('');
+    h += '</div>';
+  }
+
+  // Recent activity
+  var activity = [];
+  (diaryEntries||[]).slice(-3).forEach(function(e){
+    activity.push({col:'var(--blue)',text:(e.typeLabel||e.type||'Entry')+' logged',sub:new Date(e.date).toLocaleDateString('en-GB')+(e.text?' — '+(e.text).substring(0,50):'')});
   });
-  diaryEntries.slice(-3).forEach(function(e){
-    activities.push({ ts:e.createdAt||'', col:'var(--blue)', text:e.typeLabel + ' — ' + new Date(e.date).toLocaleDateString('en-GB'), score:'' });
-  });
-  brainLog.slice(-3).forEach(function(b){
-    var col = b.outcome==='positive'||b.outcome==='good'||b.outcome==='happened'?'var(--green)':b.outcome==='negative'||b.outcome==='difficult'||b.outcome==='refused'?'var(--red)':'var(--amber)';
-    activities.push({ ts:b.ts||'', col:col, text:'Outcome logged: '+b.outcome, score:'' });
+  (msgLog||[]).slice(-3).forEach(function(m){
+    var col=m.flag==='red'?'var(--red)':m.flag==='amber'?'var(--amber)':'var(--green)';
+    activity.push({col:col,text:m.summary||'Message analysed',sub:'Score: '+(m.score||'—')+'/10'});
   });
 
-  activities.sort(function(a,b){ return new Date(b.ts) - new Date(a.ts); });
+  if (activity.length > 0) {
+    h += '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">RECENT ACTIVITY</div>';
+    h += activity.slice(0,5).map(function(a){
+      return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">' +
+        '<div style="width:8px;height:8px;border-radius:50%;background:'+a.col+';margin-top:4px;flex-shrink:0;"></div>' +
+        '<div><div style="font-size:13px;color:var(--muted-hi);">'+a.text+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">'+a.sub+'</div></div></div>';
+    }).join('');
+    h += '</div>';
+  }
 
-  logEl.innerHTML = activities.length > 0 ?
-    activities.slice(0,8).map(function(a){
-      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);">' +
-        '<div style="width:8px;height:8px;border-radius:50%;background:'+a.col+';flex-shrink:0;"></div>' +
-        '<div style="flex:1;font-size:13px;color:var(--muted-hi);">'+a.text+'</div>' +
-        (a.score ? '<div style="font-size:11px;color:var(--muted);flex-shrink:0;">'+a.score+'</div>' : '') +
-      '</div>';
-    }).join('') :
-    '<div style="font-size:13px;color:var(--muted);">No activity yet. Start using Guardian and your activity will appear here.</div>';
+  if (!knows.length && !facts.length && !activity.length) {
+    h = '<div style="text-align:center;padding:40px 20px;">' +
+      '<div style="font-size:32px;margin-bottom:12px;">&#129504;</div>' +
+      '<div style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;">Guardian is listening</div>' +
+      '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:20px;">Complete your profile, upload documents, and log diary entries. Guardian extracts key facts automatically.</div>' +
+      '<button class="btn-gold" onclick="go(\'sWelcome\')" >Set up my case &rarr;</button></div>';
+  }
+
+  el.innerHTML = h;
 }
 
 function showEditCapture() {
