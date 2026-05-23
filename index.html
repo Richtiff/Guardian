@@ -2935,9 +2935,8 @@ async function showScreenshotCount(event) {
 }
 
 function handleBundleInSetup(event) {
-  var file = event.target.files[0];
-  event.target.value = '';
-  if (!file) return;
+  var files = Array.from(event.target.files||[]); event.target.value = '';
+  var file = files[0]; if (!file) return;
   var status = document.getElementById('stBundle');
   var result = document.getElementById('bundleSetupResult');
   if (status) { status.textContent = ''; status.innerHTML = '<span style="font-size:11px;color:var(--gold);">Reading...</span>'; }
@@ -3009,8 +3008,13 @@ function handleBundleInSetup(event) {
   reader.readAsDataURL(file);
 }
 
+function handleDocMultiple(event, docType) {
+  // Alias — routes to addDoc for backwards compatibility
+  addDoc(event, docType);
+}
+
 function handleDoc(event, docType) {
-  var files=event.target.files; if(!files||!files.length) return;
+  var files=Array.from(event.target.files||[]); event.target.value=''; if(!files.length) return;
   var stId='st'+docType.charAt(0).toUpperCase()+docType.slice(1);
   var stEl=document.getElementById(stId);
   if(stEl) stEl.textContent='⏳';
@@ -4036,7 +4040,7 @@ async function qaGreeting() {
   var greetingPrompt = getCTX() + '\n\nWrite a warm, human opening message to this parent. 3-4 sentences max. Structure it like this:\n1. Ask how they are today — warm and genuine, acknowledge this is a hard situation\n2. Briefly show you know their case (mention child by name, case type, or something specific)\n3. Ask what is on their mind today or what they need help with\n\nSound exactly like a brilliant, caring friend who happens to know everything about family court. Warm. Human. Not a robot. Not a legal assistant. No bullet points. No lists. Just natural conversation that makes them feel heard and supported.';
 
   try {
-    var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:200, messages:[{role:'user', content:greetingPrompt}] }) });
+    var res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:200, messages:[{role:'user', content:greetingPrompt}] }) });
     var data = await res.json();
     var greeting = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
     var te=document.getElementById('qaTypG'); if(te) te.remove();
@@ -4354,8 +4358,8 @@ function addQAGuardianMsg(text) {
 function scrollQA(){ var c=document.getElementById('qaMsgs'); c.scrollTop=c.scrollHeight; }
 
 function handleQAAttach(event) {
-  var file = event.target.files[0];
-  if (!file) return;
+  var files = Array.from(event.target.files||[]); event.target.value = '';
+  var file = files[0]; if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
     qaAttachment = { name: file.name, type: file.type, data: e.target.result.split(',')[1] };
@@ -4552,7 +4556,7 @@ async function analyseThread() {
   var loadMsgs = ['Reading the full thread...','Working out what has been agreed...','Identifying what is still open...','Spotting flags and decisions...','Drafting your reply...'];
   var li = 0;
   load(loadMsgs[0], 'Analysing ' + coachTypeLabel + ' correspondence');
-  var loadInt = setInterval(function(){ li=(li+1)%loadMsgs.length; var ls=document.getElementById('loadSub'); if(ls) ls.textContent=loadMsgs[li]; }, 1800);
+  var loadInt = setInterval(function(){ li=(li+1)%loadMsgs.length; var ls=document.getElementById('overlaySub'); if(ls) ls.textContent=loadMsgs[li]; }, 1800);
   var ctx = getCTX();
   var sys = (THREAD_SYS_BY_TYPE[coachType]||THREAD_SYS_BY_TYPE.other) + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
   try {
@@ -5439,8 +5443,8 @@ function saveEditCapture() {
   var editedText = edited ? edited.value.trim() : '';
 
   // Get the original suggested reply
-  var originalReply = document.getElementById('replyText') ?
-    document.getElementById('replyText').textContent.trim() : '';
+  var originalReply = document.getElementById('theirsResponse') ?
+    document.getElementById('theirsResponse').textContent.trim() : '';
 
   if (editedText) {
     // Store the edit for learning
@@ -5568,9 +5572,8 @@ function logBrainContact(outcome) {
 var lastExplainedDoc = null;
 
 async function explainDoc(event, docType) {
-  var file = event.target.files[0];
-  event.target.value = '';
-  if (!file) return;
+  var files = Array.from(event.target.files||[]); event.target.value = '';
+  var file = files[0]; if (!file) return;
   load('Reading your document...', 'Guardian is translating this into plain English');
   var reader = new FileReader();
   reader.onload = async function(e) {
@@ -5630,15 +5633,14 @@ var scanType = 'mine';
 
 function setScanType(type) {
   scanType = type;
-  document.getElementById('scanMine').classList.toggle('sel', type==='mine');
-  document.getElementById('scanTheirs').classList.toggle('sel', type==='theirs');
-  document.getElementById('scannerLabel').textContent = type==='mine' ? 'Upload my statement' : 'Upload their statement';
+  document.getElementById('mineResult').classList.toggle('sel', type==='mine');
+  document.getElementById('theirsResult').classList.toggle('sel', type==='theirs');
+  document.getElementById('theirsScanStatus').textContent = type==='mine' ? 'Upload my statement' : 'Upload their statement';
 }
 
 async function scanStatement(event, forcedType) {
-  var files = event.target.files;
-  event.target.value = '';
-  if (!files || !files.length) return;
+  var files = Array.from(event.target.files||[]); event.target.value = '';
+  if (!files.length) return;
   var type = forcedType || 'mine';
   var file = files[0]; // Process first file — if multiple, combine
   console.log('Scanning statement, type:', type, 'files:', files.length);
@@ -6275,8 +6277,8 @@ function getSwGuidance() {
 }
 
 function swUploadTheirDocs(event) {
-  var file = event.target.files[0];
-  if (!file) return;
+  var files = Array.from(event.target.files||[]); event.target.value = '';
+  var file = files[0]; if (!file) return;
   load('Reading their document...', 'Guardian is finding every allegation');
   var reader = new FileReader();
   reader.onload = async function(e) {
@@ -6767,9 +6769,8 @@ function calDayTap(dateStr) {
 // ── COURT BUNDLE UPLOAD ──
 
 async function processBundleUpload(event) {
-  var file = event.target.files[0];
-  event.target.value = '';
-  if (!file) return;
+  var files = Array.from(event.target.files||[]); event.target.value = '';
+  var file = files[0]; if (!file) return;
 
   document.getElementById('bundleStatus').textContent = '⏳';
   document.getElementById('bundleProcessing').style.display = 'block';
@@ -7632,7 +7633,7 @@ function renderCaseStrength(){var el=document.getElementById('caseStrengthCard')
 // ── COURT GURU SUGGESTIONS ──
 function loadCourtGuruSuggestions(){var el=document.getElementById('qaSugs');if(!el)return;var sug=[];var p=profile||{};if(p.hearingDeadlines){var h=p.hearingDeadlines.find(function(d){try{return(d.label.indexOf('hearing')!==-1||d.label.indexOf('Hearing')!==-1)&&daysUntil(d.date)>=0&&daysUntil(d.date)<=30;}catch(e){return false;}});if(h){var days=daysUntil(h.date);sug.push('What should I prepare for my hearing in '+days+' days?');sug.push('What will the judge look for at my next hearing?');}var s7=p.hearingDeadlines.find(function(d){return d.label&&d.label.indexOf('Section 7')!==-1;});if(s7){sug.push('What happens during a Cafcass Section 7 investigation?');sug.push('How do I prepare for my Cafcass home visit?');}}if(p.allegations&&sug.length<3)sug.push('How do I respond to false allegations in family court?');var gen=['What does the court prioritise in contact decisions?','How do I represent myself at a hearing?','What is a FHDRA and what happens at it?','What is parental alienation and can the court consider it?','What should I bring to court on the day?'];gen.forEach(function(q){if(sug.length<4)sug.push(q);});sug=sug.slice(0,4);if(!sug.length){el.innerHTML='';return;}el.innerHTML='<div style="padding:0 0 12px;"><div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--muted-hi);letter-spacing:0.5px;margin-bottom:8px;">SUGGESTED FOR YOUR CASE</div>'+sug.map(function(s){return '<button onclick="useCourtGuruSuggestion(this)" data-q="'+s.replace(/"/g,"&quot;")+'" style="display:block;width:100%;text-align:left;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--white);font-size:13px;cursor:pointer;margin-bottom:6px;">'+s+'</button>';}).join('')+'</div>';}
 
-function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.getElementById('qaSugs').innerHTML='';var inp=document.getElementById('qaInput')||document.getElementById('qaIn');if(inp){inp.value=q;sendQA();}}
+function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.getElementById('qaSugs').innerHTML='';var inp=document.getElementById('qaIn')||document.getElementById('qaIn');if(inp){inp.value=q;sendQA();}}
 
 // Load Supabase with fallback CDNs
 (function() {
