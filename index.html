@@ -4429,17 +4429,29 @@ var MAX_THREAD_IMAGES = 20;
 function resizeImageForThread(dataUrl, callback) {
   var img = new Image();
   img.onload = function() {
-    var maxW = 900;
-    var scale = img.width > maxW ? maxW / img.width : 1;
-    var w = Math.round(img.width * scale);
-    var h = Math.round(img.height * scale);
-    var canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    var ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, w, h);
-    var resized = canvas.toDataURL('image/jpeg', 0.72);
-    callback(resized.split(',')[1]);
+    try {
+      var maxW = 720;
+      var maxH = 3500;
+      var scaleW = img.width > maxW ? maxW / img.width : 1;
+      var scaleH = img.height > maxH ? maxH / img.height : 1;
+      var scale = Math.min(scaleW, scaleH);
+      var w = Math.round(img.width * scale);
+      var h = Math.round(img.height * scale);
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.60).split(',')[1]);
+    } catch(e) {
+      // Fallback — even smaller
+      try {
+        var c2 = document.createElement('canvas');
+        c2.width = 480; c2.height = Math.min(Math.round(480*(img.height/img.width)), 2500);
+        c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height);
+        callback(c2.toDataURL('image/jpeg', 0.55).split(',')[1]);
+      } catch(e2) { callback(null); }
+    }
   };
+  img.onerror = function() { callback(null); };
   img.src = dataUrl;
 }
 
@@ -4587,9 +4599,9 @@ async function analyseThread() {
     // Warn if payload is very large (Vercel 4.5MB limit)
     var bodySizeMB = (new TextEncoder().encode(bodyStr).length / (1024*1024)).toFixed(1);
     console.log('Thread analysis payload:', bodySizeMB + 'MB');
-    if (parseFloat(bodySizeMB) > 3.5) {
+    if (parseFloat(bodySizeMB) > 2.0) {
       clearInterval(loadInt); unload();
-      toast('Too many large screenshots — try using fewer or smaller images'); return;
+      toast('Images still too large — try ' + Math.floor(threadImages.length * 0.6) + ' screenshots max'); return;
     }
     var res = await fetch(API, {
       method:'POST', headers:{'Content-Type':'application/json'},
