@@ -1005,11 +1005,58 @@ p, .body-text { font-size: 16px !important; }
   <!-- THREAD ANALYSIS -->
   <div id="threadPanel" style="display:none;">
     <div class="field-group">
-      <label class="field-label">PASTE THE FULL THREAD</label>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Include all messages — Guardian works out who said what, what has been agreed, and what is still open</div>
-      <textarea id="threadInput" class="field-input" rows="10" style="resize:none;font-size:13px;line-height:1.6;" placeholder="Paste the full email chain, WhatsApp thread, or letter exchange here..."></textarea>
+      <label class="field-label">UPLOAD SCREENSHOTS</label>
+      <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;margin-bottom:10px;">Upload screenshots, PDFs, or documents — up to 20 files at once. Guardian reads everything: timestamps, sender names, every word.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <span style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--muted-hi);">&#128247; JPG / PNG</span>
+        <span style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--muted-hi);">&#128444;&#65039; HEIC / WebP</span>
+        <span style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--muted-hi);">&#128196; PDF</span>
+        <span style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--muted-hi);">&#128221; TXT / DOC</span>
+        <span style="font-size:11px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--muted-hi);">&#128172; Any screenshot</span>
+      </div>
+      <div style="background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:4px;">&#128247; Android tip</div>
+        <div style="font-size:12px;color:var(--muted-hi);line-height:1.5;">Use your phone&apos;s <strong style="color:var(--white);">scroll screenshot</strong> feature to capture the whole conversation in one long image. Samsung, Pixel, and most Android phones have this built in — look for &ldquo;Scroll capture&rdquo; after taking a screenshot.</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;">
+        <span style="font-size:14px;margin-top:1px;">&#128274;</span>
+        <div style="font-size:11px;color:var(--muted-hi);line-height:1.5;"><strong style="color:var(--white);">Your screenshots are private.</strong> They are sent securely to Guardian&apos;s AI to be read, then immediately discarded. They are never stored, never shared, and never seen by anyone at Guardian.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;text-align:center;">
+          <span style="font-size:24px;">&#128247;</span>
+          <span style="font-size:12px;font-weight:700;color:var(--white);">Camera</span>
+          <span style="font-size:10px;color:var(--muted);">Take photo</span>
+          <input type="file" accept="image/*" capture="environment" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+        </label>
+        <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;text-align:center;">
+          <span style="font-size:24px;">&#128444;&#65039;</span>
+          <span style="font-size:12px;font-weight:700;color:var(--white);">Screenshots</span>
+          <span style="font-size:10px;color:var(--muted);">JPG PNG HEIC WebP</span>
+          <input type="file" accept="image/*,.heic,.heif,.webp" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+        </label>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;text-align:center;">
+          <span style="font-size:24px;">&#128196;</span>
+          <span style="font-size:12px;font-weight:700;color:var(--white);">PDF / Doc</span>
+          <span style="font-size:10px;color:var(--muted);">Letters &amp; emails</span>
+          <input type="file" accept=".pdf,.doc,.docx,.txt,.rtf" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+        </label>
+        <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;text-align:center;">
+          <span style="font-size:24px;">&#128193;</span>
+          <span style="font-size:12px;font-weight:700;color:var(--white);">Any file</span>
+          <span style="font-size:10px;color:var(--muted);">All formats</span>
+          <input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml,.msg" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+        </label>
+      </div>
+      <div id="threadImageGrid" style="display:none;margin-bottom:12px;"></div>
     </div>
-    <button onclick="analyseThread()" class="btn-gold" style="width:100%;">Analyse this thread &#8594;</button>
+    <div class="divider"><span>or paste text</span></div>
+    <div class="field-group" style="margin-top:12px;">
+      <textarea id="threadInput" class="field-input" rows="5" style="resize:none;font-size:13px;line-height:1.6;" placeholder="Paste the full email chain or WhatsApp thread here..."></textarea>
+    </div>
+    <button onclick="analyseThread()" class="btn-gold" style="width:100%;margin-top:4px;">Analyse this thread &#8594;</button>
   </div>
   <div id="threadResult" style="display:none;"></div>
 </div>
@@ -4371,6 +4418,122 @@ var THREAD_SYS_BY_TYPE = {
   other: 'You are Guardian, analysing a correspondence thread for a parent in family court proceedings.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this about",\n  "open": ["what is unresolved"],\n  "flags": ["any concerns"],\n  "decisions": ["what the parent needs to decide"],\n  "reply": "professional, clear reply in parent voice"\n}'
 };
 
+var threadImages = [];
+
+var MAX_THREAD_IMAGES = 20;
+
+function resizeImageForThread(dataUrl, callback) {
+  var img = new Image();
+  img.onload = function() {
+    var maxW = 1280;
+    var scale = img.width > maxW ? maxW / img.width : 1;
+    var w = Math.round(img.width * scale);
+    var h = Math.round(img.height * scale);
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    var resized = canvas.toDataURL('image/jpeg', 0.85);
+    callback(resized.split(',')[1]);
+  };
+  img.src = dataUrl;
+}
+
+function handleThreadImageUpload(event) {
+  var files = Array.from(event.target.files);
+  event.target.value = '';
+  if (!files.length) return;
+  var remaining = MAX_THREAD_IMAGES - threadImages.length;
+  if (remaining <= 0) { toast('Maximum ' + MAX_THREAD_IMAGES + ' files reached'); return; }
+  if (files.length > remaining) {
+    files = files.slice(0, remaining);
+    toast('Adding ' + remaining + ' file' + (remaining>1?'s':'') + ' — ' + MAX_THREAD_IMAGES + ' maximum');
+  } else {
+    toast('Reading ' + files.length + ' file' + (files.length>1?'s':'') + '...');
+  }
+  files.forEach(function(file) {
+    var fname = file.name.toLowerCase();
+    var isImage = file.type.startsWith('image/') || fname.endsWith('.heic') || fname.endsWith('.heif');
+    var isPDF = file.type === 'application/pdf' || fname.endsWith('.pdf');
+    var isText = fname.endsWith('.txt') || fname.endsWith('.rtf') || fname.endsWith('.doc') || fname.endsWith('.docx');
+    var reader = new FileReader();
+    if (isImage) {
+      reader.onload = function(e) {
+        resizeImageForThread(e.target.result, function(b64) {
+          threadImages.push({ data: b64, type: 'image/jpeg', name: file.name, kind: 'image' });
+          renderThreadImageGrid();
+        });
+      };
+      reader.readAsDataURL(file);
+    } else if (isPDF) {
+      reader.onload = function(e) {
+        var b64 = e.target.result.split(',')[1];
+        threadImages.push({ data: b64, type: 'application/pdf', name: file.name, kind: 'pdf' });
+        renderThreadImageGrid();
+      };
+      reader.readAsDataURL(file);
+    } else if (isText) {
+      reader.onload = function(e) {
+        threadImages.push({ data: null, text: e.target.result, type: 'text/plain', name: file.name, kind: 'text' });
+        renderThreadImageGrid();
+      };
+      reader.readAsText(file);
+    } else {
+      // Try as image fallback
+      reader.onload = function(e) {
+        resizeImageForThread(e.target.result, function(b64) {
+          threadImages.push({ data: b64, type: 'image/jpeg', name: file.name, kind: 'image' });
+          renderThreadImageGrid();
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+function renderThreadImageGrid() {
+  var grid = document.getElementById('threadImageGrid');
+  if (!grid) return;
+  if (!threadImages.length) { grid.style.display='none'; return; }
+  grid.style.display = 'block';
+  var remaining = MAX_THREAD_IMAGES - threadImages.length;
+  var countCol = threadImages.length >= MAX_THREAD_IMAGES ? 'var(--amber)' : 'var(--green)';
+  var addMoreHtml = remaining > 0 ?
+    '<label style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;color:var(--gold);cursor:pointer;">+ Add more files<input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml" multiple style="display:none;" onchange="handleThreadImageUpload(event)"></label>' :
+    '<div style="font-size:11px;color:var(--amber);margin-top:6px;">Maximum 15 screenshots reached</div>';
+  grid.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+    '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:'+countCol+';letter-spacing:0.5px;">' + threadImages.length + ' / ' + MAX_THREAD_IMAGES + ' SCREENSHOTS</div>' +
+    '<button onclick="clearThreadImages()" style="font-size:11px;color:var(--red);background:transparent;border:none;cursor:pointer;">Clear all</button>' +
+    '</div>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
+    threadImages.map(function(img, i) {
+      var thumb = '';
+      if (img.kind === 'image') {
+        thumb = '<img src="data:'+img.type+';base64,'+img.data+'" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">';
+      } else if (img.kind === 'pdf') {
+        thumb = '<div style="width:70px;height:70px;border-radius:8px;background:var(--red-dim);border:1.5px solid rgba(184,68,68,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;"><span style="font-size:20px;">&#128196;</span><span style="font-size:9px;color:var(--muted-hi);text-align:center;padding:0 4px;word-break:break-all;">'+img.name.substring(0,10)+'</span></div>';
+      } else {
+        thumb = '<div style="width:70px;height:70px;border-radius:8px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;"><span style="font-size:20px;">&#128221;</span><span style="font-size:9px;color:var(--muted-hi);text-align:center;padding:0 4px;word-break:break-all;">'+img.name.substring(0,10)+'</span></div>';
+      }
+      return '<div style="position:relative;width:70px;height:70px;">' + thumb +
+        '<button onclick="removeThreadImage('+i+')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>' +
+        '</div>';
+    }).join('') +
+    '</div>' + addMoreHtml;
+}
+
+function clearThreadImages() {
+  threadImages = [];
+  renderThreadImageGrid();
+  toast('Screenshots cleared');
+}
+
+function removeThreadImage(idx) {
+  threadImages.splice(idx, 1);
+  renderThreadImageGrid();
+}
+
 function showThread() {
   document.getElementById('inPanel').style.display='none';
   document.getElementById('outPanel').style.display='none';
@@ -4384,7 +4547,8 @@ function showThread() {
 
 async function analyseThread() {
   var text = document.getElementById('threadInput').value.trim();
-  if (!text || text.length < 50) { toast('Paste the thread first'); return; }
+  var hasImages = threadImages.length > 0;
+  if (!hasImages && (!text || text.length < 50)) { toast('Upload screenshots or paste the thread first'); return; }
   var loadMsgs = ['Reading the full thread...','Working out what has been agreed...','Identifying what is still open...','Spotting flags and decisions...','Drafting your reply...'];
   var li = 0;
   load(loadMsgs[0], 'Analysing ' + coachTypeLabel + ' correspondence');
@@ -4392,10 +4556,31 @@ async function analyseThread() {
   var ctx = getCTX();
   var sys = (THREAD_SYS_BY_TYPE[coachType]||THREAD_SYS_BY_TYPE.other) + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
   try {
+    var msgContent;
+    if (hasImages) {
+      var parts = [];
+      var textParts = [];
+      threadImages.forEach(function(item) {
+        if (item.kind === 'image') {
+          parts.push({ type:'image', source:{ type:'base64', media_type:item.type, data:item.data } });
+        } else if (item.kind === 'pdf') {
+          parts.push({ type:'document', source:{ type:'base64', media_type:'application/pdf', data:item.data } });
+        } else if (item.kind === 'text') {
+          textParts.push('FILE: ' + item.name + '\n' + (item.text||''));
+        }
+      });
+      var instructionText = 'The above contains a message thread as screenshots, PDFs, and/or text files. Read ALL content in chronological order including timestamps, sender names, and every message. Analyse the complete thread and return ONLY the JSON as specified. Reference specific dates and times where visible. No preamble.';
+      if (textParts.length > 0) instructionText = textParts.join('\n\n') + '\n\n' + instructionText;
+      if (text) instructionText = 'ADDITIONAL TEXT:\n' + text + '\n\n' + instructionText;
+      parts.push({ type:'text', text: instructionText });
+      msgContent = parts;
+    } else {
+      msgContent = 'FULL THREAD:\n\n' + text + '\n\nAnalyse this thread completely and return ONLY the JSON as specified. No preamble.';
+    }
     var res = await fetch(API, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:sys,
-        messages:[{role:'user',content:'FULL THREAD:\n\n'+text+'\n\nAnalyse this thread completely and return ONLY the JSON as specified. No preamble.'}]
+        messages:[{role:'user',content:msgContent}]
       })
     });
     var data = await res.json();
@@ -4491,10 +4676,12 @@ function copyThreadReply() {
 }
 
 function resetThreadAnalysis() {
+  threadImages = [];
+  var grid = document.getElementById('threadImageGrid');
+  if (grid) { grid.innerHTML=''; grid.style.display='none'; }
   document.getElementById('threadResult').style.display='none';
   document.getElementById('threadPanel').style.display='block';
   document.getElementById('threadInput').value='';
-  document.getElementById('threadInput').focus();
 }
 
 function showIn() {
