@@ -4598,7 +4598,7 @@ async function analyseThread() {
     } else {
       msgContent = 'FULL THREAD:\n\n' + text + '\n\nAnalyse this thread completely and return ONLY the JSON as specified. No preamble.';
     }
-    var bodyStr = JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:sys,
+    var bodyStr = JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:2000, system:sys,
       messages:[{role:'user',content:msgContent}]
     });
     // Warn if payload is very large (Vercel 4.5MB limit)
