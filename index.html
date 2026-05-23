@@ -4429,7 +4429,7 @@ var MAX_THREAD_IMAGES = 20;
 function resizeImageForThread(dataUrl, callback) {
   var img = new Image();
   img.onload = function() {
-    var maxW = 1280;
+    var maxW = 900;
     var scale = img.width > maxW ? maxW / img.width : 1;
     var w = Math.round(img.width * scale);
     var h = Math.round(img.height * scale);
@@ -4437,7 +4437,7 @@ function resizeImageForThread(dataUrl, callback) {
     canvas.width = w; canvas.height = h;
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0, w, h);
-    var resized = canvas.toDataURL('image/jpeg', 0.85);
+    var resized = canvas.toDataURL('image/jpeg', 0.72);
     callback(resized.split(',')[1]);
   };
   img.src = dataUrl;
@@ -4581,19 +4581,40 @@ async function analyseThread() {
     } else {
       msgContent = 'FULL THREAD:\n\n' + text + '\n\nAnalyse this thread completely and return ONLY the JSON as specified. No preamble.';
     }
+    var bodyStr = JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:sys,
+      messages:[{role:'user',content:msgContent}]
+    });
+    // Warn if payload is very large (Vercel 4.5MB limit)
+    var bodySizeMB = (new TextEncoder().encode(bodyStr).length / (1024*1024)).toFixed(1);
+    console.log('Thread analysis payload:', bodySizeMB + 'MB');
+    if (parseFloat(bodySizeMB) > 3.5) {
+      clearInterval(loadInt); unload();
+      toast('Too many large screenshots — try using fewer or smaller images'); return;
+    }
     var res = await fetch(API, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:sys,
-        messages:[{role:'user',content:msgContent}]
-      })
+      body:bodyStr
     });
+    // Check response is ok
+    if (!res.ok) {
+      var errData = await res.json().catch(function(){return {};});
+      throw new Error('API error ' + res.status + ': ' + JSON.stringify(errData).substring(0,100));
+    }
     var data = await res.json();
+    if (data.error) throw new Error(data.error.message||JSON.stringify(data.error));
     var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var parsed=null; try{parsed=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
     clearInterval(loadInt); unload();
     if(parsed) renderThreadResult(parsed);
     else toast('Could not analyse the thread — please try again');
-  } catch(e) { clearInterval(loadInt); unload(); toast('Something went wrong — please try again'); }
+  } catch(e) {
+    clearInterval(loadInt); unload();
+    console.error('Thread analysis error:', e);
+    var errMsg = 'Something went wrong — please try again';
+    if (e && e.message && e.message.includes('size')) errMsg = 'Request too large — try fewer screenshots or smaller images';
+    if (e && e.message && e.message.includes('network')) errMsg = 'Connection error — check your internet and try again';
+    toast(errMsg);
+  }
 }
 
 function renderThreadResult(parsed) {
