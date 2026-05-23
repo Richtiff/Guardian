@@ -773,7 +773,10 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- HOME -->
 <div class="step" id="sHome">
-  <div class="home-name" id="homeName">Guardian</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="home-name" id="homeName">Guardian</div>
+    <button onclick="showVideoModal('sHome',false)" style="font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;">&#9654; How it works</button>
+  </div>
   <div class="home-status" id="homeStatus">Your case is loaded</div>
   <div class="conflict-bar-row" id="conflictRow">
     <div class="cb-label">Conflict level</div>
@@ -2659,6 +2662,11 @@ function go(id) {
   if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
   if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
   if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
+  // Inject ? help button and auto-show video on first visit
+  setTimeout(function(){
+    injectVideoBtn(id);
+    showVideoForScreen(id);
+  }, 300);
   if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
   if (id==='sStatements') {}
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
@@ -7068,6 +7076,133 @@ function saveEditProfile() {
 }
 </script>
 <script>
+
+// ── VIDEO HELP SYSTEM ──
+var VIDEOS = {
+  sHome: {
+    title: "Welcome to Guardian",
+    desc: "What Guardian is, how it works, and why it exists. Built by a parent who spent three years in family court wishing this existed.",
+    url: ""
+  },
+  sQA: {
+    title: "Court Guru",
+    desc: "Ask anything about family court. The more Guardian knows about your case — your documents, your diary, your allegations — the more specific and useful the answers get.",
+    url: ""
+  },
+  sCoach: {
+    title: "Reply Ready",
+    desc: "Every message, every correspondent. Co-parents, solicitors, Cafcass, Child Services, school — Guardian knows the right tone for each one and drafts a reply that sounds like you, not a chatbot.",
+    url: ""
+  },
+  sDocs: {
+    title: "Your Case File",
+    desc: "Every document you upload gets read by every feature. Upload your C100, court orders, Cafcass letters — Guardian reads them all and references them in your statements, replies, and answers.",
+    url: ""
+  },
+  sDiary: {
+    title: "Contact Diary",
+    desc: "Log every contact session, missed handover, and incident. Each entry becomes evidence. Patterns across entries become arguments. Everything logged feeds into your statements automatically.",
+    url: ""
+  },
+  sStatementWriter: {
+    title: "Statement Writer",
+    desc: "Guardian has read your documents, your diary, and knows every allegation. It writes your position statement using the Children Act welfare checklist — structured the way judges want to read it.",
+    url: ""
+  },
+  sBrain: {
+    title: "Guardian Brain",
+    desc: "Every feature you use teaches Guardian more about your case. Documents, diary entries, checked messages — Guardian extracts the key facts and uses them across every tool automatically.",
+    url: ""
+  },
+  sKeyDates: {
+    title: "Key Dates",
+    desc: "Log a hearing and Guardian calculates all your deadlines — position statement due date, Cafcass timeline, next hearing. The home screen shows your most urgent deadline with a countdown.",
+    url: ""
+  },
+  sExplainer: {
+    title: "Document Explainer",
+    desc: "Upload any court document, solicitor letter, or Cafcass communication. Guardian reads it and explains exactly what it means and what you need to do — in plain English.",
+    url: ""
+  },
+  sReadTheirs: {
+    title: "Read Their Statement",
+    desc: "Upload the other party's position statement. Guardian analyses it for weak points, inconsistencies, and allegations — then tells you exactly how to respond to each one.",
+    url: ""
+  },
+  sBundleUpload: {
+    title: "Court Bundle",
+    desc: "Upload your full court bundle. Guardian reads every document and builds a complete picture of your case — everything available to every tool instantly.",
+    url: ""
+  }
+};
+
+function showVideoForScreen(id) {
+  if (!VIDEOS[id]) return;
+  var seen = localStorage.getItem('gSeenVideo_' + id);
+  if (seen) return;
+  setTimeout(function(){ showVideoModal(id, false); }, 600);
+}
+
+function showVideoModal(id, forceSeen) {
+  var v = VIDEOS[id];
+  if (!v) return;
+  var modal = document.getElementById('videoModal');
+  var titleEl = document.getElementById('videoModalTitle');
+  var descEl = document.getElementById('videoModalDesc');
+  var frame = document.getElementById('videoFrame');
+  var embedDiv = document.getElementById('videoModalEmbed');
+  var comingSoon = document.getElementById('videoComingSoon');
+  var comingSoonDesc = document.getElementById('videoComingSoonDesc');
+  if (!modal) return;
+
+  titleEl.textContent = v.title;
+  descEl.textContent = v.desc;
+  modal._screenId = id;
+
+  if (v.url) {
+    frame.src = v.url + (v.url.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
+    frame.style.display = 'block';
+    comingSoon.style.display = 'none';
+  } else {
+    frame.src = '';
+    frame.style.display = 'none';
+    comingSoonDesc.textContent = v.desc;
+    comingSoon.style.display = 'flex';
+    comingSoon.style.flexDirection = 'column';
+    comingSoon.style.alignItems = 'center';
+  }
+
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideoModal(markSeen) {
+  var modal = document.getElementById('videoModal');
+  if (!modal) return;
+  var frame = document.getElementById('videoFrame');
+  if (frame) frame.src = '';
+  if (markSeen && modal._screenId) {
+    localStorage.setItem('gSeenVideo_' + modal._screenId, '1');
+  }
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function injectVideoBtn(screenId) {
+  if (!VIDEOS[screenId]) return;
+  var screen = document.getElementById(screenId);
+  if (!screen) return;
+  var header = screen.querySelector('.section-header');
+  if (!header || header.querySelector('.video-help-btn')) return;
+  var btn = document.createElement('button');
+  btn.className = 'video-help-btn';
+  btn.title = 'How this works';
+  btn.style.cssText = 'width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--muted-hi);font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-left:auto;';
+  btn.textContent = '?';
+  btn.onclick = function(e){ e.stopPropagation(); showVideoModal(screenId, false); };
+  header.appendChild(btn);
+}
+
 // ── DEADLINE CALCULATOR ──
 var hearingOrders = [];
 
@@ -7334,5 +7469,28 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
   tryLoad();
 })();
 </script>
+<!-- VIDEO HELP MODAL -->
+<div id="videoModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;overflow-y:auto;">
+  <div style="min-height:100%;display:flex;align-items:flex-end;justify-content:center;padding:20px 0 0;">
+    <div style="background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:500px;padding:20px 20px 32px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div id="videoModalTitle" style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:800;color:var(--white);"></div>
+        <button onclick="closeVideoModal()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:var(--muted-hi);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>
+      </div>
+      <div id="videoModalEmbed" style="border-radius:12px;overflow:hidden;background:rgba(0,0,0,0.4);margin-bottom:14px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;">
+        <iframe id="videoFrame" style="width:100%;height:100%;border:none;" allow="autoplay;fullscreen" allowfullscreen></iframe>
+        <div id="videoComingSoon" style="display:none;text-align:center;padding:30px 20px;">
+          <div style="font-size:32px;margin-bottom:10px;">&#127909;</div>
+          <div style="font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:6px;">Video coming soon</div>
+          <div id="videoComingSoonDesc" style="font-size:13px;color:var(--muted-hi);line-height:1.6;"></div>
+        </div>
+      </div>
+      <div id="videoModalDesc" style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:18px;"></div>
+      <button onclick="closeVideoModal(true)" style="width:100%;padding:14px;background:linear-gradient(135deg,#c9a030,var(--gold));border:none;border-radius:12px;color:#0a0600;font-family:DM Sans,sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:8px;">Got it &#8212; let&#39;s go &#8594;</button>
+      <button onclick="closeVideoModal(true)" style="width:100%;padding:10px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;">Don&#39;t show this again for this section</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
