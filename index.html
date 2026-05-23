@@ -1056,6 +1056,11 @@ p, .body-text { font-size: 16px !important; }
     <div class="field-group" style="margin-top:12px;">
       <textarea id="threadInput" class="field-input" rows="5" style="resize:none;font-size:13px;line-height:1.6;" placeholder="Paste the full email chain or WhatsApp thread here..."></textarea>
     </div>
+    <div id="rollingSummaryBanner" style="display:none;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;">
+      <div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin-bottom:4px;">&#128203; BUILDING ON PREVIOUS BATCH</div>
+      <div id="rollingSummaryText" style="font-size:11px;color:var(--muted-hi);line-height:1.5;"></div>
+      <button onclick="clearRollingSummary()" style="font-size:11px;color:var(--muted);background:transparent;border:none;cursor:pointer;margin-top:4px;">Start fresh instead</button>
+    </div>
     <button onclick="analyseThread()" class="btn-gold" style="width:100%;margin-top:4px;">Analyse this thread &#8594;</button>
   </div>
   <div id="threadResult" style="display:none;"></div>
@@ -4423,6 +4428,7 @@ var THREAD_SYS_BY_TYPE = {
 };
 
 var threadImages = [];
+var threadRollingSummary = '';
 
 var MAX_THREAD_IMAGES = 20;
 
@@ -4590,7 +4596,7 @@ async function analyseThread() {
           textParts.push('FILE: ' + item.name + '\n' + (item.text||''));
         }
       });
-      var instructionText = 'The above contains a message thread as screenshots, PDFs, and/or text files. Read ALL content in chronological order including timestamps, sender names, and every message. Analyse the complete thread and return ONLY the JSON as specified. Reference specific dates and times where visible. No preamble.';
+      var instructionText = (threadRollingSummary ? 'PREVIOUS BATCH SUMMARY:\n' + threadRollingSummary + '\n\nNEW CONTENT TO BUILD ON:\n' : '') + 'The above contains a message thread as screenshots, PDFs, and/or text files. Read ALL content in chronological order. ' + (threadRollingSummary ? 'Build on the previous batch summary — update agreed/open/flags based on this new content.' : 'Analyse the complete thread.') + ' Return ONLY the JSON as specified. Reference specific dates and times where visible. No preamble.';
       if (textParts.length > 0) instructionText = textParts.join('\n\n') + '\n\n' + instructionText;
       if (text) instructionText = 'ADDITIONAL TEXT:\n' + text + '\n\n' + instructionText;
       parts.push({ type:'text', text: instructionText });
@@ -4712,12 +4718,22 @@ function renderThreadResult(parsed) {
     h += '</div>';
     h += '<div style="display:flex;gap:8px;margin-bottom:16px;">';
     h += '<button onclick="copyThreadReply()" class="btn-gold" style="flex:1;">Copy reply</button>';
-    h += '<button onclick="resetThreadAnalysis()" style="flex:1;padding:13px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted-hi);font-size:14px;cursor:pointer;">Analyse another</button>';
+    h += '<button onclick="addMoreScreenshots()" style="flex:1;padding:13px;background:var(--blue-dim);border:1px solid rgba(52,120,212,0.3);border-radius:12px;color:var(--blue);font-size:13px;font-weight:700;cursor:pointer;">+ Add more</button>';
+    h += '<button onclick="resetThreadAnalysis()" style="flex:1;padding:13px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted-hi);font-size:14px;cursor:pointer;">Start fresh</button>';
     h += '</div>';
   }
 
   el.innerHTML = h;
 
+  // Store rolling summary for next batch
+  var summaryParts = [];
+  if (parsed.context) summaryParts.push('Context: ' + parsed.context);
+  if (parsed.pattern) summaryParts.push('Pattern: ' + parsed.pattern);
+  if (parsed.agreed && parsed.agreed.length) summaryParts.push('Agreed: ' + parsed.agreed.join('; '));
+  if (parsed.open && parsed.open.length) summaryParts.push('Still open: ' + parsed.open.join('; '));
+  if (parsed.flags && parsed.flags.length) summaryParts.push('Flags: ' + parsed.flags.join('; '));
+  if (parsed.welfare_flags && parsed.welfare_flags.length) summaryParts.push('Welfare: ' + parsed.welfare_flags.join('; '));
+  if (summaryParts.length) threadRollingSummary = summaryParts.join('\n');
   // Feed to Guardian Brain
   var bf = [parsed.context, ...(parsed.flags||[]), ...(parsed.welfare_flags||[]), ...(parsed.open||[])].filter(Boolean).join('. ');
   if (bf.length > 20) extractCaseFacts(bf, 'correspondence thread (' + coachTypeLabel + ')');
@@ -4733,11 +4749,13 @@ function copyThreadReply() {
 
 function resetThreadAnalysis() {
   threadImages = [];
+  threadRollingSummary = '';
   var grid = document.getElementById('threadImageGrid');
   if (grid) { grid.innerHTML=''; grid.style.display='none'; }
   document.getElementById('threadResult').style.display='none';
   document.getElementById('threadPanel').style.display='block';
   document.getElementById('threadInput').value='';
+  updateRollingSummaryBanner();
 }
 
 function showIn() {
@@ -7599,6 +7617,35 @@ function renderKeyDates() {
   }
   html += '<button onclick="clearDeadlines()" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(184,68,68,0.3);border-radius:10px;color:var(--red);font-size:12px;cursor:pointer;margin-top:8px;">Clear all deadlines</button>';
   el.innerHTML = html;
+}
+
+function addMoreScreenshots() {
+  // Keep rolling summary, clear images, go back to upload
+  threadImages = [];
+  var grid = document.getElementById('threadImageGrid');
+  if (grid) { grid.innerHTML=''; grid.style.display='none'; }
+  document.getElementById('threadResult').style.display='none';
+  document.getElementById('threadPanel').style.display='block';
+  document.getElementById('threadInput').value='';
+  // Show rolling summary banner
+  updateRollingSummaryBanner();
+}
+
+function clearRollingSummary() {
+  threadRollingSummary = '';
+  updateRollingSummaryBanner();
+}
+
+function updateRollingSummaryBanner() {
+  var banner = document.getElementById('rollingSummaryBanner');
+  var text = document.getElementById('rollingSummaryText');
+  if (!banner) return;
+  if (threadRollingSummary) {
+    banner.style.display = 'block';
+    if (text) text.textContent = threadRollingSummary.substring(0, 200) + (threadRollingSummary.length > 200 ? '...' : '');
+  } else {
+    banner.style.display = 'none';
+  }
 }
 
 function clearDeadlines() {
