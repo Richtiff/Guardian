@@ -965,10 +965,17 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-size:14px;font-weight:700;color:var(--white);" id="coachTypeBadgeText"></div>
       <button onclick="resetCoachType()" style="font-size:12px;color:var(--gold);background:transparent;border:none;cursor:pointer;padding:0;">Change</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
       <button type="button" id="btnIn" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">&#128233;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
       <button type="button" id="btnOut" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">&#9999;&#65039;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
     </div>
+    <button type="button" id="btnThread" class="home-btn home-btn-card" onclick="showThread()" style="width:100%;margin-bottom:20px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:22px;">&#128172;</span>
+      <div style="text-align:left;">
+        <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">Analyse a full thread</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Paste the whole conversation — Guardian reads everything</div>
+      </div>
+    </button>
   </div>
   <div id="inPanel" style="display:none;">
     <div class="msg-upload-grid">
@@ -991,6 +998,17 @@ p, .body-text { font-size: 16px !important; }
       <button class="out-check" onclick="checkOut()">Check before I send →</button>
     </div>
   </div>
+
+  <!-- THREAD ANALYSIS -->
+  <div id="threadPanel" style="display:none;">
+    <div class="field-group">
+      <label class="field-label">PASTE THE FULL THREAD</label>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Include all messages — Guardian works out who said what, what has been agreed, and what is still open</div>
+      <textarea id="threadInput" class="field-input" rows="10" style="resize:none;font-size:13px;line-height:1.6;" placeholder="Paste the full email chain, WhatsApp thread, or letter exchange here..."></textarea>
+    </div>
+    <button onclick="analyseThread()" class="btn-gold" style="width:100%;">Analyse this thread &#8594;</button>
+  </div>
+  <div id="threadResult" style="display:none;"></div>
 </div>
 
 <!-- READING -->
@@ -2158,104 +2176,144 @@ var COACH_SYS_BY_TYPE = {
   coparent: SYS,
 
   solicitor: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user has received correspondence from the opposing party\'s solicitor.',
-    'Your role is to:',
-    '1. Explain in plain English what the solicitor is actually asking for — cut through the legal language',
-    '2. Identify any firm deadlines, legal threats, or without prejudice statements',
-    '3. Flag anything the user absolutely cannot ignore or miss',
-    '4. Advise whether a response is needed and within what timeframe',
-    '5. Draft a calm, professional reply that is brief and does not over-share',
+    'You are Guardian, helping a parent in family court proceedings in England and Wales reply to correspondence from the other party\'s solicitor.',
+    'Your job is to help them reply like a confident, prepared parent — not like a solicitor.',
     '',
-    'Remember: solicitor letters are formal and intimidating by design. Most are standard practice.',
-    'Help the user see past the language to what is actually being asked.',
-    'Tone: formal, professional, factual, brief. One or two short paragraphs.',
-    'Never advise ignoring urgent legal correspondence.',
-    'Flag clearly when the user should consider seeking their own legal advice.'
+    'WHAT GOOD LOOKS LIKE:',
+    'The other solicitor reads the reply and thinks: this parent knows their case, is organised, and will not be pushed around.',
+    'Not: this looks like AI-generated legal boilerplate.',
+    'Not: this person is trying to sound like a lawyer.',
+    '',
+    'TONE RULES — CRITICAL:',
+    '- Parent voice throughout. Direct. Clear. Specific.',
+    '- Never: I write to inform you, I hereby, pursuant to, please be advised, I would like to draw your attention, I trust this finds you well.',
+    '- Never: furthermore, notwithstanding, in this regard, it should be noted.',
+    '- Wear legal knowledge lightly — reference the case number and dates naturally, not performatively.',
+    '- Short sentences. Get to the point. Solicitors respect brevity and specificity.',
+    '- If they are wrong about something — say so directly with the specific reason why.',
+    '- If a deadline or request is unreasonable — say so calmly and specifically.',
+    '',
+    'LEGAL INFORMATION FRAMING:',
+    '- Provide context and information, not instruction. "In private law proceedings, the standard position is..." not "You should...".',
+    '- Never advise on litigation strategy.',
+    '- If something requires proper legal advice, note it as context — do not give the advice.',
+    '',
+    'CASE REFERENCE:',
+    '- If a case number is known from the case context, include it naturally as a reference line.',
+    '- Subject line format if replying by email: Re: [case number if known] — [child initials if known].',
+    '- One line. Not a formal heading block.',
+    '',
+    'GOAL: Reply that makes the solicitor think: this parent is on the ball.'
   ].join('\n'),
 
   cafcass: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user is corresponding with Cafcass — the Children and Family Court Advisory and Support Service.',
-    'Cafcass advise the court on the child\'s welfare. They are not the enemy.',
-    'Your role is to:',
-    '1. Explain clearly what Cafcass are communicating or asking for',
-    '2. Advise on the appropriate response — cooperative, child-focused, professional',
-    '3. Help draft a response that presents the parent positively',
-    '4. Flag anything important in the communication',
+    'You are Guardian, helping a parent in family court proceedings in England and Wales correspond with Cafcass.',
+    'Cafcass are the Children and Family Court Advisory and Support Service. They advise the court on the child\'s welfare.',
     '',
-    'KEY: Cafcass evaluate parental cooperation as part of their welfare assessment.',
-    'Tone, responsiveness, and child-focus in every communication with them matters enormously.',
-    'Tone: professional, cooperative, warm toward the child, concise.'
+    'WHAT GOOD LOOKS LIKE:',
+    'A reply that is warm, cooperative, and child-focused. Cafcass assesses parental cooperation as part of their welfare evaluation.',
+    'Tone matters more here than anywhere. A guarded or defensive tone creates a red flag in their assessment.',
+    '',
+    'TONE RULES:',
+    '- Warm, genuine, child-focused. Sounds like a parent who cares.',
+    '- Cooperative — never defensive, never challenging their role.',
+    '- Specific about the child — use their name, reference real situations.',
+    '- Brief and responsive — answer exactly what they asked.',
+    '- Never: legal language, rights assertions, challenges to their process.',
+    '- Never sound like you are performing for the report. Sound authentic.',
+    '',
+    'CONTENT:',
+    '- Reference the child by name where natural.',
+    '- If they are requesting information, provide it clearly and fully.',
+    '- If they are arranging a visit, be flexible and accommodating in tone.',
+    '- If the case context contains relevant welfare information, weave it in naturally.',
+    '',
+    'GOAL: Cafcass reads this and thinks: cooperative, child-focused parent.'
   ].join('\n'),
 
   childservices: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user is corresponding with Children\'s Services or a social worker.',
-    'Your role is to:',
-    '1. Identify what type of contact this is — s.17 support, s.47 enquiry, Child Protection Plan, or other',
-    '2. Explain clearly what it means and what typically happens next',
-    '3. Help draft a cooperative, transparent, professional response',
-    '4. Note relevant rights without being adversarial',
+    'You are Guardian, helping a parent in family court proceedings in England and Wales correspond with Children\'s Services or a social worker.',
     '',
-    'Rights context (share only if relevant):',
-    '- Parents can ask why a social worker is visiting and what powers they are using',
-    '- Entry cannot be required without consent or a court order except in genuine emergencies',
-    '- Parents may have a support person present',
+    'WHAT GOOD LOOKS LIKE:',
+    'Cooperative, transparent, and organised. A parent who takes the process seriously and has nothing to hide.',
+    'Children\'s Services respond well to parents who engage openly and keep the focus on the child.',
     '',
-    'Being cooperative and transparent is strongly advised.',
-    'Being defensive or hostile creates significant problems in both proceedings and assessments.',
-    'Tone: professional, cooperative, transparent, child-focused. Never hostile.'
+    'TONE RULES:',
+    '- Cooperative and transparent — never hostile, never guarded.',
+    '- Specific and factual — reference actual dates, actual situations.',
+    '- Child-focused throughout.',
+    '- Never: challenge their authority, assert rights confrontationally, sound defensive.',
+    '- Never: legalese or overly formal language that sounds adversarial.',
+    '',
+    'INFORMATION TO WEAVE IN WHERE RELEVANT:',
+    '- In England and Wales, Children\'s Services have different powers depending on the type of contact (s.17 support, s.47 enquiry, Child Protection). Help the parent understand which this is from context.',
+    '- Parents can ask what section they are operating under and what the next steps are.',
+    '- Keep this as factual context only — do not frame it as rights assertions.',
+    '',
+    'GOAL: Social worker reads this and thinks: engaged, transparent, child-focused parent.'
   ].join('\n'),
 
   school: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user is corresponding with their child\'s school.',
-    'Your role is to:',
-    '1. Explain the school\'s communication clearly',
-    '2. Advise on relevant parental rights',
-    '3. Help draft a professional, collaborative response',
-    '4. Flag any issues regarding information sharing or court order implications',
+    'You are Guardian, helping a parent in family court proceedings in England and Wales correspond with their child\'s school.',
     '',
-    'Key rights: Both parents with Parental Responsibility have equal rights to information about',
-    'their child\'s education unless a court order specifically restricts this.',
-    'Schools cannot withhold information about a child from a PR-holding parent.',
-    'Tone: professional, collaborative, brief.'
+    'TONE: Professional, collaborative, brief. Parent who is organised and takes their child\'s education seriously.',
+    '',
+    'CONTENT RULES:',
+    '- Reference the child by name.',
+    '- Be specific about what is being asked or communicated.',
+    '- Both parents with Parental Responsibility have equal rights to information about their child\'s education — weave this in as context if relevant, not as a rights demand.',
+    '- If there are court order implications for collection or information sharing, reference them factually.',
+    '- Never sound adversarial toward the school — they are not a party to the proceedings.',
+    '',
+    'GOAL: School reads this and thinks: organised, reasonable parent.'
   ].join('\n'),
 
   gp: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user is corresponding with a GP or medical professional about their child.',
-    'Your role is to:',
-    '1. Explain the medical communication clearly',
-    '2. Advise on parental rights regarding medical decisions and information',
-    '3. Help draft an appropriate professional response',
-    '4. Flag any welfare or safeguarding implications',
+    'You are Guardian, helping a parent in family court proceedings in England and Wales correspond with a GP or medical professional about their child.',
     '',
-    'Key rights: Both parents with Parental Responsibility have the right to be',
-    'informed about and involved in their child\'s medical care unless a court order says otherwise.',
-    'Tone: professional, concise, cooperative.'
+    'TONE: Professional, concise, cooperative. A parent who is engaged in their child\'s care.',
+    '',
+    'CONTENT RULES:',
+    '- Reference the child by name and date of birth if known.',
+    '- Be specific about the medical matter.',
+    '- Both parents with Parental Responsibility have equal rights to be involved in their child\'s medical care — factual context only if relevant.',
+    '- Never sound like you are asserting rights aggressively. Cooperative tone always.',
+    '',
+    'GOAL: GP reads this and thinks: involved, caring parent.'
   ].join('\n'),
 
   court: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user is corresponding with or about the Family Court or HMCTS.',
-    'Your role is to:',
-    '1. Explain exactly what the communication means and what it requires',
-    '2. Flag any deadlines with urgency — court deadlines have serious consequences if missed',
-    '3. Advise on the appropriate response or action',
-    '4. Help draft any required response in the correct tone and format',
+    'You are Guardian, helping a parent in family court proceedings in England and Wales correspond with the Family Court or HMCTS.',
     '',
-    'Court correspondence must be treated as urgent. Be clear about any time limits.',
-    'Tone: formal, respectful, precise, factual.'
+    'WHAT GOOD LOOKS LIKE:',
+    'A reply or letter that is clear, well-referenced, and organised. The court clerk or judge reads it and can find what they need instantly.',
+    'Looks like a prepared litigant in person — not a legal novice, not a solicitor.',
+    '',
+    'STRUCTURE:',
+    '- Subject / reference line first: case number (if known), child initials, hearing date if relevant.',
+    '- Brief introduction: who you are, what this is about, what you are asking for or confirming.',
+    '- The specific point or request — clear and numbered if multiple points.',
+    '- No unnecessary background or emotion.',
+    '',
+    'TONE RULES:',
+    '- Formal but clear. Not robotic.',
+    '- Never: emotional language, complaints about the other party unrelated to the specific matter.',
+    '- Never: long paragraphs of background that are not relevant to the specific request.',
+    '- Reference specific documents, orders, and dates where relevant.',
+    '',
+    'URGENCY:',
+    '- Court deadlines are absolute. If there is a deadline in the correspondence, flag it clearly.',
+    '- If something requires immediate action, say so.',
+    '',
+    'GOAL: Court reads this and the point is immediately clear. Litigant in person who knows their case.'
   ].join('\n'),
 
   other: [
-    'You are Guardian, a family court communication advisor in England and Wales.',
-    'The user is corresponding with a professional or organisation related to their family court case.',
-    'Analyse the correspondence and help them respond professionally and appropriately,',
-    'considering the family court context and the child\'s welfare throughout.',
-    'Tone: professional, clear, measured.'
+    'You are Guardian, helping a parent in family court proceedings in England and Wales correspond with a professional or organisation.',
+    'Analyse the correspondence and help them reply clearly and professionally.',
+    'Parent voice throughout — specific, direct, organised.',
+    'Use the case context to make the reply relevant and accurate.',
+    'Never sound like a legal document. Sound like a well-prepared parent.'
   ].join('\n')
 };
 
@@ -2295,6 +2353,8 @@ function resetCoachType() {
   document.getElementById('coachActionPanel').style.display = 'none';
   document.getElementById('inPanel').style.display = 'none';
   document.getElementById('outPanel').style.display = 'none';
+  document.getElementById('threadPanel').style.display = 'none';
+  document.getElementById('threadResult').style.display = 'none';
   document.getElementById('coachTypePanel').style.display = 'block';
 }
 
@@ -4282,6 +4342,153 @@ function stopQAVoice() {
 }
 
 // MESSAGE COACH
+
+// ── THREAD ANALYSIS ──
+var THREAD_SYS_BY_TYPE = {
+
+  coparent: 'You are Guardian, analysing a full co-parent message thread for a parent in family court proceedings in England and Wales.\n\nRead every message carefully. Identify who is speaking and what is being communicated.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this thread about",\n  "pattern": "one word status + one sentence explanation e.g. Escalating — the other parent is increasingly making welfare allegations without evidence",\n  "open": ["what has not been resolved or needs a response"],\n  "flags": ["serious concerns, manipulation tactics, evidence-building, or legal threats spotted ACROSS the thread"],\n  "welfare_flags": ["specific child welfare concerns mentioned across the thread"],\n  "decisions": ["what the parent needs to decide before replying"],\n  "reply": "full draft reply in natural parent voice — aware of the full conversation history, not just the latest message. Short. Human. No AI tells."\n}',
+
+  solicitor: 'You are Guardian, analysing a full correspondence thread between a parent and a solicitor in family court proceedings in England and Wales.\n\nParse every message. Track what has been agreed, what is partially agreed, what is not agreed, and what is outstanding.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence negotiating or resolving",\n  "agreed": ["specific point that has been fully agreed"],\n  "open": ["specific point still unresolved or awaiting a decision"],\n  "flags": ["deadlines, legal threats, or concerns the parent must not miss"],\n  "decisions": ["specific decision the parent needs to make before replying — be concrete"],\n  "reply": "full draft reply in parent voice — direct, specific, organised. Addresses open points only. Accepts what should be accepted gracefully. Pushes back where needed with a specific alternative. Sounds like a well-prepared parent not a solicitor."\n}',
+
+  cafcass: 'You are Guardian, analysing a full correspondence thread between a parent and Cafcass in family court proceedings in England and Wales.\n\nParse every message. Track what Cafcass have asked, what has been responded to, and what is outstanding.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence about",\n  "open": ["what Cafcass have asked that has not been fully addressed"],\n  "flags": ["anything in the thread that could affect the welfare assessment negatively"],\n  "decisions": ["what the parent needs to decide or prepare before replying"],\n  "reply": "full draft reply — warm, cooperative, child-focused. Cafcass evaluate parental cooperation. Sounds genuine not performative."\n}',
+
+  childservices: 'You are Guardian, analysing a full correspondence thread between a parent and Children\'s Services in family court proceedings in England and Wales.\n\nParse every message. Identify what type of contact this is and what is being asked.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this contact about and what type of intervention (s.17, s.47, CP, other)",\n  "open": ["what has been asked or required that has not been addressed"],\n  "flags": ["anything that requires urgent attention or careful handling"],\n  "decisions": ["what the parent needs to decide before replying"],\n  "reply": "full draft reply — cooperative, transparent, professional. Child-focused throughout. Never defensive or adversarial."\n}',
+
+  school: 'You are Guardian, analysing a full correspondence thread between a parent and their child\'s school in family court proceedings in England and Wales.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this thread about",\n  "open": ["what has not been resolved"],\n  "flags": ["any issues about parental rights, information sharing, or court order implications"],\n  "decisions": ["what the parent needs to decide"],\n  "reply": "professional, collaborative, specific reply"\n}',
+
+  gp: 'You are Guardian, analysing a full medical correspondence thread for a parent in family court proceedings.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence about",\n  "open": ["what has not been resolved"],\n  "flags": ["any welfare or safeguarding concerns"],\n  "decisions": ["what the parent needs to decide"],\n  "reply": "professional, concise, cooperative reply"\n}',
+
+  court: 'You are Guardian, analysing a full correspondence thread with the Family Court or HMCTS in England and Wales.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence about",\n  "open": ["what is required or unresolved"],\n  "flags": ["URGENT: any deadlines or actions that cannot be missed — be specific about dates if visible"],\n  "decisions": ["what the parent needs to decide or prepare"],\n  "reply": "clear, well-referenced reply. Case number in subject if visible in thread. Direct and organised."\n}',
+
+  other: 'You are Guardian, analysing a correspondence thread for a parent in family court proceedings.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this about",\n  "open": ["what is unresolved"],\n  "flags": ["any concerns"],\n  "decisions": ["what the parent needs to decide"],\n  "reply": "professional, clear reply in parent voice"\n}'
+};
+
+function showThread() {
+  document.getElementById('inPanel').style.display='none';
+  document.getElementById('outPanel').style.display='none';
+  document.getElementById('threadResult').style.display='none';
+  document.getElementById('threadPanel').style.display='block';
+  var b1=document.getElementById('btnIn'),b2=document.getElementById('btnOut'),b3=document.getElementById('btnThread');
+  if(b1)b1.className='home-btn home-btn-card';
+  if(b2)b2.className='home-btn home-btn-card';
+  if(b3)b3.className='home-btn home-btn-gold';
+}
+
+async function analyseThread() {
+  var text = document.getElementById('threadInput').value.trim();
+  if (!text || text.length < 50) { toast('Paste the thread first'); return; }
+  var loadMsgs = ['Reading the full thread...','Working out what has been agreed...','Identifying what is still open...','Spotting flags and decisions...','Drafting your reply...'];
+  var li = 0;
+  load(loadMsgs[0], 'Analysing ' + coachTypeLabel + ' correspondence');
+  var loadInt = setInterval(function(){ li=(li+1)%loadMsgs.length; var ls=document.getElementById('loadSub'); if(ls) ls.textContent=loadMsgs[li]; }, 1800);
+  var ctx = getCTX();
+  var sys = (THREAD_SYS_BY_TYPE[coachType]||THREAD_SYS_BY_TYPE.other) + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
+  try {
+    var res = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:2000, system:sys,
+        messages:[{role:'user',content:'FULL THREAD:\n\n'+text+'\n\nAnalyse this thread completely and return ONLY the JSON as specified. No preamble.'}]
+      })
+    });
+    var data = await res.json();
+    var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed=null; try{parsed=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    clearInterval(loadInt); unload();
+    if(parsed) renderThreadResult(parsed);
+    else toast('Could not analyse the thread — please try again');
+  } catch(e) { clearInterval(loadInt); unload(); toast('Something went wrong — please try again'); }
+}
+
+function renderThreadResult(parsed) {
+  var el = document.getElementById('threadResult');
+  if (!el) return;
+  document.getElementById('threadPanel').style.display='none';
+  el.style.display='block';
+  var h='';
+
+  // Context + pattern
+  h += '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+  if (parsed.context) h += '<div style="font-size:13px;color:var(--muted-hi);line-height:1.5;margin-bottom:' + (parsed.pattern?'8px':'0') + ';">' + parsed.context + '</div>';
+  if (parsed.pattern) {
+    var patCol = parsed.pattern.toLowerCase().indexOf('escalat')!==-1||parsed.pattern.toLowerCase().indexOf('concern')!==-1 ? 'var(--red)' : parsed.pattern.toLowerCase().indexOf('cooperat')!==-1 ? 'var(--green)' : 'var(--amber)';
+    h += '<div style="font-size:14px;font-weight:700;color:'+patCol+';">' + parsed.pattern + '</div>';
+  }
+  h += '</div>';
+
+  // Agreed
+  if (parsed.agreed&&parsed.agreed.length>0) {
+    h += '<div style="background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">&#9989; AGREED ('+parsed.agreed.length+')</div>';
+    h += parsed.agreed.map(function(a){return '<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">&bull; '+a+'</div>';}).join('');
+    h += '</div>';
+  }
+
+  // Open
+  if (parsed.open&&parsed.open.length>0) {
+    h += '<div style="background:var(--amber-dim);border:1.5px solid rgba(201,148,58,0.25);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin-bottom:8px;">&#9888;&#65039; STILL OPEN ('+parsed.open.length+')</div>';
+    h += parsed.open.map(function(o){return '<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">&bull; '+o+'</div>';}).join('');
+    h += '</div>';
+  }
+
+  // Flags
+  if (parsed.flags&&parsed.flags.length>0) {
+    h += '<div style="background:var(--red-dim);border:1.5px solid rgba(184,68,68,0.3);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">&#128681; GUARDIAN FLAGGED</div>';
+    h += parsed.flags.map(function(f){return '<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">&bull; '+f+'</div>';}).join('');
+    h += '</div>';
+  }
+
+  // Welfare flags (co-parent)
+  if (parsed.welfare_flags&&parsed.welfare_flags.length>0) {
+    h += '<div style="background:var(--red-dim);border:2px solid rgba(184,68,68,0.4);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:8px;">&#9888;&#65039; WELFARE FLAGS</div>';
+    h += parsed.welfare_flags.map(function(f){return '<div style="font-size:13px;color:var(--white);padding:4px 0;font-weight:600;">&bull; '+f+'</div>';}).join('');
+    h += '</div>';
+  }
+
+  // Decisions needed
+  if (parsed.decisions&&parsed.decisions.length>0) {
+    h += '<div style="background:var(--card);border:2px solid rgba(212,168,67,0.4);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">BEFORE YOU REPLY &#8212; DECIDE THIS</div>';
+    h += parsed.decisions.map(function(d){return '<div style="font-size:13px;color:var(--white);padding:5px 0;font-weight:600;">&rarr; '+d+'</div>';}).join('');
+    h += '</div>';
+  }
+
+  // Draft reply
+  if (parsed.reply) {
+    h += '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">SUGGESTED REPLY</div>';
+    h += '<textarea id="threadReplyText" style="width:100%;background:transparent;border:none;color:var(--white);font-size:14px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:140px;" rows="7">'+parsed.reply.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea>';
+    h += '</div>';
+    h += '<div style="display:flex;gap:8px;margin-bottom:16px;">';
+    h += '<button onclick="copyThreadReply()" class="btn-gold" style="flex:1;">Copy reply</button>';
+    h += '<button onclick="resetThreadAnalysis()" style="flex:1;padding:13px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted-hi);font-size:14px;cursor:pointer;">Analyse another</button>';
+    h += '</div>';
+  }
+
+  el.innerHTML = h;
+
+  // Feed to Guardian Brain
+  var bf = [parsed.context, ...(parsed.flags||[]), ...(parsed.welfare_flags||[]), ...(parsed.open||[])].filter(Boolean).join('. ');
+  if (bf.length > 20) extractCaseFacts(bf, 'correspondence thread (' + coachTypeLabel + ')');
+}
+
+function copyThreadReply() {
+  var ta = document.getElementById('threadReplyText');
+  if (!ta) return;
+  var txt = ta.value;
+  if (navigator.clipboard) { navigator.clipboard.writeText(txt).then(function(){ toast('Reply copied'); }); }
+  else { ta.select(); document.execCommand('copy'); toast('Reply copied'); }
+}
+
+function resetThreadAnalysis() {
+  document.getElementById('threadResult').style.display='none';
+  document.getElementById('threadPanel').style.display='block';
+  document.getElementById('threadInput').value='';
+  document.getElementById('threadInput').focus();
+}
+
 function showIn() {
   if (!coachType) coachType = 'coparent';
   document.getElementById('inPanel').style.display='block';
