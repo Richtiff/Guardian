@@ -2415,8 +2415,12 @@ function resetCoachType() {
 
 function getCoachSysPrompt() {
   var ctx = getCTX();
+  var myName = (profile && profile.myName) ? profile.myName.split(' ')[0] : 'the user';
+  var theirName = (profile && profile.theirName) ? profile.theirName.split(' ')[0] : 'the other party';
+  var identityCtx = 'The person using Guardian is: ' + myName + '. The other party is: ' + theirName + '.\n' +
+    'In WhatsApp screenshots, RIGHT side green bubbles = sent by ' + myName + '. LEFT side grey bubbles = sent by ' + theirName + '.\n';
   var sys = COACH_SYS_BY_TYPE[coachType] || SYS;
-  return sys + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
+  return identityCtx + sys + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
 }
 
 function getCTX() {
@@ -4410,7 +4414,7 @@ function stopQAVoice() {
 // ── THREAD ANALYSIS ──
 var THREAD_SYS_BY_TYPE = {
 
-  coparent: 'You are Guardian, analysing a full co-parent message thread for a parent in family court proceedings in England and Wales.\n\nRead every message carefully. Identify who is speaking and what is being communicated.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this thread about",\n  "pattern": "one word status + one sentence explanation e.g. Escalating — the other parent is increasingly making welfare allegations without evidence",\n  "open": ["what has not been resolved or needs a response"],\n  "flags": ["serious concerns, manipulation tactics, evidence-building, or legal threats spotted ACROSS the thread"],\n  "welfare_flags": ["specific child welfare concerns mentioned across the thread"],\n  "decisions": ["what the parent needs to decide before replying"],\n  "reply": "full draft reply in natural parent voice — aware of the full conversation history, not just the latest message. Short. Human. No AI tells."\n}',
+  coparent: 'You are Guardian, analysing a full co-parent message thread for a parent in family court proceedings in England and Wales.\n\nRead every message carefully. Identify who is speaking and what is being communicated.\n\nCRITICAL RULES FOR WELFARE FLAGS:\n- Welfare flags are ONLY actual concerns about the child that were NOT properly handled — missed medical care, safety risks, health issues ignored, injuries not addressed.\n- Routine welfare updates shared between parents (sore bum, cold, minor illness) that were acknowledged and acted on are NOT welfare flags. They are normal co-parenting.\n- A thumbs up, OK, or brief acknowledgment to a welfare update is a VALID response showing the parent received and will act on the information. Do NOT flag this.\n- Only flag something if it shows a genuine risk to the child or a failure to respond to a serious concern.\n\nCRITICAL RULES FOR FLAGS:\n- Flags are serious: legal threats, manipulation tactics, evidence-building, allegations, attempts to restrict contact.\n- Normal cooperative messages, routine updates, and brief acknowledgments are NOT flags.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this thread about",\n  "pattern": "one word status + one sentence explanation e.g. Escalating — the other parent is increasingly making welfare allegations without evidence",\n  "open": ["what has not been resolved or needs a response"],\n  "flags": ["serious concerns, manipulation tactics, evidence-building, or legal threats spotted ACROSS the thread"],\n  "welfare_flags": ["actual child welfare concerns that were NOT properly handled — leave empty if all welfare matters were appropriately responded to"],\n  "decisions": ["what the parent needs to decide before replying"],\n  "reply": "full draft reply in natural parent voice — aware of the full conversation history. Short. Human. No AI tells."\n}',
 
   solicitor: 'You are Guardian, analysing a full correspondence thread between a parent and a solicitor in family court proceedings in England and Wales.\n\nParse every message. Track what has been agreed, what is partially agreed, what is not agreed, and what is outstanding.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence negotiating or resolving",\n  "agreed": ["specific point that has been fully agreed"],\n  "open": ["specific point still unresolved or awaiting a decision"],\n  "flags": ["deadlines, legal threats, or concerns the parent must not miss"],\n  "decisions": ["specific decision the parent needs to make before replying — be concrete"],\n  "reply": "full draft reply in parent voice — direct, specific, organised. Addresses open points only. Accepts what should be accepted gracefully. Pushes back where needed with a specific alternative. Sounds like a well-prepared parent not a solicitor."\n}',
 
@@ -4581,7 +4585,15 @@ async function analyseThread() {
   load(loadMsgs[0], 'Analysing ' + coachTypeLabel + ' correspondence');
   var loadInt = setInterval(function(){ li=(li+1)%loadMsgs.length; var ls=document.getElementById('overlaySub'); if(ls) ls.textContent=loadMsgs[li]; }, 1800);
   var ctx = getCTX();
-  var sys = (THREAD_SYS_BY_TYPE[coachType]||THREAD_SYS_BY_TYPE.other) + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
+  // Inject identity so Guardian knows who is who in screenshots
+  var myName = (profile && profile.myName) ? profile.myName.split(' ')[0] : 'the user';
+  var theirName = (profile && profile.theirName) ? profile.theirName.split(' ')[0] : 'the other party';
+  var identityCtx = 'IDENTITY CONTEXT:\n' +
+    'The person using Guardian is: ' + myName + '\n' +
+    'The other party is: ' + theirName + '\n' +
+    'IN WHATSAPP SCREENSHOTS: Messages on the RIGHT side (darker/green bubbles) are sent BY ' + myName + '. Messages on the LEFT side (lighter/grey bubbles) are sent BY ' + theirName + '.\n' +
+    'Always correctly attribute messages based on their position in the screenshot.\n';
+  var sys = identityCtx + (THREAD_SYS_BY_TYPE[coachType]||THREAD_SYS_BY_TYPE.other) + '\n\nCORRESPONDENT TYPE: ' + coachTypeLabel + '\n\n' + ctx;
   try {
     var msgContent;
     if (hasImages) {
