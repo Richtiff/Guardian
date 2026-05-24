@@ -498,7 +498,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div class="auth-error" id="loginError"></div>
   <div style="display:flex;align-items:center;gap:8px;margin:8px 0;">
-    <input type="checkbox" id="rememberMe" checked style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer;">
+    <input type="checkbox" id="rememberMe" checked checked style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer;">
     <label for="rememberMe" style="font-size:13px;color:var(--muted-hi);cursor:pointer;">Keep me signed in for 30 days</label>
   </div>
   <button type="button" class="btn-gold" onclick="doLogin()" style="margin-top:4px;">Sign in →</button>
@@ -563,7 +563,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
   <button type="button" class="btn-gold" onclick="startSetupOrHome()">Set up my case →</button>
-  <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">5 free message checks — no card needed</div>
+  <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">50 free message checks — no card needed</div>
 </div>
 
 <!-- PROFILE 1 -->
@@ -797,7 +797,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div class="trial-banner" id="trialBanner" style="display:none;">
     <div class="trial-text">Free message checks remaining</div>
-    <div class="trial-count" id="trialCount">5</div>
+    <div class="trial-count" id="trialCount">50</div>
   </div>
   <div id="deadlineBanner"></div>
   <div id="caseStrengthCard"></div>
@@ -4059,7 +4059,7 @@ function showHome() {
   }
   var paid=localStorage.getItem('gPaid')==='true';
   if(!paid){
-    var rem=Math.max(0,5-checks);
+    var rem=Math.max(0,50-checks);
     document.getElementById('trialCount').textContent=rem;
     document.getElementById('trialBanner').style.display=rem>=0?'flex':'none';
   }
@@ -4951,7 +4951,7 @@ function skipCool(){if(coolInt)clearInterval(coolInt);doQuestion();}
 
 function checkTrial(){
   if(localStorage.getItem('gPaid')==='true') return true;
-  if(checks>=5){go('sPaywall');return false;}
+  if(checks>=50){go('sPaywall');return false;}
   return true;
 }
 
@@ -4960,7 +4960,7 @@ function resetTrial(){
   localStorage.setItem('gChecks','0');
   localStorage.removeItem('gUpsellDismissed');
   upsellShownThisSession=false;
-  toast('✅ Trial reset — 5 checks restored');
+  toast('✅ Trial reset — 50 checks restored');
   go('sHome');
 }
 
@@ -4994,6 +4994,69 @@ async function askQ() {
 }
 
 function doQuestion(p) {
+  // Court/HMCTS document detection — skip reply flow entirely
+  var isCourtDoc = coachType === 'court' || detectDocType(st.msg||'', p) === 'hearing' || detectDocType(st.msg||'', p) === 'court_order';
+  if (isCourtDoc) {
+    unload();
+    // Show a court-specific guide screen instead of reply flow
+    go('sReply');
+    // Hide ALL reply/question UI, show court guide
+    document.getElementById('replyContent').style.display = 'none';
+    document.getElementById('qTheirMsg').style.display = 'none';
+    var courtGuide = document.getElementById('courtDocGuide');
+    if (!courtGuide) {
+      courtGuide = document.createElement('div');
+      courtGuide.id = 'courtDocGuide';
+      var replyScreen = document.querySelector('#sReply .card');
+      if (replyScreen) replyScreen.insertBefore(courtGuide, replyScreen.firstChild);
+    }
+    var docType = detectDocType(st.msg||'', p);
+    var actions = getDocActions(docType, st.msg||'');
+    var guide = {
+      hearing: { reassurance: 'Take a breath. This is normal.', plain: 'You have received a court hearing notice. This means your case has been given a hearing date. It does not mean you have done anything wrong — it is part of the standard process.', firstTimer: 'A DRA (Dispute Resolution Appointment) is where the judge looks at both sides and tries to help reach agreement. No final decisions are usually made. It is a conversation, not a verdict.', steps: [{num:'1',text:'Save this date — you must attend in person unless told otherwise.',urgent:true},{num:'2',text:'Any documents for the judge must be filed 48 hours before the hearing.',urgent:true},{num:'3',text:'Add to Key Dates — Guardian will track your deadlines.'},{num:'4',text:'Save to Case File so every Guardian feature knows about it.'},{num:'5',text:'Ask Court Guru what to expect at a DRA.'}] },
+      court_order: { reassurance: 'A court order is legally binding. Read it carefully.', plain: 'You have received a court order. This sets out what both parties must do. Breach of a court order is serious.', firstTimer: 'Every part of a court order means something specific. Guardian can explain each section in plain English.', steps: [{num:'1',text:'Save to Case File immediately — most important document in your case.',urgent:true},{num:'2',text:'Add all dates and deadlines to Key Dates now.',urgent:true},{num:'3',text:'Ask Court Guru what the order means and what you must do.'},{num:'4',text:'Log receipt in Contact Diary.'}] }
+    };
+    var g = guide[docType] || guide.hearing;
+    var isNew = !profile || !profile.duration || profile.duration.toLowerCase().indexOf('week') !== -1;
+    var h = '<div style="background:linear-gradient(135deg,rgba(212,168,67,0.15),rgba(212,168,67,0.05));border:2px solid rgba(212,168,67,0.25);border-radius:18px;overflow:hidden;margin-bottom:16px;">';
+    h += '<div style="padding:16px 16px 12px;">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:6px;">GUARDIAN GUIDE — NO REPLY NEEDED</div>';
+    h += '<div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:8px;">' + g.reassurance + '</div>';
+    h += '<div style="font-size:13px;color:var(--muted-hi);line-height:1.6;">' + g.plain + '</div>';
+    h += '</div>';
+    if (isNew && g.firstTimer) {
+      h += '<div style="background:rgba(52,120,212,0.08);border-top:1px solid rgba(52,120,212,0.2);padding:12px 16px;display:flex;gap:10px;">';
+      h += '<span style="font-size:16px;flex-shrink:0;">🌱</span>';
+      h += '<div style="font-size:12px;color:var(--muted-hi);line-height:1.6;">' + g.firstTimer + '</div>';
+      h += '</div>';
+    }
+    h += '<div style="padding:14px 16px;background:var(--card);">';
+    h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:0.5px;margin-bottom:10px;">HERE IS WHAT TO DO</div>';
+    g.steps.forEach(function(step) {
+      var urg = step.urgent ? 'var(--white);font-weight:700' : 'var(--muted-hi)';
+      h += '<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;">';
+      h += '<div style="min-width:22px;height:22px;border-radius:50%;background:' + (step.urgent?'var(--gold)':'rgba(255,255,255,0.08)') + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:' + (step.urgent?'#0a0600':'var(--muted)') + ';flex-shrink:0;">' + step.num + '</div>';
+      h += '<div style="font-size:13px;line-height:1.5;padding-top:2px;color:' + urg + '">' + step.text + '</div></div>';
+    });
+    h += '</div>';
+    if (actions.length) {
+      h += '<div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">';
+      h += '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.5px;margin-bottom:2px;">USE GUARDIAN NOW</div>';
+      actions.forEach(function(a) {
+        h += '<button onclick="' + a.fn + '" style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;text-align:left;cursor:pointer;width:100%;">';
+        h += '<span style="font-size:18px;flex-shrink:0;">' + a.icon + '</span>';
+        h += '<div><div style="font-size:13px;font-weight:700;color:var(--white);">' + a.label + '</div>';
+        h += '<div style="font-size:11px;color:var(--muted-hi);">' + a.sub + '</div></div></button>';
+      });
+      h += '</div>';
+    }
+    h += '<div style="padding:12px 16px;border-top:1px solid var(--border);">';
+    h += '<button onclick="goBack()" style="width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted-hi);font-size:13px;cursor:pointer;">← Back to Reply Ready</button>';
+    h += '</div></div>';
+    courtGuide.innerHTML = h;
+    return; // Skip all reply/question logic
+  }
+
   var fb=document.getElementById('flagBanner');
   if(st.flag&&st.flagText){
     var cls=st.flag==='red'?'flag-red':st.flag==='amber'?'flag-amber':'flag-green';
@@ -5251,7 +5314,7 @@ async function doLogin() {
       if (result.error) { showAuthError('loginError', result.error.message); return; }
       currentUser = result.data.user;
       var rememberEl = document.getElementById('rememberMe');
-      var days = (rememberEl && rememberEl.checked) ? 30 : 1;
+      var days = (rememberEl && rememberEl.checked) ? 90 : 30;
       var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
       localStorage.setItem('gSession', JSON.stringify({ email:result.data.user.email, userId:result.data.user.id, expiry:expiry, supabase:true }));
       await loadProfileFromSupabase();
@@ -5270,7 +5333,7 @@ async function doLogin() {
     currentUser = { id: email, email: email };
     // Store session with expiry
     var remember = document.getElementById('rememberMe');
-    var days = (remember && remember.checked) ? 30 : 1;
+    var days = (remember && remember.checked) ? 90 : 30;
     var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
     localStorage.setItem('gSession', JSON.stringify({ email:email, expiry:expiry }));
     if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
@@ -7893,15 +7956,15 @@ function getDocActions(docType, msgText) {
   if (docType === 'hearing') {
     actions = [
       { icon: '📁', label: 'Add to Case File', sub: 'So every feature knows about this', fn: "go('sDocs')" },
-      { icon: '📅', label: 'Set Key Date', sub: hearingDate ? 'Hearing: ' + hearingDate : 'Track your deadline', fn: "go('sKeyDates')" },
-      { icon: '📝', label: 'Log in Contact Diary', sub: hearingDate ? 'Record hearing notice received — ' + hearingDate : 'Date-stamp this in your diary', fn: "go('sDiary')" },
+      { icon: '📅', label: 'Set Key Date', sub: hearingDate ? 'Hearing: ' + hearingDate : 'Track your deadline', fn: "goToKeyDatesPreFilled('" + (hearingDate||'') + "', 'DRA')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: hearingDate ? 'Record hearing notice received — ' + hearingDate : 'Date-stamp this in your diary', fn: "goToDiaryPreFilled('message', '', 'Court hearing notice received. DRA hearing listed for " + (hearingDate||'date TBC') + ".')" },
       { icon: '✍️', label: 'Start Position Statement', sub: 'Due 48 hours before the hearing', fn: "go('sStatement')" },
       { icon: '🧠', label: 'Ask Court Guru about DRA', sub: 'What to expect and how to prepare', fn: "askCourtGuru('What should I know about a DRA hearing and how should I prepare?')" },
     ];
   } else if (docType === 'cafcass') {
     actions = [
       { icon: '📁', label: 'Add to Case File', sub: 'Store for every tool to read', fn: "go('sDocs')" },
-      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date Cafcass letter received', fn: "go('sDiary')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date Cafcass letter received', fn: "goToDiaryPreFilled('message', '', 'Cafcass communication received.')" },
       { icon: '📖', label: 'Read Their Statement', sub: 'Guardian analyses Cafcass\'s position', fn: "go('sReadTheirs')" },
       { icon: '🧠', label: 'Ask Court Guru', sub: 'What this letter means for your case', fn: "askCourtGuru('I have received a Cafcass letter. What should I know?')" },
     ];
@@ -7909,21 +7972,21 @@ function getDocActions(docType, msgText) {
     actions = [
       { icon: '📖', label: 'Read Their Statement', sub: 'Guardian reads it and tells you what to do', fn: "go('sReadTheirs')" },
       { icon: '📁', label: 'Add to Case File', sub: 'Store it for Statement Writer to read', fn: "go('sDocs')" },
-      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date their statement was received', fn: "go('sDiary')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date their statement was received', fn: "goToDiaryPreFilled('message', '', 'Position statement received from other party.')" },
       { icon: '✍️', label: 'Write Your Response', sub: 'Start your position statement', fn: "go('sStatement')" },
     ];
   } else if (docType === 'court_order') {
     actions = [
       { icon: '📁', label: 'Add to Case File', sub: 'Critical — every feature needs to know this', fn: "go('sDocs')" },
       { icon: '📅', label: 'Set Key Dates', sub: 'Extract deadlines from the order', fn: "go('sKeyDates')" },
-      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date order received — important evidence', fn: "go('sDiary')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date order received — important evidence', fn: "goToDiaryPreFilled('message', '', 'Court order received.')" },
       { icon: '🧠', label: 'Ask Court Guru', sub: 'What this order means and what you must do', fn: "askCourtGuru('I have received a court order. Can you explain what it means and what I need to do?')" },
     ];
   } else if (docType === 'solicitor') {
     actions = [
       { icon: '📄', label: 'Explain This Document', sub: 'Guardian translates the legal language', fn: "go('sExplainer')" },
       { icon: '📁', label: 'Add to Case File', sub: 'Store it for context', fn: "go('sDocs')" },
-      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date solicitor letter received', fn: "go('sDiary')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date solicitor letter received', fn: "goToDiaryPreFilled('message', '', 'Solicitor letter received.')" },
       { icon: '🧠', label: 'Ask Court Guru', sub: 'What to do about this letter', fn: "askCourtGuru('I have received a letter from the other party\'s solicitor. What should I do?')" },
     ];
   } else if (docType === 'social_services') {
@@ -8103,6 +8166,65 @@ function askCourtGuru(question) {
   setTimeout(function(){
     var inp = document.getElementById('qaIn');
     if (inp) { inp.value = question; sendQA(); }
+  }, 400);
+}
+
+
+// ── PRE-FILL HELPERS FOR DOCUMENT ROUTER ──
+function goToDiaryPreFilled(entryType, dateStr, notesText) {
+  go('sDiaryEntry');
+  setTimeout(function() {
+    // Set date
+    var dateEl = document.getElementById('diaryDate');
+    if (dateEl && dateStr) {
+      // Convert "18 June 2026" to YYYY-MM-DD
+      var parsed = new Date(dateStr);
+      if (!isNaN(parsed)) {
+        dateEl.value = parsed.toISOString().split('T')[0];
+      } else {
+        // Try today if parse fails
+        dateEl.value = new Date().toISOString().split('T')[0];
+      }
+    } else if (dateEl) {
+      dateEl.value = new Date().toISOString().split('T')[0];
+    }
+    // Select entry type
+    if (entryType) {
+      var btn = document.querySelector('#diaryTypeOpts .opt[onclick*="\'' + entryType + '\'"]');
+      if (btn) btn.click();
+    }
+    // Pre-fill notes
+    if (notesText) {
+      var textEl = document.getElementById('diaryText');
+      if (textEl) textEl.value = notesText;
+    }
+    toast('Diary pre-filled — review and save');
+  }, 400);
+}
+
+function goToKeyDatesPreFilled(hearingDateStr, hearingType) {
+  // Key Dates pulls from diary hearing entries
+  // Route to diary with a hearing entry pre-filled
+  var notesText = 'Court hearing notice received.' + (hearingType ? ' Type: ' + hearingType + '.' : '') + (hearingDateStr ? ' Hearing date: ' + hearingDateStr + '.' : '');
+  go('sDiaryEntry');
+  setTimeout(function() {
+    // Set today as entry date (date notice received)
+    var dateEl = document.getElementById('diaryDate');
+    if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+    // Select hearing type
+    var hearingBtn = document.querySelector('#diaryTypeOpts .opt[onclick*=\"hearing\"]');
+    if (hearingBtn) hearingBtn.click();
+    // Pre-fill hearing date if available
+    if (hearingDateStr) {
+      var hd = document.getElementById('nextHearingDate');
+      if (hd) {
+        var parsed = new Date(hearingDateStr);
+        if (!isNaN(parsed)) hd.value = parsed.toISOString().split('T')[0];
+      }
+    }
+    var textEl = document.getElementById('diaryText');
+    if (textEl) textEl.value = notesText;
+    toast('Fill in hearing details and save — Guardian will calculate your deadlines');
   }, 400);
 }
 
