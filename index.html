@@ -1195,6 +1195,7 @@ p, .body-text { font-size: 16px !important; }
           <button type="button" class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
         </div>
       </div>
+      <div id="docRouter" style="display:none;"></div>
       <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
       <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
       <div id="replyScoreDisplay" style="display:none;"></div>
@@ -4509,6 +4510,7 @@ var THREAD_SYS_BY_TYPE = {
 };
 
 var threadImages = [];
+var currentMsg = '';
 var threadRollingSummary = '';
 var threadLastResult = null;
 try { threadRollingSummary = localStorage.getItem('gThreadSummary') || ''; } catch(e) {}
@@ -4899,7 +4901,7 @@ async function handleUpload(event) {
       var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
       var p=null; try{p=JSON.parse(raw);}catch(err){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
       unload();
-      if(p&&p.theirMessages&&p.theirMessages.length>3){st.msg=p.theirMessages.trim();askQ();}
+      if(p&&p.theirMessages&&p.theirMessages.length>3){currentMsg=p.theirMessages.trim(); st.msg=p.theirMessages.trim();askQ();}
       else{toast('Could not read screenshot — please type the message instead');}
     } catch(e){unload();toast('Upload failed — please try again');}
   };
@@ -4909,7 +4911,7 @@ async function handleUpload(event) {
 function confirmType() {
   var v=document.getElementById('typeIn').value.trim();
   if(!v){toast('Please type their message first');return;}
-  st.msg=v; askQ();
+  currentMsg = v; st.msg=v; askQ();
 }
 function checkOut() {
   var v=document.getElementById('outIn').value.trim();
@@ -5092,6 +5094,8 @@ async function _gen(ctx) {
       else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
       document.getElementById('suggestedReply').textContent=p.reply||'(No reply needed — silence is the stronger position here.)';
       document.getElementById('replyWhy').textContent=p.why||'';
+      // Smart document router
+      showDocRouter(currentMsg||'', p);
       // Red line check on single message reply
       var redHitsS = checkRedLines(p.reply||'');
       var rlDiv = document.getElementById('replyRedLines');
@@ -7827,6 +7831,133 @@ function updateRollingSummaryBanner() {
 }
 
 
+
+
+// ── SMART DOCUMENT ROUTER ──
+function detectDocType(msgText, analysisResult) {
+  var txt = (msgText + ' ' + JSON.stringify(analysisResult||'')).toLowerCase();
+  if (/notice of hearing|date of hearing|dispute resolution|fhdra|directions hearing|final hearing|dra hearing|listed for hearing|family court.*hearing/.test(txt)) return 'hearing';
+  if (/cafcass|section 7|welfare report|safeguarding letter|s7 report/.test(txt)) return 'cafcass';
+  if (/position statement|statement of case|their statement/.test(txt)) return 'their_statement';
+  if (/court order|prohibited steps|child arrangements order|specific issue|contact order/.test(txt)) return 'court_order';
+  if (/dear sir|dear madam|solicitor|solicitors|legal representatives|without prejudice/.test(txt)) return 'solicitor';
+  if (/social services|children services|local authority|section 47|child protection|safeguarding concern/.test(txt)) return 'social_services';
+  if (/x.ray|hospital|doctor|gp|medical|fracture|injury|consultant|paediatric/.test(txt)) return 'medical';
+  if (/school|teacher|headteacher|nursery|attendance|term time/.test(txt)) return 'school';
+  return null;
+}
+
+function getDocActions(docType, msgText) {
+  var actions = [];
+  var txt = msgText.toLowerCase();
+  
+  // Extract hearing date if present
+  var hearingDate = null;
+  var dateMatch = msgText.match(/(?:date of hearing|hearing date|listed for)[:\s]+([\d]{1,2}\s+[A-Za-z]+\s+[\d]{4}|[\d]{1,2}\/[\d]{1,2}\/[\d]{4})/i) ||
+                  msgText.match(/([\d]{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+[\d]{4})/i);
+  if (dateMatch) hearingDate = dateMatch[1];
+
+  if (docType === 'hearing') {
+    actions = [
+      { icon: '📁', label: 'Add to Case File', sub: 'So every feature knows about this', fn: "go('sDocs')" },
+      { icon: '📅', label: 'Set Key Date', sub: hearingDate ? 'Hearing: ' + hearingDate : 'Track your deadline', fn: "go('sKeyDates')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: hearingDate ? 'Record hearing notice received — ' + hearingDate : 'Date-stamp this in your diary', fn: "go('sDiary')" },
+      { icon: '✍️', label: 'Start Position Statement', sub: 'Due 48 hours before the hearing', fn: "go('sStatement')" },
+      { icon: '🧠', label: 'Ask Court Guru about DRA', sub: 'What to expect and how to prepare', fn: "askCourtGuru('What should I know about a DRA hearing and how should I prepare?')" },
+    ];
+  } else if (docType === 'cafcass') {
+    actions = [
+      { icon: '📁', label: 'Add to Case File', sub: 'Store for every tool to read', fn: "go('sDocs')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date Cafcass letter received', fn: "go('sDiary')" },
+      { icon: '📖', label: 'Read Their Statement', sub: 'Guardian analyses Cafcass\'s position', fn: "go('sReadTheirs')" },
+      { icon: '🧠', label: 'Ask Court Guru', sub: 'What this letter means for your case', fn: "askCourtGuru('I have received a Cafcass letter. What should I know?')" },
+    ];
+  } else if (docType === 'their_statement') {
+    actions = [
+      { icon: '📖', label: 'Read Their Statement', sub: 'Guardian reads it and tells you what to do', fn: "go('sReadTheirs')" },
+      { icon: '📁', label: 'Add to Case File', sub: 'Store it for Statement Writer to read', fn: "go('sDocs')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date their statement was received', fn: "go('sDiary')" },
+      { icon: '✍️', label: 'Write Your Response', sub: 'Start your position statement', fn: "go('sStatement')" },
+    ];
+  } else if (docType === 'court_order') {
+    actions = [
+      { icon: '📁', label: 'Add to Case File', sub: 'Critical — every feature needs to know this', fn: "go('sDocs')" },
+      { icon: '📅', label: 'Set Key Dates', sub: 'Extract deadlines from the order', fn: "go('sKeyDates')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date order received — important evidence', fn: "go('sDiary')" },
+      { icon: '🧠', label: 'Ask Court Guru', sub: 'What this order means and what you must do', fn: "askCourtGuru('I have received a court order. Can you explain what it means and what I need to do?')" },
+    ];
+  } else if (docType === 'solicitor') {
+    actions = [
+      { icon: '📄', label: 'Explain This Document', sub: 'Guardian translates the legal language', fn: "go('sExplainer')" },
+      { icon: '📁', label: 'Add to Case File', sub: 'Store it for context', fn: "go('sDocs')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date solicitor letter received', fn: "go('sDiary')" },
+      { icon: '🧠', label: 'Ask Court Guru', sub: 'What to do about this letter', fn: "askCourtGuru('I have received a letter from the other party\'s solicitor. What should I do?')" },
+    ];
+  } else if (docType === 'social_services') {
+    actions = [
+      { icon: '📁', label: 'Add to Case File', sub: 'Urgent — store immediately', fn: "go('sDocs')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Date and detail everything — urgently', fn: "go('sDiary')" },
+      { icon: '📅', label: 'Set Key Date', sub: 'Track any dates mentioned', fn: "go('sKeyDates')" },
+      { icon: '🧠', label: 'Ask Court Guru', sub: 'What social services involvement means', fn: "askCourtGuru('Social services have been in contact regarding my case. What do I need to know?')" },
+    ];
+  } else if (docType === 'medical') {
+    actions = [
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Date-stamped evidence entry', fn: "go('sDiary')" },
+      { icon: '📁', label: 'Add to Case File', sub: 'Medical evidence is important', fn: "go('sDocs')" },
+    ];
+  } else if (docType === 'school') {
+    actions = [
+      { icon: '📁', label: 'Add to Case File', sub: 'School records are useful evidence', fn: "go('sDocs')" },
+      { icon: '📝', label: 'Log in Contact Diary', sub: 'Note the date and context', fn: "go('sDiary')" },
+    ];
+  }
+  return actions;
+}
+
+function showDocRouter(msgText, analysisResult) {
+  var docType = detectDocType(msgText, analysisResult);
+  if (!docType) return; // No special document detected
+  var actions = getDocActions(docType, msgText);
+  if (!actions.length) return;
+  
+  var labels = {
+    hearing: '📋 This is a court hearing notice',
+    cafcass: '📋 This is a Cafcass communication',
+    their_statement: '📋 This looks like a position statement',
+    court_order: '📋 This is a court order',
+    solicitor: '📋 This is a solicitor letter',
+    social_services: '⚠️ This involves social services — act now',
+    medical: '🏥 This involves a medical matter',
+    school: '🏫 This is a school communication',
+  };
+
+  var routerEl = document.getElementById('docRouter');
+  if (!routerEl) return;
+  routerEl.style.display = 'block';
+  
+  var h = '<div style="background:var(--card);border:2px solid rgba(212,168,67,0.3);border-radius:16px;padding:16px;margin-bottom:16px;">';
+  h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:6px;">GUARDIAN RECOMMENDS</div>';
+  h += '<div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:12px;">' + (labels[docType]||'📋 Document detected') + '</div>';
+  h += '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:12px;">Use Guardian fully — here\'s what to do with this:</div>';
+  h += '<div style="display:flex;flex-direction:column;gap:8px;">';
+  actions.forEach(function(a) {
+    h += '<button onclick="' + a.fn + '" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;text-align:left;cursor:pointer;width:100%;">';
+    h += '<span style="font-size:20px;flex-shrink:0;">' + a.icon + '</span>';
+    h += '<div><div style="font-size:13px;font-weight:700;color:var(--white);">' + a.label + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted-hi);">' + a.sub + '</div></div>';
+    h += '</button>';
+  });
+  h += '</div></div>';
+  routerEl.innerHTML = h;
+}
+
+function askCourtGuru(question) {
+  go('sQA');
+  setTimeout(function(){
+    var inp = document.getElementById('qaIn');
+    if (inp) { inp.value = question; sendQA(); }
+  }, 400);
+}
 
 // ── RED LINE REPLY CHECKER ──
 var RED_LINES = [
