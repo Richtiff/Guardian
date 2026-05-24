@@ -4967,6 +4967,11 @@ function resetTrial(){
 async function askQ() {
   if(!checkTrial()) return;
   var isOut = st.outgoing === true;
+  // Set message text first so it shows on any screen
+  if (!isOut) {
+    var qt = document.getElementById('qTheirText'); if(qt) qt.textContent = st.msg;
+    var rt = document.getElementById('rTheirText'); if(rt) rt.textContent = st.msg;
+  }
   // Court/HMCTS documents — skip API entirely, show guide immediately
   if (!isOut && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order')) {
     unload();
@@ -4975,6 +4980,7 @@ async function askQ() {
   }
   load(isOut ? 'Checking this for you...' : 'Reading this carefully...', isOut ? 'Making sure it\'s safe to send' : 'Working out the best approach');
   if (!isOut) {
+    // Message text already set above for court docs — update here for non-court too
     document.getElementById('qTheirText').textContent = st.msg;
     document.getElementById('rTheirText').textContent = st.msg;
   } else {
@@ -5013,8 +5019,16 @@ function doQuestion(p) {
     if (!courtGuide) {
       courtGuide = document.createElement('div');
       courtGuide.id = 'courtDocGuide';
-      var replyScreen = document.querySelector('#sReply .card');
-      if (replyScreen) replyScreen.insertBefore(courtGuide, replyScreen.firstChild);
+      courtGuide.style.cssText = 'padding:12px 16px;';
+      var replyScreen = document.getElementById('sReply');
+      if (replyScreen) {
+        var bubble = document.getElementById('msgBubble');
+        if (bubble && bubble.nextSibling) {
+          replyScreen.insertBefore(courtGuide, bubble.nextSibling);
+        } else {
+          replyScreen.appendChild(courtGuide);
+        }
+      }
     }
     var docType = detectDocType(st.msg||'', p);
     var actions = getDocActions(docType, st.msg||'');
@@ -8434,6 +8448,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
