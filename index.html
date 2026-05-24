@@ -1016,6 +1016,25 @@ p, .body-text { font-size: 16px !important; }
 
   <!-- THREAD ANALYSIS -->
   <div id="threadPanel" style="display:none;">
+
+    <!-- Rolling summary — shown prominently at top when active -->
+    <div id="rollingSummaryBanner" style="display:none;margin-bottom:14px;">
+      <div style="background:linear-gradient(135deg,rgba(212,168,67,0.15),rgba(212,168,67,0.05));border:2px solid rgba(212,168,67,0.4);border-radius:16px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">&#128203;</div>
+          <div>
+            <div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:800;color:var(--gold);">Continuing previous analysis</div>
+            <div style="font-size:11px;color:var(--muted-hi);">Guardian remembers your last batch — upload more to build on it</div>
+          </div>
+        </div>
+        <div id="rollingSummaryText" style="font-size:12px;color:var(--muted-hi);line-height:1.6;background:rgba(0,0,0,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;padding:8px 12px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.2);border-radius:8px;font-size:11px;color:var(--gold);font-weight:600;">&#10003; Upload more screenshots below to continue</div>
+          <button onclick="clearRollingSummary()" style="padding:8px 12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;">Start fresh</button>
+        </div>
+      </div>
+    </div>
+
     <div class="field-group">
       <label class="field-label">UPLOAD SCREENSHOTS</label>
       <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;margin-bottom:10px;">Upload screenshots, PDFs, or documents — up to 20 files at once. Guardian reads everything: timestamps, sender names, every word.</div>
@@ -1067,11 +1086,6 @@ p, .body-text { font-size: 16px !important; }
     <div class="divider"><span>or paste text</span></div>
     <div class="field-group" style="margin-top:12px;">
       <textarea id="threadInput" class="field-input" rows="5" style="resize:none;font-size:13px;line-height:1.6;" placeholder="Paste the full email chain or WhatsApp thread here..."></textarea>
-    </div>
-    <div id="rollingSummaryBanner" style="display:none;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.3);border-radius:10px;padding:10px 12px;margin-bottom:10px;">
-      <div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--blue);letter-spacing:0.5px;margin-bottom:4px;">&#128203; BUILDING ON PREVIOUS BATCH</div>
-      <div id="rollingSummaryText" style="font-size:11px;color:var(--muted-hi);line-height:1.5;"></div>
-      <button onclick="clearRollingSummary()" style="font-size:11px;color:var(--muted);background:transparent;border:none;cursor:pointer;margin-top:4px;">Start fresh instead</button>
     </div>
     <button onclick="analyseThread()" class="btn-gold" style="width:100%;margin-top:4px;">Analyse this thread &#8594;</button>
   </div>
@@ -7715,7 +7729,13 @@ function updateRollingSummaryBanner() {
   if (!banner) return;
   if (threadRollingSummary) {
     banner.style.display = 'block';
-    if (text) text.textContent = threadRollingSummary.substring(0, 200) + (threadRollingSummary.length > 200 ? '...' : '');
+    if (text) {
+      // Show a clean readable version of the summary
+      var lines = threadRollingSummary.split('\n').filter(Boolean);
+      var preview = lines.slice(0, 3).join(' • ');
+      if (threadRollingSummary.length > 250) preview = preview.substring(0, 250) + '...';
+      text.textContent = preview;
+    }
   } else {
     banner.style.display = 'none';
   }
@@ -7900,3 +7920,4 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
