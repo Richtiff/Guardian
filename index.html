@@ -4973,7 +4973,7 @@ async function askQ() {
     var rt = document.getElementById('rTheirText'); if(rt) rt.textContent = st.msg;
   }
   // Court/HMCTS documents — skip API entirely, show guide immediately
-  if (!isOut && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order')) {
+  if (!isOut && coachType !== 'coparent' && coachType !== 'other' && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order')) {
     unload();
     doQuestion({ context: '', question: '', options: [] });
     return;
@@ -5007,7 +5007,8 @@ async function askQ() {
 
 function doQuestion(p) {
   // Court/HMCTS document detection — skip reply flow entirely
-  var isCourtDoc = coachType === 'court' || detectDocType(st.msg||'', p) === 'hearing' || detectDocType(st.msg||'', p) === 'court_order';
+  // Only show court guide for official document types, never for co-parent messages
+  var isCourtDoc = coachType !== 'coparent' && coachType !== 'other' && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order');
   if (isCourtDoc) {
     unload();
     // Show a court-specific guide screen instead of reply flow
@@ -8031,6 +8032,8 @@ function getDocActions(docType, msgText) {
 }
 
 function showDocRouter(msgText, analysisResult) {
+  // Never show document router for co-parent messages
+  if (coachType === 'coparent' || coachType === 'other') return;
   var docType = detectDocType(msgText, analysisResult);
   if (!docType) return;
   var actions = getDocActions(docType, msgText);
@@ -8448,6 +8451,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
