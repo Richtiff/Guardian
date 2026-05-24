@@ -4967,6 +4967,12 @@ function resetTrial(){
 async function askQ() {
   if(!checkTrial()) return;
   var isOut = st.outgoing === true;
+  // Court/HMCTS documents — skip API entirely, show guide immediately
+  if (!isOut && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order')) {
+    unload();
+    doQuestion({ context: '', question: '', options: [] });
+    return;
+  }
   load(isOut ? 'Checking this for you...' : 'Reading this carefully...', isOut ? 'Making sure it\'s safe to send' : 'Working out the best approach');
   if (!isOut) {
     document.getElementById('qTheirText').textContent = st.msg;
@@ -8428,5 +8434,6 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
