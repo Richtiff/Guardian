@@ -1028,10 +1028,11 @@ p, .body-text { font-size: 16px !important; }
           </div>
         </div>
         <div id="rollingSummaryText" style="font-size:12px;color:var(--muted-hi);line-height:1.6;background:rgba(0,0,0,0.2);border-radius:10px;padding:10px 12px;margin-bottom:10px;"></div>
-        <div style="display:flex;gap:8px;">
-          <div style="flex:1;padding:8px 12px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.2);border-radius:8px;font-size:11px;color:var(--gold);font-weight:600;">&#10003; Upload more screenshots below to continue</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="reviewLastThreadResult()" style="flex:1;padding:8px 12px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.3);border-radius:8px;color:var(--gold);font-size:11px;font-weight:700;cursor:pointer;min-width:140px;">&#128269; Review last analysis</button>
           <button onclick="clearRollingSummary()" style="padding:8px 12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;">Start fresh</button>
         </div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:8px;">&#8595; Or upload more screenshots below to add to this analysis</div>
       </div>
     </div>
 
@@ -4493,7 +4494,9 @@ var THREAD_SYS_BY_TYPE = {
 
 var threadImages = [];
 var threadRollingSummary = '';
+var threadLastResult = null;
 try { threadRollingSummary = localStorage.getItem('gThreadSummary') || ''; } catch(e) {}
+try { var _tlr = localStorage.getItem('gThreadLastResult'); if (_tlr) threadLastResult = JSON.parse(_tlr); } catch(e) {}
 
 var MAX_THREAD_IMAGES = 20;
 
@@ -4810,6 +4813,8 @@ function renderThreadResult(parsed) {
   if (parsed.flags && parsed.flags.length) summaryParts.push('Flags: ' + parsed.flags.join('; '));
   if (parsed.welfare_flags && parsed.welfare_flags.length) summaryParts.push('Welfare: ' + parsed.welfare_flags.join('; '));
   if (summaryParts.length) { threadRollingSummary = summaryParts.join('\n'); try { localStorage.setItem('gThreadSummary', threadRollingSummary); } catch(e) {} }
+  // Store full result for review
+  try { localStorage.setItem('gThreadLastResult', JSON.stringify(parsed)); } catch(e) {}
   // Feed to Guardian Brain
   var bf = [parsed.context, ...(parsed.flags||[]), ...(parsed.welfare_flags||[]), ...(parsed.open||[])].filter(Boolean).join('. ');
   if (bf.length > 20) extractCaseFacts(bf, 'correspondence thread (' + coachTypeLabel + ')');
@@ -4826,7 +4831,8 @@ function copyThreadReply() {
 function resetThreadAnalysis() {
   threadImages = [];
   threadRollingSummary = '';
-  try { localStorage.removeItem('gThreadSummary'); } catch(e) {}
+  threadLastResult = null;
+  try { localStorage.removeItem('gThreadSummary'); localStorage.removeItem('gThreadLastResult'); } catch(e) {}
   var grid = document.getElementById('threadImageGrid');
   if (grid) { grid.innerHTML=''; grid.style.display='none'; }
   document.getElementById('threadResult').style.display='none';
@@ -7718,6 +7724,18 @@ function addMoreScreenshots() {
   updateRollingSummaryBanner();
 }
 
+function reviewLastThreadResult() {
+  // Load and show the last result without a new API call
+  try { var _tlr = localStorage.getItem('gThreadLastResult'); if (_tlr) threadLastResult = JSON.parse(_tlr); } catch(e) {}
+  if (!threadLastResult) { toast('No previous analysis to review'); return; }
+  document.getElementById('threadPanel').style.display = 'none';
+  document.getElementById('threadResult').style.display = 'block';
+  renderThreadResult(threadLastResult);
+  // Scroll to top
+  var el = document.getElementById('threadResult');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function clearRollingSummary() {
   threadRollingSummary = '';
   updateRollingSummaryBanner();
@@ -7728,6 +7746,8 @@ function updateRollingSummaryBanner() {
   var text = document.getElementById('rollingSummaryText');
   if (!banner) return;
   if (threadRollingSummary) {
+    // Refresh in-memory last result
+    try { var _r = localStorage.getItem('gThreadLastResult'); if (_r) threadLastResult = JSON.parse(_r); } catch(e) {}
     banner.style.display = 'block';
     if (text) {
       // Show a clean readable version of the summary
