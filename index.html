@@ -2265,6 +2265,13 @@ var SYS = [
   '',
   'GOAL: Protect the child. Reduce conflict. Create a clean written record. Sound like a real human being.',
   '',
+  'REPLY TONE — NON-NEGOTIABLE:',
+  '- The suggested reply is ALWAYS calm, de-escalating, and child-focused — regardless of how serious the flags or allegations are.',
+  '- Never suggest a reply that mentions court proceedings, solicitors, legal action, or evidence in the reply text itself.',
+  '- Never suggest silence, refusal to communicate, or confrontational language.',
+  '- The decisions section carries the serious advice. The reply itself must be human, brief, and de-escalating.',
+  '- When in doubt, the reply should be shorter. A 10-word reply that keeps communication open is better than a 50-word reply that escalates.',
+  '',
   'CRITICAL LANGUAGE RULES — APPLY IN EVERY REPLY:',
   '- Never express sympathy with the other parent\'s personal situation, circumstances, or emotional state.',
   '- Never use language that implies emotional connection, warmth, or care toward the other parent as a person.',
@@ -4475,9 +4482,9 @@ function stopQAVoice() {
 // ── THREAD ANALYSIS ──
 var THREAD_SYS_BY_TYPE = {
 
-  coparent: 'Guardian analysing a co-parent thread for a UK family court parent. Return ONLY JSON:\n{\n  "context": "one sentence summary",\n  "pattern": "one word + one sentence e.g. Escalating — welfare allegations increasing",\n  "open": ["unresolved items"],\n  "flags": ["serious issues only: legal threats, manipulation, evidence-building, allegations — NOT routine messages"],\n  "welfare_flags": ["child welfare NOT handled — empty if welfare was properly acknowledged"],\n  "decisions": ["decisions needed before replying"],\n  "reply": "short natural reply in parent voice"\n}\nRules: thumbs up = valid response, NOT a welfare flag. Routine updates = NOT flags. Only flag genuine risks.',
+  coparent: 'Guardian analysing a co-parent thread for a UK family court parent. Return ONLY JSON:\n{\n  "context": "one sentence summary",\n  "pattern": "one word + one sentence e.g. Escalating — welfare allegations increasing",\n  "open": ["unresolved items"],\n  "flags": ["serious issues only: legal threats, manipulation, evidence-building, allegations — NOT routine messages"],\n  "welfare_flags": ["child welfare NOT handled — empty if welfare was properly acknowledged"],\n  "decisions": ["decisions needed before replying"],\n  "reply": "short natural reply in parent voice"\n}\nRules: thumbs up = valid response, NOT a welfare flag. Routine updates = NOT flags. Only flag genuine risks.\n\nREPLY RULES — CRITICAL:\n- The suggested reply is ALWAYS calm, child-focused, and de-escalating regardless of how serious the flags are.\n- Never suggest a reply that mentions court, solicitors, proceedings, legal action, or evidence.\n- Never suggest a reply that sounds confrontational, threatening, or defensive.\n- Never suggest silence or refusal to communicate — this can be used against the parent.\n- The serious advice belongs in the decisions section. The reply itself must be human and brief.\n- Even when the situation is serious, the reply should be the calmest possible response that keeps communication open and focuses only on the child.',
 
-  solicitor: 'You are Guardian, analysing a full correspondence thread between a parent and a solicitor in family court proceedings in England and Wales.\n\nParse every message. Track what has been agreed, what is partially agreed, what is not agreed, and what is outstanding.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence negotiating or resolving",\n  "agreed": ["specific point that has been fully agreed"],\n  "open": ["specific point still unresolved or awaiting a decision"],\n  "flags": ["deadlines, legal threats, or concerns the parent must not miss"],\n  "decisions": ["specific decision the parent needs to make before replying — be concrete"],\n  "reply": "full draft reply in parent voice — direct, specific, organised. Addresses open points only. Accepts what should be accepted gracefully. Pushes back where needed with a specific alternative. Sounds like a well-prepared parent not a solicitor."\n}',
+  solicitor: 'You are Guardian, analysing a full correspondence thread between a parent and a solicitor in family court proceedings in England and Wales.\n\nParse every message. Track what has been agreed, what is partially agreed, what is not agreed, and what is outstanding.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence negotiating or resolving",\n  "agreed": ["specific point that has been fully agreed"],\n  "open": ["specific point still unresolved or awaiting a decision"],\n  "flags": ["deadlines, legal threats, or concerns the parent must not miss"],\n  "decisions": ["specific decision the parent needs to make before replying — be concrete"],\n  "reply": "full draft reply in parent voice — direct, specific, organised. Addresses open points only. Short. Never confrontational or threatening."\n}\nREPLY RULE: Never suggest refusing to communicate. Never mention taking legal action or going to court — those are decisions for the parent, not the reply.',
 
   cafcass: 'You are Guardian, analysing a full correspondence thread between a parent and Cafcass in family court proceedings in England and Wales.\n\nParse every message. Track what Cafcass have asked, what has been responded to, and what is outstanding.\n\nReturn ONLY JSON:\n{\n  "context": "one sentence: what is this correspondence about",\n  "open": ["what Cafcass have asked that has not been fully addressed"],\n  "flags": ["anything in the thread that could affect the welfare assessment negatively"],\n  "decisions": ["what the parent needs to decide or prepare before replying"],\n  "reply": "full draft reply — warm, cooperative, child-focused. Cafcass evaluate parental cooperation. Sounds genuine not performative."\n}',
 
@@ -7725,15 +7732,47 @@ function addMoreScreenshots() {
 }
 
 function reviewLastThreadResult() {
-  // Load and show the last result without a new API call
+  // Load stored result
   try { var _tlr = localStorage.getItem('gThreadLastResult'); if (_tlr) threadLastResult = JSON.parse(_tlr); } catch(e) {}
-  if (!threadLastResult) { toast('No previous analysis to review'); return; }
-  document.getElementById('threadPanel').style.display = 'none';
-  document.getElementById('threadResult').style.display = 'block';
-  renderThreadResult(threadLastResult);
-  // Scroll to top
-  var el = document.getElementById('threadResult');
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+  if (threadLastResult) {
+    // Full result stored — show it
+    document.getElementById('threadPanel').style.display = 'none';
+    document.getElementById('threadResult').style.display = 'block';
+    renderThreadResult(threadLastResult);
+    var el = document.getElementById('threadResult');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  
+  // No full result — reconstruct from rolling summary text
+  if (threadRollingSummary) {
+    var lines = threadRollingSummary.split('\n');
+    var reconstructed = { context: '', pattern: '', open: [], flags: [], welfare_flags: [], decisions: [], reply: '' };
+    lines.forEach(function(line) {
+      if (line.startsWith('Context: ')) reconstructed.context = line.replace('Context: ', '');
+      else if (line.startsWith('Pattern: ')) reconstructed.pattern = line.replace('Pattern: ', '');
+      else if (line.startsWith('Agreed: ')) reconstructed.agreed = line.replace('Agreed: ', '').split('; ');
+      else if (line.startsWith('Still open: ')) reconstructed.open = line.replace('Still open: ', '').split('; ');
+      else if (line.startsWith('Flags: ')) reconstructed.flags = line.replace('Flags: ', '').split('; ');
+      else if (line.startsWith('Welfare: ')) reconstructed.welfare_flags = line.replace('Welfare: ', '').split('; ');
+    });
+    document.getElementById('threadPanel').style.display = 'none';
+    document.getElementById('threadResult').style.display = 'block';
+    renderThreadResult(reconstructed);
+    // Show note about partial result
+    var el = document.getElementById('threadResult');
+    if (el) {
+      var note = document.createElement('div');
+      note.style.cssText = 'background:var(--amber-dim);border:1px solid rgba(201,148,58,0.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--amber);';
+      note.textContent = 'Summary view — run a new analysis to store the full result.';
+      el.insertBefore(note, el.firstChild);
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    return;
+  }
+  
+  toast('Run an analysis first — then you can review it here');
 }
 
 function clearRollingSummary() {
@@ -7940,3 +7979,4 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
