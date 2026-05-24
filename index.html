@@ -1195,6 +1195,8 @@ p, .body-text { font-size: 16px !important; }
           <button type="button" class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
         </div>
       </div>
+      <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
       <div id="replyScoreDisplay" style="display:none;"></div>
       <div style="padding:0 16px 12px;">
         <button type="button" onclick="scoreReply(document.getElementById('suggestedReply').textContent,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
@@ -4680,7 +4682,7 @@ async function analyseThread() {
           textParts.push('FILE: ' + item.name + '\n' + (item.text||''));
         }
       });
-      var instructionText = (threadRollingSummary ? 'PREVIOUS BATCH SUMMARY:\n' + threadRollingSummary + '\n\nNEW CONTENT TO BUILD ON:\n' : '') + 'The above contains a message thread as screenshots, PDFs, and/or text files. Read ALL content in chronological order. ' + (threadRollingSummary ? 'Build on the previous batch summary — update agreed/open/flags based on this new content.' : 'Analyse the complete thread.') + ' Return ONLY the JSON as specified. Reference specific dates and times where visible. No preamble.';
+      var instructionText = (threadRollingSummary ? 'PREVIOUS BATCH SUMMARY:\n' + threadRollingSummary + '\n\nNEW CONTENT TO BUILD ON:\n' : '') + 'The above contains a message thread as screenshots, PDFs, and/or text files. Read ALL content in chronological order. ' + (threadRollingSummary ? 'Build on the previous batch summary — update agreed/open/flags based on this new content.' : 'Analyse the complete thread.') + ' Return ONLY the JSON as specified. Include a "reply_why" field: one sentence on why this wording was chosen and what was avoided. Reference specific dates and times where visible. No preamble.';
       if (textParts.length > 0) instructionText = textParts.join('\n\n') + '\n\n' + instructionText;
       if (text) instructionText = 'ADDITIONAL TEXT:\n' + text + '\n\n' + instructionText;
       parts.push({ type:'text', text: instructionText });
@@ -4800,6 +4802,10 @@ function renderThreadResult(parsed) {
     h += '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">SUGGESTED REPLY</div>';
     h += '<textarea id="threadReplyText" style="width:100%;background:transparent;border:none;color:var(--white);font-size:14px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:140px;" rows="7">'+parsed.reply.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea>';
     h += '</div>';
+    var _rh = checkRedLines(parsed.reply||'');
+    if (_rh.length) { h += '<div style="background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"><div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + _rh.map(function(r){return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• '+r+'</div>';}).join('') + '</div>'; }
+    if (parsed.reply_why) { h += '<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;gap:8px;"><span style="font-size:14px;flex-shrink:0;">💡</span><div style="font-size:12px;color:var(--muted-hi);line-height:1.5;"><strong style="color:var(--white);">Why this wording:</strong> ' + parsed.reply_why + '</div></div>'; }
+    h += '<div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;">Guardian writes a starting point — always edit before sending.</div>';
     h += '<div id="threadScoreDisplay" style="display:none;"></div>';
     h += '<button onclick="scoreReply(document.getElementById(\'threadReplyText\').value,\'threadScoreDisplay\')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Score before I send &#8594;</button>';
     h += '<div style="display:flex;gap:8px;margin-bottom:16px;">';
@@ -4810,6 +4816,8 @@ function renderThreadResult(parsed) {
   }
 
   el.innerHTML = h;
+  // Auto-score after render
+  setTimeout(function(){ if(document.getElementById('threadReplyText') && document.getElementById('threadScoreDisplay').style.display==='none') scoreReply(document.getElementById('threadReplyText').value,'threadScoreDisplay'); }, 1000);
 
   // Store rolling summary for next batch
   var summaryParts = [];
@@ -5077,6 +5085,17 @@ async function _gen(ctx) {
       else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
       document.getElementById('suggestedReply').textContent=p.reply||'(No reply needed — silence is the stronger position here.)';
       document.getElementById('replyWhy').textContent=p.why||'';
+      // Red line check on single message reply
+      var redHitsS = checkRedLines(p.reply||'');
+      var rlDiv = document.getElementById('replyRedLines');
+      if (rlDiv) {
+        if (redHitsS.length > 0) {
+          rlDiv.style.display='block';
+          rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
+        } else { rlDiv.style.display='none'; }
+      }
+      // Auto-score
+      setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').textContent,'replyScoreDisplay'); }, 800);
       if(p.tips&&p.tips.length){
         var ti=document.getElementById('tipItems'); ti.innerHTML='';
         p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});
@@ -7801,6 +7820,29 @@ function updateRollingSummaryBanner() {
 }
 
 
+
+// ── RED LINE REPLY CHECKER ──
+var RED_LINES = [
+  { pattern: /i['\u2019]m sorry you['\u2019]ve had to/i, reason: "sounds like an admission that the other parent was left alone" },
+  { pattern: /i know this (has been|is) hard for you/i, reason: "expresses sympathy with the other parent personally" },
+  { pattern: /speak(ing)? (to|with) (a |my )?solicitor/i, reason: "mentions solicitors — signals legal escalation in the message itself" },
+  { pattern: /court proceedings/i, reason: "mentions court proceedings directly in the message" },
+  { pattern: /legal action/i, reason: "threatens legal action — highly escalating" },
+  { pattern: /this (will be|is|may be) used as evidence/i, reason: "threatening — mentions evidence" },
+  { pattern: /i['\u2019]m not going to communicate/i, reason: "refusal to communicate — can be used to show you're obstructing" },
+  { pattern: /i (miss|missed) (you|us|what we had)/i, reason: "sounds like re-engagement language" },
+  { pattern: /you have (no right|violated|breached|ignored)/i, reason: "confrontational — accuses the other party directly" },
+  { pattern: /as per the court order/i, reason: "referencing the court order in the reply is confrontational and legal — belongs in decisions, not the reply" },
+];
+
+function checkRedLines(replyText) {
+  var hits = [];
+  RED_LINES.forEach(function(rl) {
+    if (rl.pattern.test(replyText)) hits.push(rl.reason);
+  });
+  return hits;
+}
+
 async function scoreReply(msgText, displayElId) {
   if (!msgText || msgText.trim().length < 5) { toast('Nothing to score'); return; }
   var el = document.getElementById(displayElId);
@@ -7978,5 +8020,5 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 </div>
 
 </body>
-</html> 
+</html>
 
