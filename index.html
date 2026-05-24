@@ -4433,6 +4433,7 @@ var THREAD_SYS_BY_TYPE = {
 
 var threadImages = [];
 var threadRollingSummary = '';
+try { threadRollingSummary = localStorage.getItem('gThreadSummary') || ''; } catch(e) {}
 
 var MAX_THREAD_IMAGES = 20;
 
@@ -4570,6 +4571,7 @@ function showThread() {
   document.getElementById('outPanel').style.display='none';
   document.getElementById('threadResult').style.display='none';
   document.getElementById('threadPanel').style.display='block';
+  updateRollingSummaryBanner();
   var b1=document.getElementById('btnIn'),b2=document.getElementById('btnOut'),b3=document.getElementById('btnThread');
   if(b1)b1.className='home-btn home-btn-card';
   if(b2)b2.className='home-btn home-btn-card';
@@ -4745,7 +4747,7 @@ function renderThreadResult(parsed) {
   if (parsed.open && parsed.open.length) summaryParts.push('Still open: ' + parsed.open.join('; '));
   if (parsed.flags && parsed.flags.length) summaryParts.push('Flags: ' + parsed.flags.join('; '));
   if (parsed.welfare_flags && parsed.welfare_flags.length) summaryParts.push('Welfare: ' + parsed.welfare_flags.join('; '));
-  if (summaryParts.length) threadRollingSummary = summaryParts.join('\n');
+  if (summaryParts.length) { threadRollingSummary = summaryParts.join('\n'); try { localStorage.setItem('gThreadSummary', threadRollingSummary); } catch(e) {} }
   // Feed to Guardian Brain
   var bf = [parsed.context, ...(parsed.flags||[]), ...(parsed.welfare_flags||[]), ...(parsed.open||[])].filter(Boolean).join('. ');
   if (bf.length > 20) extractCaseFacts(bf, 'correspondence thread (' + coachTypeLabel + ')');
@@ -4762,6 +4764,7 @@ function copyThreadReply() {
 function resetThreadAnalysis() {
   threadImages = [];
   threadRollingSummary = '';
+  try { localStorage.removeItem('gThreadSummary'); } catch(e) {}
   var grid = document.getElementById('threadImageGrid');
   if (grid) { grid.innerHTML=''; grid.style.display='none'; }
   document.getElementById('threadResult').style.display='none';
