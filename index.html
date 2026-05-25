@@ -2460,6 +2460,11 @@ function setCoachType(type, label, icon) {
   coachTypeIcon = icon;
   document.getElementById('coachTypePanel').style.display = 'none';
   document.getElementById('coachActionPanel').style.display = 'block';
+  // Clear previous message when switching type
+  var ti = document.getElementById('typeIn'); if (ti) ti.value = '';
+  var prevImg = document.getElementById('uploadPreview'); if (prevImg) { prevImg.src=''; prevImg.style.display='none'; }
+  uploadedImage = null; uploadedImageType = null;
+  st = { msg:'', flag:'', flagText:'', tip:'', why:'', answer:'', outgoing:false, outMsg:'' };
   var badge = document.getElementById('coachTypeBadgeText');
   if (badge) badge.innerHTML = icon + ' &nbsp;' + label;
   // Update textarea placeholder
@@ -2487,6 +2492,10 @@ function setCoachType(type, label, icon) {
 function resetCoachType() {
   coachType = 'coparent';
   coachTypeLabel = 'Co-parent';
+  // Clear previous message
+  var ti = document.getElementById('typeIn'); if (ti) ti.value = '';
+  uploadedImage = null; uploadedImageType = null;
+  st = { msg:'', flag:'', flagText:'', tip:'', why:'', answer:'', outgoing:false, outMsg:'' };
   document.getElementById('coachActionPanel').style.display = 'none';
   document.getElementById('inPanel').style.display = 'none';
   document.getElementById('outPanel').style.display = 'none';
@@ -4974,7 +4983,6 @@ async function askQ() {
   }
   // Court/HMCTS documents — skip API entirely, show guide immediately
   if (!isOut && coachType !== 'coparent' && coachType !== 'other' && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order')) {
-    toast('DEBUG 1: Court detected, type=' + coachType);
     unload();
     doQuestion({ context: '', question: '', options: [] });
     return;
@@ -5003,10 +5011,11 @@ async function askQ() {
     unload();
     if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
     else{doQuestion(null);}
-  } catch(e){unload();doQuestion(null);}
+  } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
 
 function doQuestion(p) {
+  if (!p) { go('sCoach'); toast('Could not read that — please try again'); return; }
   // Court/HMCTS document detection — skip reply flow entirely
   // Only show court guide for official document types, never for co-parent messages
   var isCourtDoc = coachType !== 'coparent' && coachType !== 'other' && (coachType === 'court' || detectDocType(st.msg||'', {}) === 'hearing' || detectDocType(st.msg||'', {}) === 'court_order');
@@ -8470,6 +8479,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
