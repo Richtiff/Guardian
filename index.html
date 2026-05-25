@@ -5026,15 +5026,25 @@ function doQuestion(p) {
       var replyScreen = document.getElementById('sReply');
       if (replyScreen) {
         var bubble = document.getElementById('msgBubble');
-        toast('DEBUG 3: bubble=' + !!bubble + ' replyScreen=' + !!replyScreen);
-        if (bubble && bubble.nextSibling) {
-          replyScreen.insertBefore(courtGuide, bubble.nextSibling);
-          toast('DEBUG 4: inserted after bubble');
-        } else if (replyScreen) {
-          replyScreen.appendChild(courtGuide);
-          toast('DEBUG 4b: appended to sReply');
+        // Collapse long court documents
+        if (bubble) {
+          bubble.style.cssText = 'max-height:100px;overflow:hidden;border-radius:12px;';
+          var expBtn = document.createElement('button');
+          expBtn.textContent = '▼ Show full document';
+          expBtn.style.cssText = 'display:block;width:100%;padding:6px;background:transparent;border:none;color:var(--gold);font-size:12px;cursor:pointer;text-align:center;margin-bottom:8px;';
+          expBtn.onclick = function(){ bubble.style.maxHeight='none'; expBtn.style.display='none'; };
+          bubble.parentNode.insertBefore(expBtn, bubble.nextSibling);
+        }
+        // Insert guide BEFORE the message bubble so it's the first thing seen
+        if (bubble) {
+          replyScreen.insertBefore(courtGuide, bubble);
         } else {
-          toast('DEBUG 4c: NOTHING FOUND');
+          replyScreen.insertBefore(courtGuide, replyScreen.firstChild);
+        }
+        // Scroll to top
+        replyScreen.scrollTop = 0;
+        window.scrollTo(0,0);
+        if (false) {
         }
       }
     }
@@ -8460,6 +8470,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
