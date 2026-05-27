@@ -4985,7 +4985,10 @@ function skipCool(){if(coolInt)clearInterval(coolInt);doQuestion();}
 
 function checkTrial(){
   if(localStorage.getItem('gPaid')==='true') return true;
-  if(checks>=50){go('sPaywall');return false;}
+  var paid = false;
+  try { paid = localStorage.getItem('gPaid')==='true'; } catch(e){}
+  if(paid) return true;
+  if(checks>=50){ go('sPaywall'); return false; }
   return true;
 }
 
@@ -4994,8 +4997,15 @@ function resetTrial(){
   localStorage.setItem('gChecks','0');
   localStorage.removeItem('gUpsellDismissed');
   upsellShownThisSession=false;
-  toast('✅ Trial reset — 50 checks restored');
-  go('sHome');
+  toast('✅ Checks reset to 50');
+  showHome();
+}
+function devReset(){
+  checks=0;
+  localStorage.setItem('gChecks','0');
+  localStorage.clear();
+  toast('✅ Full reset — reload the app');
+  setTimeout(function(){ window.location.reload(); }, 1000);
 }
 
 async function askQ() {
@@ -5024,6 +5034,7 @@ async function askQ() {
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
       : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
@@ -8408,6 +8419,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
