@@ -1059,13 +1059,13 @@ p, .body-text { font-size: 16px !important; }
           <span style="font-size:24px;">&#128247;</span>
           <span style="font-size:12px;font-weight:700;color:var(--white);">Camera</span>
           <span style="font-size:10px;color:var(--muted);">Take photo</span>
-          <input type="file" accept="image/*" capture="environment" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+          <input type="file" accept="image/*" capture="environment" multiple style="position:absolute;opacity:0;width:0;height:0;" onchange="handleThreadImageUpload(event)">
         </label>
         <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;text-align:center;">
           <span style="font-size:24px;">&#128444;&#65039;</span>
           <span style="font-size:12px;font-weight:700;color:var(--white);">Screenshots</span>
           <span style="font-size:10px;color:var(--muted);">JPG PNG HEIC WebP</span>
-          <input type="file" accept="image/*,.heic,.heif,.webp" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+          <input type="file" accept="image/*,.heic,.heif,.webp" multiple style="position:absolute;opacity:0;width:0;height:0;" onchange="handleThreadImageUpload(event)">
         </label>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
@@ -1073,13 +1073,13 @@ p, .body-text { font-size: 16px !important; }
           <span style="font-size:24px;">&#128196;</span>
           <span style="font-size:12px;font-weight:700;color:var(--white);">PDF / Doc</span>
           <span style="font-size:10px;color:var(--muted);">Letters &amp; emails</span>
-          <input type="file" accept=".pdf,.doc,.docx,.txt,.rtf" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+          <input type="file" accept=".pdf,.doc,.docx,.txt,.rtf" multiple style="position:absolute;opacity:0;width:0;height:0;" onchange="handleThreadImageUpload(event)">
         </label>
         <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;background:rgba(255,255,255,0.04);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer;text-align:center;">
           <span style="font-size:24px;">&#128193;</span>
           <span style="font-size:12px;font-weight:700;color:var(--white);">Any file</span>
           <span style="font-size:10px;color:var(--muted);">All formats</span>
-          <input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml,.msg" multiple style="display:none;" onchange="handleThreadImageUpload(event)">
+          <input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml,.msg" multiple style="position:absolute;opacity:0;width:0;height:0;" onchange="handleThreadImageUpload(event)">
         </label>
       </div>
       <div id="threadImageGrid" style="display:none;margin-bottom:12px;"></div>
@@ -4627,7 +4627,7 @@ function renderThreadImageGrid() {
   var remaining = MAX_THREAD_IMAGES - threadImages.length;
   var countCol = threadImages.length >= MAX_THREAD_IMAGES ? 'var(--amber)' : 'var(--green)';
   var addMoreHtml = remaining > 0 ?
-    '<label style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;color:var(--gold);cursor:pointer;">+ Add more files<input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml" multiple style="display:none;" onchange="handleThreadImageUpload(event)"></label>' +
+    '<label style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;color:var(--gold);cursor:pointer;">+ Add more files<input type="file" accept="image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.webp,.eml,.msg" multiple style="position:absolute;opacity:0;width:0;height:0;" onchange="handleThreadImageUpload(event)"></label>' +
     '<div style="margin-top:10px;padding:10px 12px;background:var(--green-dim);border:1px solid rgba(26,158,114,0.3);border-radius:10px;display:flex;align-items:center;gap:8px;">' +
     '<span style="color:var(--green);font-size:16px;">&#10003;</span>' +
     '<span style="font-size:12px;color:var(--green);font-weight:600;">' + threadImages.length + ' file' + (threadImages.length !== 1 ? 's' : '') + ' ready — tap Analyse to continue</span>' +
@@ -4909,21 +4909,46 @@ async function handleUpload(event) {
   var files = Array.from(event.target.files);
   event.target.value = '';
   if (!files.length) return;
-  var file = files[0]; // Process first image — combine if multiple
-  if (files.length > 1) toast('Reading ' + files.length + ' screenshots...');
+  var file = files[0];
+  if (files.length > 1) toast('Reading first screenshot...');
   load('Reading your message...','Taking a careful look at this');
-  var reader=new FileReader();
-  reader.onload=async function(e){
-    var b64=e.target.result.split(',')[1];
-    try {
-      var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:file.type,data:b64}},{type:'text',text:'Read this message screenshot. Return ONLY JSON: {"theirMessages":"<their messages>","myMessages":"<my messages>","unclear":false}'}]}]})});
-      var data=await res.json();
-      var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
-      var p=null; try{p=JSON.parse(raw);}catch(err){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
-      unload();
-      if(p&&p.theirMessages&&p.theirMessages.length>3){currentMsg=p.theirMessages.trim(); st.msg=p.theirMessages.trim();askQ();}
-      else{toast('Could not read screenshot — please type the message instead');}
-    } catch(e){unload();toast('Upload failed — please try again');}
+  // Compress image before sending to avoid Vercel timeout
+  var img = new Image();
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    img.onload = async function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 720;
+      var scale = Math.min(MAX/img.width, MAX/img.height, 1);
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      var compressed = canvas.toDataURL('image/jpeg', 0.7);
+      var b64 = compressed.split(',')[1];
+      try {
+        var res = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:400,
+            messages:[{role:'user', content:[
+              {type:'image', source:{type:'base64', media_type:'image/jpeg', data:b64}},
+              {type:'text', text:'Read this screenshot of a message. Return ONLY JSON: {"theirMessages":"full text of incoming messages","myMessages":"full text of my sent messages","unclear":false}'}
+            ]}]
+          })
+        });
+        var data = await res.json();
+        var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+        var p = null;
+        try { p = JSON.parse(raw); } catch(err) { var m2 = raw.match(/\{[\s\S]*\}/); if(m2) try{p=JSON.parse(m2[0]);}catch(e2){} }
+        unload();
+        if (p && p.theirMessages && p.theirMessages.length > 3) {
+          currentMsg = p.theirMessages.trim();
+          st.msg = p.theirMessages.trim();
+          askQ();
+        } else {
+          toast('Could not read screenshot — please type the message instead');
+        }
+      } catch(e) { unload(); toast('Could not read screenshot — please type the message instead'); }
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -8383,6 +8408,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
