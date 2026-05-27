@@ -1183,7 +1183,8 @@ p, .body-text { font-size: 16px !important; }
       <div class="coach-body">
         <div id="noReplyBanner" style="display:none;"></div>
         <div class="breathe" id="breatheDiv">Take a breath before you decide.</div>
-        <div class="suggested" id="suggestedReply"></div>
+        <textarea class="suggested" id="suggestedReply" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
         <div class="reply-why" id="replyWhy"></div>
       </div>
       <div class="tip-card" id="tipCard"><div class="tip-lbl">💡 What to do now</div><div id="tipItems"></div></div>
@@ -1202,7 +1203,7 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
       <div id="replyScoreDisplay" style="display:none;"></div>
       <div style="padding:0 16px 12px;">
-        <button type="button" onclick="scoreReply(document.getElementById('suggestedReply').textContent,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
+        <button type="button" onclick="scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
       </div>
       <div class="feedback-row">
         <span class="feedback-lbl">Was this helpful?</span>
@@ -2596,7 +2597,7 @@ window.onload = function() { (async function() {
       try {
         var sess = JSON.parse(stored);
         if (sess.expiry && Date.now() < sess.expiry) {
-          currentUser = { id: sess.email, email: sess.email };
+          currentUser = { id: sess.userId || sess.email, email: sess.email };
           var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
           if (isComplete) { profile.complete = true; showHome(); return; }
           // setupStep navigation removed
@@ -5132,7 +5133,7 @@ async function _gen(ctx) {
   var modeInstructions = {
     natural: "REPLY MODE: Natural everyday co-parenting. Sound exactly like this parent would naturally text. Casual opener like Hey [name] if appropriate. Use the child's own words where possible. End with a practical question not a statement. No legal language. No guardedness. Just a real parent texting. IMPORTANT: Even in natural mode you must always acknowledge any concern raised, confirm any information received, and state any action you are taking. Low conflict messages can be traps — a parent who later claims their concern was ignored. Close every loop naturally without sounding defensive.",
     welfare: "REPLY MODE: Welfare focused. Show genuine care for the child's needs. Use the child's name. Acknowledge the concern directly. Confirm what you will do. Ask what else you can do if needed. Creates a clear timestamped record of engagement without sounding like you are creating a record. Still warm and natural. Never leave a welfare concern unacknowledged even if it seems minor.",
-    protective: "REPLY MODE: Protective reply. Measured, factual, short. Every word chosen carefully. No emotion. Court-ready without sounding court-ready. Acknowledge without over-engaging. Confirm receipt of any information. State what action you are taking. Redirect to the child's practical needs. Do not admit anything. Do not deny anything aggressively. Always close the loop so nothing can later be described as ignored."
+    protective: "REPLY MODE: Protective reply. This does NOT mean cold or formal — a warm, child-focused reply is MORE protective than a defensive one because it shows an engaged, reasonable parent. Lead with the child by name — ask how they are or reference their wellbeing. Show genuine interest in staying informed about the child's day-to-day life. Gently reference existing arrangements as the baseline without being confrontational. Keep communication open without over-engaging on allegations. Sound like a caring parent who is completely on top of things — not a solicitor. No admission. No aggression. Every word earns its place. Always close the loop. Ask to be kept updated about the child if appropriate. The court wants to see a parent who puts the child first — show them that."
   };
 
   var universalRules = "UNIVERSAL RULES THAT APPLY IN ALL MODES: 1) Always acknowledge any concern raised — never leave it unaddressed even if the message seems routine. 2) Always confirm receipt of any health, welfare or practical information. 3) Always state what action you are taking or will take. 4) Friendly messages can be traps — a co-parent building a paper trail of ignored concerns. Close every loop. 5) The reply must create a clear record that the parent engaged, noticed, and acted — without ever sounding like that is what it is doing.";
@@ -5161,8 +5162,8 @@ async function _gen(ctx) {
       else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
       else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
       var replyText = p.reply||'';
-      var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply') !== -1 || replyText.toLowerCase().indexOf('silence is') !== -1 || coachType === 'court';
-      document.getElementById('suggestedReply').textContent = replyText || '(No reply needed)';
+      var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply needed') !== -1 || replyText.toLowerCase().indexOf('silence is the stronger') !== -1;
+      document.getElementById('suggestedReply').value = replyText || '(No reply needed)';
       document.getElementById('replyWhy').textContent = p.why||'';
       // Hide/show reply UI based on whether reply is needed
       var replyCard = document.getElementById('replyCard');
@@ -5182,7 +5183,7 @@ async function _gen(ctx) {
           rlDiv.style.display = redHitsS.length > 0 ? 'block' : 'none';
           if (redHitsS.length > 0) rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
         }
-        setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').textContent,'replyScoreDisplay'); }, 800);
+        setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
       }
       // Smart document router
       showDocRouter(currentMsg||'', p);
@@ -5196,7 +5197,7 @@ async function _gen(ctx) {
         } else { rlDiv.style.display='none'; }
       }
       // Auto-score
-      setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').textContent,'replyScoreDisplay'); }, 800);
+      setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
       if(p.tips&&p.tips.length){
         var ti=document.getElementById('tipItems'); ti.innerHTML='';
         p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});
@@ -5220,18 +5221,19 @@ function showAnyway(){document.getElementById('nuclearWarn').style.display='none
 
 async function refine(type){
   var instr={formal:'Too formal. Rewrite as real British parent texting — shorter, natural. Keep factual.',harsh:'Too harsh. Soften while keeping factual. Remove anything accusatory.',different:'Rewrite with different words — same meaning, said differently.'};
-  var prev=document.getElementById('suggestedReply').textContent;
-  document.getElementById('suggestedReply').textContent='Updating...';
+  var prev=document.getElementById('suggestedReply').value;
+  document.getElementById('suggestedReply').value='Updating...';
   try {
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:150,system:SYS,messages:[{role:'user',content:getCTX()+'\n\nTheir message: "'+st.msg+'"\nCurrent reply: "'+st.reply+'"\nFeedback: '+instr[type]+'\n\nRewrite it. Real British parent. Max 2 sentences. No legal language. Return ONLY the new reply text.'}]})});
     var data=await res.json();
     var r=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/^["']|["']$/g,'');
-    if(r&&r.length>3){st.reply=r;document.getElementById('suggestedReply').textContent=r;}
-    else{document.getElementById('suggestedReply').textContent=prev;}
-  } catch(e){document.getElementById('suggestedReply').textContent=prev;}
+    if(r&&r.length>3){st.reply=r;document.getElementById('suggestedReply').value=r;}
+    else{document.getElementById('suggestedReply').value=prev;}
+  } catch(e){document.getElementById('suggestedReply').value=prev;}
 }
 
 function confirmReply(){
+  var editedReply = document.getElementById('suggestedReply'); if (editedReply) st.reply = editedReply.value || st.reply;
   document.getElementById('confirmedReply').textContent=st.reply;
   document.getElementById('editIn').value=st.reply;
   if(timingInt) clearInterval(timingInt);
@@ -8419,6 +8421,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
