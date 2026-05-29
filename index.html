@@ -446,7 +446,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .reminder-banner-title { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:800; color:var(--gold); margin-bottom:4px; }
 .reminder-banner-body { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:10px; }
 .reminder-banner-btns { display:flex; gap:8px; }
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#1a2535; border:1px solid rgba(255,255,255,0.1); color:var(--white); padding:11px 20px; border-radius:10px; font-size:13px; font-weight:500; z-index:999; transition:transform 0.25s ease; white-space:nowrap; }
+.toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(120px); background:#1e2d45; border:1.5px solid rgba(212,168,67,0.4); color:var(--white); padding:16px 24px; border-radius:14px; font-size:16px; font-weight:600; z-index:9999; transition:transform 0.25s ease; max-width:85vw; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.4); white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
 .overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
 .overlay.show { display:flex; pointer-events:all; }
@@ -4957,12 +4957,14 @@ async function handleUpload(event) {
     img.onload = function() {
       try {
         var canvas = document.createElement('canvas');
-        var MAX = 800;
-        var scale = Math.min(MAX/img.width, MAX/img.height, 1);
+        // Cap width only — long screenshots stay readable
+        var MAX_W = 1080;
+        var scale = Math.min(MAX_W / img.width, 1);
         canvas.width = Math.round(img.width * scale);
         canvas.height = Math.round(img.height * scale);
+        var quality = canvas.height > 4000 ? 0.5 : 0.7;
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        var compressed = canvas.toDataURL('image/jpeg', 0.75);
+        var compressed = canvas.toDataURL('image/jpeg', quality || 0.75);
         sendToAPI(compressed.split(',')[1], 'image/jpeg');
       } catch(err) {
         // Canvas failed — send raw
@@ -5240,11 +5242,11 @@ function fixReply(){st.answer=(st.answer||'')+' [Please generate a safer calmer 
 function showAnyway(){document.getElementById('nuclearWarn').style.display='none';document.getElementById('replyContent').style.display='block';}
 
 async function refine(type){
-  var instr={formal:'Too formal. Rewrite as real British parent texting — shorter, natural. Keep factual.',harsh:'Too harsh. Soften while keeping factual. Remove anything accusatory.',different:'Rewrite with different words — same meaning, said differently.'};
+  var instr={formal:'Too formal. Rewrite as real British parent texting — shorter, natural. Keep factual.',harsh:'Too harsh. Soften while keeping factual. Remove anything accusatory.',different:'Write a COMPLETELY DIFFERENT reply — different opening, different structure, different words. Do NOT use any of the same phrases as the current reply. Same protective intent, entirely different approach.'};
   var prev=document.getElementById('suggestedReply').value;
   document.getElementById('suggestedReply').value='Updating...';
   try {
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:150,system:SYS,messages:[{role:'user',content:getCTX()+'\n\nTheir message: "'+st.msg+'"\nCurrent reply: "'+st.reply+'"\nFeedback: '+instr[type]+'\n\nRewrite it. Real British parent. Max 2 sentences. No legal language. Return ONLY the new reply text.'}]})});
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:150,system:SYS,messages:[{role:'user',content:getCTX()+'\n\nTheir message: "'+st.msg+'"\nPrevious reply (DO NOT reuse these phrases): "'+prev+'"\nFeedback: '+instr[type]+'\n\nRewrite it. Real British parent. Max 2 sentences. No legal language. Return ONLY the new reply text.'}]})});
     var data=await res.json();
     var r=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/^["']|["']$/g,'');
     if(r&&r.length>3){st.reply=r;document.getElementById('suggestedReply').value=r;}
