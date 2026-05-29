@@ -4911,45 +4911,65 @@ async function handleUpload(event) {
   event.target.value = '';
   if (!files.length) return;
   var file = files[0];
-  if (files.length > 1) toast('Reading first screenshot...');
-  load('Reading your message...','Taking a careful look at this');
-  // Compress image before sending to avoid Vercel timeout
-  var img = new Image();
+  load('Reading your screenshot...','Looking at this carefully');
+
+  async function sendToAPI(b64, mediaType) {
+    try {
+      if(!b64 || b64.length < 100) { unload(); toast('Image too small to read — try another'); return; }
+      var res = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:500,
+          messages:[{role:'user', content:[
+            {type:'image', source:{type:'base64', media_type: mediaType || 'image/jpeg', data:b64}},
+            {type:'text', text:'Read all the text in this message screenshot. Return ONLY JSON: {"theirMessages":"the incoming message text","myMessages":"any sent messages visible","unclear":false}. If you cannot read text clearly set unclear to true.'}
+          ]}]
+        })
+      });
+      if (!res.ok) { unload(); toast('Could not read screenshot ('+res.status+') — try typing the message instead'); return; }
+      var data = await res.json();
+      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+      var p = null;
+      try { p = JSON.parse(raw); } catch(err) { var m2 = raw.match(/\{[\s\S]*\}/); if(m2) try{p=JSON.parse(m2[0]);}catch(e2){} }
+      unload();
+      if (p && p.unclear) { toast('Screenshot not clear enough — please type the message instead'); return; }
+      if (p && p.theirMessages && p.theirMessages.length > 3) {
+        currentMsg = p.theirMessages.trim();
+        st.msg = p.theirMessages.trim();
+        document.getElementById('typeIn').value = p.theirMessages.trim();
+        askQ();
+      } else {
+        toast('Could not read text from screenshot — please type the message instead');
+      }
+    } catch(e) { unload(); toast('Screenshot failed — please type the message instead'); }
+  }
+
   var reader = new FileReader();
+  reader.onerror = function() { unload(); toast('Could not open that file — try a different format'); };
   reader.onload = function(e) {
-    img.onload = async function() {
-      var canvas = document.createElement('canvas');
-      var MAX = 720;
-      var scale = Math.min(MAX/img.width, MAX/img.height, 1);
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      var compressed = canvas.toDataURL('image/jpeg', 0.7);
-      var b64 = compressed.split(',')[1];
-      try {
-        var res = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:400,
-            messages:[{role:'user', content:[
-              {type:'image', source:{type:'base64', media_type:'image/jpeg', data:b64}},
-              {type:'text', text:'Read this screenshot of a message. Return ONLY JSON: {"theirMessages":"full text of incoming messages","myMessages":"full text of my sent messages","unclear":false}'}
-            ]}]
-          })
-        });
-        var data = await res.json();
-        var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
-        var p = null;
-        try { p = JSON.parse(raw); } catch(err) { var m2 = raw.match(/\{[\s\S]*\}/); if(m2) try{p=JSON.parse(m2[0]);}catch(e2){} }
-        unload();
-        if (p && p.theirMessages && p.theirMessages.length > 3) {
-          currentMsg = p.theirMessages.trim();
-          st.msg = p.theirMessages.trim();
-          askQ();
-        } else {
-          toast('Could not read screenshot — please type the message instead');
-        }
-      } catch(e) { unload(); toast('Could not read screenshot — please type the message instead'); }
+    var dataUrl = e.target.result;
+    var mediaType = file.type && file.type.startsWith('image/') ? file.type : 'image/jpeg';
+    // Try canvas compression first
+    var img = new Image();
+    img.onerror = function() {
+      // Canvas decode failed — send raw (might be HEIC etc)
+      var b64 = dataUrl.split(',')[1];
+      sendToAPI(b64, mediaType);
     };
-    img.src = e.target.result;
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        var MAX = 800;
+        var scale = Math.min(MAX/img.width, MAX/img.height, 1);
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var compressed = canvas.toDataURL('image/jpeg', 0.75);
+        sendToAPI(compressed.split(',')[1], 'image/jpeg');
+      } catch(err) {
+        // Canvas failed — send raw
+        sendToAPI(dataUrl.split(',')[1], mediaType);
+      }
+    };
+    img.src = dataUrl;
   };
   reader.readAsDataURL(file);
 }
