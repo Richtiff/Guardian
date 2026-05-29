@@ -820,6 +820,11 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-icon">⚖️</div>
       <div class="home-btn-label">Court Guru</div>
       <div class="home-btn-sub">We can explain anything, anytime</div>
+    </button
+    <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="grid-column:1/-1;">
+      <div class="home-btn-icon">🛡️</div>
+      <div class="home-btn-label">Talk to Guardian</div>
+      <div class="home-btn-sub">Ask me anything about your case</div>
     </button>
     <button type="button" class="home-btn home-btn-card" onclick="showSection('sStatements','scanner')">
       <div class="home-btn-icon">📋</div>
@@ -1225,12 +1230,13 @@ p, .body-text { font-size: 16px !important; }
     <div id="guardianChat" style="display:none;border-top:2px solid rgba(212,168,67,0.2);background:linear-gradient(180deg,rgba(212,168,67,0.03) 0%,transparent 100px);">
 
       <!-- Chat header -->
-      <div style="padding:16px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🛡️</div>
+      <div style="padding:16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛡️</div>
         <div>
-          <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;color:var(--white);letter-spacing:0.2px;">Guardian</div>
-          <div style="font-size:11px;color:var(--gold);font-weight:500;">Ask me why this works</div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">Guardian</div>
+          <div style="font-size:12px;color:var(--gold);font-weight:600;">Ask me anything about this</div>
         </div>
+        <button onclick="clearGuardianChat()" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
       </div>
 
       <!-- Messages -->
@@ -1255,6 +1261,42 @@ p, .body-text { font-size: 16px !important; }
 
   </div>
   </div>
+  </div>
+</div>
+
+<!-- TALK TO GUARDIAN -->
+<div class="step" id="sTalkGuardian">
+  <div style="display:flex;flex-direction:column;height:100vh;max-height:100vh;background:var(--bg);">
+
+    <!-- Header -->
+    <div style="padding:16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛡️</div>
+      <div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:var(--white);">Guardian</div>
+        <div style="font-size:12px;color:var(--gold);">Your case companion</div>
+      </div>
+      <button onclick="clearTalkHistory()" style="margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid var(--border);">New chat</button>
+    </div>
+
+    <!-- Messages -->
+    <div id="talkMessages" style="flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth;"></div>
+
+    <!-- Suggestions (shown when chat starts) -->
+    <div id="talkSuggestions" style="padding:8px 16px 4px;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;"></div>
+
+    <!-- Input -->
+    <div style="padding:12px 16px 20px;display:flex;gap:10px;align-items:flex-end;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+      <textarea id="talkInput" rows="2"
+        placeholder="Ask Guardian anything about your case..."
+        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;max-height:120px;"
+        onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
+        onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
+      <button onclick="sendTalkMsg()"
+        style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
+    </div>
+
   </div>
 </div>
 
@@ -8291,9 +8333,132 @@ function goToKeyDatesPreFilled(hearingDateStr, hearingType) {
   }, 400);
 }
 
+// ── TALK TO GUARDIAN ──
+var talkHistory = [];
+
+function openTalkGuardian() {
+  go('sTalkGuardian');
+  if (talkHistory.length === 0) {
+    initTalkGuardian();
+  }
+}
+
+function initTalkGuardian() {
+  var el = document.getElementById('talkMessages');
+  if (el) el.innerHTML = '';
+  talkHistory = [];
+  // Show starter suggestions
+  var sugs = [
+    'What should I focus on before my DRA hearing?',
+    'She just sent me a message — can I paste it here?',
+    'How do I build a stronger case?',
+    'What patterns should I be documenting?',
+    'Explain the welfare checklist to me'
+  ];
+  var sugEl = document.getElementById('talkSuggestions');
+  if (sugEl) {
+    sugEl.innerHTML = sugs.map(function(s) {
+      return '<button class="chat-suggestion-btn" onclick="useTalkSuggestion(\'' + s.replace(/'/g,"\'") + '\')">' + s + '</button>';
+    }).join('');
+  }
+  // Opening message
+  var opening = 'I know your case. Ask me anything — a message she just sent, what to expect at your hearing, how to reply to something, what to log. Talk to me like a friend who\'s been through this.';
+  addTalkMessage('guardian', opening);
+}
+
+function useTalkSuggestion(q) {
+  var input = document.getElementById('talkInput');
+  if (input) { input.value = q; sendTalkMsg(); }
+}
+
+function addTalkMessage(role, text) {
+  var el = document.getElementById('talkMessages');
+  if (!el) return null;
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:flex-start;gap:10px;' + (role==='user'?'flex-direction:row-reverse;':'');
+  var avatar = document.createElement('div');
+  if (role === 'guardian') {
+    avatar.style.cssText = 'width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px;';
+    avatar.textContent = '🛡️';
+  } else {
+    avatar.style.cssText = 'width:32px;height:32px;background:rgba(52,120,212,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;';
+    avatar.textContent = '👤';
+  }
+  var bubble = document.createElement('div');
+  bubble.style.cssText = role === 'guardian'
+    ? 'background:rgba(212,168,67,0.07);border:1px solid rgba(212,168,67,0.15);border-radius:4px 20px 20px 20px;padding:14px 18px;font-size:16px;line-height:1.75;color:var(--white);max-width:82%;font-family:DM Sans,sans-serif;'
+    : 'background:rgba(52,120,212,0.15);border:1px solid rgba(52,120,212,0.25);border-radius:20px 4px 20px 20px;padding:14px 18px;font-size:16px;line-height:1.75;color:var(--white);max-width:82%;font-family:DM Sans,sans-serif;';
+  bubble.innerHTML = text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  // Hide suggestions once conversation starts
+  if (role === 'user') {
+    var sugEl = document.getElementById('talkSuggestions');
+    if (sugEl) sugEl.style.display = 'none';
+  }
+  return bubble;
+}
+
+async function sendTalkMsg() {
+  var input = document.getElementById('talkInput');
+  if (!input) return;
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  input.style.height = 'auto';
+  addTalkMessage('user', msg);
+  // Typing indicator
+  var typingDiv = document.createElement('div');
+  typingDiv.style.cssText = 'display:flex;align-items:flex-start;gap:10px;';
+  var av = document.createElement('div');
+  av.style.cssText = 'width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;';
+  av.textContent = '🛡️';
+  var typing = document.createElement('div');
+  typing.className = 'chat-typing';
+  typing.innerHTML = '<span class="chat-dot"></span><span class="chat-dot"></span><span class="chat-dot"></span>';
+  typingDiv.appendChild(av);
+  typingDiv.appendChild(typing);
+  var el = document.getElementById('talkMessages');
+  if (el) { el.appendChild(typingDiv); el.scrollTop = el.scrollHeight; }
+  talkHistory.push({ role:'user', content: msg });
+  var sysPr = 'You are Guardian — built by a parent who spent three years in family court and came out the other side. You know this person\'s case in detail.\n\nTalk like a knowledgeable friend — direct, plain English, no legal jargon, no hedging. Use the child\'s name. Reference specific dates and context from the case. Be honest even when it\'s not what they want to hear.\n\nWhen they paste a message from the other parent: analyse it, spot the pattern, tell them what it means strategically, suggest what to reply, tell them what to log.\n\nWhen they ask about hearings: explain what to expect, what the judge is looking for, how to present themselves.\n\nWhen they push back or ask follow-up questions: respond directly. No waffle. Always end with one concrete action if relevant.\n\nKeep responses focused — 3-6 sentences unless they need more. This is a conversation not a lecture.\n\n' + getCTX();
+  try {
+    var res = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:500, system:sysPr, messages:talkHistory })
+    });
+    if (el) el.removeChild(typingDiv);
+    if (!res.ok) { addTalkMessage('guardian', 'Something went wrong — try again'); return; }
+    var data = await res.json();
+    var text = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    talkHistory.push({ role:'assistant', content:text });
+    addTalkMessage('guardian', text);
+  } catch(e) {
+    if (el && typingDiv.parentNode) el.removeChild(typingDiv);
+    addTalkMessage('guardian', 'Something went wrong — try again');
+  }
+}
+
+function clearTalkHistory() {
+  talkHistory = [];
+  var el = document.getElementById('talkMessages');
+  if (el) el.innerHTML = '';
+  initTalkGuardian();
+}
+
 // ── GUARDIAN CHAT ──
 var chatHistory = [];
 var chatContext = '';
+
+function clearGuardianChat() {
+  chatHistory = [];
+  var el = document.getElementById('chatMessages');
+  if (el) el.innerHTML = '';
+  var sugEl = document.getElementById('chatSuggestions');
+  if (sugEl) sugEl.style.display = 'flex';
+}
 
 function openGuardianChat() {
   var chatEl = document.getElementById('guardianChat');
@@ -8315,7 +8480,10 @@ function openGuardianChat() {
   var msgEl = document.getElementById('chatMessages');
   if(msgEl){ msgEl.appendChild(typingEl); msgEl.scrollTop = msgEl.scrollHeight; }
   var loadingEl = typingEl;
-  generateChatResponse('Explain in 2-3 sentences why this reply works strategically and what it does in the record. Then give me one specific thing to log tonight. Be direct — talk to me like a friend who knows my case.', loadingEl);
+  // Build a specific opening based on the flag
+  var flagInfo = (st.flag||'') + (st.flagText ? ' — ' + st.flagText : '');
+  var openingPrompt = 'In 2-3 sentences: why does this reply work for this specific situation? What does it do in the record that matters? End with one thing to log tonight. No generic advice — be specific to what just happened.' + (flagInfo ? ' Context: ' + flagInfo : '');
+  generateChatResponse(openingPrompt, loadingEl);
   // Show suggestion buttons
   var sugs = document.getElementById('chatSuggestions');
   if (sugs) {
@@ -8345,7 +8513,7 @@ function addChatMessage(role, text) {
 }
 
 async function generateChatResponse(userMsg, loadingEl) {
-  var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You have just generated a reply for the user. Now have a REAL conversation about the strategy behind it.\n\nSpeak directly. Plain English. No legal jargon. Like a knowledgeable friend — not a lawyer. Use the child\'s name. Reference specific dates and context. Be honest.\n\nWhen explaining why a reply works, focus on: (1) what it does in the written record, (2) what pattern it protects against, (3) what to log tonight to make it count as evidence.\n\nKeep responses short — 3-5 sentences max. Always end with one specific action if relevant.\n\nCase context:\n' + chatContext;
+  var sysPr = 'You are Guardian. Talk like a sharp friend who has been through family court — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
   
   chatHistory.push({ role: 'user', content: userMsg });
   
@@ -8354,8 +8522,8 @@ async function generateChatResponse(userMsg, loadingEl) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
         system: sysPr,
         messages: chatHistory
       })
