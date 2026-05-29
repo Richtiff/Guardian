@@ -258,6 +258,14 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .fb-btn.up-sel { border-color:var(--green); background:var(--green-dim); }
 .fb-btn.dn-sel { border-color:var(--red); background:var(--red-dim); }
 .fb-thanks { font-size:12px; color:var(--muted-hi); text-align:center; padding:10px; display:none; }
+.chat-bubble-guardian { background:rgba(212,168,67,0.07); border:1px solid rgba(212,168,67,0.15); border-radius:4px 18px 18px 18px; padding:13px 16px; font-size:14px; line-height:1.7; color:var(--white); max-width:88%; font-family:'DM Sans',sans-serif; }
+.chat-bubble-user { background:rgba(52,120,212,0.15); border:1px solid rgba(52,120,212,0.25); border-radius:18px 4px 18px 18px; padding:13px 16px; font-size:14px; line-height:1.7; color:var(--white); max-width:88%; align-self:flex-end; font-family:'DM Sans',sans-serif; }
+.chat-typing { background:rgba(212,168,67,0.07); border:1px solid rgba(212,168,67,0.15); border-radius:4px 18px 18px 18px; padding:13px 16px; max-width:70px; }
+.chat-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--gold); opacity:0.6; animation:chatPulse 1.2s infinite; margin:0 2px; }
+.chat-dot:nth-child(2){animation-delay:0.2s;} .chat-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes chatPulse { 0%,60%,100%{transform:translateY(0);opacity:0.4;} 30%{transform:translateY(-5px);opacity:1;} }
+.chat-suggestion-btn { background:rgba(212,168,67,0.06); border:1.5px solid rgba(212,168,67,0.2); border-radius:20px; padding:7px 14px; font-size:12px; font-weight:600; color:var(--gold); cursor:pointer; white-space:nowrap; font-family:'DM Sans',sans-serif; transition:background 0.15s; }
+.chat-suggestion-btn:active { background:rgba(212,168,67,0.15); }
 .nuclear-card { background:var(--red-dim); border:2px solid rgba(239,68,68,0.4); border-radius:16px; padding:18px; margin-bottom:14px; }
 .nuclear-title { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:800; color:var(--red); margin-bottom:8px; }
 .nuclear-text { font-size:13px; color:var(--muted-hi); margin-bottom:14px; line-height:1.6; }
@@ -1212,6 +1220,40 @@ p, .body-text { font-size: 16px !important; }
       </div>
       <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
     </div>
+
+    <!-- GUARDIAN CHAT -->
+    <div id="guardianChat" style="display:none;border-top:2px solid rgba(212,168,67,0.2);background:linear-gradient(180deg,rgba(212,168,67,0.03) 0%,transparent 100px);">
+
+      <!-- Chat header -->
+      <div style="padding:16px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🛡️</div>
+        <div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;color:var(--white);letter-spacing:0.2px;">Guardian</div>
+          <div style="font-size:11px;color:var(--gold);font-weight:500;">Ask me why this works</div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div id="chatMessages" style="padding:16px;min-height:80px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
+
+      <!-- Suggestion chips -->
+      <div id="chatSuggestions" style="padding:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch;"></div>
+
+      <!-- Input row -->
+      <div style="padding:12px 16px 16px;display:flex;gap:10px;align-items:flex-end;border-top:1px solid rgba(255,255,255,0.05);">
+        <textarea id="chatInput" rows="2"
+          placeholder="Ask Guardian anything..."
+          style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
+          onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+        <button onclick="sendChatMsg()"
+          style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s;"
+          title="Send">➤</button>
+      </div>
+
+    </div>
+
+  </div>
   </div>
   </div>
 </div>
@@ -5206,6 +5248,7 @@ async function _gen(ctx) {
           if (redHitsS.length > 0) rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
         }
         setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
+        setTimeout(function(){ openGuardianChat(); }, 1200);
       }
       // Smart document router
       showDocRouter(currentMsg||'', p);
@@ -8248,6 +8291,115 @@ function goToKeyDatesPreFilled(hearingDateStr, hearingType) {
   }, 400);
 }
 
+// ── GUARDIAN CHAT ──
+var chatHistory = [];
+var chatContext = '';
+
+function openGuardianChat() {
+  var chatEl = document.getElementById('guardianChat');
+  if (!chatEl) return;
+  chatEl.style.display = 'block';
+  chatEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  chatHistory = [];
+  // Build context for chat
+  var reply = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || document.getElementById('suggestedReply').textContent || '') : '';
+  var scoreEl = document.getElementById('replyScoreDisplay');
+  var score = scoreEl ? scoreEl.textContent : '';
+  chatContext = getCTX() + '\n\nMESSAGE THEY SENT:\n' + (st.msg||'') + '\n\nREPLY GUARDIAN GENERATED:\n' + reply + '\n\nFLAG: ' + (st.flag||'') + ' — ' + (st.flagText||'') + '\n\nSCORE: ' + score;
+  // Auto-generate opening message
+  addChatMessage('guardian', '...');
+  // Show typing indicator
+  var typingEl = document.createElement('div');
+  typingEl.className = 'chat-typing';
+  typingEl.innerHTML = '<span class="chat-dot"></span><span class="chat-dot"></span><span class="chat-dot"></span>';
+  var msgEl = document.getElementById('chatMessages');
+  if(msgEl){ msgEl.appendChild(typingEl); msgEl.scrollTop = msgEl.scrollHeight; }
+  var loadingEl = typingEl;
+  generateChatResponse('Explain in 2-3 sentences why this reply works strategically and what it does in the record. Then give me one specific thing to log tonight. Be direct — talk to me like a friend who knows my case.', loadingEl);
+  // Show suggestion buttons
+  var sugs = document.getElementById('chatSuggestions');
+  if (sugs) {
+    var questions = ['Why does this reply work?', 'Is she building a pattern?', 'What do I log tonight?', 'What will she do next?'];
+    sugs.innerHTML = questions.map(function(q) {
+      return '<button class="chat-suggestion-btn" onclick="useChatSuggestion(\''+q.replace(/'/g, "\'")+'\')">'+q+'</button>';
+    }).join('');
+  }
+}
+
+function useChatSuggestion(q) {
+  document.getElementById('chatInput').value = q;
+  sendChatMsg();
+}
+
+function addChatMessage(role, text) {
+  var el = document.getElementById('chatMessages');
+  if (!el) return null;
+  var div = document.createElement('div');
+  div.className = role === 'guardian' ? 'chat-bubble-guardian' : 'chat-bubble-user';
+  div.style.display = role === 'user' ? 'flex' : 'block';
+  div.style.alignSelf = role === 'user' ? 'flex-end' : 'flex-start';
+  div.textContent = text;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  return div;
+}
+
+async function generateChatResponse(userMsg, loadingEl) {
+  var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You have just generated a reply for the user. Now have a REAL conversation about the strategy behind it.\n\nSpeak directly. Plain English. No legal jargon. Like a knowledgeable friend — not a lawyer. Use the child\'s name. Reference specific dates and context. Be honest.\n\nWhen explaining why a reply works, focus on: (1) what it does in the written record, (2) what pattern it protects against, (3) what to log tonight to make it count as evidence.\n\nKeep responses short — 3-5 sentences max. Always end with one specific action if relevant.\n\nCase context:\n' + chatContext;
+  
+  chatHistory.push({ role: 'user', content: userMsg });
+  
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 300,
+        system: sysPr,
+        messages: chatHistory
+      })
+    });
+    if (!res.ok) { if(loadingEl) loadingEl.textContent = 'Could not load — try again'; return; }
+    var data = await res.json();
+    var text = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    chatHistory.push({ role: 'assistant', content: text });
+    if (loadingEl && loadingEl.parentNode) {
+      var bubble = document.createElement('div');
+      bubble.className = 'chat-bubble-guardian';
+      bubble.textContent = text;
+      loadingEl.parentNode.replaceChild(bubble, loadingEl);
+    } else {
+      addChatMessage('guardian', text);
+    }
+    var el = document.getElementById('chatMessages');
+    if (el) el.scrollTop = el.scrollHeight;
+  } catch(e) {
+    if (loadingEl) loadingEl.textContent = 'Something went wrong — try again';
+  }
+}
+
+function sendChatMsg() {
+  var input = document.getElementById('chatInput');
+  if (!input) return;
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addChatMessage('user', msg);
+  var loadingEl = addChatMessage('guardian', '...');
+  generateChatResponse(msg, loadingEl);
+}
+
+// Allow Enter to send (Shift+Enter for new line)
+document.addEventListener('DOMContentLoaded', function() {
+  var chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+    });
+  }
+});
+
 // ── RED LINE REPLY CHECKER ──
 var RED_LINES = [
   { pattern: /i['\u2019]m sorry you['\u2019]ve had to/i, reason: "sounds like an admission that the other parent was left alone" },
@@ -8443,6 +8595,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
