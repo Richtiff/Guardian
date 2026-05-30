@@ -861,7 +861,7 @@ p, .body-text { font-size: 16px !important; }
     </button>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:14px;">
-    <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates')">
+    <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates','sTalkGuardian')">
       <div class="home-btn-icon">⏰</div>
       <div class="home-btn-label">Key Dates</div>
       <div class="home-btn-sub">Deadlines &amp; countdowns</div>
@@ -4317,7 +4317,7 @@ async function sendQA() {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-6',
+        model:'claude-haiku-4-5-20251001',
         max_tokens:800,
         system:sys,
         messages:qaHistory.slice(-10)
@@ -5244,7 +5244,7 @@ async function _gen(ctx) {
 
   var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
@@ -6675,7 +6675,7 @@ function swUploadTheirDocs(event) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 800,
           system: 'You are reading a family court document filed by the other parent or their solicitor. Extract every allegation, concern, or claim made about the responding parent.',
           messages: [{ role: 'user', content: [
@@ -6875,7 +6875,7 @@ async function buildStatement(courtAsk) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
         system: "You are a senior family law solicitor and barrister with 25 years experience in the Family Court in England and Wales. You write position statements that judges and magistrates immediately recognise as authoritative, credible and child-focused.\n\nTHE LAW:\n- Paramountcy principle: child welfare is paramount (s.1(1) Children Act 1989)\n- Welfare checklist (s.1(3) CA 1989) — address EVERY factor with specific case evidence\n- Presumption of parental involvement (s.1(2A) CA 1989) unless contrary to welfare\n- No order principle (s.1(5)) — orders only where better for the child\n- PD12J applies where domestic abuse is alleged\n\nWELFARE CHECKLIST s.1(3) CA 1989 — address each factor with evidence from this specific case:\n(a) The ascertainable wishes and feelings of the child\n(b) Physical, emotional and educational needs\n(c) Likely effect of any change in circumstances\n(d) Age, sex, background and relevant characteristics\n(e) Any harm suffered or risk of harm\n(f) Capability of each parent to meet the child needs\n(g) Range of powers available to the court\n\nWHAT JUDGES WANT TO SEE:\n- Every argument framed around child welfare not parent feelings\n- Specific evidence with dates — diary entries, document names, communications\n- Measured credible tone — no personal attacks or emotional language\n- Precise orders sought with legal basis\n- Acknowledge the other party position before rebutting\n- Proportionate length that respects the court time\n\nTONE CONVERSION RULES — always reframe around child welfare:\nShe is a terrible mother becomes There are documented welfare concerns regarding the child care\nHe is toxic becomes The pattern of behaviour documented raises serious welfare concerns\nShe is alienating my child becomes There are concerns about parental alienation impacting the child right to a relationship with both parents\nHe never shows up becomes Contact has been disrupted on X documented occasions causing the child distress and instability\n\nCRITICAL FORMAT RULES:\n- Write in first person — the parent voice\n- NO AI tells: no Furthermore, Moreover, It is submitted, It should be noted, In conclusion\n- NO headers, NO bullet points, NO bold text\n- Short focused paragraphs\n- Every factual claim must cite specific evidence — diary entry dates, document names\n- End with numbered orders sought and legal basis for each\n- Final line: I believe the facts stated in this statement are true.",
         messages: [{ role: 'user', content: prompt }]
@@ -7199,7 +7199,7 @@ async function processBundleUpload(event) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 3000,
           system: 'You are reading a family court bundle for a parent in proceedings in England and Wales. Extract every separate document you can identify within this bundle. For each document identify: what it is, who filed or authored it, the date, and the key facts it contains. Be specific about authorship — identify if it is from the court, Cafcass, the other parent, their solicitor, or the user themselves.',
           messages: [{
@@ -8425,10 +8425,10 @@ async function sendTalkMsg() {
   try {
     var res = await fetch(API, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:500, system:sysPr, messages:talkHistory })
+      body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:600, system:sysPr, messages:talkHistory })
     });
     if (el) el.removeChild(typingDiv);
-    if (!res.ok) { addTalkMessage('guardian', 'Something went wrong — try again'); return; }
+    if (!res.ok) { var errText2 = await res.text().catch(function(){return res.status;}); console.log('Talk error:', res.status, errText2); addTalkMessage('guardian', 'Error ' + res.status + ' — ' + String(errText2).substring(0,100)); return; }
     var data = await res.json();
     var text = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
     talkHistory.push({ role:'assistant', content:text });
@@ -8520,13 +8520,13 @@ async function generateChatResponse(userMsg, loadingEl) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 600,
         system: sysPr,
         messages: chatHistory
       })
     });
-    if (!res.ok) { if(loadingEl) loadingEl.textContent = 'Could not load — try again'; return; }
+    if (!res.ok) { var errText = await res.text().catch(function(){return res.status;}); console.log('Chat error:', res.status, errText); if(loadingEl) loadingEl.textContent = 'Error ' + res.status + ' — try again'; return; }
     var data = await res.json();
     var text = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
     chatHistory.push({ role: 'assistant', content: text });
@@ -8762,6 +8762,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
