@@ -8425,7 +8425,7 @@ async function sendTalkMsg() {
   try {
     var res = await fetch(API, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:500, system:sysPr, messages:talkHistory })
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:500, system:sysPr, messages:talkHistory })
     });
     if (el) el.removeChild(typingDiv);
     if (!res.ok) { addTalkMessage('guardian', 'Something went wrong — try again'); return; }
@@ -8520,7 +8520,7 @@ async function generateChatResponse(userMsg, loadingEl) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: sysPr,
         messages: chatHistory
