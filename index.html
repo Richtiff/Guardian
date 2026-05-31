@@ -816,10 +816,10 @@ p, .body-text { font-size: 16px !important; }
       <div class="home-btn-label">Reply Ready</div>
       <div class="home-btn-sub">When you don't know what to say</div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('qa','qa')">
+    <button type="button" class="home-btn home-btn-card" onclick="openTalkGuardian()">
       <div class="home-btn-icon">⚖️</div>
       <div class="home-btn-label">Court Guru</div>
-      <div class="home-btn-sub">We can explain anything, anytime</div>
+      <div class="home-btn-sub">Ask anything about your case</div>
     </button>
     <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="grid-column:1/-1;margin-top:4px;">
       <div class="home-btn-icon">🛡️</div>
@@ -4194,7 +4194,7 @@ function showHome() {
 function goQA() {
   var lastQA=null; try{lastQA=JSON.parse(localStorage.getItem('gLastQA')||'null');}catch(e){}
   document.getElementById('qaMsgs').innerHTML='';
-  go('sQA'); loadCourtGuruSuggestions();
+  openTalkGuardian();
   if(lastQA&&lastQA.length>=2){
     setTimeout(function(){
       var msgs=document.getElementById('qaMsgs'); if(!msgs)return;
@@ -8349,9 +8349,12 @@ function initTalkGuardian() {
   var sugs = [
     'What should I focus on before my DRA hearing?',
     'She just sent me a message — can I paste it here?',
+    'What is a DRA hearing and what happens?',
+    'Explain the welfare checklist to me',
     'How do I build a stronger case?',
+    'What can the judge order at a DRA?',
     'What patterns should I be documenting?',
-    'Explain the welfare checklist to me'
+    'What does section 7 mean?'
   ];
   var sugEl = document.getElementById('talkSuggestions');
   if (sugEl) {
@@ -8511,7 +8514,7 @@ function addChatMessage(role, text) {
 }
 
 async function generateChatResponse(userMsg, loadingEl) {
-  var sysPr = 'You are Guardian. Talk like a sharp friend who has been through family court — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
+  var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You know family court law in England and Wales in depth AND you know this person\'s specific case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
   
   chatHistory.push({ role: 'user', content: userMsg });
   
