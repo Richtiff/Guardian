@@ -1238,8 +1238,7 @@ p, .body-text { font-size: 16px !important; }
           <div style="font-size:12px;color:var(--gold);font-weight:600;">Ask me anything about this</div>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px;">
-          <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')"
-            style="width:32px;height:32px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--white);font-size:14px;cursor:pointer;" title="Voice off — tap to enable">🔇</button>
+          
           <button onclick="clearGuardianChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
         </div>
       </div>
@@ -1260,7 +1259,7 @@ p, .body-text { font-size: 16px !important; }
           style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
           onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
-        <button id="chatMicBtn" onclick="toggleChatVoice()"
+        <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
           style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🎙️</button>
         <button onclick="sendChatMsg()"
           style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s;"
@@ -1286,7 +1285,7 @@ p, .body-text { font-size: 16px !important; }
         <div style="font-size:12px;color:var(--gold);">Your case companion</div>
       </div>
       <button onclick="clearTalkHistory()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid var(--border);">New chat</button>
-      <button id="talkSpeakBtn" onclick="toggleGuardianVoice('talkSpeakBtn')" style="margin-left:8px;width:34px;height:34px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-size:15px;cursor:pointer;" title="Tap to enable voice">🔇</button>
+      
     </div>
 
     <!-- Messages -->
@@ -1303,7 +1302,7 @@ p, .body-text { font-size: 16px !important; }
         onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
         onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
-      <button onclick="toggleTalkVoice()" id="talkMicBtn"
+      <button onclick="toggleTalkVoice()" id="talkMicBtn" title="Tap to speak"
           style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🎙️</button>
         <button onclick="sendTalkMsg()"
         style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
@@ -8443,8 +8442,8 @@ async function updateReplyFromChat() {
     var data = await res.json();
     var newReply = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
     if (newReply && newReply.length > 5) {
-      if (replyEl) replyEl.value = newReply;
-      toast('✅ Reply updated');
+      if (replyEl) { replyEl.value = newReply; replyEl.focus(); replyEl.scrollIntoView({ behavior:'smooth', block:'center' }); }
+      toast('✅ Reply updated — tap to edit');
       // Re-score
       setTimeout(function(){ scoreReply(newReply, 'replyScoreDisplay'); }, 500);
     } else {
@@ -8462,6 +8461,7 @@ var guardianVoiceOn = false;
 var currentUtterance = null;
 
 function guardianSpeak(text) {
+  return; // Voice output disabled — too robotic
   if (!guardianVoiceOn) return;
   if (!window.speechSynthesis) return;
   // Stop anything currently speaking
@@ -8526,7 +8526,8 @@ function initTalkGuardian() {
     }).join('');
   }
   // Opening message
-  var opening = 'I know your case. Ask me anything — a message she just sent, what to expect at your hearing, how to reply to something, what to log. Talk to me like a friend who\'s been through this.';
+  var firstName = (profile && profile.myName) ? profile.myName.split(' ')[0] : '';
+  var opening = (firstName ? 'Hi ' + firstName + '. ' : '') + 'I know your case. Ask me anything — a message she just sent, what to expect at your hearing, how to reply to something, what to log. Talk to me like a friend who\'s been through this.';
   addTalkMessage('guardian', opening);
 }
 
