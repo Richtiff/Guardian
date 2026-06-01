@@ -873,6 +873,11 @@ p, .body-text { font-size: 16px !important; }
   <div id="deadlineBanner"></div>
   <div id="caseStrengthCard"></div>
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
+  <div id="continueBar" style="display:none;margin:0 0 12px;background:rgba(196,154,60,0.1);border:1.5px solid rgba(196,154,60,0.3);border-radius:14px;padding:14px 16px;cursor:pointer;" onclick="continueLast()">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:4px;">CONTINUE WHERE YOU LEFT OFF</div>
+    <div id="continuePreview" style="font-size:13px;color:var(--white);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></div>
+    <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">Tap to regenerate reply →</div>
+  </div>
   <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
     <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">💬</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Reply Ready</div><div class="home-btn-sub">Paste their message. Get a reply. Send with confidence.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
@@ -1241,7 +1246,6 @@ p, .body-text { font-size: 16px !important; }
       <div id="replyScoreDisplay" style="display:none;"></div>
       <div style="padding:0 16px 12px;">
         <button type="button" onclick="scoreReply(storeOriginalReply(suggestedReply_val); document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
-      <button type="button" onclick="openGuardianChat()" style="width:100%;padding:16px;margin-top:10px;background:rgba(196,154,60,0.12);border:2px solid rgba(196,154,60,0.4);border-radius:14px;color:var(--gold);font-size:15px;font-weight:800;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:0.2px;">🛡️ Ask Guardian — understand why this reply works</button>
       </div>
       <div class="feedback-row">
         <span class="feedback-lbl">Was this helpful?</span>
@@ -1252,126 +1256,48 @@ p, .body-text { font-size: 16px !important; }
     </div>
 
     <!-- GUARDIAN CHAT -->
-    <div id="guardianChat" style="display:none;border-top:2px solid rgba(212,168,67,0.2);background:linear-gradient(180deg,rgba(212,168,67,0.03) 0%,transparent 100px);">
+    <div id="guardianChat" style="display:block;border-top:2px solid rgba(196,154,60,0.2);background:linear-gradient(180deg,rgba(196,154,60,0.03) 0%,transparent 80px);">
 
-      <!-- Chat header -->
-      <div style="padding:16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛡️</div>
-        <div>
-          <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">Guardian</div>
-          <div style="font-size:12px;color:var(--gold);font-weight:600;">Ask me anything about this</div>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:8px;">
-          
-          <button onclick="clearGuardianChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
-          <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')" style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:22px;cursor:pointer;" title="Tap to enable/disable voice">🔇</button>
-          <div style="width:1px;height:32px;background:var(--border);margin:0 8px;flex-shrink:0;"></div>
-          <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;flex-shrink:0;">Clear</button>
-        </div>
-      </div>
-
-      <!-- Messages -->
-      <div id="chatMessages" style="padding:16px 12px;min-height:80px;max-height:500px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;"></div>
-
-      <!-- Suggestion chips -->
-      <div id="chatSuggestions" style="padding:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch;"></div>
-
-      <!-- Input row -->
-      <div style="padding:8px 16px 4px;">
-        <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:10px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
-      </div>
-      <div style="padding:8px 16px 16px;display:flex;gap:8px;align-items:flex-end;">
-        <textarea id="chatInput" rows="2"
-          placeholder="Type or tap 🎙️ to speak..."
-          style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
-          onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
-        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-          <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
-            style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">🎙️</button>
-          <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')"
-            style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="Tap to hear Guardian speak">🔇</button>
-        </div>
-        <button onclick="sendChatMsg()"
-          style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
-      </div><div style="padding:8px 16px 16px;display:flex;gap:10px;align-items:flex-end;">
-        <textarea id="chatInput" rows="2"
-          placeholder="Ask Guardian anything..."
-          style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
-          onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
-        <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
-          style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🎙️</button>
-        <button onclick="sendChatMsg()"
-          style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s;"
-          title="Send">➤</button>
-      </div>
-
+  <!-- Header -->
+  <div style="padding:14px 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--gold),#9a7520);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🛡️</div>
+    <div style="flex:1;">
+      <div style="font-size:14px;font-weight:800;color:var(--white);font-family:DM Sans,sans-serif;">Guardian</div>
+      <div style="font-size:11px;color:var(--gold);">Ask me anything about this reply</div>
     </div>
-
+    <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;">Clear</button>
   </div>
+
+  <!-- Messages -->
+  <div id="chatMessages" style="padding:14px 16px;min-height:60px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
+
+  <!-- Suggestions -->
+  <div id="chatSuggestions" style="padding:0 16px 10px;display:flex;gap:8px;flex-wrap:wrap;"></div>
+
+  <!-- Expand prompt — shown until user taps -->
+  <div id="chatExpandPrompt" style="padding:6px 16px 12px;text-align:center;cursor:pointer;border-top:1px solid rgba(255,255,255,0.04);" onclick="expandGuardianChat()">
+    <span style="font-size:13px;color:var(--gold);font-weight:600;">Tap to ask a question ↓</span>
   </div>
-</div>
 
-<!-- TALK TO GUARDIAN -->
-<div class="step" id="sTalkGuardian" style="display:none;">
-  <div style="display:flex;flex-direction:column;height:100vh;max-height:100vh;background:var(--bg);">
-
-    <!-- Header -->
-    <div style="padding:16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg);">
-      <button class="back-btn" onclick="goBack()">←</button>
-      <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🛡️</div>
-      <div>
-        <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:var(--white);">Guardian</div>
-        <div style="font-size:12px;color:var(--gold);">Your case companion</div>
-      </div>
-      <button onclick="clearTalkHistory()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid var(--border);">New chat</button>
-      <button id="talkSpeakBtn" onclick="toggleGuardianVoice('talkSpeakBtn')" style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;margin-left:4px;" title="Tap to enable voice">🔇</button>
-      
+  <!-- Input area — hidden until expanded -->
+  <div id="chatInputArea" style="display:none;border-top:1px solid rgba(255,255,255,0.05);">
+    <div style="padding:10px 16px 6px;">
+      <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:9px;background:rgba(196,154,60,0.08);border:1px solid rgba(196,154,60,0.25);border-radius:10px;color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
     </div>
-
-    <!-- Messages -->
-    <div id="talkMessages" style="flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth;"></div>
-
-    <!-- Suggestions (shown when chat starts) -->
-    <div id="talkSuggestions" style="padding:8px 16px 4px;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;"></div>
-
-    <!-- Input -->
-    <div style="padding:8px 16px 4px;border-top:1px solid rgba(255,255,255,0.05);">
-        <div style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;">
-          🎙️ Tap mic to speak — Guardian will respond to what you say.<br>
-          🔇 Tap speaker to hear Guardian read responses aloud.
-        </div>
-      </div>
-      <div style="padding:8px 16px 20px;display:flex;gap:8px;align-items:flex-end;">
-        <textarea id="talkInput" rows="2"
-          placeholder="Or type your question..."
-          style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
-          onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
-        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-          <button id="talkMicBtn" onclick="toggleTalkVoice()" title="Tap to speak — tap again to stop"
-            style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">🎙️</button>
-          <button id="talkSpeakBtn" onclick="toggleGuardianVoice('talkSpeakBtn')"
-            style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="Tap to enable voice">🔇</button>
-        </div>
-        <button onclick="sendTalkMsg()"
-          style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
-      </div><div style="padding:12px 16px 20px;display:flex;gap:10px;align-items:flex-end;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
-      <textarea id="talkInput" rows="2"
-        placeholder="Ask Guardian anything about your case..."
-        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;max-height:120px;"
-        onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
+    <div style="padding:6px 16px 16px;display:flex;gap:8px;align-items:flex-end;">
+      <textarea id="chatInput" rows="2"
+        placeholder="Type or speak your question..."
+        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
         onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
-      <button onclick="toggleTalkVoice()" id="talkMicBtn" title="Tap to speak"
-          style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🎙️</button>
-        <button onclick="sendTalkMsg()"
-        style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
+      <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
+        style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">🎙️</button>
+      <button onclick="sendChatMsg()"
+        style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
     </div>
   </div>
+
 </div>
 
 <!-- CONFIRMED -->
@@ -4252,6 +4178,18 @@ function applyDocIntel() {
 function showHome() {
   // Reset reply state so refresh never restores a stale message
   st = {}; currentMsg = ''; currentThread = '';
+  // Show continue banner if last message saved
+  try {
+    var lastMsg = sessionStorage.getItem('lastMsg');
+    var continueBar = document.getElementById('continueBar');
+    var continuePreview = document.getElementById('continuePreview');
+    if (lastMsg && lastMsg.length > 5 && continueBar && continuePreview) {
+      continuePreview.textContent = lastMsg.substring(0, 120) + (lastMsg.length > 120 ? '...' : '');
+      continueBar.style.display = 'block';
+    } else if (continueBar) {
+      continueBar.style.display = 'none';
+    }
+  } catch(e) {}
   var typeIn = document.getElementById('typeIn'); if(typeIn) typeIn.value = '';
   var inPanel = document.getElementById('inPanel'); if(inPanel) inPanel.style.display = 'none';
   var outPanel = document.getElementById('outPanel'); if(outPanel) outPanel.style.display = 'none';
@@ -5406,6 +5344,8 @@ async function _gen(ctx) {
       var replyText = p.reply||'';
       var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply needed') !== -1 || replyText.toLowerCase().indexOf('silence is the stronger') !== -1;
       var _rt = replyText || '(No reply needed)'; storeOriginalReply(_rt); document.getElementById('suggestedReply').value = _rt;
+      // Save last message so refresh can resume
+      try { sessionStorage.setItem('lastMsg', st.msg||''); sessionStorage.setItem('lastReply', _rt); } catch(e) {}
       document.getElementById('replyWhy').textContent = p.why||'';
       // Hide/show reply UI based on whether reply is needed
       var replyCard = document.getElementById('replyCard');
@@ -8668,6 +8608,27 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// ── CONTINUE LAST MESSAGE ──
+function continueLast() {
+  try {
+    var lastMsg = sessionStorage.getItem('lastMsg');
+    if (!lastMsg) return;
+    // Hide banner
+    var bar = document.getElementById('continueBar');
+    if (bar) bar.style.display = 'none';
+    // Set message and go through flow
+    showSection('sCoach','coach');
+    setTimeout(function() {
+      var typeIn = document.getElementById('typeIn');
+      var inPanel = document.getElementById('inPanel');
+      if (typeIn) typeIn.value = lastMsg;
+      if (inPanel) inPanel.style.display = 'block';
+      // Auto-confirm after short delay
+      setTimeout(function() { confirmType(); }, 300);
+    }, 200);
+  } catch(e) {}
+}
+
 // ── AUTO-GROW TEXTAREA ──
 function autoGrow(el) {
   el.style.height = 'auto';
@@ -8973,6 +8934,18 @@ function confirmClearChat() {
   if (confirm('Clear this conversation?')) clearGuardianChat();
 }
 
+function expandGuardianChat() {
+  var inputArea = document.getElementById('chatInputArea');
+  var prompt = document.getElementById('chatExpandPrompt');
+  var msgs = document.getElementById('chatMessages');
+  if (inputArea) inputArea.style.display = 'block';
+  if (prompt) prompt.style.display = 'none';
+  if (msgs) msgs.style.maxHeight = '400px';
+  // Focus input
+  var inp = document.getElementById('chatInput');
+  if (inp) inp.focus();
+}
+
 function clearGuardianChat() {
   chatHistory = [];
   var el = document.getElementById('chatMessages');
@@ -8985,7 +8958,13 @@ function openGuardianChat() {
   var chatEl = document.getElementById('guardianChat');
   if (!chatEl) return;
   chatEl.style.display = 'block';
-  chatEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Reset to collapsed state
+  var inputArea = document.getElementById('chatInputArea');
+  var prompt = document.getElementById('chatExpandPrompt');
+  var msgs = document.getElementById('chatMessages');
+  if (inputArea) inputArea.style.display = 'none';
+  if (prompt) prompt.style.display = 'block';
+  if (msgs) msgs.style.maxHeight = '220px';
   chatHistory = [];
   // Build context for chat
   var reply = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || document.getElementById('suggestedReply').textContent || '') : '';
@@ -9016,6 +8995,7 @@ function openGuardianChat() {
 }
 
 function useChatSuggestion(q) {
+  expandGuardianChat();
   document.getElementById('chatInput').value = q;
   sendChatMsg();
 }
