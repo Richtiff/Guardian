@@ -1269,6 +1269,7 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-size:14px;font-weight:800;color:var(--white);font-family:DM Sans,sans-serif;">Guardian</div>
       <div style="font-size:11px;color:var(--gold);">Ask me anything about this reply</div>
     </div>
+    <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')" style="width:36px;height:36px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-size:16px;cursor:pointer;" title="Tap to hear Guardian speak">🔇</button>
     <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;">Clear</button>
   </div>
 
@@ -5363,7 +5364,8 @@ async function _gen(ctx) {
         setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
         // Scroll to top of reply — user reads from top not bottom
         setTimeout(function(){ var el = document.getElementById('sReply'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); window.scrollTo({top:0,behavior:'smooth'}); }, 300);
-        // Chat available but not auto-opened — user taps to open
+        // Auto-populate chat context and chips after reply
+        setTimeout(function(){ openGuardianChat(); }, 1200);
       }
       // Smart document router
       showDocRouter(currentMsg||'', p);
@@ -9019,6 +9021,11 @@ function addChatMessage(role, text) {
 async function generateChatResponse(userMsg, loadingEl) {
   var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You know family court law in England and Wales in depth AND you know this person\'s specific case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nIf the user pastes a letter, order, or document — read it carefully and explain it in plain English. Tell them what it means, what they need to do, and what the deadline is if there is one.\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
   
+  // Rebuild context if empty (e.g. after refresh)
+  if (!chatContext) {
+    var reply2 = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || '') : '';
+    chatContext = getCTX() + '\n\nMESSAGE THEY SENT:\n' + (st.msg||currentMsg||'') + '\n\nREPLY GUARDIAN GENERATED:\n' + reply2;
+  }
   chatHistory.push({ role: 'user', content: userMsg });
   
   try {
