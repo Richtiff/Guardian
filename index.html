@@ -33,14 +33,14 @@
   --text-support: 14px;
   --text-label: 13px;
 }
-html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
-.app { max-width:480px; margin:0 auto; padding:0 16px 40px; }
+html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; overflow-y:auto; -webkit-overflow-scrolling:touch; -webkit-font-smoothing:antialiased; }
+.app { max-width:480px; margin:0 auto; padding:0 16px 100px; }
 .header { display:flex; align-items:center; justify-content:space-between; padding:18px 0 14px; border-bottom:1px solid var(--border); margin-bottom:24px; }
 .logo { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; }
 .logo span { color:var(--gold); }
 .badge { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); background:var(--gold-dim); border:1px solid rgba(245,200,66,0.2); padding:4px 10px; border-radius:20px; }
 .step { display:none; animation:fadeUp 0.2s ease; }
-.step.active { display:block; }
+.step.active { display:block; min-height:50vh; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes spin { to{transform:rotate(360deg)} }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
@@ -318,7 +318,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .divider { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
 .divider span { font-size:11px; color:var(--muted); }
-.type-panel { background:var(--card); border:1.5px solid var(--border); border-radius:14px; overflow:hidden; }
+.type-panel { background:var(--card); border:1.5px solid var(--border); border-radius:14px; }
 .type-header { padding:11px 14px; border-bottom:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:var(--amber); }
 .type-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 14px; resize:none; outline:none; min-height:90px; }
 .type-textarea::placeholder { color:var(--muted); }
@@ -870,8 +870,6 @@ p, .body-text { font-size: 16px !important; }
     <div class="trial-text">Free message checks remaining</div>
     <div class="trial-count" id="trialCount">50</div>
   </div>
-  <div id="deadlineBanner"></div>
-  <div id="caseStrengthCard"></div>
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
   <div id="continueBar" style="display:none;margin:0 0 12px;background:rgba(196,154,60,0.1);border:1.5px solid rgba(196,154,60,0.3);border-radius:14px;padding:14px 16px;cursor:pointer;" onclick="continueLast()">
     <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:4px;">CONTINUE WHERE YOU LEFT OFF</div>
@@ -899,6 +897,10 @@ p, .body-text { font-size: 16px !important; }
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🗂️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Case</div><div class="home-btn-sub">Your case file. Stored and ready when you need it.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
   </div>
+
+  <div id="deadlineBanner" style="margin-top:12px;"></div>
+  <div id="caseStrengthCard" style="margin-top:4px;"></div>
+
 <div id="intelBar" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
       <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">🧠 Guardian Intelligence</div>
@@ -8614,7 +8616,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleScreenshotSection(val) {
   var ss = document.getElementById('screenshotSection');
   if (!ss) return;
-  ss.style.display = val && val.trim().length > 0 ? 'none' : 'block';
+  ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
 }
 
 // ── CONTINUE LAST MESSAGE ──
