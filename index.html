@@ -2870,17 +2870,8 @@ function getIntroData() {
 }
 
 function showSection(screen, introKey) {
-  var introData = getIntroData();
-  if (introKey && introData[introKey] && !introSeen[introKey]) {
-    var d = introData[introKey];
-    document.getElementById('introIcon').textContent = d.icon;
-    document.getElementById('introTitle').textContent = d.title;
-    document.getElementById('introBody').textContent = d.body;
-    introPendingScreen = screen;
-    document.getElementById('sectionIntro').classList.add('show');
-  } else {
-    navigateToSection(screen);
-  }
+  // Skip intro overlays — navigate directly
+  navigateToSection(screen);
 }
 
 function closeIntro() {
@@ -8817,11 +8808,12 @@ function toggleGuardianVoice(btnId) {
 var talkHistory = [];
 
 function openTalkGuardian() {
+  talkHistory = [];
   go('sTalkGuardian');
   setTimeout(function(){
-    if (talkHistory.length === 0) { initTalkGuardian(); }
+    initTalkGuardian();
     window.scrollTo({top:0,behavior:'instant'});
-  }, 50);
+  }, 100);
 }
 
 function initTalkGuardian() {
