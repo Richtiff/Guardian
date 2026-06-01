@@ -1200,7 +1200,7 @@ p, .body-text { font-size: 16px !important; }
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
         <div class="reply-why" id="replyWhy"></div>
       </div>
-      <div class="tip-card" id="tipCard"><div class="tip-lbl">💡 What to do now</div><div id="tipItems"></div></div>
+      <div class="tip-card" id="tipCard" style="cursor:pointer;" onclick="this.querySelector('#tipItems').style.display=this.querySelector('#tipItems').style.display==='none'?'block':'none'"><div class="tip-lbl">💡 What to do now <span style="font-size:10px;color:var(--muted);margin-left:6px;">tap to expand</span></div><div id="tipItems" style="display:none;"></div></div>
       <div class="refine-section">
         <div class="refine-lbl">How does this feel?</div>
         <div class="refine-row">
@@ -1217,6 +1217,7 @@ p, .body-text { font-size: 16px !important; }
       <div id="replyScoreDisplay" style="display:none;"></div>
       <div style="padding:0 16px 12px;">
         <button type="button" onclick="scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
+      <button type="button" onclick="openGuardianChat()" style="width:100%;padding:13px;margin-top:8px;background:rgba(212,168,67,0.08);border:1.5px solid rgba(212,168,67,0.25);border-radius:14px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">🛡️ Ask Guardian about this reply</button>
       </div>
       <div class="feedback-row">
         <span class="feedback-lbl">Was this helpful?</span>
@@ -5203,8 +5204,20 @@ function doQuestion(p) {
   if (bubble) bubble.style.background = st.outgoing ? 'rgba(52,120,212,0.12)' : '';
   if (st.outgoing) {
     document.getElementById('rTheirText').textContent = st.outMsg || '';
+    go('sQuestion'); // outgoing still needs mode selection
+    return;
   }
-  go('sQuestion');
+  // Incoming messages — skip question screen, go straight to reply
+  // Auto-select mode based on flag
+  var autoMode = 'natural';
+  if (st.flag === 'red') autoMode = 'protective';
+  else if (st.flag === 'amber') autoMode = 'welfare';
+  st.replyMode = autoMode;
+  document.querySelectorAll('.mode-opt').forEach(function(el){ el.classList.remove('active'); });
+  var modeMap = { natural:'modeNatural', welfare:'modeWelfare', protective:'modeProtective' };
+  var modeEl = document.getElementById(modeMap[autoMode]);
+  if (modeEl) modeEl.classList.add('active');
+  genReplyDirect();
 }
 
 function toggleVoice(){
@@ -5300,7 +5313,7 @@ async function _gen(ctx) {
           if (redHitsS.length > 0) rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
         }
         setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
-        setTimeout(function(){ openGuardianChat(); }, 1200);
+        // Chat available but not auto-opened — user taps to open
       }
       // Smart document router
       showDocRouter(currentMsg||'', p);
