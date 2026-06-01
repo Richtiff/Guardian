@@ -1236,7 +1236,11 @@ p, .body-text { font-size: 16px !important; }
           <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">Guardian</div>
           <div style="font-size:12px;color:var(--gold);font-weight:600;">Ask me anything about this</div>
         </div>
-        <button onclick="clearGuardianChat()" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
+        <div style="margin-left:auto;display:flex;gap:8px;">
+          <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')"
+            style="width:32px;height:32px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--white);font-size:14px;cursor:pointer;" title="Voice off — tap to enable">🔇</button>
+          <button onclick="clearGuardianChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
+        </div>
       </div>
 
       <!-- Messages -->
@@ -1246,12 +1250,17 @@ p, .body-text { font-size: 16px !important; }
       <div id="chatSuggestions" style="padding:0 16px 12px;display:flex;gap:8px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch;"></div>
 
       <!-- Input row -->
-      <div style="padding:12px 16px 16px;display:flex;gap:10px;align-items:flex-end;border-top:1px solid rgba(255,255,255,0.05);">
+      <div style="padding:8px 16px 4px;">
+        <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:10px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
+      </div>
+      <div style="padding:8px 16px 16px;display:flex;gap:10px;align-items:flex-end;">
         <textarea id="chatInput" rows="2"
           placeholder="Ask Guardian anything..."
           style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
           onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
           onblur="this.style.borderColor='rgba(255,255,255,0.1)'"></textarea>
+        <button id="chatMicBtn" onclick="toggleChatVoice()"
+          style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🎙️</button>
         <button onclick="sendChatMsg()"
           style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s;"
           title="Send">➤</button>
@@ -1275,7 +1284,8 @@ p, .body-text { font-size: 16px !important; }
         <div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;color:var(--white);">Guardian</div>
         <div style="font-size:12px;color:var(--gold);">Your case companion</div>
       </div>
-      <button onclick="clearTalkHistory()" style="margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid var(--border);">New chat</button>
+      <button onclick="clearTalkHistory()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid var(--border);">New chat</button>
+      <button id="talkSpeakBtn" onclick="toggleGuardianVoice('talkSpeakBtn')" style="margin-left:8px;width:34px;height:34px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-size:15px;cursor:pointer;" title="Tap to enable voice">🔇</button>
     </div>
 
     <!-- Messages -->
@@ -1292,7 +1302,9 @@ p, .body-text { font-size: 16px !important; }
         onfocus="this.style.borderColor='rgba(212,168,67,0.5)'"
         onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
-      <button onclick="sendTalkMsg()"
+      <button onclick="toggleTalkVoice()" id="talkMicBtn"
+          style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:14px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🎙️</button>
+        <button onclick="sendTalkMsg()"
         style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
     </div>
   </div>
@@ -8331,6 +8343,144 @@ function goToKeyDatesPreFilled(hearingDateStr, hearingType) {
   }, 400);
 }
 
+// ── GUARDIAN VOICE INPUT ──
+var talkRecognition = null;
+var chatRecognition = null;
+
+function createRecognition(onResult, btnId) {
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) { toast('Voice not supported on this browser'); return null; }
+  var rec = new SpeechRec();
+  rec.continuous = false;
+  rec.interimResults = false;
+  rec.lang = 'en-GB';
+  rec.onstart = function() {
+    var btn = document.getElementById(btnId);
+    if (btn) { btn.style.background = 'rgba(255,0,0,0.3)'; btn.style.borderColor = 'red'; btn.textContent = '🔴'; }
+  };
+  rec.onend = function() {
+    var btn = document.getElementById(btnId);
+    if (btn) { btn.style.background = 'rgba(255,255,255,0.08)'; btn.style.borderColor = 'rgba(255,255,255,0.15)'; btn.textContent = '🎙️'; }
+  };
+  rec.onerror = function(e) {
+    var btn = document.getElementById(btnId);
+    if (btn) { btn.style.background = 'rgba(255,255,255,0.08)'; btn.textContent = '🎙️'; }
+    if (e.error !== 'no-speech') toast('Microphone error — try again');
+  };
+  rec.onresult = function(e) {
+    var transcript = e.results[0][0].transcript.trim();
+    if (transcript) onResult(transcript);
+  };
+  return rec;
+}
+
+function toggleTalkVoice() {
+  if (!talkRecognition) {
+    talkRecognition = createRecognition(function(text) {
+      var input = document.getElementById('talkInput');
+      if (input) { input.value = text; sendTalkMsg(); }
+    }, 'talkMicBtn');
+  }
+  if (!talkRecognition) return;
+  try { talkRecognition.start(); }
+  catch(e) { talkRecognition = null; toggleTalkVoice(); }
+}
+
+function toggleChatVoice() {
+  if (!chatRecognition) {
+    chatRecognition = createRecognition(function(text) {
+      var input = document.getElementById('chatInput');
+      if (input) { input.value = text; sendChatMsg(); }
+    }, 'chatMicBtn');
+  }
+  if (!chatRecognition) return;
+  try { chatRecognition.start(); }
+  catch(e) { chatRecognition = null; toggleChatVoice(); }
+}
+
+// ── UPDATE REPLY FROM CHAT ──
+async function updateReplyFromChat() {
+  var replyEl = document.getElementById('suggestedReply');
+  var currentReply = replyEl ? (replyEl.value || replyEl.textContent || '') : '';
+  if (!currentReply || currentReply.length < 5) { toast('No reply to update'); return; }
+
+  // Build context from chat conversation
+  var chatConvo = chatHistory.map(function(m) {
+    return (m.role === 'user' ? 'User: ' : 'Guardian: ') + m.content;
+  }).join('\n');
+
+  var btn = document.getElementById('updateReplyBtn');
+  if (btn) { btn.textContent = 'Updating...'; btn.disabled = true; }
+
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        system: getCTX() + '\n\nYou are updating a reply based on new context provided by the user. Return ONLY the updated reply text — nothing else, no explanation.',
+        messages: [{
+          role: 'user',
+          content: 'Original message received: "' + (st.msg||'') + '"\n\nCurrent reply: "' + currentReply + '"\n\nNew context from conversation:\n' + chatConvo + '\n\nRewrite the reply incorporating this new context. Keep the same tone and length. Return ONLY the reply text.'
+        }]
+      })
+    });
+    if (!res.ok) { toast('Could not update — try again'); return; }
+    var data = await res.json();
+    var newReply = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    if (newReply && newReply.length > 5) {
+      if (replyEl) replyEl.value = newReply;
+      toast('✅ Reply updated');
+      // Re-score
+      setTimeout(function(){ scoreReply(newReply, 'replyScoreDisplay'); }, 500);
+    } else {
+      toast('Could not generate update — try again');
+    }
+  } catch(e) {
+    toast('Something went wrong');
+  } finally {
+    if (btn) { btn.textContent = '↑ Update reply'; btn.disabled = false; }
+  }
+}
+
+// ── GUARDIAN VOICE OUTPUT ──
+var guardianVoiceOn = false;
+var currentUtterance = null;
+
+function guardianSpeak(text) {
+  if (!guardianVoiceOn) return;
+  if (!window.speechSynthesis) return;
+  // Stop anything currently speaking
+  window.speechSynthesis.cancel();
+  // Strip markdown
+  var clean = text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*/g, '').replace(/<[^>]+>/g, '');
+  var utt = new SpeechSynthesisUtterance(clean);
+  utt.lang = 'en-GB';
+  utt.rate = 0.95;
+  utt.pitch = 1.0;
+  // Try to use a natural British voice
+  var voices = window.speechSynthesis.getVoices();
+  var preferred = voices.find(function(v) {
+    return v.lang === 'en-GB' && (v.name.includes('Daniel') || v.name.includes('Google') || v.name.includes('Microsoft'));
+  }) || voices.find(function(v) { return v.lang === 'en-GB'; }) || voices.find(function(v) { return v.lang.startsWith('en'); });
+  if (preferred) utt.voice = preferred;
+  currentUtterance = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+function toggleGuardianVoice(btnId) {
+  guardianVoiceOn = !guardianVoiceOn;
+  var btn = document.getElementById(btnId);
+  if (btn) {
+    btn.style.background = guardianVoiceOn ? 'rgba(212,168,67,0.3)' : 'rgba(255,255,255,0.08)';
+    btn.style.borderColor = guardianVoiceOn ? 'var(--gold)' : 'rgba(255,255,255,0.15)';
+    btn.title = guardianVoiceOn ? 'Voice on — tap to mute' : 'Voice off — tap to enable';
+    toast(guardianVoiceOn ? '🔊 Guardian will now speak responses' : '🔇 Voice muted');
+  }
+  if (!guardianVoiceOn && window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
 // ── TALK TO GUARDIAN ──
 var talkHistory = [];
 
@@ -8394,6 +8544,8 @@ function addTalkMessage(role, text) {
   div.appendChild(bubble);
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
+  // Speak guardian responses if voice is on
+  if (role === 'guardian' && text !== '...') guardianSpeak(text);
   // Hide suggestions once conversation starts
   if (role === 'user') {
     var sugEl = document.getElementById('talkSuggestions');
@@ -8539,6 +8691,7 @@ async function generateChatResponse(userMsg, loadingEl) {
       // Render **bold** markdown
       bubble.innerHTML = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
       loadingEl.parentNode.replaceChild(bubble, loadingEl);
+      guardianSpeak(text);
     } else {
       addChatMessage('guardian', text);
     }
