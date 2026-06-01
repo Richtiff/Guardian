@@ -34,7 +34,7 @@
   --text-label: 13px;
 }
 html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
-.app { max-width:480px; margin:0 auto; padding:0 16px 80px; }
+.app { max-width:480px; margin:0 auto; padding:0 16px 40px; }
 .header { display:flex; align-items:center; justify-content:space-between; padding:18px 0 14px; border-bottom:1px solid var(--border); margin-bottom:24px; }
 .logo { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; }
 .logo span { color:var(--gold); }
@@ -1033,17 +1033,19 @@ p, .body-text { font-size: 16px !important; }
     <!-- PASTE FIRST — primary action -->
     <div class="type-panel" style="margin-bottom:12px;">
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
-      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
+      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
       <button class="type-confirm" onclick="confirmType()">Check this message →</button>
     </div>
-    <!-- SCREENSHOT SECOND — secondary option -->
+    <!-- SCREENSHOT SECOND — hides when text is pasted -->
+    <div id="screenshotSection">
     <div class="divider"><span>or upload a screenshot</span></div>
     <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · any app</div>
     <div class="msg-upload-grid" style="margin-top:10px;">
       <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Gallery<input type="file" accept="image/*" multiple onchange="handleUpload(event)"></label>
       <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera<input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)"></label>
     </div>
+    </div><!-- end screenshotSection -->
   </div>
   <div id="outPanel" style="display:none;">
     <div class="out-card">
@@ -8607,6 +8609,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+// ── HIDE SCREENSHOT SECTION WHEN TEXT IS PASTED ──
+function toggleScreenshotSection(val) {
+  var ss = document.getElementById('screenshotSection');
+  if (!ss) return;
+  ss.style.display = val && val.trim().length > 0 ? 'none' : 'block';
+}
 
 // ── CONTINUE LAST MESSAGE ──
 function continueLast() {
