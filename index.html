@@ -873,7 +873,7 @@ p, .body-text { font-size: 16px !important; }
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
   <div id="continueBar" style="display:none;margin:0 0 12px;background:rgba(196,154,60,0.1);border:1.5px solid rgba(196,154,60,0.3);border-radius:14px;padding:14px 16px;cursor:pointer;" onclick="continueLast()">
     <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:4px;">CONTINUE WHERE YOU LEFT OFF</div>
-    <div id="continuePreview" style="font-size:13px;color:var(--white);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></div>
+    <div id="continuePreview" style="font-size:13px;color:var(--white);line-height:1.5;margin-top:4px;opacity:0.85;"></div>
     <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">Tap to regenerate reply →</div>
   </div>
   <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
@@ -1037,7 +1037,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
-      <button class="type-confirm" onclick="confirmType()">Check this message →</button>
+      <button class="type-confirm" onclick="confirmType()" ontouchend="event.preventDefault();confirmType();" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
     <div id="screenshotSection">
@@ -4180,7 +4180,7 @@ function showHome() {
     var continueBar = document.getElementById('continueBar');
     var continuePreview = document.getElementById('continuePreview');
     if (lastMsg && lastMsg.length > 5 && continueBar && continuePreview) {
-      continuePreview.textContent = lastMsg.substring(0, 120) + (lastMsg.length > 120 ? '...' : '');
+      continuePreview.textContent = lastMsg;
       continueBar.style.display = 'block';
     } else if (continueBar) {
       continueBar.style.display = 'none';
@@ -8606,10 +8606,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── HIDE SCREENSHOT SECTION WHEN TEXT IS PASTED ──
+var _toggleSSTimer = null;
 function toggleScreenshotSection(val) {
-  var ss = document.getElementById('screenshotSection');
-  if (!ss) return;
-  ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
+  clearTimeout(_toggleSSTimer);
+  _toggleSSTimer = setTimeout(function() {
+    var ss = document.getElementById('screenshotSection');
+    if (!ss) return;
+    ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
+  }, 300);
 }
 
 // ── CONTINUE LAST MESSAGE ──
@@ -8628,7 +8632,11 @@ function continueLast() {
       if (typeIn) typeIn.value = lastMsg;
       if (inPanel) inPanel.style.display = 'block';
       // Auto-confirm after short delay
-      setTimeout(function() { confirmType(); }, 300);
+      setTimeout(function() {
+        var ta = document.getElementById('typeIn');
+        if (ta) { autoGrow(ta); toggleScreenshotSection(ta.value); }
+        confirmType();
+      }, 300);
     }, 200);
   } catch(e) {}
 }
