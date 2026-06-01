@@ -765,6 +765,69 @@ p, .body-text { font-size: 16px !important; }
   <button type="button" class="btn-ghost" onclick="skipDocs()">Skip for now — I'll add documents later</button>
 </div>
 
+
+<!-- PROFILE 5 — OTHER PARENT -->
+<div class="step" id="sProfile5">
+  <div class="setup-progress"><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot active"></div><div class="setup-dot"></div></div>
+  <div class="setup-title">Who are you dealing with?</div>
+  <div class="setup-sub">This helps Guardian spot manipulation and protect you.</div>
+
+  <div style="margin-bottom:16px;">
+    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;letter-spacing:0.5px;">HOW DO THEY COMMUNICATE?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="dynamicGrid">
+      <button type="button" class="opt" id="dynLoaded" onclick="selectDynamic('loaded','Loaded messages — hidden meaning behind every word')">
+        <div style="font-size:20px;margin-bottom:4px;">⚠️</div>
+        <div style="font-size:13px;font-weight:700;">Loaded</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Hidden meaning in every message</div>
+      </button>
+      <button type="button" class="opt" id="dynAggressive" onclick="selectDynamic('aggressive','Aggressive and confrontational — uses threats and ultimatums')">
+        <div style="font-size:20px;margin-bottom:4px;">🔥</div>
+        <div style="font-size:13px;font-weight:700;">Aggressive</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Threats and ultimatums</div>
+      </button>
+      <button type="button" class="opt" id="dynUnpredictable" onclick="selectDynamic('unpredictable','Unpredictable — switches between cooperative and hostile')">
+        <div style="font-size:20px;margin-bottom:4px;">🔄</div>
+        <div style="font-size:13px;font-weight:700;">Unpredictable</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Switches between nice and hostile</div>
+      </button>
+      <button type="button" class="opt" id="dynCooperative" onclick="selectDynamic('cooperative','Mostly cooperative but has moments of conflict')">
+        <div style="font-size:20px;margin-bottom:4px;">🤝</div>
+        <div style="font-size:13px;font-weight:700;">Mostly cooperative</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Generally reasonable</div>
+      </button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;letter-spacing:0.5px;">ANYTHING ELSE GUARDIAN SHOULD KNOW ABOUT THEM? <span style="color:var(--muted);font-weight:400;">(optional)</span></div>
+    <textarea id="iTheirStyle" rows="3" placeholder="e.g. always sends messages late at night, uses the children to pass messages, copies in family members..." style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px;color:var(--white);font-size:14px;font-family:inherit;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <button type="button" class="btn-primary" onclick="saveProfile5()">Continue →</button>
+  <button type="button" class="btn-ghost" onclick="go('sProfile4')" style="margin-top:8px;">Back</button>
+</div>
+
+<!-- PROFILE 6 — TONE PROFILING -->
+<div class="step" id="sProfile6">
+  <div class="setup-progress"><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot done"></div><div class="setup-dot active"></div></div>
+  <div class="setup-title">Let Guardian find your voice</div>
+  <div class="setup-sub">Paste 10–20 of your sent messages so Guardian learns how you write. Every reply will sound like you — not a robot.</div>
+
+  <div style="background:rgba(212,168,67,0.06);border:1.5px solid rgba(212,168,67,0.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+    <div style="font-size:13px;color:var(--white);line-height:1.6;">Go to WhatsApp → your conversation → copy your last 10–20 sent messages → paste them below.</div>
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;letter-spacing:0.5px;">YOUR SENT MESSAGES</div>
+    <textarea id="iToneMessages" rows="6" placeholder="Paste your messages here — just yours, not theirs..." style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px;color:var(--white);font-size:14px;font-family:inherit;resize:none;outline:none;box-sizing:border-box;min-height:140px;" oninput="autoGrow(this)"></textarea>
+    <div style="font-size:12px;color:var(--muted);margin-top:6px;">Don't worry about removing timestamps or names — Guardian filters those out.</div>
+  </div>
+
+  <button type="button" class="btn-primary" onclick="saveProfile6()">Build my Guardian →</button>
+  <button type="button" class="btn-ghost" onclick="go('sProfile5')" style="margin-top:8px;">Back</button>
+  <button type="button" class="btn-ghost" onclick="skipToneProfiling()" style="margin-top:4px;color:var(--muted);font-size:12px;">Skip this step</button>
+</div>
+
 <!-- PROCESSING -->
 <div class="step" id="sProcessing">
   <div style="text-align:center;padding:60px 20px;">
@@ -810,66 +873,28 @@ p, .body-text { font-size: 16px !important; }
   <div id="deadlineBanner"></div>
   <div id="caseStrengthCard"></div>
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
-  <div class="home-grid" style="margin-bottom:20px;">
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')">
-      <div class="home-btn-icon">💬</div>
-      <div class="home-btn-label">Reply Ready</div>
-      <div class="home-btn-sub">When you don't know what to say</div>
+  <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')" style="text-align:left;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">💬</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Reply Ready</div><div class="home-btn-sub">Paste their message. Get a reply. Send with confidence.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="openTalkGuardian()">
-      <div class="home-btn-icon">⚖️</div>
-      <div class="home-btn-label">Court Guru</div>
-      <div class="home-btn-sub">Ask anything about your case</div>
+    <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="text-align:left;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🛡️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Ask Guardian</div><div class="home-btn-sub">Messages, documents, hearings — ask me anything.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="grid-column:1/-1;margin-top:4px;">
-      <div class="home-btn-icon">🛡️</div>
-      <div class="home-btn-label">Talk to Guardian</div>
-      <div class="home-btn-sub">Ask me anything about your case</div>
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDiary','diary')" style="text-align:left;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📓</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Diary</div><div class="home-btn-sub">Log every session. Build your evidence record.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sStatements','scanner')">
-      <div class="home-btn-icon">📋</div>
-      <div class="home-btn-label">Statements</div>
-      <div class="home-btn-sub">Read, check and write statements</div>
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sStatements','scanner')" style="text-align:left;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📋</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Statements</div><div class="home-btn-sub">Read theirs. Check yours. Write your position statement.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sExplainer','explainer')">
-      <div class="home-btn-icon">📩</div>
-      <div class="home-btn-label">Understand Your Documents</div>
-      <div class="home-btn-sub">Take the fear out of every letter</div>
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sBrain','brain')" style="text-align:left;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🧠</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Guardian Brain</div><div class="home-btn-sub">Everything Guardian knows about your case.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
+    </button>
+
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDocs','docs')" style="text-align:left;padding:16px 20px;">
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🗂️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Case</div><div class="home-btn-sub">Your case file. Stored and ready when you need it.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
   </div>
-  <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">YOUR CASE</div>
-  <div class="home-grid">
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDocs','docs')">
-      <div class="home-btn-icon">🗂</div>
-      <div class="home-btn-label">Case File</div>
-      <div class="home-btn-sub">Safe, stored and ready when you need it</div>
-    </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sDiary','diary')">
-      <div class="home-btn-icon">📓</div>
-      <div class="home-btn-label">My Diary</div>
-      <div class="home-btn-sub">Your memory. Your safety net.</div>
-    </button>
-    <button type="button" class="home-btn home-btn-card" onclick="showSection('sBrain','brain')">
-      <div class="home-btn-icon">🧠</div>
-      <div class="home-btn-label">Guardian Brain</div>
-      <div class="home-btn-sub">Your experience makes us stronger</div>
-    </button>
-    <button type="button" class="home-btn home-btn-card" onclick="go('sEditProfile')">
-      <div class="home-btn-icon">⚙</div>
-      <div class="home-btn-label">My Case</div>
-      <div class="home-btn-sub">Your profile. Always up to date.</div>
-    </button>
-  </div>
-  <div style="display:flex;gap:8px;margin-bottom:14px;">
-    <button type="button" class="home-btn home-btn-card" style="flex:1;padding:16px 14px;" onclick="go('sKeyDates','sTalkGuardian')">
-      <div class="home-btn-icon">⏰</div>
-      <div class="home-btn-label">Key Dates</div>
-      <div class="home-btn-sub">Deadlines &amp; countdowns</div>
-    </button>
-  </div>
-  <!-- Intelligence Readiness — prominent until complete -->
-  <div id="intelRestore" onclick="showIntelBar()" style="display:none;align-items:center;gap:6px;padding:7px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;margin-bottom:10px;font-size:12px;color:var(--muted-hi);font-family:DM Sans,sans-serif;font-weight:600;">🧠 Guardian Intelligence <span style="color:var(--gold);">Show →</span></div>
-  <div id="intelBar" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;display:none;">
+<div id="intelBar" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
       <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;color:var(--white);">🧠 Guardian Intelligence</div>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -997,32 +1022,28 @@ p, .body-text { font-size: 16px !important; }
       <button type="button" id="btnIn" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">&#128233;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
       <button type="button" id="btnOut" class="home-btn home-btn-card" onclick="showOut()"><span style="font-size:24px;">&#9999;&#65039;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">I want to send something</div></button>
     </div>
-    <button type="button" id="btnThread" class="home-btn home-btn-card" onclick="showThread()" style="width:100%;margin-bottom:20px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:22px;">&#128172;</span>
-      <div style="text-align:left;">
-        <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">Analyse a full thread</div>
-        <div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Paste the whole conversation — Guardian reads everything</div>
-      </div>
-    </button>
+
   </div>
   <div id="inPanel" style="display:none;">
-    <div class="msg-upload-grid">
-      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera<input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)"></label>
-      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Gallery<input type="file" accept="image/*" multiple onchange="handleUpload(event)"></label>
-      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Screenshot<input type="file" accept="image/*" onchange="handleUpload(event)"></label>
-    </div>
-    <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · any app</div>
-    <div class="divider"><span>or type it</span></div>
-    <div class="type-panel">
-      <div class="type-header">THEIR MESSAGE</div>
-      <textarea class="type-textarea" id="typeIn" rows="4" placeholder="Paste or type what they sent you..." id="typeInPlaceholder"></textarea>
+    <!-- PASTE FIRST — primary action -->
+    <div class="type-panel" style="margin-bottom:12px;">
+      <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
+      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
+      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
       <button class="type-confirm" onclick="confirmType()">Check this message →</button>
+    </div>
+    <!-- SCREENSHOT SECOND — secondary option -->
+    <div class="divider"><span>or upload a screenshot</span></div>
+    <div class="apps-note">WhatsApp · AppClose · iMessage · SMS · any app</div>
+    <div class="msg-upload-grid" style="margin-top:10px;">
+      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Gallery<input type="file" accept="image/*" multiple onchange="handleUpload(event)"></label>
+      <label class="msg-upload-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera<input type="file" accept="image/*" capture="environment" onchange="handleUpload(event)"></label>
     </div>
   </div>
   <div id="outPanel" style="display:none;">
     <div class="out-card">
       <div class="out-header">WHAT DO YOU WANT TO SAY?</div>
-      <textarea class="out-textarea" id="outIn" rows="4" placeholder="Type what you are thinking of sending..."></textarea>
+      <textarea class="out-textarea" id="outIn" rows="3" placeholder="Type what you are thinking of sending..." oninput="autoGrow(this)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <button class="out-check" onclick="checkOut()">Check before I send →</button>
     </div>
   </div>
@@ -1240,6 +1261,7 @@ p, .body-text { font-size: 16px !important; }
         <div style="margin-left:auto;display:flex;gap:8px;">
           
           <button onclick="clearGuardianChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
+          <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;" title="Tap to enable voice">🔇</button>
         </div>
       </div>
 
@@ -1285,6 +1307,7 @@ p, .body-text { font-size: 16px !important; }
         <div style="font-size:12px;color:var(--gold);">Your case companion</div>
       </div>
       <button onclick="clearTalkHistory()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid var(--border);">New chat</button>
+      <button id="talkSpeakBtn" onclick="toggleGuardianVoice('talkSpeakBtn')" style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;margin-left:4px;" title="Tap to enable voice">🔇</button>
       
     </div>
 
@@ -1463,7 +1486,45 @@ p, .body-text { font-size: 16px !important; }
     </div>
     <input type="hidden" id="eRelContext">
   </div>
-  <button type="button" class="btn-gold" onclick="saveEditProfile()" style="margin-top:8px;">Save changes</button>
+  <!-- OTHER PARENT DYNAMIC -->
+  <div class="field-group" style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+    <label class="field-label">HOW DO THEY COMMUNICATE?</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Helps Guardian spot manipulation and protect you in every reply.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="editDynamicGrid">
+      <button type="button" class="opt" id="editDynLoaded" onclick="selectEditDynamic('loaded','Loaded messages — hidden meaning behind every word')">
+        <div style="font-size:18px;margin-bottom:3px;">⚠️</div>
+        <div style="font-size:12px;font-weight:700;">Loaded</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:1px;">Hidden meaning</div>
+      </button>
+      <button type="button" class="opt" id="editDynAggressive" onclick="selectEditDynamic('aggressive','Aggressive and confrontational — uses threats and ultimatums')">
+        <div style="font-size:18px;margin-bottom:3px;">🔥</div>
+        <div style="font-size:12px;font-weight:700;">Aggressive</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:1px;">Threats &amp; ultimatums</div>
+      </button>
+      <button type="button" class="opt" id="editDynUnpredictable" onclick="selectEditDynamic('unpredictable','Unpredictable — switches between cooperative and hostile')">
+        <div style="font-size:18px;margin-bottom:3px;">🔄</div>
+        <div style="font-size:12px;font-weight:700;">Unpredictable</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:1px;">Switches between nice/hostile</div>
+      </button>
+      <button type="button" class="opt" id="editDynCooperative" onclick="selectEditDynamic('cooperative','Mostly cooperative but has moments of conflict')">
+        <div style="font-size:18px;margin-bottom:3px;">🤝</div>
+        <div style="font-size:12px;font-weight:700;">Mostly cooperative</div>
+        <div style="font-size:11px;color:var(--muted-hi);margin-top:1px;">Generally reasonable</div>
+      </button>
+    </div>
+    <textarea id="editTheirStyle" rows="2" placeholder="Anything else about how they communicate..." style="width:100%;margin-top:10px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:13px;font-family:inherit;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <!-- TONE PROFILING -->
+  <div class="field-group" style="margin-top:8px;">
+    <label class="field-label">YOUR COMMUNICATION STYLE</label>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Paste 10–20 of your sent messages so Guardian sounds like you, not a robot.</div>
+    <textarea id="editToneMessages" rows="5" placeholder="Paste your sent messages here..." style="width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:13px;font-family:inherit;resize:none;outline:none;box-sizing:border-box;min-height:100px;" oninput="autoGrow(this)"></textarea>
+    <div id="editToneResult" style="display:none;margin-top:10px;background:rgba(212,168,67,0.07);border:1px solid rgba(212,168,67,0.2);border-radius:10px;padding:12px;font-size:13px;color:var(--white);line-height:1.6;"></div>
+    <button type="button" onclick="analyseEditTone()" style="margin-top:8px;width:100%;padding:10px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;" id="editToneBtn">Analyse my writing style</button>
+  </div>
+
+  <button type="button" class="btn-gold" onclick="saveEditProfile()" style="margin-top:16px;">Save changes</button>
   <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
     <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.5px;margin-bottom:10px;">MULTIPLE CASES</div>
     <div style="font-size:13px;color:var(--muted-hi);margin-bottom:12px;line-height:1.6;">Running a C100 and non-mol at the same time? Need to manage a second case? Coming soon.</div>
@@ -2627,6 +2688,8 @@ function getCTX() {
   if (profile.allegations) lines.push('Allegations against parent: ' + profile.allegations);
   if (profile.dismissed) lines.push('Dismissed/ruled in favour: ' + profile.dismissed);
   if (profile.commStyle) lines.push('Communication style: ' + profile.commStyle);
+  if (profile.toneProfile) lines.push('User tone profile: ' + profile.toneProfile);
+  if (profile.theirDynamic) lines.push('Other parent dynamic: ' + profile.theirDynamic);
   if (profile.voice) lines.push('Parent described as: ' + profile.voice);
   if (profile.relationshipContext) lines.push('Relationship history: ' + profile.relationshipContext);
   Object.keys(docs).forEach(function(k) { if (docs[k]) lines.push('Doc (' + k + '): ' + docs[k].substring(0,200)); });
@@ -2780,7 +2843,7 @@ if (supabase) {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates'];
 
 var stepHistory = [];
 var navLock = false;
@@ -3264,7 +3327,8 @@ async function processDocs() {
   save();
   var keys=Object.keys(uploadedDocs);
   if(!keys.length&&!voice){skipDocs();return;}
-  go('sProcessing');
+  go('sProfile5');
+  // continue processing after tone
   var items=document.getElementById('procItems');
   var extracts={};
   // Process ALL documents in parallel for speed
@@ -7568,6 +7632,23 @@ async function addDoc(event, docType) {
 
 // EDIT PROFILE
 function loadEditProfile() {
+  // Pre-fill dynamic selection
+  if (profile && profile.theirDynamic) {
+    var dynMap = {loaded:'editDynLoaded', aggressive:'editDynAggressive', unpredictable:'editDynUnpredictable', cooperative:'editDynCooperative'};
+    Object.keys(dynMap).forEach(function(k) {
+      if (profile.theirDynamic.toLowerCase().indexOf(k) > -1) {
+        selectEditDynamic(k, profile.theirDynamic);
+      }
+    });
+  }
+  if (profile && profile.toneProfile) {
+    var result = document.getElementById('editToneResult');
+    if (result) { result.textContent = profile.toneProfile; result.style.display = 'block'; }
+  }
+  if (profile && profile.toneMessages) {
+    var ta = document.getElementById('editToneMessages');
+    if (ta) ta.value = profile.toneMessages;
+  }
   if (!profile) return;
   var fields = { editMyName:'myName', editTheirName:'theirName', editChildName:'childName', editContact:'contact', editAllegations:'allegations', editDismissed:'dismissed' };
   Object.keys(fields).forEach(function(id) {
@@ -7667,6 +7748,9 @@ function getSelectedEditCaseTypes() {
 }
 
 function saveEditProfile() {
+  if (editSelectedDynamic) profile.theirDynamic = editSelectedDynamic;
+  var theirStyleEl = document.getElementById('editTheirStyle');
+  if (theirStyleEl && theirStyleEl.value.trim()) profile.theirStyle = theirStyleEl.value.trim();
   if (!profile) profile = {};
   profile.myName = document.getElementById('editMyName').value.trim() || profile.myName;
   profile.theirName = document.getElementById('editTheirName').value.trim() || profile.theirName;
@@ -8355,6 +8439,161 @@ function goToKeyDatesPreFilled(hearingDateStr, hearingType) {
   }, 400);
 }
 
+// ── ONBOARDING — PROFILE 5 & 6 ──
+var selectedDynamic = '';
+
+function selectDynamic(type, desc) {
+  selectedDynamic = desc;
+  document.querySelectorAll('#dynamicGrid .opt').forEach(function(b){ b.classList.remove('active'); });
+  var btn = document.getElementById('dyn' + type.charAt(0).toUpperCase() + type.slice(1));
+  if (btn) btn.classList.add('active');
+}
+
+function saveProfile5() {
+  if (!selectedDynamic) { toast('Please select how they communicate'); return; }
+  profile.theirDynamic = selectedDynamic;
+  var extra = document.getElementById('iTheirStyle');
+  if (extra && extra.value.trim()) profile.theirStyle = extra.value.trim();
+  save();
+  go('sProfile6');
+}
+
+function skipToneProfiling() {
+  go('sProcessing');
+  startProcessing();
+}
+
+function saveProfile6() {
+  var msgs = document.getElementById('iToneMessages');
+  if (msgs && msgs.value.trim().length > 20) {
+    profile.toneMessages = msgs.value.trim();
+  }
+  save();
+  go('sProcessing');
+  startProcessing();
+}
+
+// ── EDIT PROFILE — DYNAMIC + TONE ──
+var editSelectedDynamic = '';
+
+function selectEditDynamic(type, desc) {
+  editSelectedDynamic = desc;
+  document.querySelectorAll('#editDynamicGrid .opt').forEach(function(b){ b.classList.remove('active'); });
+  var map = {loaded:'editDynLoaded', aggressive:'editDynAggressive', unpredictable:'editDynUnpredictable', cooperative:'editDynCooperative'};
+  var btn = document.getElementById(map[type]);
+  if (btn) btn.classList.add('active');
+}
+
+async function analyseEditTone() {
+  var msgs = document.getElementById('editToneMessages');
+  if (!msgs || msgs.value.trim().length < 20) { toast('Paste at least a few messages first'); return; }
+  var btn = document.getElementById('editToneBtn');
+  if (btn) { btn.textContent = 'Analysing...'; btn.disabled = true; }
+  try {
+    var res = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001', max_tokens:600,
+        messages:[{ role:'user', content:'Analyse these messages from a parent in a family court case. Score their communication for court safety out of 10 (most people score 5-7, be realistic and honest). Return ONLY valid JSON with no extra text: {"score":6,"headline":"short honest headline","strengths":["strength1","strength2"],"risks":["risk1","risk2"],"shock":"one sentence what a judge would notice","profile":"2 sentence style description"}\n\nMessages:\n' + msgs.value.trim().substring(0,2000) }]
+      })
+    });
+    var data = await res.json();
+    var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed = null;
+    try { parsed = JSON.parse(raw); } catch(e) { var m = raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
+    if (!parsed) { toast('Could not analyse — try again'); return; }
+    profile.toneMessages = msgs.value.trim();
+    profile.toneProfile = parsed.profile || '';
+    profile.commSafetyScore = parsed.score;
+    save();
+    var result = document.getElementById('editToneResult');
+    if (!result) return;
+    var sc = parsed.score || 5;
+    var col = sc >= 8 ? '#4caf50' : sc >= 6 ? '#f5c842' : '#e53935';
+    var out = [];
+    out.push('<div style="text-align:center;padding:16px 0 12px;">');
+    out.push('<div style="font-size:52px;font-weight:900;color:' + col + ';font-family:DM Sans,sans-serif;line-height:1;">' + sc + '<span style="font-size:18px;color:#888;">/10</span></div>');
+    out.push('<div style="font-size:13px;font-weight:700;color:#fff;margin-top:8px;">' + (parsed.headline || 'Communication Safety Score') + '</div>');
+    out.push('</div>');
+    if (parsed.shock) {
+      out.push('<div style="background:rgba(229,57,53,0.1);border:1px solid rgba(229,57,53,0.3);border-radius:10px;padding:12px;margin-bottom:12px;">');
+      out.push('<div style="font-size:10px;font-weight:700;color:#ef9a9a;letter-spacing:0.5px;margin-bottom:6px;">WHAT A JUDGE WOULD NOTICE</div>');
+      out.push('<div style="font-size:13px;color:#fff;line-height:1.5;">' + parsed.shock + '</div>');
+      out.push('</div>');
+    }
+    if (parsed.strengths && parsed.strengths.length) {
+      out.push('<div style="margin-bottom:12px;"><div style="font-size:10px;font-weight:700;color:#81c784;letter-spacing:0.5px;margin-bottom:6px;">WHAT YOU DO WELL</div>');
+      parsed.strengths.forEach(function(s){ out.push('<div style="font-size:13px;color:#fff;padding:3px 0;line-height:1.5;">&#10003; ' + s + '</div>'); });
+      out.push('</div>');
+    }
+    if (parsed.risks && parsed.risks.length) {
+      out.push('<div style="margin-bottom:14px;"><div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:0.5px;margin-bottom:6px;">WHERE YOU ARE EXPOSED</div>');
+      parsed.risks.forEach(function(r){ out.push('<div style="font-size:13px;color:#fff;padding:3px 0;line-height:1.5;">&#9888; ' + r + '</div>'); });
+      out.push('</div>');
+    }
+    out.push('<div style="background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:10px;padding:12px;">');
+    out.push('<div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:0.5px;margin-bottom:6px;">GUARDIAN HAS YOUR BACK</div>');
+    out.push('<div style="font-size:13px;color:#fff;line-height:1.5;">Every reply Guardian writes scores 9/10 or above. Your weaknesses are covered. Your voice is preserved.</div>');
+    out.push('</div>');
+    result.innerHTML = out.join('');
+    result.style.display = 'block';
+    toast('Score: ' + sc + '/10 — see your results below');
+  } catch(e) { toast('Could not analyse — try again'); }
+  finally { if(btn){ btn.textContent = 'Analyse my writing style'; btn.disabled = false; } }
+}
+
+// Pre-fill edit dynamic when Edit Profile opens
+var _origShowEditProfile = typeof showEditProfile === 'function' ? showEditProfile : null;
+
+// ── TONE PROFILE ANALYSIS ──
+async function analyseToneProfile(messages) {
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        messages: [{
+          role: 'user',
+          content: 'Analyse these messages from a parent in a family court case. Score their communication style for court safety out of 10 (be realistic — most people score 5-7). Return ONLY JSON:\n{"score":6,"headline":"Your messages could be working against you","strengths":["strength1"],"risks":["risk1"],"shock":"what a judge would notice","profile":"2 sentence style description"}\n\nMessages:\n' + messages.substring(0, 2000)
+        }]
+      })
+    });
+    if (!res.ok) { showDefaultGuardianEdge(); return; }
+    var data = await res.json();
+    var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
+    var parsed = null;
+    try { parsed = JSON.parse(raw); } catch(e) { var m2 = raw.match(/\{[\s\S]*\}/); if(m2) try{parsed=JSON.parse(m2[0]);}catch(e2){} }
+    if (parsed) {
+      profile.toneProfile = parsed.profile || '';
+      profile.commSafetyScore = parsed.score;
+      save();
+      var toneCard = document.getElementById('toneProfileCard');
+      var toneContent = document.getElementById('toneProfileContent');
+      var edgeContent = document.getElementById('guardianEdgeContent');
+      if (toneCard) toneCard.style.display = 'block';
+      if (toneContent && parsed.profile) toneContent.innerHTML = '<div style="font-size:32px;font-weight:900;color:' + (parsed.score>=8?'#4caf50':parsed.score>=6?'var(--gold)':'#e53935') + ';font-family:DM Sans,sans-serif;">' + parsed.score + '<span style="font-size:16px;color:var(--muted);">/10</span></div><div style="margin-top:6px;">' + parsed.profile + '</div>';
+      if (edgeContent) edgeContent.textContent = (parsed.shock ? parsed.shock + ' ' : '') + 'Guardian writes every reply at 9/10 or above — your weaknesses are covered.';
+    } else {
+      showDefaultGuardianEdge();
+    }
+  } catch(e) {
+    showDefaultGuardianEdge();
+  }
+}
+
+function showDefaultGuardianEdge() {
+  var edgeContent = document.getElementById('guardianEdgeContent');
+  if (edgeContent) edgeContent.textContent = 'Guardian catches what stress makes you miss — loaded language, trap messages, and patterns building over time. You bring the context. Guardian brings the strategy.';
+}
+
+// ── AUTO-GROW TEXTAREA ──
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight) + 'px';
+}
+
 // ── GUARDIAN VOICE INPUT ──
 var talkRecognition = null;
 var chatRecognition = null;
@@ -8461,7 +8700,6 @@ var guardianVoiceOn = false;
 var currentUtterance = null;
 
 function guardianSpeak(text) {
-  return; // Voice output disabled — too robotic
   if (!guardianVoiceOn) return;
   if (!window.speechSynthesis) return;
   // Stop anything currently speaking
@@ -8514,6 +8752,7 @@ function initTalkGuardian() {
     'She just sent me a message — can I paste it here?',
     'What is a DRA hearing and what happens?',
     'Explain the welfare checklist to me',
+    'I just got a letter — can I paste it here?',
     'How do I build a stronger case?',
     'What can the judge order at a DRA?',
     'What patterns should I be documenting?',
@@ -8680,7 +8919,7 @@ function addChatMessage(role, text) {
 }
 
 async function generateChatResponse(userMsg, loadingEl) {
-  var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You know family court law in England and Wales in depth AND you know this person\'s specific case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
+  var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You know family court law in England and Wales in depth AND you know this person\'s specific case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nIf the user pastes a letter, order, or document — read it carefully and explain it in plain English. Tell them what it means, what they need to do, and what the deadline is if there is one.\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
   
   chatHistory.push({ role: 'user', content: userMsg });
   
