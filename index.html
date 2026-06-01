@@ -1217,7 +1217,10 @@ p, .body-text { font-size: 16px !important; }
       <div class="coach-body">
         <div id="noReplyBanner" style="display:none;"></div>
         <div class="breathe" id="breatheDiv">Take a breath before you decide.</div>
-        <textarea class="suggested" id="suggestedReply" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
+        <div id="restoreBar" style="display:none;padding:4px 0 6px;">
+        <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;">↩ Restore original reply</button>
+      </div>
+      <textarea class="suggested" id="suggestedReply" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
         <div class="reply-why" id="replyWhy"></div>
       </div>
@@ -1237,8 +1240,8 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
       <div id="replyScoreDisplay" style="display:none;"></div>
       <div style="padding:0 16px 12px;">
-        <button type="button" onclick="scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
-      <button type="button" onclick="openGuardianChat()" style="width:100%;padding:13px;margin-top:8px;background:rgba(212,168,67,0.08);border:1.5px solid rgba(212,168,67,0.25);border-radius:14px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">🛡️ Ask Guardian about this reply</button>
+        <button type="button" onclick="scoreReply(storeOriginalReply(suggestedReply_val); document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
+      <button type="button" onclick="openGuardianChat()" style="width:100%;padding:16px;margin-top:10px;background:rgba(196,154,60,0.12);border:2px solid rgba(196,154,60,0.4);border-radius:14px;color:var(--gold);font-size:15px;font-weight:800;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:0.2px;">🛡️ Ask Guardian — understand why this reply works</button>
       </div>
       <div class="feedback-row">
         <span class="feedback-lbl">Was this helpful?</span>
@@ -1262,8 +1265,8 @@ p, .body-text { font-size: 16px !important; }
           
           <button onclick="clearGuardianChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:8px;cursor:pointer;">Clear</button>
           <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')" style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:22px;cursor:pointer;" title="Tap to enable/disable voice">🔇</button>
-          <div style="width:1px;height:32px;background:var(--border);margin:0 8px;"></div>
-          <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;">Clear</button>
+          <div style="width:1px;height:32px;background:var(--border);margin:0 8px;flex-shrink:0;"></div>
+          <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;flex-shrink:0;">Clear</button>
         </div>
       </div>
 
@@ -1277,7 +1280,22 @@ p, .body-text { font-size: 16px !important; }
       <div style="padding:8px 16px 4px;">
         <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:10px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
       </div>
-      <div style="padding:8px 16px 16px;display:flex;gap:10px;align-items:flex-end;">
+      <div style="padding:8px 16px 16px;display:flex;gap:8px;align-items:flex-end;">
+        <textarea id="chatInput" rows="2"
+          placeholder="Type or tap 🎙️ to speak..."
+          style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
+          onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
+            style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">🎙️</button>
+          <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')"
+            style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="Tap to hear Guardian speak">🔇</button>
+        </div>
+        <button onclick="sendChatMsg()"
+          style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
+      </div><div style="padding:8px 16px 16px;display:flex;gap:10px;align-items:flex-end;">
         <textarea id="chatInput" rows="2"
           placeholder="Ask Guardian anything..."
           style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
@@ -1320,7 +1338,28 @@ p, .body-text { font-size: 16px !important; }
     <div id="talkSuggestions" style="padding:8px 16px 4px;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;"></div>
 
     <!-- Input -->
-    <div style="padding:12px 16px 20px;display:flex;gap:10px;align-items:flex-end;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+    <div style="padding:8px 16px 4px;border-top:1px solid rgba(255,255,255,0.05);">
+        <div style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;">
+          🎙️ Tap mic to speak — Guardian will respond to what you say.<br>
+          🔇 Tap speaker to hear Guardian read responses aloud.
+        </div>
+      </div>
+      <div style="padding:8px 16px 20px;display:flex;gap:8px;align-items:flex-end;">
+        <textarea id="talkInput" rows="2"
+          placeholder="Or type your question..."
+          style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
+          onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          <button id="talkMicBtn" onclick="toggleTalkVoice()" title="Tap to speak — tap again to stop"
+            style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">🎙️</button>
+          <button id="talkSpeakBtn" onclick="toggleGuardianVoice('talkSpeakBtn')"
+            style="width:48px;height:48px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;" title="Tap to enable voice">🔇</button>
+        </div>
+        <button onclick="sendTalkMsg()"
+          style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
+      </div><div style="padding:12px 16px 20px;display:flex;gap:10px;align-items:flex-end;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
       <textarea id="talkInput" rows="2"
         placeholder="Ask Guardian anything about your case..."
         style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;max-height:120px;"
@@ -2845,7 +2884,7 @@ if (supabase) {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
 
 var stepHistory = [];
 var navLock = false;
@@ -5076,6 +5115,9 @@ async function handleUpload(event) {
   event.target.value = '';
   if (!files.length) return;
   var file = files[0];
+  // Clear any text in the paste box so screenshot is used, not old text
+  var typeIn = document.getElementById('typeIn');
+  if (typeIn) typeIn.value = '';
   load('Reading your screenshot...','Looking at this carefully');
 
   async function sendToAPI(b64, mediaType) {
@@ -5100,6 +5142,7 @@ async function handleUpload(event) {
         currentMsg = p.theirMessages.trim();
         st.msg = p.theirMessages.trim();
         document.getElementById('typeIn').value = p.theirMessages.trim();
+        toast('📸 Screenshot read successfully');
         askQ();
       } else {
         toast('Could not read text from screenshot — please type the message instead');
@@ -5362,7 +5405,7 @@ async function _gen(ctx) {
       else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
       var replyText = p.reply||'';
       var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply needed') !== -1 || replyText.toLowerCase().indexOf('silence is the stronger') !== -1;
-      document.getElementById('suggestedReply').value = replyText || '(No reply needed)';
+      var _rt = replyText || '(No reply needed)'; storeOriginalReply(_rt); document.getElementById('suggestedReply').value = _rt;
       document.getElementById('replyWhy').textContent = p.why||'';
       // Hide/show reply UI based on whether reply is needed
       var replyCard = document.getElementById('replyCard');
@@ -8597,6 +8640,34 @@ function showDefaultGuardianEdge() {
   if (edgeContent) edgeContent.textContent = 'Guardian catches what stress makes you miss — loaded language, trap messages, and patterns building over time. You bring the context. Guardian brings the strategy.';
 }
 
+// ── RESTORE ORIGINAL REPLY ──
+var originalReply = '';
+function storeOriginalReply(text) {
+  originalReply = text;
+  var bar = document.getElementById('restoreBar');
+  if (bar) bar.style.display = 'none';
+}
+function restoreOriginalReply() {
+  var el = document.getElementById('suggestedReply');
+  if (el && originalReply) {
+    el.value = originalReply;
+    var bar = document.getElementById('restoreBar');
+    if (bar) bar.style.display = 'none';
+    scoreReply(originalReply, 'replyScoreDisplay');
+    toast('Original reply restored');
+  }
+}
+// Show restore bar when reply is edited
+document.addEventListener('DOMContentLoaded', function() {
+  var sr = document.getElementById('suggestedReply');
+  if (sr) sr.addEventListener('input', function() {
+    if (originalReply && this.value !== originalReply) {
+      var bar = document.getElementById('restoreBar');
+      if (bar) bar.style.display = 'block';
+    }
+  });
+});
+
 // ── AUTO-GROW TEXTAREA ──
 function autoGrow(el) {
   el.style.height = 'auto';
@@ -8634,28 +8705,57 @@ function createRecognition(onResult, btnId) {
   return rec;
 }
 
+var talkMicActive = false;
 function toggleTalkVoice() {
+  var btn = document.getElementById('talkMicBtn');
+  if (talkMicActive) {
+    // Stop recording
+    if (talkRecognition) { try { talkRecognition.stop(); } catch(e) {} }
+    talkMicActive = false;
+    if (btn) { btn.textContent = '🎙️'; btn.style.background = 'rgba(255,255,255,0.08)'; btn.style.borderColor = 'rgba(255,255,255,0.15)'; }
+    return;
+  }
   if (!talkRecognition) {
     talkRecognition = createRecognition(function(text) {
+      talkMicActive = false;
+      var btn2 = document.getElementById('talkMicBtn');
+      if (btn2) { btn2.textContent = '🎙️'; btn2.style.background = 'rgba(255,255,255,0.08)'; btn2.style.borderColor = 'rgba(255,255,255,0.15)'; }
       var input = document.getElementById('talkInput');
       if (input) { input.value = text; sendTalkMsg(); }
     }, 'talkMicBtn');
   }
   if (!talkRecognition) return;
-  try { talkRecognition.start(); }
-  catch(e) { talkRecognition = null; toggleTalkVoice(); }
+  try {
+    talkRecognition.start();
+    talkMicActive = true;
+    if (btn) { btn.textContent = '⏹️'; btn.style.background = 'rgba(255,0,0,0.2)'; btn.style.borderColor = 'red'; }
+  } catch(e) { talkRecognition = null; talkMicActive = false; toggleTalkVoice(); }
 }
 
+var chatMicActive = false;
 function toggleChatVoice() {
+  var btn = document.getElementById('chatMicBtn');
+  if (chatMicActive) {
+    if (chatRecognition) { try { chatRecognition.stop(); } catch(e) {} }
+    chatMicActive = false;
+    if (btn) { btn.textContent = '🎙️'; btn.style.background = 'rgba(255,255,255,0.08)'; btn.style.borderColor = 'rgba(255,255,255,0.15)'; }
+    return;
+  }
   if (!chatRecognition) {
     chatRecognition = createRecognition(function(text) {
+      chatMicActive = false;
+      var btn2 = document.getElementById('chatMicBtn');
+      if (btn2) { btn2.textContent = '🎙️'; btn2.style.background = 'rgba(255,255,255,0.08)'; btn2.style.borderColor = 'rgba(255,255,255,0.15)'; }
       var input = document.getElementById('chatInput');
       if (input) { input.value = text; sendChatMsg(); }
     }, 'chatMicBtn');
   }
   if (!chatRecognition) return;
-  try { chatRecognition.start(); }
-  catch(e) { chatRecognition = null; toggleChatVoice(); }
+  try {
+    chatRecognition.start();
+    chatMicActive = true;
+    if (btn) { btn.textContent = '⏹️'; btn.style.background = 'rgba(255,0,0,0.2)'; btn.style.borderColor = 'red'; }
+  } catch(e) { chatRecognition = null; chatMicActive = false; toggleChatVoice(); }
 }
 
 // ── UPDATE REPLY FROM CHAT ──
@@ -8746,9 +8846,10 @@ var talkHistory = [];
 
 function openTalkGuardian() {
   go('sTalkGuardian');
-  if (talkHistory.length === 0) {
-    initTalkGuardian();
-  }
+  setTimeout(function(){
+    if (talkHistory.length === 0) { initTalkGuardian(); }
+    window.scrollTo({top:0,behavior:'instant'});
+  }, 50);
 }
 
 function initTalkGuardian() {
@@ -9185,6 +9286,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
