@@ -1275,34 +1275,42 @@ p, .body-text { font-size: 16px !important; }
   </div>
 
   <!-- Messages -->
-  <div id="chatMessages" style="padding:14px 16px;min-height:80px;height:260px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
+  <div id="chatMessages" style="padding:14px 16px;min-height:80px;height:220px;max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
 
   <!-- Mic button only -->
   <div id="chatSuggestions" style="display:none;"></div>
 
   <!-- Input area — always open -->
   <div id="chatInputArea" style="display:block;border-top:1px solid rgba(255,255,255,0.05);">
-    <div style="padding:10px 16px 6px;">
-      <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:9px;background:rgba(196,154,60,0.08);border:1px solid rgba(196,154,60,0.25);border-radius:10px;color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
-      <button onclick="saveExchangeToDiary()" style="width:100%;padding:9px;margin-top:6px;background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.25);border-radius:10px;color:#81c784;font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;touch-action:manipulation;">📓 Take this to My Diary →</button>
+
+    <!-- Utility links — small and subtle -->
+    <div style="display:flex;gap:12px;padding:8px 16px 4px;justify-content:flex-end;">
+      <button onclick="updateReplyFromChat()" id="updateReplyBtn" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;touch-action:manipulation;">↑ Update reply</button>
+      <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;padding:0;touch-action:manipulation;">📓 Save to Diary</button>
     </div>
 
+    <!-- Input row -->
     <div style="padding:6px 16px 16px;display:flex;gap:8px;align-items:flex-end;">
-      <textarea id="chatInput" rows="4"
-        placeholder="Type your question here — tap ➤ to send..."
-        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.7;transition:border-color 0.2s;min-height:96px;"
+      <textarea id="chatInput" rows="3"
+        placeholder="Type your question — tap ➤ to send..."
+        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.6;transition:border-color 0.2s;min-height:110px;"
         onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
         onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
         onkeydown=""></textarea>
-      <label title="Attach document, photo or PDF" style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;"></label>
-      <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
-        style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">🎙️</button>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <label title="Attach document, photo or PDF" style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;"></label>
+        <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
+          style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;touch-action:manipulation;">🎙️</button>
+      </div>
       <button onclick="sendChatMsg()"
-        style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
+        style="width:48px;height:48px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
     </div>
+
   </div>
 
 </div>
+
+
 
 <!-- CONFIRMED -->
 <div class="step" id="sConfirmed">
@@ -5175,7 +5183,7 @@ function checkTrial(){
   var paid = false;
   try { paid = localStorage.getItem('gPaid')==='true'; } catch(e){}
   if(paid) return true;
-  if(checks>=50){ go('sPaywall'); return false; }
+  if(checks >= 500){ go('sPaywall'); return false; }
   return true;
 }
 
