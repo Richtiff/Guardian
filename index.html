@@ -34,7 +34,7 @@
   --text-label: 13px;
 }
 html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; overflow-y:auto; -webkit-overflow-scrolling:touch; -webkit-font-smoothing:antialiased; }
-.app { max-width:480px; margin:0 auto; padding:0 16px 200px; }
+.app { max-width:480px; margin:0 auto; padding:0 16px 160px; }
 .header { display:flex; align-items:center; justify-content:space-between; padding:18px 0 14px; border-bottom:1px solid var(--border); margin-bottom:24px; }
 .logo { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; }
 .logo span { color:var(--gold); }
@@ -1286,20 +1286,20 @@ p, .body-text { font-size: 16px !important; }
   </div>
 
   <!-- Input — fixed to bottom of screen -->
-  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:8px 16px 12px;z-index:50;display:flex;gap:8px;align-items:flex-end;">
+  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:6px 12px 8px;z-index:50;display:flex;gap:6px;align-items:flex-end;">
     <textarea id="chatInput" rows="3"
       placeholder="Ask Guardian anything about this reply..."
-      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.6;min-height:90px;-webkit-appearance:none;"
+      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:60px;max-height:120px;overflow-y:auto;-webkit-appearance:none;"
       onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
       onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
       onkeydown=""></textarea>
     <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-      <label style="width:46px;height:46px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <label style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
         <span style="font-size:20px;">📎</span><input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
       </label>
-      <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:46px;height:46px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
+      <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
     </div>
-    <button onclick="sendChatMsg()" style="width:50px;height:50px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
+    <button onclick="sendChatMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
   </div>
 
 </div>
@@ -2290,10 +2290,10 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
-<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:130px;right:16px;z-index:100;width:44px;height:44px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
-<button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:80px;right:16px;z-index:100;width:44px;height:44px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
+<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
+<button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:108px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
 <div class="toast" id="toast"></div>
-<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.06);padding:8px 16px;text-align:center;pointer-events:none;"><p style="font-size:11px;color:var(--muted);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
 
 <script>
@@ -8742,7 +8742,15 @@ async function uploadDocToChat(event) {
         unload();
         addChatMessage('user', '📎 ' + file.name + ' uploaded');
         chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
-        var loadingEl = addChatMessage('guardian', '...');
+          // Show loading as plain text — not a bubble
+  var loadingEl = document.createElement('div');
+  loadingEl.id = 'chatLoadingIndicator';
+  loadingEl.style.cssText = 'padding:8px 16px;font-size:13px;color:var(--muted);font-style:italic;';
+  loadingEl.textContent = 'Guardian is thinking...';
+  var msgsEl = document.getElementById('chatMessages');
+  if (msgsEl) { msgsEl.appendChild(loadingEl); msgsEl.scrollTop = msgsEl.scrollHeight; }
+  // Safety timeout
+  var safetyTimer = setTimeout(function(){ if(loadingEl && loadingEl.textContent === 'Guardian is thinking...') { loadingEl.textContent = 'Something went wrong — try asking again'; } }, 30000);
         generateChatResponse('I have just read this document. Explain what it means in plain English — what it says, what it requires, any deadlines, and what I need to flag for my case.', loadingEl);
       }).catch(function(){ unload(); toast('Could not read Word doc — try saving as PDF first'); });
       return;
@@ -9346,7 +9354,13 @@ function sendChatMsg() {
   if (!msg) return;
   input.value = '';
   addChatMessage('user', msg);
-  var loadingEl = addChatMessage('guardian', '...');
+  // Loading as plain italic text — no bubble
+  var loadingEl = document.createElement('div');
+  loadingEl.className = 'chat-loading-plain';
+  loadingEl.style.cssText = 'padding:8px 16px;font-size:13px;color:var(--muted);font-style:italic;';
+  loadingEl.textContent = 'Guardian is thinking...';
+  var _cMsg = document.getElementById('chatMessages');
+  if (_cMsg) { _cMsg.appendChild(loadingEl); }
   generateChatResponse(msg, loadingEl);
 }
 
