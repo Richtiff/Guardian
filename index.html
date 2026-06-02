@@ -258,8 +258,8 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .fb-btn.up-sel { border-color:var(--green); background:var(--green-dim); }
 .fb-btn.dn-sel { border-color:var(--red); background:var(--red-dim); }
 .fb-thanks { font-size:12px; color:var(--muted-hi); text-align:center; padding:10px; display:none; }
-.chat-bubble-guardian { background:rgba(212,168,67,0.07); border:1px solid rgba(212,168,67,0.15); border-radius:4px 20px 20px 20px; padding:16px 18px; font-size:16px; line-height:1.75; color:var(--white); max-width:95%; font-family:'DM Sans',sans-serif; font-weight:400; }
-.chat-bubble-user { background:rgba(52,120,212,0.15); border:1px solid rgba(52,120,212,0.25); border-radius:20px 4px 20px 20px; padding:16px 18px; font-size:16px; line-height:1.75; color:var(--white); max-width:95%; align-self:flex-end; font-family:'DM Sans',sans-serif; }
+.chat-bubble-guardian { font-size:16px; color:var(--white); line-height:1.8; padding:4px 0 16px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.chat-bubble-user { background:rgba(255,255,255,0.07); border-radius:16px 4px 16px 16px; padding:12px 16px; font-size:15px; color:var(--white); line-height:1.6; align-self:flex-end; max-width:85%; }
 .chat-typing { background:rgba(212,168,67,0.07); border:1px solid rgba(212,168,67,0.15); border-radius:4px 18px 18px 18px; padding:13px 16px; max-width:70px; }
 .chat-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--gold); opacity:0.6; animation:chatPulse 1.2s infinite; margin:0 2px; }
 .chat-dot:nth-child(2){animation-delay:0.2s;} .chat-dot:nth-child(3){animation-delay:0.4s;}
@@ -1226,7 +1226,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
       <div class="coach-body">
         <div id="noReplyBanner" style="display:none;"></div>
-        <div class="breathe" id="breatheDiv">Take a breath before you decide.</div>
+        <div class="breathe" id="breatheDiv" style="font-size:13px;color:var(--muted);text-align:center;padding:8px 0;font-style:normal;"><span id="breatheText">Take a breath — </span><span id="breatheTimer" style="color:var(--gold);font-weight:700;">15s</span> <span id="breatheReason">before you send. Rushed replies can be used against you.</span></div>
         <div id="restoreBar" style="display:none;padding:4px 0 6px;">
         <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;">↩ Restore original reply</button>
       </div>
@@ -1281,7 +1281,7 @@ p, .body-text { font-size: 16px !important; }
   <!-- Utility links -->
   <div style="display:flex;gap:16px;padding:4px 16px 8px;justify-content:flex-end;">
     <button onclick="updateReplyFromChat()" id="updateReplyBtn" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">↑ Update reply</button>
-    <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">📓 Save to Diary</button>
+    <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">📓 Diary</button>
   </div>
 
   <!-- Input — fixed to bottom of screen -->
@@ -2289,8 +2289,8 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
-<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
-<button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:108px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
+<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:200px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
+<button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
 <div class="toast" id="toast"></div>
 <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
@@ -5266,7 +5266,8 @@ async function askQ() {
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
-    unload();
+    // Don't unload — keep overlay showing, update text for next stage
+    load('Building your reply...', 'Almost ready');
     if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
     else{ unload(); toast('Could not read — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
@@ -5406,6 +5407,8 @@ async function _gen(ctx) {
       var _rt = replyText || '(No reply needed)'; storeOriginalReply(_rt); document.getElementById('suggestedReply').value = _rt;
       // Save last message so refresh can resume
       try { var _exp = Date.now() + (3*24*60*60*1000); localStorage.setItem('lastMsg', JSON.stringify({msg:st.msg||'',exp:_exp})); } catch(e) {}
+      // Start breath timer
+      startBreathTimer();
       document.getElementById('replyWhy').textContent = p.why||'';
       // Hide/show reply UI based on whether reply is needed
       var replyCard = document.getElementById('replyCard');
@@ -5478,7 +5481,10 @@ async function refine(type){
 }
 
 function confirmReply(){
-  var editedReply = document.getElementById('suggestedReply'); if (editedReply) st.reply = editedReply.value || st.reply;
+  var editedReply = document.getElementById('suggestedReply');
+  var replyText = editedReply ? editedReply.value.trim() : '';
+  if (!replyText) { toast('No reply to use — something went wrong, please go back and try again'); return; }
+  st.reply = replyText;
   document.getElementById('confirmedReply').textContent=st.reply;
   document.getElementById('editIn').value=st.reply;
   if(timingInt) clearInterval(timingInt);
@@ -8674,6 +8680,30 @@ function toggleScreenshotSection(val) {
   ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
 }
 
+// ── BREATH TIMER ──
+var _breatheTimer = null;
+function startBreathTimer() {
+  clearInterval(_breatheTimer);
+  var secs = 15;
+  var timerEl = document.getElementById('breatheTimer');
+  var textEl = document.getElementById('breatheText');
+  var reasonEl = document.getElementById('breatheReason');
+  var useBtn = document.querySelector('.refine-use');
+  // Disable Use This during countdown
+  if (useBtn) { useBtn.style.opacity = '0.4'; useBtn.style.pointerEvents = 'none'; }
+  _breatheTimer = setInterval(function() {
+    secs--;
+    if (timerEl) timerEl.textContent = secs + 's';
+    if (secs <= 0) {
+      clearInterval(_breatheTimer);
+      if (timerEl) timerEl.textContent = '';
+      if (textEl) textEl.textContent = '';
+      if (reasonEl) reasonEl.textContent = 'Ready. Review your reply before sending.';
+      if (useBtn) { useBtn.style.opacity = '1'; useBtn.style.pointerEvents = 'auto'; }
+    }
+  }, 1000);
+}
+
 // ── SCROLL TO REPLY ──
 function scrollToReply() {
   window.scrollTo({top:0, behavior:'smooth'});
@@ -9312,7 +9342,11 @@ function addChatMessage(role, text) {
   div.className = role === 'guardian' ? 'chat-bubble-guardian' : 'chat-bubble-user';
   div.style.display = role === 'user' ? 'flex' : 'block';
   div.style.alignSelf = role === 'user' ? 'flex-end' : 'flex-start';
-  div.textContent = text;
+  if (role === 'guardian') {
+    div.innerHTML = '<span style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;display:block;margin-bottom:6px;">🛡 GUARDIAN</span>' + (text||'').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  } else {
+    div.textContent = text;
+  }
   el.appendChild(div);
   el.scrollTop = el.scrollHeight;
   return div;
