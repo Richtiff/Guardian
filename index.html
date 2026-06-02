@@ -874,7 +874,7 @@ p, .body-text { font-size: 16px !important; }
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">GET HELP</div>
   <div id="continueBar" style="display:none;margin:0 0 12px;background:rgba(196,154,60,0.1);border:1.5px solid rgba(196,154,60,0.3);border-radius:14px;padding:14px 16px;cursor:pointer;" onclick="continueLast()">
     <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:4px;">CONTINUE WHERE YOU LEFT OFF</div>
-    <div id="continuePreview" style="font-size:13px;color:var(--white);line-height:1.5;margin-top:4px;opacity:0.85;"></div>
+    <div id="continuePreview" style="font-size:13px;color:var(--white);line-height:1.5;margin-top:4px;opacity:0.85;max-height:60px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;"></div>
     <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">Tap to regenerate reply →</div>
   </div>
   <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
@@ -1211,7 +1211,7 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <!-- REPLY -->
-<div class="step" id="sReply">
+<div class="step" id="sReply" style="display:none;flex-direction:column;min-height:100vh;">
   <div class="their-bubble" id="msgBubble"><div class="their-label" id="msgBubbleLabel">Their message</div><div class="their-text" id="rTheirText"></div></div>
   <div id="nuclearWarn" style="display:none;">
     <div class="nuclear-card">
@@ -1280,8 +1280,8 @@ p, .body-text { font-size: 16px !important; }
   <!-- Mic button only -->
   <div id="chatSuggestions" style="display:none;"></div>
 
-  <!-- Input area — always open -->
-  <div id="chatInputArea" style="display:block;border-top:1px solid rgba(255,255,255,0.05);">
+  <!-- Input area — sticky at bottom -->
+  <div id="chatInputArea" style="display:block;border-top:1px solid rgba(255,255,255,0.05);position:sticky;bottom:36px;background:var(--bg);z-index:10;">
 
     <!-- Utility links — small and subtle -->
     <div style="display:flex;gap:12px;padding:8px 16px 4px;justify-content:flex-end;">
@@ -2296,6 +2296,7 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
+<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:80px;right:16px;z-index:100;width:44px;height:44px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;">↑</button>
 <div class="toast" id="toast"></div>
 <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.06);padding:8px 16px;text-align:center;pointer-events:none;"><p style="font-size:11px;color:var(--muted);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
@@ -2701,6 +2702,8 @@ function getCTX() {
 }
 
 window.onload = function() { (async function() {
+  // Dismiss all intros permanently if already seen
+  try { if(localStorage.getItem('allIntrosSeen')) { var si=document.getElementById('sectionIntro'); if(si) si.classList.remove('show'); } } catch(e) {}
   // Safety — always hide overlay on load
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('overlay').style.display = 'none';
@@ -2891,6 +2894,11 @@ function closeIntro() {
 }
 
 function closeIntroSkip() {
+  // Permanently dismiss all intros
+  try { localStorage.setItem('allIntrosSeen','1'); } catch(e) {}
+  var el = document.getElementById('sectionIntro'); if(el) el.classList.remove('show');
+  if (introPendingScreen) navigateToSection(introPendingScreen);
+  return;
   var title = document.getElementById('introTitle').textContent;
   var introData = getIntroData();
   Object.keys(introData).forEach(function(k){ if(introData[k].title===title){ introSeen[k]=true; } });
@@ -8644,6 +8652,25 @@ function toggleScreenshotSection(val) {
   if (!ss) return;
   ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
 }
+
+// ── SCROLL TO REPLY ──
+function scrollToReply() {
+  var el = document.getElementById('rTheirText') || document.getElementById('sReply');
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Show/hide scroll up button based on scroll position
+window.addEventListener('scroll', function() {
+  var btn = document.getElementById('scrollToReplyBtn');
+  if (!btn) return;
+  var activeStep = document.querySelector('.step.active');
+  if (activeStep && activeStep.id === 'sReply') {
+    btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+  } else {
+    btn.style.display = 'none';
+  }
+});
 
 // ── CONTINUE LAST MESSAGE ──
 function continueLast() {
