@@ -477,6 +477,7 @@ p, .body-text { font-size: 16px !important; }
 .supporting-text, .hint-text, small { font-size: 14px !important; }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
 <div id="appLoader" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;">
@@ -1033,7 +1034,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div id="inPanel" style="display:none;">
     <!-- PASTE FIRST — primary action -->
-    <div class="type-panel" style="margin-bottom:12px;">
+    <div class="type-panel" style="margin-bottom:12px;min-height:160px;">
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
@@ -1269,18 +1270,15 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-size:14px;font-weight:800;color:var(--white);font-family:DM Sans,sans-serif;">Guardian</div>
       <div style="font-size:11px;color:var(--gold);">Ask me anything about this reply</div>
     </div>
-    <button id="chatSpeakBtn" onclick="toggleGuardianVoice('chatSpeakBtn')" style="display:flex;align-items:center;gap:6px;padding:6px 12px;height:36px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.2);border-radius:20px;color:var(--white);font-size:13px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;" title="Tap to hear Guardian speak">🔇 Voice off</button>
+    
     <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;">Clear</button>
   </div>
 
   <!-- Messages -->
-  <div id="chatMessages" style="padding:14px 16px;min-height:60px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
+  <div id="chatMessages" style="padding:14px 16px;min-height:80px;height:260px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
 
-  <!-- Suggestions + mic -->
-  <div style="padding:0 16px 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-    <div id="chatSuggestions" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;"></div>
-    <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">🎙️</button>
-  </div>
+  <!-- Mic button only -->
+  <div id="chatSuggestions" style="display:none;"></div>
 
   <!-- Input area — always open -->
   <div id="chatInputArea" style="display:block;border-top:1px solid rgba(255,255,255,0.05);">
@@ -1288,13 +1286,15 @@ p, .body-text { font-size: 16px !important; }
       <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:9px;background:rgba(196,154,60,0.08);border:1px solid rgba(196,154,60,0.25);border-radius:10px;color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
       <button onclick="saveExchangeToDiary()" style="width:100%;padding:9px;margin-top:6px;background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.25);border-radius:10px;color:#81c784;font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;touch-action:manipulation;">📓 Take this to My Diary →</button>
     </div>
+
     <div style="padding:6px 16px 16px;display:flex;gap:8px;align-items:flex-end;">
-      <textarea id="chatInput" rows="2"
-        placeholder="Type or speak your question..."
-        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:11px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.2s;"
+      <textarea id="chatInput" rows="4"
+        placeholder="Type your question here — tap ➤ to send..."
+        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.7;transition:border-color 0.2s;min-height:96px;"
         onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
         onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
+        onkeydown=""></textarea>
+      <label title="Attach document, photo or PDF" style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;"></label>
       <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak"
         style="width:44px;height:44px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">🎙️</button>
       <button onclick="sendChatMsg()"
@@ -2288,7 +2288,7 @@ p, .body-text { font-size: 16px !important; }
 
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <div class="toast" id="toast"></div>
-<button id="voiceStopBtn" onclick="stopGuardianVoice()" style="display:none;position:fixed;bottom:90px;right:20px;z-index:999;width:56px;height:56px;background:linear-gradient(135deg,#e53935,#b71c1c);border:none;border-radius:50%;color:white;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(229,57,53,0.5);align-items:center;justify-content:center;">⏹️</button>
+
 
 <script>
 const API = '/api/anthropic';
@@ -3255,7 +3255,7 @@ function handleBundleInSetup(event) {
       if (result) { result.style.display='block'; result.style.color='var(--red)'; result.innerHTML='❌ Something went wrong. The file may be too large. Try uploading individual documents from Case File after setup.'; }
     }
   };
-  reader.readAsDataURL(file);
+  if (isWord) { reader.readAsArrayBuffer(file); } else { reader.readAsDataURL(file); }
 }
 
 function handleDocMultiple(event, docType) {
@@ -8627,14 +8627,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── HIDE SCREENSHOT SECTION WHEN TEXT IS PASTED ──
-var _toggleSSTimer = null;
 function toggleScreenshotSection(val) {
-  clearTimeout(_toggleSSTimer);
-  _toggleSSTimer = setTimeout(function() {
-    var ss = document.getElementById('screenshotSection');
-    if (!ss) return;
-    ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
-  }, 300);
+  var ss = document.getElementById('screenshotSection');
+  if (!ss) return;
+  ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
 }
 
 // ── CONTINUE LAST MESSAGE ──
@@ -8666,6 +8662,121 @@ function continueLast() {
 function autoGrow(el) {
   el.style.height = 'auto';
   el.style.height = (el.scrollHeight) + 'px';
+}
+
+// ── DOC UPLOAD TO CHAT ──
+async function uploadDocToChat(event) {
+  var file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  var mediaType = file.type || '';
+  var isImage = mediaType.startsWith('image/');
+  var isPDF = mediaType === 'application/pdf' || file.name.endsWith('.pdf');
+
+  var isWord = mediaType.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx');
+  var isText = mediaType === 'text/plain' || file.name.endsWith('.txt');
+  var isGdoc = file.name.endsWith('.gdoc') || file.name.endsWith('.gsheet');
+  if (isGdoc) { toast('Google Docs: File → Download → PDF, then upload the PDF'); return; }
+  if (!isImage && !isPDF && !isWord && !isText) {
+    toast('Supported: photos, PDFs, Word docs. Google Docs: export as PDF first.');
+    return;
+  }
+
+  load('Reading document...', 'Give me a moment');
+  var reader = new FileReader();
+  reader.onerror = function() { unload(); toast('Could not open file — try a different format'); };
+  reader.onload = async function(e) {
+    var b64 = e.target.result.split(',')[1];
+    if (!b64 || b64.length < 100) { unload(); toast('File too small to read'); return; }
+    // Word doc via mammoth
+    if (isWord) {
+      if (typeof mammoth === 'undefined') { unload(); toast('Loading Word support — try again in a moment'); return; }
+      var arrayBuffer = e.target.result;
+      mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function(result) {
+        var text = result.value.trim();
+        if (!text) { unload(); toast('Could not read Word doc — try saving as PDF first'); return; }
+        unload();
+        addChatMessage('user', '📎 ' + file.name + ' uploaded');
+        chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
+        var loadingEl = addChatMessage('guardian', '...');
+        generateChatResponse('I have just read this document. Explain what it means in plain English — what it says, what it requires, any deadlines, and what I need to flag for my case.', loadingEl);
+      }).catch(function(){ unload(); toast('Could not read Word doc — try saving as PDF first'); });
+      return;
+    }
+    if (isText) {
+      var text = atob(b64);
+      unload();
+      addChatMessage('user', '📎 ' + file.name + ' uploaded');
+      chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
+      var loadingEl = addChatMessage('guardian', '...');
+      generateChatResponse('I have just read this document. Explain what it means in plain English.', loadingEl);
+      return;
+    }
+    try {
+      var content;
+      if (isImage) {
+        // Compress image first
+        var img = new Image();
+        img.onload = async function() {
+          try {
+            var canvas = document.createElement('canvas');
+            var scale = Math.min(1080/img.width, 1);
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            var compressed = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
+            await sendDocToChat(compressed, 'image/jpeg', file.name);
+          } catch(err) {
+            await sendDocToChat(b64, mediaType, file.name);
+          }
+        };
+        img.onerror = async function() { await sendDocToChat(b64, mediaType, file.name); };
+        img.src = e.target.result;
+        return;
+      } else if (isPDF) {
+        await sendDocToChat(b64, 'application/pdf', file.name);
+      }
+    } catch(err) {
+      unload();
+      toast('Could not read document — try pasting the text instead');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function sendDocToChat(b64, mediaType, fileName) {
+  try {
+    var isImage = mediaType.startsWith('image/');
+    var isPDF = mediaType === 'application/pdf';
+    var content;
+    if (isImage) {
+      content = [
+        {type:'image', source:{type:'base64', media_type:mediaType, data:b64}},
+        {type:'text', text:'Read all the text in this document or letter. Extract everything written on it.'}
+      ];
+    } else if (isPDF) {
+      content = [
+        {type:'document', source:{type:'base64', media_type:'application/pdf', data:b64}},
+        {type:'text', text:'Read this document and extract the key content.'}
+      ];
+    }
+    var res = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:1500, messages:[{role:'user', content:content}]})
+    });
+    unload();
+    if (!res.ok) { toast('Could not read document (' + res.status + ') — try pasting text instead'); return; }
+    var data = await res.json();
+    var extracted = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    if (!extracted || extracted.length < 10) { toast('Could not extract text — try a clearer image'); return; }
+    addChatMessage('user', '📎 ' + fileName + ' uploaded');
+    chatContext += '\n\nUPLOADED DOCUMENT (' + fileName + '):\n' + extracted.substring(0, 3000);
+    var loadingEl = addChatMessage('guardian', '...');
+    generateChatResponse('I have just read this document. Explain what it means in plain English — what it says, what it requires me to do, any deadlines, and anything I need to flag for my case.', loadingEl);
+  } catch(err) {
+    unload();
+    toast('Could not read document — try pasting the text instead');
+  }
 }
 
 // ── GUARDIAN VOICE INPUT ──
@@ -8793,9 +8904,23 @@ function saveExchangeToDiary() {
     }));
   } catch(e) {}
 
-  // Navigate to diary
-  toast('📓 Opening diary — your exchange is pre-loaded');
-  setTimeout(function(){ showSection('sDiary', 'diary'); }, 600);
+  // Navigate to diary immediately
+  go('sDiary');
+  toast('📓 Exchange saved — add your notes below');
+  // Pre-fill after screen loads
+  setTimeout(function() {
+    try {
+      var prefill = sessionStorage.getItem('diaryPrefill');
+      if (prefill) {
+        var pdata = JSON.parse(prefill);
+        sessionStorage.removeItem('diaryPrefill');
+        var tEl = document.getElementById('diaryEntryTitle');
+        var cEl = document.getElementById('diaryEntryContent');
+        if (tEl) tEl.value = pdata.title || '';
+        if (cEl) { cEl.value = pdata.content || ''; autoGrow(cEl); }
+      }
+    } catch(e) {}
+  }, 400);
 }
 
 // ── UPDATE REPLY FROM CHAT ──
@@ -8855,6 +8980,7 @@ function stopGuardianVoice() {
 }
 
 function guardianSpeak(text) {
+  return; // Voice output disabled — mic input only
   if (!guardianVoiceOn) return;
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -9085,9 +9211,22 @@ function openGuardianChat() {
   var sugs = document.getElementById('chatSuggestions');
   if (sugs) {
     var questions = ['Why does this reply work?', 'Is she building a pattern?', 'What do I log tonight?', 'What will she do next?'];
-    sugs.innerHTML = questions.map(function(q) {
-      return '<button class="chat-suggestion-btn" onclick="useChatSuggestion(\''+q.replace(/'/g, "\'")+'\')">'+q+'</button>';
-    }).join('');
+  var chipsDiv = document.createElement('div');
+  chipsDiv.id = 'chatChips';
+  chipsDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 8px;';
+  questions.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'chat-suggestion-btn';
+    btn.textContent = q;
+    btn.style.cssText = 'touch-action:manipulation;';
+    btn.onclick = function() {
+      var c = document.getElementById('chatChips'); if(c) c.remove();
+      useChatSuggestion(q);
+    };
+    chipsDiv.appendChild(btn);
+  });
+  var msgEl2 = document.getElementById('chatMessages');
+  if (msgEl2) { msgEl2.appendChild(chipsDiv); msgEl2.scrollTop = msgEl2.scrollHeight; }
   }
 }
 
@@ -9111,7 +9250,7 @@ function addChatMessage(role, text) {
 }
 
 async function generateChatResponse(userMsg, loadingEl) {
-  var sysPr = 'You are Guardian. You have the exact message and reply in your context below — when asked about this reply, this message, or why something works, answer specifically about those. You know this case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nIf the user pastes a letter, order, or document — read it carefully and explain it in plain English. Tell them what it means, what they need to do, and what the deadline is if there is one.\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
+  var sysPr = 'You are Guardian — a knowledgeable friend who has been through family court. You know this case in detail.\n\nWhen the user shares context (like what happened 5 weeks ago, a pattern they have noticed, something the other parent said) — engage with it directly. That context is gold. Tell them what it means strategically and what to do with it.\n\nAlways be specific. Never generic.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nIf the user pastes a letter, order, or document — read it carefully and explain it in plain English. Tell them what it means, what they need to do, and what the deadline is if there is one.\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
   
   // Always rebuild context — read message from DOM if st.msg is empty
   var reply2 = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || '') : '';
