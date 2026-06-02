@@ -111,7 +111,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .cb-fill { height:100%; border-radius:3px; }
 .cb-val { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; }
 .home-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-.home-btn { padding:20px 14px; border-radius:16px; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; transition:all 0.18s; }
+.home-btn { padding:20px 14px; border-radius:16px; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; transition:all 0.18s;  touch-action:manipulation; }
 .home-btn-gold { background:linear-gradient(135deg,#c9a030,var(--gold)); color:#0a0800; }
 .home-btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,200,66,0.3); }
 .home-btn-card { background:var(--card); border:1.5px solid var(--border) !important; color:var(--muted-hi); }
@@ -322,7 +322,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .type-header { padding:11px 14px; border-bottom:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:var(--amber); }
 .type-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 14px; resize:none; outline:none; min-height:90px; }
 .type-textarea::placeholder { color:var(--muted); }
-.type-confirm { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+.type-confirm { touch-action:manipulation; width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
 .out-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
 .out-header { padding:14px 16px; border-bottom:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:700; color:var(--blue); }
 .out-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 16px; resize:none; outline:none; min-height:90px; }
@@ -454,7 +454,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .reminder-banner-title { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:800; color:var(--gold); margin-bottom:4px; }
 .reminder-banner-body { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:10px; }
 .reminder-banner-btns { display:flex; gap:8px; }
-.toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(120px); background:#1e2d45; border:1.5px solid rgba(212,168,67,0.4); color:var(--white); padding:16px 24px; border-radius:14px; font-size:16px; font-weight:600; z-index:9999; transition:transform 0.25s ease; max-width:85vw; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.4); white-space:nowrap; }
+.toast { position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(120px); background:#1e2d45; border:1.5px solid rgba(212,168,67,0.4); color:var(--white); padding:14px 20px; border-radius:14px; font-size:14px; font-weight:600; z-index:9999; transition:transform 0.25s ease; max-width:80vw; width:max-content; max-width:min(80vw,340px); text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.4); word-wrap:break-word; white-space:normal; white-space:nowrap; }
 .toast.show { transform:translateX(-50%) translateY(0); }
 .overlay { position:fixed; inset:0; background:rgba(8,13,20,0.88); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:100; pointer-events:none; }
 .overlay.show { display:flex; pointer-events:all; }
@@ -1037,7 +1037,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
-      <button class="type-confirm" onclick="confirmType()" ontouchend="event.preventDefault();confirmType();" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
+      <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
     <div id="screenshotSection">
@@ -1276,18 +1276,17 @@ p, .body-text { font-size: 16px !important; }
   <!-- Messages -->
   <div id="chatMessages" style="padding:14px 16px;min-height:60px;max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;"></div>
 
-  <!-- Suggestions -->
-  <div id="chatSuggestions" style="padding:0 16px 10px;display:flex;gap:8px;flex-wrap:wrap;"></div>
-
-  <!-- Expand prompt — shown until user taps -->
-  <div id="chatExpandPrompt" style="padding:6px 16px 12px;text-align:center;cursor:pointer;border-top:1px solid rgba(255,255,255,0.04);" onclick="expandGuardianChat()">
-    <span style="font-size:13px;color:var(--gold);font-weight:600;">Tap to ask a question ↓</span>
+  <!-- Suggestions + mic -->
+  <div style="padding:0 16px 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <div id="chatSuggestions" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;"></div>
+    <button id="chatMicBtn" onclick="toggleChatVoice()" title="Tap to speak" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">🎙️</button>
   </div>
 
-  <!-- Input area — hidden until expanded -->
-  <div id="chatInputArea" style="display:none;border-top:1px solid rgba(255,255,255,0.05);">
+  <!-- Input area — always open -->
+  <div id="chatInputArea" style="display:block;border-top:1px solid rgba(255,255,255,0.05);">
     <div style="padding:10px 16px 6px;">
       <button id="updateReplyBtn" onclick="updateReplyFromChat()" style="width:100%;padding:9px;background:rgba(196,154,60,0.08);border:1px solid rgba(196,154,60,0.25);border-radius:10px;color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">↑ Update reply with this context</button>
+      <button onclick="saveExchangeToDiary()" style="width:100%;padding:9px;margin-top:6px;background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.25);border-radius:10px;color:#81c784;font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;touch-action:manipulation;">📓 Take this to My Diary →</button>
     </div>
     <div style="padding:6px 16px 16px;display:flex;gap:8px;align-items:flex-end;">
       <textarea id="chatInput" rows="2"
@@ -2289,6 +2288,7 @@ p, .body-text { font-size: 16px !important; }
 
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <div class="toast" id="toast"></div>
+<button id="voiceStopBtn" onclick="stopGuardianVoice()" style="display:none;position:fixed;bottom:90px;right:20px;z-index:999;width:56px;height:56px;background:linear-gradient(135deg,#e53935,#b71c1c);border:none;border-radius:50%;color:white;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(229,57,53,0.5);align-items:center;justify-content:center;">⏹️</button>
 
 <script>
 const API = '/api/anthropic';
@@ -2890,7 +2890,29 @@ function closeIntroSkip() {
 
 function navigateToSection(screen) {
   introPendingScreen = null;
-  if (screen === 'qa') { goQA(); } else { go(screen); }
+  if (screen === 'qa') { goQA(); }
+  else {
+    go(screen);
+    // Check for diary pre-fill
+    if (screen === 'sDiary') {
+      setTimeout(function() {
+        try {
+          var prefill = sessionStorage.getItem('diaryPrefill');
+          if (prefill) {
+            var data = JSON.parse(prefill);
+            sessionStorage.removeItem('diaryPrefill');
+            var titleEl = document.getElementById('diaryEntryTitle');
+            var contentEl = document.getElementById('diaryEntryContent');
+            if (titleEl) titleEl.value = data.title || '';
+            if (contentEl) { contentEl.value = data.content || ''; autoGrow(contentEl); }
+            var newBtn = document.getElementById('diaryNewBtn') || document.querySelector('#sDiary .btn-primary');
+            if (newBtn) newBtn.click();
+            toast('\uD83D\uDCCB Exchange pre-loaded — add your notes and save');
+          }
+        } catch(e) {}
+      }, 500);
+    }
+  }
 }
 
 
@@ -4176,7 +4198,7 @@ function showHome() {
   st = {}; currentMsg = ''; currentThread = '';
   // Show continue banner if last message saved
   try {
-    var lastMsg = sessionStorage.getItem('lastMsg');
+    var _lm = null; try { var _lmr = localStorage.getItem('lastMsg'); if(_lmr){ var _lmo=JSON.parse(_lmr); _lm = (_lmo.exp > Date.now()) ? _lmo.msg : null; if(!_lm) localStorage.removeItem('lastMsg'); } } catch(e){} var lastMsg = _lm;
     var continueBar = document.getElementById('continueBar');
     var continuePreview = document.getElementById('continuePreview');
     if (lastMsg && lastMsg.length > 5 && continueBar && continuePreview) {
@@ -5341,7 +5363,7 @@ async function _gen(ctx) {
       var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply needed') !== -1 || replyText.toLowerCase().indexOf('silence is the stronger') !== -1;
       var _rt = replyText || '(No reply needed)'; storeOriginalReply(_rt); document.getElementById('suggestedReply').value = _rt;
       // Save last message so refresh can resume
-      try { sessionStorage.setItem('lastMsg', st.msg||''); sessionStorage.setItem('lastReply', _rt); } catch(e) {}
+      try { var _exp = Date.now() + (3*24*60*60*1000); localStorage.setItem('lastMsg', JSON.stringify({msg:st.msg||'',exp:_exp})); } catch(e) {}
       document.getElementById('replyWhy').textContent = p.why||'';
       // Hide/show reply UI based on whether reply is needed
       var replyCard = document.getElementById('replyCard');
@@ -5362,10 +5384,9 @@ async function _gen(ctx) {
           if (redHitsS.length > 0) rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
         }
         setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
-        // Scroll to top of reply — user reads from top not bottom
-        setTimeout(function(){ var el = document.getElementById('sReply'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); window.scrollTo({top:0,behavior:'smooth'}); }, 300);
-        // Auto-populate chat context and chips after reply
-        setTimeout(function(){ openGuardianChat(); }, 1200);
+        // Stay where we are — user scrolls naturally
+        // Auto-populate chat context and chips after reply — delay so scoring finishes first
+        setTimeout(function(){ openGuardianChat(); }, 3000);
       }
       // Smart document router
       showDocRouter(currentMsg||'', p);
@@ -8731,6 +8752,52 @@ function toggleChatVoice() {
   } catch(e) { chatRecognition = null; chatMicActive = false; toggleChatVoice(); }
 }
 
+// ── TAKE EXCHANGE TO DIARY ──
+function saveExchangeToDiary() {
+  var theirMsg = document.getElementById('rTheirText') ? document.getElementById('rTheirText').textContent.trim() : (st.msg || currentMsg || '');
+  var ourReply = document.getElementById('suggestedReply') ? document.getElementById('suggestedReply').value.trim() : '';
+
+  if (!theirMsg || theirMsg.length < 5) {
+    toast('No message to save — check a message first');
+    return;
+  }
+
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  var timeStr = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+
+  // Build pre-filled diary content — no internal flags, no Guardian metadata
+  var diaryText = dateStr + ' at ' + timeStr + '\n\n'
+    + 'MESSAGE RECEIVED:\n' + theirMsg + '\n\n'
+    + 'MY REPLY:\n' + (ourReply || '(not yet sent)') + '\n\n'
+    + 'NOTES:\n';
+
+  // Add Guardian analysis if any — stripped of scoring language
+  var analysis = chatHistory
+    .filter(function(m){ return m.role === 'assistant'; })
+    .map(function(m){ return m.content; })
+    .join('\n\n');
+  if (analysis) {
+    diaryText += analysis + '\n\n';
+  }
+
+  diaryText += 'SCREENSHOTS: Upload screenshots of the full conversation below.\n'
+    + '\n⚠️ Always save the complete thread — never partial messages.';
+
+  // Store pre-fill in sessionStorage for diary to pick up
+  try {
+    sessionStorage.setItem('diaryPrefill', JSON.stringify({
+      date: now.toISOString(),
+      title: 'Message — ' + dateStr,
+      content: diaryText
+    }));
+  } catch(e) {}
+
+  // Navigate to diary
+  toast('📓 Opening diary — your exchange is pre-loaded');
+  setTimeout(function(){ showSection('sDiary', 'diary'); }, 600);
+}
+
 // ── UPDATE REPLY FROM CHAT ──
 async function updateReplyFromChat() {
   var replyEl = document.getElementById('suggestedReply');
@@ -8781,6 +8848,12 @@ async function updateReplyFromChat() {
 var guardianVoiceOn = false;
 var currentUtterance = null;
 
+function stopGuardianVoice() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  var btn = document.getElementById('voiceStopBtn');
+  if (btn) btn.style.display = 'none';
+}
+
 function guardianSpeak(text) {
   if (!guardianVoiceOn) return;
   if (!window.speechSynthesis) return;
@@ -8796,6 +8869,11 @@ function guardianSpeak(text) {
       || voices.find(function(v){ return v.lang==='en-GB'; })
       || voices.find(function(v){ return v.lang.startsWith('en'); });
     if (preferred) utt.voice = preferred;
+    // Show floating stop button while speaking
+    var stopBtn = document.getElementById('voiceStopBtn');
+    if (stopBtn) stopBtn.style.display = 'flex';
+    utt.onend = function() { if (stopBtn) stopBtn.style.display = 'none'; };
+    utt.onerror = function() { if (stopBtn) stopBtn.style.display = 'none'; };
     currentUtterance = utt;
     window.speechSynthesis.speak(utt);
   }
@@ -8963,42 +9041,33 @@ function confirmClearChat() {
 }
 
 function expandGuardianChat() {
-  var inputArea = document.getElementById('chatInputArea');
-  var prompt = document.getElementById('chatExpandPrompt');
-  var msgs = document.getElementById('chatMessages');
-  if (inputArea) inputArea.style.display = 'block';
-  if (prompt) prompt.style.display = 'none';
-  if (msgs) msgs.style.maxHeight = '400px';
-  // Focus input
+  // Input always open now — just focus
   var inp = document.getElementById('chatInput');
   if (inp) inp.focus();
 }
 
 function clearGuardianChat() {
   chatHistory = [];
+  chatContext = '';
   var el = document.getElementById('chatMessages');
   if (el) el.innerHTML = '';
-  var sugEl = document.getElementById('chatSuggestions');
-  if (sugEl) sugEl.style.display = 'flex';
+  // Regenerate opening message
+  setTimeout(function(){ openGuardianChat(); }, 200);
 }
 
 function openGuardianChat() {
   var chatEl = document.getElementById('guardianChat');
   if (!chatEl) return;
   chatEl.style.display = 'block';
-  // Reset to collapsed state
-  var inputArea = document.getElementById('chatInputArea');
-  var prompt = document.getElementById('chatExpandPrompt');
-  var msgs = document.getElementById('chatMessages');
-  if (inputArea) inputArea.style.display = 'none';
-  if (prompt) prompt.style.display = 'block';
-  if (msgs) msgs.style.maxHeight = '220px';
+  // Don't scroll — user stays on the reply
   chatHistory = [];
   // Build context for chat
-  var reply = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || document.getElementById('suggestedReply').textContent || '') : '';
+  var reply = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || '') : '';
+  var msgDom = document.getElementById('rTheirText') ? document.getElementById('rTheirText').textContent.trim() : '';
+  var msgForChat = st.msg || currentMsg || msgDom || '';
   var scoreEl = document.getElementById('replyScoreDisplay');
   var score = scoreEl ? scoreEl.textContent : '';
-  chatContext = getCTX() + '\n\nMESSAGE THEY SENT:\n' + (st.msg||'') + '\n\nREPLY GUARDIAN GENERATED:\n' + reply + '\n\nFLAG: ' + (st.flag||'') + ' — ' + (st.flagText||'') + '\n\nSCORE: ' + score;
+  chatContext = getCTX() + '\n\nMESSAGE THEY SENT:\n' + msgForChat + '\n\nREPLY GUARDIAN GENERATED:\n' + reply + '\n\nFLAG: ' + (st.flag||'') + (st.flagText?' — '+st.flagText:'') + '\n\nSCORE: ' + score + '\n\nReference this specific message and reply in every answer.';
   // Auto-generate opening message
   addChatMessage('guardian', '...');
   // Show typing indicator
@@ -9042,12 +9111,16 @@ function addChatMessage(role, text) {
 }
 
 async function generateChatResponse(userMsg, loadingEl) {
-  var sysPr = 'You are Guardian — built by a parent who spent three years in family court. You know family court law in England and Wales in depth AND you know this person\'s specific case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nIf the user pastes a letter, order, or document — read it carefully and explain it in plain English. Tell them what it means, what they need to do, and what the deadline is if there is one.\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
+  var sysPr = 'You are Guardian. You have the exact message and reply in your context below — when asked about this reply, this message, or why something works, answer specifically about those. You know this case in detail.\n\nYou can answer legal questions (what is a DRA, welfare checklist, section 7, prohibited steps orders, enforcement orders) AND strategic questions (how to reply, what to document, what to expect at hearings, how to build evidence).\n\nIf the user pastes a letter, order, or document — read it carefully and explain it in plain English. Tell them what it means, what they need to do, and what the deadline is if there is one.\n\nTalk like a sharp friend who has been through it — direct, natural, no waffle.\n\nRules:\n- Never repeat words or phrases you just used\n- Never start two sentences the same way\n- No legal jargon. No hedging. No "certainly" or "absolutely" or "of course"\n- Be specific to this case — use names, dates, facts\n- 3-4 sentences usually enough. More only when needed\n- End with one concrete thing to do, if relevant\n- When they push back, engage with what they actually said\n- If they paste a message, analyse it: what is she building, what does it mean, what should they do\n\n' + chatContext;
   
-  // Rebuild context if empty (e.g. after refresh)
-  if (!chatContext) {
-    var reply2 = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || '') : '';
-    chatContext = getCTX() + '\n\nMESSAGE THEY SENT:\n' + (st.msg||currentMsg||'') + '\n\nREPLY GUARDIAN GENERATED:\n' + reply2;
+  // Always rebuild context — read message from DOM if st.msg is empty
+  var reply2 = document.getElementById('suggestedReply') ? (document.getElementById('suggestedReply').value || '') : '';
+  var msgFromDom = '';
+  var rTheirEl = document.getElementById('rTheirText');
+  if (rTheirEl && rTheirEl.textContent && rTheirEl.textContent.trim().length > 3) msgFromDom = rTheirEl.textContent.trim();
+  var msgForCtx = st.msg || currentMsg || msgFromDom || '';
+  if (msgForCtx || reply2) {
+    chatContext = getCTX() + '\n\nMESSAGE THEY SENT (the message at the top of the screen):\n' + msgForCtx + '\n\nREPLY GUARDIAN SUGGESTED:\n' + reply2 + '\n\nFLAG: ' + (st.flag||'') + (st.flagText ? ' — ' + st.flagText : '') + '\n\nYou know this exact message and reply. Reference them specifically when asked.';
   }
   chatHistory.push({ role: 'user', content: userMsg });
   
