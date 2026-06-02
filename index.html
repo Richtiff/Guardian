@@ -1050,7 +1050,14 @@ p, .body-text { font-size: 16px !important; }
     </div>
     </div><!-- end screenshotSection -->
   </div>
-  <div id="outPanel" style="display:none;">
+  <div <div id="outPanel" style="display:none;">
+    <div style="background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT DO YOU WANT TO SAY?</div>
+      <textarea class="out-textarea" id="outIn" rows="3" placeholder="Type what you are thinking of sending..." oninput="autoGrow(this)" style="width:100%;min-height:80px;overflow:hidden;resize:none;background:transparent;border:none;outline:none;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;line-height:1.6;"></textarea>
+    </div>
+    <button type="button" class="type-confirm" onclick="checkOut()" style="touch-action:manipulation;">Check before I send →</button>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">Guardian will check your tone, flag anything that could be used against you, and suggest a cleaner version if needed.</div>
+  </div>id="outPanel" style="display:none;">
     <div class="out-card">
       <div class="out-header">WHAT DO YOU WANT TO SAY?</div>
       <textarea class="out-textarea" id="outIn" rows="3" placeholder="Type what you are thinking of sending..." oninput="autoGrow(this)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
@@ -1230,7 +1237,7 @@ p, .body-text { font-size: 16px !important; }
         <div id="restoreBar" style="display:none;padding:4px 0 6px;">
         <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;">↩ Restore original reply</button>
       </div>
-      <textarea class="suggested" id="suggestedReply" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
+      <textarea class="suggested" id="suggestedReply" onclick="oneTouchCopy(this)" title="Tap to copy" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
         <div class="reply-why" id="replyWhy"></div>
       </div>
@@ -1313,7 +1320,8 @@ p, .body-text { font-size: 16px !important; }
     <div class="confirmed-reply" id="confirmedReply"></div>
     <div id="confirmScoreDisplay" style="display:none;"></div>
     <button type="button" onclick="scoreReply(document.getElementById('confirmedReply').textContent, 'confirmScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Score before I send &#8594;</button>
-    <button type="button" class="btn-green" onclick="copyReply()" style="margin-bottom:10px;">Copy &amp; send</button>
+    <button type="button" onclick="copyReply()" style="width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:17px;font-weight:800;cursor:pointer;margin-bottom:8px;touch-action:manipulation;font-family:'DM Sans',sans-serif;">📋 Copy reply</button>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px;">Open WhatsApp · long-press in text box · Paste</div>
     <div class="timing-card" id="timingCard">
       <div class="timing-top"><span class="timing-headline" id="timingHL"></span><span class="timing-countdown" id="timingCD"></span></div>
       <div class="timing-reason" id="timingReason"></div>
@@ -5505,6 +5513,22 @@ function confirmReply(){
   } else { tc.style.display='none'; }
   setTimeout(function(){document.getElementById('sentCard').style.display='block';},1500);
   go('sConfirmed');
+}
+
+function oneTouchCopy(el) {
+  var text = el.value;
+  if (!text) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      toast('✅ Copied — open WhatsApp and paste');
+      el.style.borderColor = 'rgba(76,175,80,0.6)';
+      setTimeout(function(){ el.style.borderColor = ''; }, 2000);
+    });
+  } else {
+    el.select();
+    document.execCommand('copy');
+    toast('✅ Copied — open WhatsApp and paste');
+  }
 }
 
 function copyReply(){
