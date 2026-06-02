@@ -861,7 +861,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="home-name" id="homeName">Guardian</div>
     <button onclick="showVideoModal('sHome',false)" style="font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;">&#9654; How it works</button>
   </div>
-  <div class="home-status" id="homeStatus">Your case is loaded</div>
+  <div class="home-status" id="homeStatus">Guardian is ready</div>
   <div class="conflict-bar-row" id="conflictRow">
     <div class="cb-label">Conflict level</div>
     <div class="cb-bar"><div class="cb-fill" id="cbFill"></div></div>
@@ -1226,7 +1226,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
       <div class="coach-body">
         <div id="noReplyBanner" style="display:none;"></div>
-        <div class="breathe" id="breatheDiv" style="font-size:13px;color:var(--muted);text-align:center;padding:8px 0;font-style:normal;"><span id="breatheText">Take a breath — </span><span id="breatheTimer" style="color:var(--gold);font-weight:700;">15s</span> <span id="breatheReason">before you send. Rushed replies can be used against you.</span></div>
+        <div class="breathe" id="breatheDiv" style="font-size:14px;color:var(--muted);text-align:center;padding:10px 0 6px;font-style:normal;line-height:1.6;"><span id="breatheText">Take a breath — </span><span id="breatheTimer" style="color:var(--gold);font-weight:800;font-size:18px;">15s</span> <span id="breatheReason">before you send. Rushed replies can be used against you.</span></div>
         <div id="restoreBar" style="display:none;padding:4px 0 6px;">
         <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;">↩ Restore original reply</button>
       </div>
@@ -1288,7 +1288,7 @@ p, .body-text { font-size: 16px !important; }
   <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:6px 12px 8px;z-index:50;display:flex;gap:6px;align-items:flex-end;">
     <textarea id="chatInput" rows="3"
       placeholder="Ask Guardian anything about this reply..."
-      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:60px;max-height:120px;overflow-y:auto;-webkit-appearance:none;"
+      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:48px;max-height:100px;overflow-y:auto;-webkit-appearance:none;"
       onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
       onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
       onkeydown=""></textarea>
@@ -5283,7 +5283,7 @@ function doQuestion(p) {
   var fb=document.getElementById('flagBanner');
   if(st.flag&&st.flagText){
     var cls=st.flag==='red'?'flag-red':st.flag==='amber'?'flag-amber':'flag-green';
-    var labels={red:{icon:'🔴',lbl:'Serious allegation — reply carefully'},amber:{icon:'🟡',lbl:'Loaded message — stay factual'},green:{icon:'🟢',lbl:'Routine message — keep it brief'}};
+    var labels={red:{icon:'🔴',lbl:'This needs care — Guardian has your back'},amber:{icon:'🟡',lbl:'Loaded message — stay calm and factual'},green:{icon:'🟢',lbl:'Routine — keep it brief and warm'}};
     var fl=labels[st.flag]||labels.green;
     fb.innerHTML='<div class="flag-card '+cls+'"><span class="flag-icon">'+fl.icon+'</span><div class="flag-body"><div class="flag-title">'+fl.lbl+'</div><div class="flag-desc">'+st.flagText+'</div></div></div>';
   } else { fb.innerHTML=''; }
@@ -8680,28 +8680,136 @@ function toggleScreenshotSection(val) {
   ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
 }
 
+// ── DYNAMIC SUGGESTION CHIPS ──
+function generateChips(msg, flag, flagText) {
+  msg = (msg || '').toLowerCase();
+  flag = flag || 'green';
+
+  // Always include this as first chip
+  var chips = ['Why does this reply work?'];
+
+  // Flag-specific chips
+  if (flag === 'red') {
+    chips.push('What exactly makes this serious?');
+    chips.push('What should I NOT say?');
+    chips.push('Should I reply at all?');
+    return chips.slice(0,4);
+  }
+  if (flag === 'amber') {
+    chips.push('What is she actually trying to do here?');
+    chips.push('Am I reading too much into this?');
+  }
+
+  // Content-specific chips
+  if (msg.match(/nap|sleep|routine|bedtime/)) {
+    chips.push('Is this routine change significant?');
+    chips.push('What do I log about this?');
+  } else if (msg.match(/contact|collect|pickup|handover|drop/)) {
+    chips.push('Do I need to confirm this in writing?');
+    chips.push('What if the time changes?');
+  } else if (msg.match(/school|nursery|childminder|teacher/)) {
+    chips.push('Do I have a right to this information?');
+    chips.push('What should I follow up on?');
+  } else if (msg.match(/doctor|hospital|ill|sick|appointment|medical/)) {
+    chips.push('What are my rights here?');
+    chips.push('What do I need to document?');
+  } else if (msg.match(/holiday|trip|abroad|passport|travel/)) {
+    chips.push('What do I need to agree in writing?');
+    chips.push('What are my legal rights here?');
+  } else if (msg.match(/money|pay|cost|expense|maintenance/)) {
+    chips.push('How should I handle financial requests?');
+    chips.push('What do I need to keep a record of?');
+  } else {
+    // Generic fallback chips
+    chips.push('What do I need to remember from this?');
+    chips.push('Am I handling this well?');
+  }
+
+  // Always useful if not already full
+  if (chips.length < 4) chips.push('What would a judge think of this exchange?');
+
+  return chips.slice(0, 4);
+}
+
 // ── BREATH TIMER ──
 var _breatheTimer = null;
 function startBreathTimer() {
   clearInterval(_breatheTimer);
-  var secs = 15;
+  var flag = st.flag || 'green';
+  var config = {
+    red: {
+      secs: null, // No countdown — advice only
+      msg: "You've already done the hard part — Guardian has your reply ready. The strongest thing you can do now is wait. Solicitors advise not responding to allegations the same day. Come back tomorrow with fresh eyes.",
+      label: "🛡️ Guardian has your back",
+      canOverride: true
+    },
+    amber: {
+      secs: 3600, // 1 hour
+      msg: "Take a break before you send — your reply is ready when you are. A short pause often catches things a first read misses. Step away, come back clearer.",
+      label: "🟡 Wait an hour",
+      canOverride: true
+    },
+    green: {
+      secs: 30,
+      msg: "Your reply looks good. Just a quick read-through before you send.",
+      label: "✅ Nearly ready",
+      canOverride: false
+    }
+  };
+  var c = config[flag] || config.green;
   var timerEl = document.getElementById('breatheTimer');
   var textEl = document.getElementById('breatheText');
   var reasonEl = document.getElementById('breatheReason');
   var useBtn = document.querySelector('.refine-use');
-  // Disable Use This during countdown
+  if (reasonEl) reasonEl.textContent = c.msg;
+  if (textEl) textEl.textContent = c.label + ' ';
+  // Red flag — no countdown, just advice. Show override option.
+  if (!c.secs) {
+    if (timerEl) timerEl.textContent = '';
+    if (useBtn) { useBtn.style.opacity = '0.4'; useBtn.style.pointerEvents = 'none'; }
+    // After 5 seconds show override option
+    setTimeout(function() {
+      if (timerEl) {
+        timerEl.innerHTML = '<br><span onclick="overrideTimer()" style="font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer;">I understand the risk — send anyway</span>';
+      }
+    }, 5000);
+    return;
+  }
+  // Amber/green — show countdown
   if (useBtn) { useBtn.style.opacity = '0.4'; useBtn.style.pointerEvents = 'none'; }
-  _breatheTimer = setInterval(function() {
-    secs--;
-    if (timerEl) timerEl.textContent = secs + 's';
+  var secs = c.secs;
+  function tick() {
     if (secs <= 0) {
       clearInterval(_breatheTimer);
       if (timerEl) timerEl.textContent = '';
       if (textEl) textEl.textContent = '';
-      if (reasonEl) reasonEl.textContent = 'Ready. Review your reply before sending.';
+      if (reasonEl) reasonEl.textContent = 'Ready — review your reply before sending.';
       if (useBtn) { useBtn.style.opacity = '1'; useBtn.style.pointerEvents = 'auto'; }
+      return;
     }
-  }, 1000);
+    var h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
+    var display = h > 0 ? h+'h '+m+'m' : m > 0 ? m+'m '+s+'s' : s+'s';
+    if (timerEl) timerEl.textContent = display;
+    // After 30s on amber, show override
+    if (c.canOverride && secs === (c.secs - 30)) {
+      if (timerEl) timerEl.innerHTML = timerEl.textContent + ' <span onclick="overrideTimer()" style="font-size:11px;color:var(--muted);text-decoration:underline;cursor:pointer;">send anyway</span>';
+    }
+    secs--;
+  }
+  tick();
+  _breatheTimer = setInterval(tick, 1000);
+}
+
+function overrideTimer() {
+  clearInterval(_breatheTimer);
+  var timerEl = document.getElementById('breatheTimer');
+  var textEl = document.getElementById('breatheText');
+  var reasonEl = document.getElementById('breatheReason');
+  var useBtn = document.querySelector('.refine-use');
+  if (timerEl) timerEl.textContent = '';
+  if (textEl) textEl.textContent = '';
+  if (reasonEl) reasonEl.textContent = 'Sending early — pause for one breath and ask: does this reply help William?';
+  if (useBtn) { useBtn.style.opacity = '1'; useBtn.style.pointerEvents = 'auto'; }
 }
 
 // ── SCROLL TO REPLY ──
@@ -8777,6 +8885,24 @@ async function uploadDocToChat(event) {
   var reader = new FileReader();
   reader.onerror = function() { unload(); toast('Could not open file — try a different format'); };
   reader.onload = async function(e) {
+    // Word docs come as ArrayBuffer — handle before any string operations
+    if (isWord) {
+      if (typeof mammoth === 'undefined') { unload(); toast('Loading Word support — try again in a moment'); return; }
+      mammoth.extractRawText({arrayBuffer: e.target.result}).then(function(result) {
+        var text = result.value.trim();
+        if (!text) { unload(); toast('Could not read Word doc — try saving as PDF first'); return; }
+        unload();
+        addChatMessage('user', '\uD83D\uDCCE ' + file.name + ' uploaded');
+        chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
+        var loadEl = document.createElement('div');
+        loadEl.style.cssText = 'padding:8px 16px;font-size:13px;color:var(--muted);font-style:italic;';
+        loadEl.textContent = 'Guardian is thinking...';
+        var msgsEl = document.getElementById('chatMessages');
+        if (msgsEl) msgsEl.appendChild(loadEl);
+        generateChatResponse('I have just read this document. Explain in plain English what it means, what it requires, any deadlines, and anything I need to flag for my case.', loadEl);
+      }).catch(function(){ unload(); toast('Could not read Word doc — try saving as PDF first'); });
+      return;
+    }
     var b64 = e.target.result.split(',')[1];
     if (!b64 || b64.length < 100) { unload(); toast('File too small to read'); return; }
     // Word doc via mammoth
@@ -9309,7 +9435,8 @@ function openGuardianChat() {
   // Show suggestion buttons
   var sugs = document.getElementById('chatSuggestions');
   if (sugs) {
-    var questions = ['Why does this reply work?', 'Is she building a pattern?', 'What do I log tonight?', 'What will she do next?'];
+    // Generate chips dynamically based on message content and flag
+    var questions = generateChips(msgForChat, st.flag, st.flagText);
   var chipsDiv = document.createElement('div');
   chipsDiv.id = 'chatChips';
   chipsDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 8px;';
