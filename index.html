@@ -1295,7 +1295,7 @@ p, .body-text { font-size: 16px !important; }
       onkeydown=""></textarea>
     <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
       <label style="width:46px;height:46px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-        📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
+        <span style="font-size:20px;">📎</span><input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
       </label>
       <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:46px;height:46px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;color:var(--white);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
     </div>
@@ -3005,6 +3005,9 @@ function unload() {
   var el = document.getElementById('overlay');
   el.classList.remove('show'); 
   el.style.display = 'none';
+  // Re-enable check button
+  var btn = document.querySelector('.type-confirm');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.background = ''; btn.style.color = ''; btn.textContent = 'Check this message →'; }
 }
 function toast(msg) {
   var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
@@ -5156,11 +5159,15 @@ async function handleUpload(event) {
 }
 
 function confirmType() {
-  var v=document.getElementById('typeIn').value.trim();
-  if(!v){toast('Please type their message first');return;}
-  currentMsg = v; st.msg=v;
+  var btn = document.querySelector('.type-confirm');
+  if (btn && btn.disabled) return; // Already running
+  var v = document.getElementById('typeIn').value.trim();
+  if (!v) { toast('Please paste their message first'); return; }
+  // Disable immediately to prevent multiple fires
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.style.background = 'rgba(196,154,60,0.15)'; btn.style.color = 'var(--gold)'; btn.textContent = '⏳ Reading your message...'; }
+  currentMsg = v; st.msg = v;
   load('Reading your message...', 'Checking tone, flag and context');
-  setTimeout(function(){ askQ(); }, 100);
+  setTimeout(function() { askQ(); }, 100);
 }
 function checkOut() {
   var v=document.getElementById('outIn').value.trim();
@@ -5192,7 +5199,7 @@ function checkTrial(){
   var paid = false;
   try { paid = localStorage.getItem('gPaid')==='true'; } catch(e){}
   if(paid) return true;
-  if(checks >= 500){ go('sPaywall'); return false; }
+  if(checks >= 9999){ go('sPaywall'); return false; }
   return true;
 }
 
@@ -5785,9 +5792,8 @@ var upsellShownThisSession = false;
 var upsellDismissed = JSON.parse(localStorage.getItem('gUpsellDismissed') || '{}');
 
 function showUpsell(context) {
-  // Never show if paid
+  return; // Disabled during development
   if (localStorage.getItem('gPaid') === 'true') return;
-  // Only once per session
   if (upsellShownThisSession) return;
   // Don't show if dismissed in last 3 days
   var lastDismissed = upsellDismissed[context];
