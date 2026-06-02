@@ -34,7 +34,7 @@
   --text-label: 13px;
 }
 html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh; overflow-y:auto; -webkit-overflow-scrolling:touch; -webkit-font-smoothing:antialiased; }
-.app { max-width:480px; margin:0 auto; padding:0 16px 100px; }
+.app { max-width:480px; margin:0 auto; padding:0 16px 120px; }
 .header { display:flex; align-items:center; justify-content:space-between; padding:18px 0 14px; border-bottom:1px solid var(--border); margin-bottom:24px; }
 .logo { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; }
 .logo span { color:var(--gold); }
@@ -1312,6 +1312,7 @@ p, .body-text { font-size: 16px !important; }
 
 
 
+
 <!-- CONFIRMED -->
 <div class="step" id="sConfirmed">
   <div class="confirmed-card">
@@ -2296,6 +2297,7 @@ p, .body-text { font-size: 16px !important; }
 
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <div class="toast" id="toast"></div>
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.06);padding:8px 16px;text-align:center;pointer-events:none;"><p style="font-size:11px;color:var(--muted);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
 
 <script>
@@ -5105,9 +5107,11 @@ async function handleUpload(event) {
       if (p && p.theirMessages && p.theirMessages.length > 3) {
         currentMsg = p.theirMessages.trim();
         st.msg = p.theirMessages.trim();
-        document.getElementById('typeIn').value = p.theirMessages.trim();
-        toast('📸 Screenshot read successfully');
-        askQ();
+        var typeInEl = document.getElementById('typeIn');
+        if (typeInEl) { typeInEl.value = p.theirMessages.trim(); autoGrow(typeInEl); toggleScreenshotSection(p.theirMessages); }
+        toast('📸 Screenshot read — loading reply...');
+        // Brief pause so user can see the message before it submits
+        setTimeout(function() { askQ(); }, 1500);
       } else {
         toast('Could not read text from screenshot — please type the message instead');
       }
@@ -8644,26 +8648,24 @@ function toggleScreenshotSection(val) {
 // ── CONTINUE LAST MESSAGE ──
 function continueLast() {
   try {
-    var lastMsg = sessionStorage.getItem('lastMsg');
-    if (!lastMsg) return;
-    // Hide banner
+    // Read from localStorage with expiry
+    var lastMsg = null;
+    try {
+      var lmr = localStorage.getItem('lastMsg');
+      if (lmr) { var lmo = JSON.parse(lmr); lastMsg = (lmo.exp > Date.now()) ? lmo.msg : null; }
+    } catch(e) { lastMsg = sessionStorage.getItem('lastMsg'); }
+    if (!lastMsg || lastMsg.length < 3) { toast('No recent message found'); return; }
     var bar = document.getElementById('continueBar');
     if (bar) bar.style.display = 'none';
-    // Set message and go through flow
-    showSection('sCoach','coach');
+    go('sCoach');
     setTimeout(function() {
       var typeIn = document.getElementById('typeIn');
       var inPanel = document.getElementById('inPanel');
-      if (typeIn) typeIn.value = lastMsg;
+      if (typeIn) { typeIn.value = lastMsg; autoGrow(typeIn); toggleScreenshotSection(lastMsg); }
       if (inPanel) inPanel.style.display = 'block';
-      // Auto-confirm after short delay
-      setTimeout(function() {
-        var ta = document.getElementById('typeIn');
-        if (ta) { autoGrow(ta); toggleScreenshotSection(ta.value); }
-        confirmType();
-      }, 300);
-    }, 200);
-  } catch(e) {}
+      setTimeout(function() { confirmType(); }, 1500);
+    }, 300);
+  } catch(e) { toast('Could not restore last message'); }
 }
 
 // ── AUTO-GROW TEXTAREA ──
@@ -9519,6 +9521,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
