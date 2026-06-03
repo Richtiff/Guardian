@@ -5384,6 +5384,7 @@ async function askQ() {
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
     // Don't unload — keep overlay showing, update text for next stage
     load('Building your reply...', 'Almost ready');
+    toast('Step 1: Flag detected — ' + (p ? p.flag||'none' : 'null'));
     if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
     else{ unload(); toast('Could not read — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
@@ -5486,6 +5487,7 @@ async function genReply(){
 async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
 
 async function _gen(ctx) {
+  toast('Step 2: Generating reply...');
   load('Writing your reply...','Keeping it safe and human');
   var caseCtx=getCTX();
   var modeInstructions = {
@@ -5503,6 +5505,7 @@ async function _gen(ctx) {
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
     unload();
+    toast('Step 3: Reply ready — score ' + (p ? p.score : 'null'));
     if(p&&p.reply!==undefined){
       st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
       checks++; localStorage.setItem('gChecks',checks);
@@ -5576,8 +5579,9 @@ async function _gen(ctx) {
         document.getElementById('nuclearWarn').style.display='none';
         document.getElementById('replyContent').style.display='block';
       }
+      toast('Step 4: Navigating to reply screen');
       go('sReply');
-    } else { toast('Could not generate a reply — please try again'); }
+    } else { toast('Step 3 FAILED: Could not generate a reply — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
 
