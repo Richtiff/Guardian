@@ -1036,8 +1036,8 @@ p, .body-text { font-size: 16px !important; }
     <!-- PASTE FIRST — primary action -->
     <div class="type-panel" style="margin-bottom:12px;min-height:160px;">
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
-      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
-      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
+      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their message — or several messages if they sent a few quickly..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
+      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste their last message, or several messages if they came through quickly. Guardian will read them all.</div>
       <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
@@ -5484,7 +5484,7 @@ async function _gen(ctx) {
 
   var universalRules = "UNIVERSAL RULES THAT APPLY IN ALL MODES: 1) Always acknowledge any concern raised — never leave it unaddressed even if the message seems routine. 2) Always confirm receipt of any health, welfare or practical information. 3) Always state what action you are taking or will take. 4) Friendly messages can be traps — a co-parent building a paper trail of ignored concerns. Close every loop. 5) The reply must create a clear record that the parent engaged, noticed, and acted — without ever sounding like that is what it is doing.";
 
-  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
+  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message(s): "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
@@ -8346,7 +8346,7 @@ function getDocActions(docType, msgText) {
       { icon: '📁', label: 'Add to Case File', sub: 'So every feature knows about this', fn: "go('sDocs')" },
       { icon: '📅', label: 'Set Key Date', sub: hearingDate ? 'Hearing: ' + hearingDate : 'Track your deadline', fn: "goToKeyDatesPreFilled('" + (hearingDate||'') + "', 'DRA')" },
       { icon: '📝', label: 'Log in Contact Diary', sub: hearingDate ? 'Record hearing notice received — ' + hearingDate : 'Date-stamp this in your diary', fn: "goToDiaryPreFilled('message', '', 'Court hearing notice received. DRA hearing listed for " + (hearingDate||'date TBC') + ".')" },
-      { icon: '✍️', label: 'Start Position Statement', sub: 'Due 48 hours before the hearing', fn: "go('sStatement')" },
+      { icon: '✍️', label: 'Start Position Statement', sub: 'Due 48 hours before the hearing', fn: "go('sStatements')" },
       { icon: '🧠', label: 'Ask Court Guru about DRA', sub: 'What to expect and how to prepare', fn: "askCourtGuru('What should I know about a DRA hearing and how should I prepare?')" },
     ];
   } else if (docType === 'cafcass') {
@@ -8361,7 +8361,7 @@ function getDocActions(docType, msgText) {
       { icon: '📖', label: 'Read Their Statement', sub: 'Guardian reads it and tells you what to do', fn: "go('sReadTheirs')" },
       { icon: '📁', label: 'Add to Case File', sub: 'Store it for Statement Writer to read', fn: "go('sDocs')" },
       { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date their statement was received', fn: "goToDiaryPreFilled('message', '', 'Position statement received from other party.')" },
-      { icon: '✍️', label: 'Write Your Response', sub: 'Start your position statement', fn: "go('sStatement')" },
+      { icon: '✍️', label: 'Write Your Response', sub: 'Start your position statement', fn: "go('sStatements')" },
     ];
   } else if (docType === 'court_order') {
     actions = [
