@@ -1057,13 +1057,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
     <button type="button" onclick="checkOut()" style="width:100%;padding:16px;background:rgba(196,154,60,0.12);border:2px solid rgba(196,154,60,0.4);border-radius:14px;color:var(--gold);font-size:16px;font-weight:800;cursor:pointer;font-family:DM Sans,sans-serif;touch-action:manipulation;margin-top:4px;">Check before I send →</button>
     <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">Guardian will check your tone, flag anything that could be used against you, and suggest a cleaner version if needed.</div>
-  </div>id="outPanel" style="display:none;">
-    <div class="out-card">
-      <div class="out-header">WHAT DO YOU WANT TO SAY?</div>
-      <textarea class="out-textarea" id="outIn" rows="3" placeholder="Type what you are thinking of sending..." oninput="autoGrow(this)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
-      <button class="out-check" onclick="checkOut()">Check before I send →</button>
-    </div>
-  </div>
+  
 
   <!-- THREAD ANALYSIS -->
   <div id="threadPanel" style="display:none;">
@@ -1568,6 +1562,35 @@ p, .body-text { font-size: 16px !important; }
     </div>
     <div id="brainEvidenceStatus" style="display:none;margin-top:8px;font-size:12px;color:var(--green);text-align:center;"></div>
   </div>
+
+  <!-- WHAT'S BEEN SAID — memory tracker -->
+  <div style="margin-top:20px;">
+    <!-- Import from AI button -->
+  <button onclick="go('sImport')" style="width:100%;padding:14px;background:rgba(196,154,60,0.08);border:1.5px solid rgba(196,154,60,0.25);border-radius:14px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:16px;touch-action:manipulation;">📥 Import case from ChatGPT or another AI</button>
+
+  <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">WHAT'S BEEN SAID</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Log statements, promises, or positions taken by anyone in your case. Guardian will quietly flag when something changes.</div>
+
+    <!-- Add new statement -->
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <select id="saidByWho" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:14px;margin-bottom:10px;font-family:'DM Sans',sans-serif;">
+        <option value="">Who said it?</option>
+        <option value="other_parent">Other parent</option>
+        <option value="cafcass">Cafcass</option>
+        <option value="social_services">Social Services</option>
+        <option value="court">Court / Judge</option>
+        <option value="school">School / Nursery</option>
+        <option value="other">Someone else</option>
+      </select>
+      <textarea id="saidWhat" rows="2" placeholder="What was said or agreed..." style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;margin-bottom:10px;"></textarea>
+      <input type="text" id="saidContext" placeholder="Context — where, when, how (message / court / in person)" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;">
+      <button onclick="saveSaidStatement()" style="width:100%;padding:12px;background:rgba(196,154,60,0.12);border:1.5px solid rgba(196,154,60,0.3);border-radius:10px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;touch-action:manipulation;">Remember this</button>
+    </div>
+
+    <!-- Logged statements -->
+    <div id="saidStatements"></div>
+  </div>
+
 </div>
 
 <!-- DOCUMENT EXPLAINER -->
@@ -2299,6 +2322,44 @@ p, .body-text { font-size: 16px !important; }
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:200px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
 <button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
+
+<div class="step" id="sImport">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Import Your Case</div><div class="section-sub">Bring your context across from another AI</div></div>
+  </div>
+  <div style="background:rgba(196,154,60,0.08);border:1.5px solid rgba(196,154,60,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:13px;color:var(--white);line-height:1.7;">ChatGPT is a great starting point. But it does not know family court in England and Wales the way this does. It does not spot patterns across your messages or know what a judge will think when they read your reply.<br><br>This app was built by someone who spent many years as a litigant in person and won. Every feature exists because it was needed in a real case.<br><br><span style="color:var(--gold);font-weight:700;">Paste your conversation and we will bring everything useful across.</span></div>
+  </div>
+  <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHICH APP DID YOU USE?</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+    <button onclick="selectImportApp('chatgpt')" id="imp-chatgpt" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">🤖</div>ChatGPT</button>
+    <button onclick="selectImportApp('gemini')" id="imp-gemini" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">✨</div>Gemini</button>
+    <button onclick="selectImportApp('other')" id="imp-other" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">💬</div>Other AI</button>
+    <button onclick="selectImportApp('none')" id="imp-none" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">❌</div>Not used one</button>
+  </div>
+  <div id="importInstructions" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">HOW TO COPY YOUR CONVERSATION</div>
+    <div id="importSteps" style="font-size:14px;color:var(--white);line-height:1.9;"></div>
+  </div>
+  <div id="importPasteArea" style="display:none;">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">PASTE YOUR CONVERSATION HERE</div>
+    <textarea id="importPaste" rows="6" placeholder="Paste your conversation here — do not worry about how much text, Guardian will do the work..." style="width:100%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.6;min-height:140px;margin-bottom:12px;"></textarea>
+    <button onclick="processImport()" style="width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:16px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;touch-action:manipulation;">Extract my case facts</button>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px;">You will review everything before it saves. Nothing is automatic.</div>
+  </div>
+  <div id="importReview" style="display:none;">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">REVIEW WHAT GUARDIAN FOUND</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Read through carefully. Edit anything that does not look right before saving.</div>
+    <textarea id="importExtracted" rows="10" style="width:100%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.7;min-height:200px;margin-bottom:12px;"></textarea>
+    <button onclick="saveImport()" style="width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:16px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;touch-action:manipulation;">Save to Guardian Brain</button>
+    <button onclick="go('sBrain')" style="width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:14px;color:var(--muted);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Start again</button>
+  </div>
+  <div style="text-align:center;padding:20px 0 8px;">
+    <button onclick="goBack()" style="background:transparent;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;">Skip — I will build my case as I go</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
@@ -2830,7 +2891,7 @@ if (supabase) {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian','sImport'];
 
 var stepHistory = [];
 var navLock = false;
@@ -5898,6 +5959,7 @@ function checkSevenDayUpsell() {
 var brainLog = safeJSONParse(localStorage.getItem('gBrainLog'), []);
 
 function loadBrainScreen() {
+  renderSaidStatements();
   var fc = document.getElementById('brainFactCount');
   var facts = (brainLog||[]).filter(function(b){ return b.summary||b.text; });
   if (fc) fc.textContent = facts.length > 0 ? facts.length + ' facts extracted' : '';
@@ -8702,6 +8764,169 @@ function toggleScreenshotSection(val) {
   var ss = document.getElementById('screenshotSection');
   if (!ss) return;
   ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
+}
+
+// ── AI IMPORT ──
+var selectedImportApp = null;
+
+function selectImportApp(app) {
+  selectedImportApp = app;
+  // Highlight selected
+  ['chatgpt','gemini','other','none'].forEach(function(a) {
+    var btn = document.getElementById('imp-' + a);
+    if (btn) {
+      btn.style.background = a === app ? 'rgba(196,154,60,0.15)' : 'var(--card)';
+      btn.style.borderColor = a === app ? 'var(--gold)' : 'var(--border)';
+    }
+  });
+
+  if (app === 'none') {
+    document.getElementById('importInstructions').style.display = 'none';
+    document.getElementById('importPasteArea').style.display = 'none';
+    toast('No problem — Guardian will learn your case as you go');
+    return;
+  }
+
+  var instructions = {
+    chatgpt: '1. Open ChatGPT\n2. Find your case conversation\n3. Tap and hold on any message\n4. Choose Select All then Copy\n5. Come back here and paste below',
+    gemini: '1. Open Google Gemini\n2. Find your case conversation\n3. Press and hold, select all text\n4. Copy and paste below',
+    other: '1. Open your AI app\n2. Find your case conversation\n3. Select all the text (press and hold, Select All)\n4. Copy it\n5. Paste below\n\nDont worry about getting it perfect — Guardian will extract what matters.'
+  };
+
+  var stepsEl = document.getElementById('importSteps');
+  if (stepsEl) {
+    var instrLines = (instructions[app] || instructions.other); stepsEl.innerHTML = instrLines.replace(/\\n/g, '___NL___').split('___NL___').map(function(l){ return l.trim() ? '<div style="padding:2px 0;">' + l + '</div>' : ''; }).join('');
+  }
+
+  document.getElementById('importInstructions').style.display = 'block';
+  document.getElementById('importPasteArea').style.display = 'block';
+}
+
+async function processImport() {
+  var text = document.getElementById('importPaste').value.trim();
+  if (!text || text.length < 50) { toast('Please paste your conversation first'); return; }
+
+  load('Reading your conversation...', 'This may take a moment');
+
+  try {
+    var res = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        messages: [{
+          role: 'user',
+          content: 'You are extracting case facts from an AI conversation for a family court litigant in person in England and Wales. Extract ONLY relevant case facts. Return a structured summary max 1500 words: names, allegations, court history, communication patterns, important dates, concerns raised, what has and has not worked, current live issues. Do NOT include generic AI advice. Be concise and factual.' + ' Conversation: ' + text.substring(0, 30000)
+        }]
+      })
+    });
+
+    unload();
+
+    if (!res.ok) { toast('Could not process — please try again'); return; }
+    var data = await res.json();
+    var extracted = (data.content||[]).map(function(b){ return b.text||''; }).join('').trim();
+
+    if (!extracted || extracted.length < 50) { toast('Could not find case facts — try pasting more of the conversation'); return; }
+
+    document.getElementById('importExtracted').value = extracted;
+    document.getElementById('importPasteArea').style.display = 'none';
+    document.getElementById('importInstructions').style.display = 'none';
+    document.getElementById('importReview').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+
+  } catch(e) {
+    unload();
+    toast('Something went wrong — please try again');
+  }
+}
+
+function saveImport() {
+  var extracted = document.getElementById('importExtracted').value.trim();
+  if (!extracted) { toast('Nothing to save'); return; }
+
+  // Save to Guardian Brain as a special import entry
+  var brainFacts = getBrainFacts();
+  brainFacts.push('[IMPORTED CASE CONTEXT]\n' + extracted);
+  localStorage.setItem('brainFacts', JSON.stringify(brainFacts));
+
+  // Also store as dedicated import for getCTX
+  localStorage.setItem('importedCaseContext', extracted);
+
+  toast('✅ Case context saved to Guardian Brain');
+  setTimeout(function(){ go('sBrain'); }, 800);
+}
+
+// ── WHAT'S BEEN SAID — MEMORY TRACKER ──
+function saveSaidStatement() {
+  var who = document.getElementById('saidByWho').value;
+  var what = document.getElementById('saidWhat').value.trim();
+  var context = document.getElementById('saidContext').value.trim();
+  if (!who || !what) { toast('Please fill in who said it and what was said'); return; }
+
+  var statements = getSaidStatements();
+  var entry = {
+    id: Date.now(),
+    who: who,
+    what: what,
+    context: context,
+    date: new Date().toISOString(),
+    dateStr: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})
+  };
+  statements.unshift(entry);
+  localStorage.setItem('saidStatements', JSON.stringify(statements));
+
+  // Clear form
+  document.getElementById('saidByWho').value = '';
+  document.getElementById('saidWhat').value = '';
+  document.getElementById('saidContext').value = '';
+
+  // Also add to brain context
+  var brainFacts = getBrainFacts();
+  brainFacts.push('[STATEMENT ' + entry.dateStr + '] ' + whoLabel(who) + ' said: "' + what + '"' + (context ? ' (' + context + ')' : ''));
+  localStorage.setItem('brainFacts', JSON.stringify(brainFacts));
+
+  renderSaidStatements();
+  toast('Remembered — Guardian will flag if this changes');
+}
+
+function whoLabel(who) {
+  var labels = {other_parent:'Other parent', cafcass:'Cafcass', social_services:'Social Services', court:'Court', school:'School/Nursery', other:'Other party'};
+  return labels[who] || who;
+}
+
+function getSaidStatements() {
+  try { return JSON.parse(localStorage.getItem('saidStatements') || '[]'); } catch(e) { return []; }
+}
+
+function deleteSaidStatement(id) {
+  var statements = getSaidStatements().filter(function(s){ return s.id !== id; });
+  localStorage.setItem('saidStatements', JSON.stringify(statements));
+  renderSaidStatements();
+}
+
+function renderSaidStatements() {
+  var el = document.getElementById('saidStatements');
+  if (!el) return;
+  var statements = getSaidStatements();
+  if (statements.length === 0) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px 0;">Nothing logged yet.</div>';
+    return;
+  }
+  el.innerHTML = statements.map(function(s) {
+    return '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">' +
+        '<span style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.3px;">' + whoLabel(s.who).toUpperCase() + '</span>' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<span style="font-size:11px;color:var(--muted);">' + s.dateStr + '</span>' +
+          '<button onclick="deleteSaidStatement(' + s.id + ')" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;">✕</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:14px;color:var(--white);line-height:1.6;margin-bottom:' + (s.context ? '6px' : '0') + ';">"' + s.what + '"</div>' +
+      (s.context ? '<div style="font-size:12px;color:var(--muted);">' + s.context + '</div>' : '') +
+    '</div>';
+  }).join('');
 }
 
 // ── DYNAMIC SUGGESTION CHIPS ──
