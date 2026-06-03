@@ -1213,6 +1213,7 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- REPLY -->
 <div class="step" id="sReply">
+  <div id="flagBanner"></div>
   <div class="their-bubble" id="msgBubble"><div class="their-label" id="msgBubbleLabel">Their message</div><div class="their-text" id="rTheirText"></div></div>
   <div id="nuclearWarn" style="display:none;">
     <div class="nuclear-card">
@@ -1222,6 +1223,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="nuclear-row"><button type="button" class="nuclear-fix" onclick="fixReply()">Fix it for me</button><button type="button" class="nuclear-skip" onclick="showAnyway()">Show it anyway</button></div>
     </div>
   </div>
+  <div id="replyCard">
   <div id="replyContent" style="display:none;">
     <div class="coach-card">
       <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
@@ -1238,12 +1240,16 @@ p, .body-text { font-size: 16px !important; }
       <div class="tip-card" id="tipCard" style="cursor:pointer;" onclick="this.querySelector('#tipItems').style.display=this.querySelector('#tipItems').style.display==='none'?'block':'none'"><div class="tip-lbl">💡 What to do now <span style="font-size:10px;color:var(--muted);margin-left:6px;">tap to expand</span></div><div id="tipItems" style="display:none;"></div></div>
       <div class="refine-section">
         <div class="refine-lbl">How does this feel?</div>
-        <div class="refine-row">
+        </div><!-- end replyContent -->
+</div><!-- end replyCard -->
+  <div id="replySendSection">
+  <div class="refine-row">
           <button type="button" class="refine-btn" onclick="refine('formal')">Too formal</button>
           <button type="button" class="refine-btn" onclick="refine('harsh')">Too harsh</button>
           <button type="button" class="refine-btn" onclick="refine('different')">Say something different</button>
           <button type="button" class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
         </div>
+  </div><!-- end replySendSection -->
       <div id="docRouter" style="display:none;"></div>
       
       
@@ -2323,6 +2329,36 @@ p, .body-text { font-size: 16px !important; }
 <button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:200px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
 <button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
 
+<div class="step" id="sTalkGuardian">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div>
+      <div class="section-title">Ask Guardian</div>
+      <div class="section-sub">Messages, documents, hearings — ask me anything</div>
+    </div>
+  </div>
+
+  <!-- Messages area — scrollable -->
+  <div id="talkMessages" style="padding:0 0 16px;display:flex;flex-direction:column;gap:16px;min-height:200px;"></div>
+
+  <!-- Fixed input bar -->
+  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:8px 16px 12px;z-index:50;display:flex;gap:8px;align-items:flex-end;">
+    <textarea id="talkInput" rows="2"
+      placeholder="Ask anything about your case..."
+      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.6;min-height:52px;max-height:120px;overflow-y:auto;-webkit-appearance:none;"
+      onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
+      onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
+      onkeydown=""></textarea>
+    <label style="width:42px;height:42px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToTalk(event)" style="display:none;">
+    </label>
+    <button id="talkMicBtn" onclick="toggleTalkVoice()" style="width:42px;height:42px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;">🎙️</button>
+    <button onclick="sendTalkMsg()" style="width:46px;height:46px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
+  </div>
+
+  <!-- Spacer for fixed input -->
+  <div style="height:100px;"></div>
+</div>
 <div class="step" id="sImport">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
