@@ -2801,6 +2801,17 @@ function getCTX() {
 }
 
 window.onload = function() { (async function() {
+  // Safety net — if no active screen for 15s, go home
+  setInterval(function() {
+    var active = document.querySelector('.step.active');
+    var overlay = document.getElementById('overlay');
+    var overlayVisible = overlay && overlay.style.display !== 'none' && overlay.classList.contains('show');
+    if (!active && !overlayVisible) {
+      console.warn('No active screen — recovering to home');
+      var home = document.getElementById('sHome');
+      if (home) home.classList.add('active');
+    }
+  }, 15000);
   // Dismiss all intros permanently if already seen
   try { if(localStorage.getItem('allIntrosSeen')) { var si=document.getElementById('sectionIntro'); if(si) si.classList.remove('show'); } } catch(e) {}
   // Safety — always hide overlay on load
@@ -5380,7 +5391,7 @@ async function askQ() {
 
 function doQuestion(p) {
   if (!p) { go('sCoach'); toast('Could not read — please try again'); return; }
-  if (!p) { go('sCoach'); toast('Could not read that — please try again'); return; }
+  try {
   // Court/HMCTS document detection — skip reply flow entirely
   // Only show court guide for official document types, never for co-parent messages
   
@@ -5393,8 +5404,8 @@ function doQuestion(p) {
     fb.innerHTML='<div class="flag-card '+cls+'"><span class="flag-icon">'+fl.icon+'</span><div class="flag-body"><div class="flag-title">'+fl.lbl+'</div><div class="flag-desc">'+st.flagText+'</div></div></div>';
   } else { fb.innerHTML=''; }
   if(p&&p.question){
-    document.getElementById('qText').textContent=p.question;
-    var opts=document.getElementById('qOpts'); opts.innerHTML='';
+    if(document.getElementById('qText')) document.getElementById('qText').textContent=p.question;
+    var opts=document.getElementById('qOpts'); if(opts) opts.innerHTML='';
     (p.options||['Yes','No','Partly']).forEach(function(opt){
       var btn=document.createElement('button'); btn.className='q-opt'; btn.textContent=opt;
       btn.onclick=function(){
@@ -5435,6 +5446,7 @@ function doQuestion(p) {
   if (modeEl) modeEl.classList.add('active');
   load('Generating your reply...', 'Reading the message carefully');
   genReplyDirect();
+  } catch(e) { unload(); go('sCoach'); toast('Something went wrong — please try again'); }
 }
 
 function toggleVoice(){
