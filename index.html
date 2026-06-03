@@ -2938,6 +2938,31 @@ if (supabase) {
   });
 }
 
+// GLOBAL ERROR HANDLER — shows any crash on screen
+window.onerror = function(msg, src, line, col, err) {
+  var errDiv = document.getElementById('globalError');
+  if (!errDiv) {
+    errDiv = document.createElement('div');
+    errDiv.id = 'globalError';
+    errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b71c1c;color:white;padding:16px;z-index:99999;font-size:14px;font-family:monospace;word-break:break-all;';
+    document.body.appendChild(errDiv);
+  }
+  errDiv.textContent = 'ERROR: ' + msg + ' (line ' + line + ')';
+  errDiv.style.display = 'block';
+  return false;
+};
+window.onunhandledrejection = function(e) {
+  var errDiv = document.getElementById('globalError');
+  if (!errDiv) {
+    errDiv = document.createElement('div');
+    errDiv.id = 'globalError';
+    errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b71c1c;color:white;padding:16px;z-index:99999;font-size:14px;font-family:monospace;word-break:break-all;';
+    document.body.appendChild(errDiv);
+  }
+  errDiv.textContent = 'PROMISE ERROR: ' + (e.reason ? (e.reason.message || e.reason) : 'unknown');
+  errDiv.style.display = 'block';
+};
+
 var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian','sImport'];
 
 var stepHistory = [];
@@ -5353,6 +5378,7 @@ function devReset(){
 }
 
 async function askQ() {
+  toast('askQ started');
   if(!checkTrial()) return;
   var isOut = st.outgoing === true;
   // Set message text first so it shows on any screen
@@ -5377,7 +5403,9 @@ async function askQ() {
     var prompt = isOut
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
       : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
+    toast('Sending to API...');
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
+    toast('Got response: ' + res.status);
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
