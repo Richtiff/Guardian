@@ -5605,7 +5605,8 @@ async function _gen(ctx) {
         document.getElementById('nuclearWarn').style.display='none';
         document.getElementById('replyContent').style.display='block';
       }
-      go('sReply');
+      toast('Score: ' + (p ? p.score : 'null') + ' reply: ' + (p && p.reply ? p.reply.substring(0,20) : 'null'));
+      setTimeout(function(){ toast('NAVIGATING NOW'); go('sReply'); }, 500);
     } else { toast('Could not generate a reply — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
