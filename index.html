@@ -1213,7 +1213,7 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <!-- REPLY -->
-<div class="step" id="sReply" style="background:red !important;">
+<div class="step" id="sReply">
 
   <!-- Flag banner -->
   <div id="flagBanner"></div>
@@ -2857,10 +2857,10 @@ window.onload = function() { (async function() {
   document.getElementById('overlay').style.display = 'none';
 
   // Android PWA back button support
-  window.addEventListener('popstate', function(e) { goBack(); });
+  window.addEventListener('popstate_disabled', function(e) { goBack(); });
 
   // Push initial state
-  history.pushState({step:'init'}, '');
+  // history.pushState removed to prevent Chrome throttling
 
   // Wait for Supabase library to load — retry up to 20 times
   var attempts = 0;
@@ -3128,10 +3128,7 @@ function go(id) {
   if (t) t.classList.add('active');
   if (id === 'sHome') { try { showHome(); } catch(e) {} }
   window.scrollTo({top:0,behavior:'smooth'});
-  navLock = true;
-  history.pushState({step:id}, '', '');
   stepHistory.push(id);
-  setTimeout(function(){ navLock = false; }, 100);
   // Show home button on all screens except setup and home itself
   var homeBtn = document.getElementById('homeBtn');
   if (homeBtn) {
@@ -5575,13 +5572,14 @@ async function _gen(ctx) {
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
       unload();
-    unload();
+      unload();
     if(p&&p.reply!==undefined){
+      try {
       st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning';
       checks++; localStorage.setItem('gChecks',checks);
       msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
       localStorage.setItem('gLog',JSON.stringify(msgLog));
-      saveProfileToSupabase();
+      try{ if(profile && profile.userId && profile.userId.length > 20 && profile.userId.indexOf('@') === -1) saveProfileToSupabase(); }catch(e){}
       if(checks===6)checkUpsellTriggers('check3');
       if(checks===10)checkUpsellTriggers('check5');
       var recentRed=msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
@@ -5647,8 +5645,9 @@ async function _gen(ctx) {
         }
       }catch(e){}
       // Navigate
-      go('sReply');
-      window.scrollTo(0,0);
+      } catch(setupErr) { console.log('SETUP ERR:', setupErr && setupErr.message); }
+          go('sReply');
+      try{window.scrollTo({top:0});}catch(e){}
       // Auto-score after navigation
       setTimeout(function(){try{scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay');}catch(e){}},1000);
     } else {
