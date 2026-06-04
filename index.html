@@ -5583,8 +5583,19 @@ async function _gen(ctx) {
     try { st.reply=_r; st.score=_s; checks++; localStorage.setItem('gChecks',checks); saveProfileToSupabase(); } catch(e){}
     try { startBreathTimer(); } catch(e){}
     try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
-    go('sReply');
-    try { window.scrollTo({top:0}); } catch(e){}
+    // FORCE sReply visible - bypass go() entirely
+    try {
+      var steps = document.querySelectorAll('.step');
+      steps.forEach(function(s){ s.classList.remove('active'); s.style.display=''; });
+      var sr = document.getElementById('sReply');
+      if (sr) {
+        sr.classList.add('active');
+        sr.style.display = 'block';
+        sr.style.minHeight = '100vh';
+        sr.style.background = '#0d1117';
+        window.scrollTo(0,0);
+      }
+    } catch(forceErr) { alert('FORCE ERROR: ' + forceErr.message); }
     try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
     } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
