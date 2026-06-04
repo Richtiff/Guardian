@@ -1214,103 +1214,134 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- REPLY -->
 <div class="step" id="sReply">
+
+  <!-- Flag banner -->
   <div id="flagBanner"></div>
-  <div class="their-bubble" id="msgBubble"><div class="their-label" id="msgBubbleLabel">Their message</div><div class="their-text" id="rTheirText"></div></div>
+
+  <!-- Their message -->
+  <div class="their-bubble" id="msgBubble">
+    <div class="their-label" id="msgBubbleLabel">Their message</div>
+    <div class="their-text" id="rTheirText"></div>
+  </div>
+
+  <!-- Nuclear warning (score < 5) -->
   <div id="nuclearWarn" style="display:none;">
     <div class="nuclear-card">
       <div class="nuclear-title">⚠️ Do not send this yet</div>
-      <div class="nuclear-text">This reply could make things worse. Here is why:</div>
-      <div class="nuclear-reasons" id="nuclearReasons"></div>
-      <div class="nuclear-row"><button type="button" class="nuclear-fix" onclick="fixReply()">Fix it for me</button><button type="button" class="nuclear-skip" onclick="showAnyway()">Show it anyway</button></div>
+      <div class="nuclear-text">This reply could make things worse:</div>
+      <div id="nuclearReasons"></div>
+      <div class="nuclear-row">
+        <button type="button" onclick="fixReply()">Fix it for me</button>
+        <button type="button" onclick="showAnyway()">Show anyway</button>
+      </div>
     </div>
   </div>
+
+  <!-- Reply card -->
   <div id="replyCard">
-  <div id="replyContent">
     <div class="coach-card">
-      <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
+      <div class="coach-header">
+        <span class="coach-lbl">💬 Reply Ready</span>
+        <span class="score-badge" id="scoreBadge"></span>
+      </div>
       <div class="coach-body">
-        <div id="noReplyBanner" style="display:none;"></div>
-        <div class="breathe" id="breatheDiv" style="font-size:14px;color:var(--muted);text-align:center;padding:10px 0 6px;font-style:normal;line-height:1.6;"><span id="breatheText">Take a breath — </span><span id="breatheTimer" style="color:var(--gold);font-weight:800;font-size:18px;">15s</span> <span id="breatheReason">before you send. Rushed replies can be used against you.</span></div>
+
+        <!-- Breath timer -->
+        <div class="breathe" id="breatheDiv" style="font-size:14px;color:var(--muted);text-align:center;padding:10px 0 6px;line-height:1.6;">
+          <span id="breatheText"></span>
+          <span id="breatheTimer" style="color:var(--gold);font-weight:800;font-size:18px;"></span>
+          <span id="breatheReason"></span>
+        </div>
+
+        <!-- Restore bar -->
         <div id="restoreBar" style="display:none;padding:4px 0 6px;">
-        <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;">↩ Restore original reply</button>
-      </div>
-      <textarea class="suggested" id="suggestedReply" onclick="oneTouchCopy(this)" title="Tap to copy" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
+          <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;">↩ Restore original reply</button>
+        </div>
+
+        <!-- The reply -->
+        <textarea class="suggested" id="suggestedReply" onclick="oneTouchCopy(this)" title="Tap to copy"
+          style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5"
+          placeholder="Your reply will appear here..."></textarea>
+
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
+
+        <!-- Why this reply works -->
         <div class="reply-why" id="replyWhy"></div>
+
+        <!-- Tips -->
+        <div class="tip-card" id="tipCard" style="display:none;">
+          <div class="tip-lbl">💡 What to do now</div>
+          <div id="tipItems"></div>
+        </div>
+
       </div>
-      <div class="tip-card" id="tipCard" style="cursor:pointer;" onclick="this.querySelector('#tipItems').style.display=this.querySelector('#tipItems').style.display==='none'?'block':'none'"><div class="tip-lbl">💡 What to do now <span style="font-size:10px;color:var(--muted);margin-left:6px;">tap to expand</span></div><div id="tipItems" style="display:none;"></div></div>
+
+      <!-- Refine buttons -->
       <div class="refine-section">
         <div class="refine-lbl">How does this feel?</div>
-        </div><!-- end replyContent -->
-</div><!-- end replyCard -->
-  <div id="replySendSection">
-  <div class="refine-row">
+        <div class="refine-row">
           <button type="button" class="refine-btn" onclick="refine('formal')">Too formal</button>
           <button type="button" class="refine-btn" onclick="refine('harsh')">Too harsh</button>
           <button type="button" class="refine-btn" onclick="refine('different')">Say something different</button>
           <button type="button" class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
         </div>
-  </div><!-- end replySendSection -->
-      <div id="docRouter" style="display:none;"></div>
-      
-      
-      <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
-      <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
-      <div id="replyScoreDisplay" style="display:none;"></div>
-      <div style="padding:0 16px 12px;">
-        <button type="button" onclick="scoreReply(storeOriginalReply(suggestedReply_val); document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
       </div>
-      <div class="feedback-row">
-        <span class="feedback-lbl">Was this helpful?</span>
-        <button type="button" class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
-        <button type="button" class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
+
+    </div>
+  </div>
+
+  <!-- No reply needed banner -->
+  <div id="noReplyBanner" style="display:none;"></div>
+
+  <!-- Red lines -->
+  <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
+
+  <!-- Score display -->
+  <div id="replyScoreDisplay" style="display:none;"></div>
+
+  <!-- Doc router -->
+  <div id="docRouter" style="display:none;"></div>
+
+  <!-- Feedback -->
+  <div class="feedback-row">
+    <span class="feedback-lbl">Was this helpful?</span>
+    <button type="button" class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
+    <button type="button" class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
+  </div>
+  <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
+
+  <!-- Replace send section -->
+  <div id="replySendSection"></div>
+
+  <!-- Guardian Chat -->
+  <div id="guardianChat" style="display:none;margin-top:16px;border-top:2px solid rgba(196,154,60,0.2);">
+    <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <div style="width:28px;height:28px;background:rgba(196,154,60,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🛡️</div>
+      <div style="flex:1;font-size:12px;color:var(--muted);">Ask Guardian anything about this reply</div>
+      <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:8px;cursor:pointer;">Clear</button>
+    </div>
+    <div id="chatMessages" style="padding:16px;display:flex;flex-direction:column;gap:14px;"></div>
+    <div id="chatSuggestions" style="display:none;"></div>
+    <div style="display:flex;gap:16px;padding:4px 16px 8px;justify-content:flex-end;">
+      <button onclick="updateReplyFromChat()" id="updateReplyBtn" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;touch-action:manipulation;">↑ Update reply</button>
+      <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;touch-action:manipulation;">📓 Diary</button>
+    </div>
+    <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:6px 12px 8px;z-index:50;display:flex;gap:6px;align-items:flex-end;">
+      <textarea id="chatInput" rows="2" placeholder="Ask Guardian anything about this reply..."
+        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:48px;max-height:100px;overflow-y:auto;-webkit-appearance:none;"
+        onfocus="this.style.borderColor='rgba(196,154,60,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"></textarea>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <label style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
+        </label>
+        <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
       </div>
-      <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
+      <button onclick="sendChatMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
     </div>
-
-    <!-- GUARDIAN CHAT -->
-    <div id="guardianChat" style="display:block;margin-top:16px;border-top:2px solid rgba(196,154,60,0.2);">
-
-  <!-- Header -->
-  <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
-    <div style="width:28px;height:28px;background:rgba(196,154,60,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🛡️</div>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:12px;color:var(--muted);">Ask Guardian anything about this reply</div>
-    </div>
-    <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:8px;cursor:pointer;flex-shrink:0;white-space:nowrap;">Clear</button>
+    <div style="height:80px;"></div>
   </div>
 
-  <!-- Messages — no fixed height, grows naturally -->
-  <div id="chatMessages" style="padding:16px;display:flex;flex-direction:column;gap:14px;"></div>
-
-  <!-- Suggestions rendered inline by JS -->
-  <div id="chatSuggestions" style="display:none;"></div>
-
-  <!-- Utility links -->
-  <div style="display:flex;gap:16px;padding:4px 16px 8px;justify-content:flex-end;">
-    <button onclick="updateReplyFromChat()" id="updateReplyBtn" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">↑ Update reply</button>
-    <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">📓 Diary</button>
-  </div>
-
-  <!-- Input — fixed to bottom of screen -->
-  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:6px 12px 8px;z-index:50;display:flex;gap:6px;align-items:flex-end;">
-    <textarea id="chatInput" rows="3"
-      placeholder="Ask Guardian anything about this reply..."
-      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:48px;max-height:100px;overflow-y:auto;-webkit-appearance:none;"
-      onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
-      onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
-      onkeydown=""></textarea>
-    <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-      <label style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-        <span style="font-size:20px;">📎</span><input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
-      </label>
-      <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
-    </div>
-    <button onclick="sendChatMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
-  </div>
-
-</div>
-
+  <div style="height:20px;"></div>
 
 
 
