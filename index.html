@@ -1225,7 +1225,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
   <div id="replyCard">
-  <div id="replyContent" style="display:none;">
+  <div id="replyContent">
     <div class="coach-card">
       <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
       <div class="coach-body">
@@ -5618,7 +5618,7 @@ async function _gen(ctx) {
         document.getElementById('replyContent').style.display='block';
       }
           go('sReply');
-      setTimeout(function(){ window.scrollTo(0,0); }, 100);
+      window.scrollTo(0,0);
     } else { unload(); go('sCoach'); toast('Could not generate a reply — please try again'); }
   } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
