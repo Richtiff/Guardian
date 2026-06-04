@@ -41,6 +41,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .badge { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); background:var(--gold-dim); border:1px solid rgba(245,200,66,0.2); padding:4px 10px; border-radius:20px; }
 .step { display:none; animation:fadeUp 0.2s ease; }
 .step.active { display:block; min-height:50vh; }
+@keyframes spin { to { transform:rotate(360deg); } }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes spin { to{transform:rotate(360deg)} }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
@@ -329,7 +330,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .out-textarea::placeholder { color:var(--muted); }
 .out-check { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
 .reading { text-align:center; padding:60px 20px; }
-.spinner { width:52px; height:52px; margin:0 auto 20px; position:relative; }
+.spinner { width:52px; height:52px; margin:0 auto 20px; border:4px solid rgba(196,154,60,0.3); border-top:4px solid var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; }
 .spinner::before { content:''; position:absolute; inset:0; border-radius:50%; border:2.5px solid var(--border); border-top-color:var(--gold); animation:spin 0.8s linear infinite; }
 .reading-title { font-family:'DM Sans',sans-serif; font-size:17px; font-weight:800; margin-bottom:6px; }
 .reading-sub { font-size:13px; color:var(--muted-hi); }
@@ -878,23 +879,23 @@ p, .body-text { font-size: 16px !important; }
     <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">Tap to regenerate reply →</div>
   </div>
   <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sCoach')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">💬</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Reply Ready</div><div class="home-btn-sub">Paste their message. Get a reply. Send with confidence.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sTalkGuardian');setTimeout(initTalkGuardian,100)" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🛡️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Ask Guardian</div><div class="home-btn-sub">Messages, documents, hearings — ask me anything.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDiary','diary')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sDiary')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📓</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Diary</div><div class="home-btn-sub">Log every session. Build your evidence record.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sStatements','scanner')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sStatements')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📋</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Statements</div><div class="home-btn-sub">Read theirs. Check yours. Write your position statement.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sBrain','brain')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sBrain')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🧠</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Guardian Brain</div><div class="home-btn-sub">Everything Guardian knows about your case.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
 
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDocs','docs')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sDocs')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🗂️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Case</div><div class="home-btn-sub">Your case file. Stored and ready when you need it.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
   </div>
@@ -3093,6 +3094,7 @@ function go(id) {
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
   if (t) t.classList.add('active');
+  if (id === 'sHome') { try { showHome(); } catch(e) {} }
   window.scrollTo({top:0,behavior:'smooth'});
   navLock = true;
   history.pushState({step:id}, '', '');
@@ -5378,7 +5380,6 @@ function devReset(){
 }
 
 async function askQ() {
-  toast('askQ started');
   if(!checkTrial()) return;
   var isOut = st.outgoing === true;
   // Set message text first so it shows on any screen
@@ -5403,16 +5404,13 @@ async function askQ() {
     var prompt = isOut
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
       : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
-    toast('Sending to API...');
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
-    toast('Got response: ' + res.status);
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
     // Don't unload — keep overlay showing, update text for next stage
     load('Building your reply...', 'Almost ready');
-    toast('Step 1: Flag detected — ' + (p ? p.flag||'none' : 'null'));
     if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
     else{ unload(); toast('Could not read — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
@@ -5515,7 +5513,6 @@ async function genReply(){
 async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
 
 async function _gen(ctx) {
-  toast('Step 2: Generating reply...');
   load('Writing your reply...','Keeping it safe and human');
   var caseCtx=getCTX();
   var modeInstructions = {
@@ -5533,7 +5530,6 @@ async function _gen(ctx) {
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
     unload();
-    toast('Step 3: Reply ready — score ' + (p ? p.score : 'null'));
     if(p&&p.reply!==undefined){
       st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
       checks++; localStorage.setItem('gChecks',checks);
@@ -5607,9 +5603,8 @@ async function _gen(ctx) {
         document.getElementById('nuclearWarn').style.display='none';
         document.getElementById('replyContent').style.display='block';
       }
-      toast('Step 4: Navigating to reply screen');
       go('sReply');
-    } else { toast('Step 3 FAILED: Could not generate a reply — please try again'); }
+    } else { toast('Could not generate a reply — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
 
