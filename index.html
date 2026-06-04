@@ -986,7 +986,6 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- COACH HOME -->
 <div class="step" id="sCoach">
-  <div style="background:#b71c1c;color:white;padding:10px;font-weight:bold;font-size:16px;">🔴 SCOACH LOADED - IF YOU SEE THIS SCREEN IS RENDERING</div>
   <div class="section-header">
     <button type="button" class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Reply Ready</div><div class="section-sub">You don't have to figure out what to say alone</div></div>
@@ -1040,7 +1039,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their message — or several messages if they sent a few quickly..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste their last message, or several messages if they came through quickly. Guardian will read them all.</div>
-      <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
+      <button class="type-confirm" onclick="toast('BTN TAP');confirmType()" style="touch-action:manipulation;width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
     <div id="screenshotSection">
@@ -1215,7 +1214,6 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- REPLY -->
 <div class="step" id="sReply">
-  <div style="background:#1b5e20;color:white;padding:10px;font-weight:bold;font-size:16px;">🟢 SREPLY LOADED - SCREEN IS RENDERING</div>
   <div id="flagBanner"></div>
   <div class="their-bubble" id="msgBubble"><div class="their-label" id="msgBubbleLabel">Their message</div><div class="their-text" id="rTheirText"></div></div>
   <div id="nuclearWarn" style="display:none;">
@@ -3121,6 +3119,7 @@ function go(id) {
   }, 300);
   if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
   if (id==='sStatements') {}
+  if (id==='sCoach') { var btn=document.querySelector('.type-confirm'); if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.background='';btn.style.color='';btn.textContent='Check this message →';} document.getElementById('overlay').style.display='none'; document.getElementById('overlay').classList.remove('show'); }
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
   if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
@@ -5406,7 +5405,8 @@ async function askQ() {
     var prompt = isOut
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
       : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
+    var askTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
+    var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})}), askTimeout]);
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
@@ -5527,7 +5527,8 @@ async function _gen(ctx) {
 
   var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message(s): "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
+    var fetchTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
+    var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})}), fetchTimeout]);
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
@@ -5605,8 +5606,7 @@ async function _gen(ctx) {
         document.getElementById('nuclearWarn').style.display='none';
         document.getElementById('replyContent').style.display='block';
       }
-      toast('Score: ' + (p ? p.score : 'null') + ' reply: ' + (p && p.reply ? p.reply.substring(0,20) : 'null'));
-      setTimeout(function(){ toast('NAVIGATING NOW'); go('sReply'); }, 500);
+      go('sReply');
     } else { toast('Could not generate a reply — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
