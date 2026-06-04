@@ -1039,7 +1039,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their message — or several messages if they sent a few quickly..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste their last message, or several messages if they came through quickly. Guardian will read them all.</div>
-      <button class="type-confirm" onclick="toast('BTN TAP');confirmType()" style="touch-action:manipulation;width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
+      <button class="type-confirm" onclick="alert('BTN TAP - button fired');confirmType()" style="touch-action:manipulation;width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
     <div id="screenshotSection">
@@ -2802,6 +2802,14 @@ function getCTX() {
 }
 
 window.onload = function() { (async function() {
+  // Recovery — if overlay stuck for >20s, force unload
+  var _overlayTimer = 0;
+  setInterval(function() {
+    var el = document.getElementById('overlay');
+    var showing = el && el.classList.contains('show');
+    if (showing) { _overlayTimer += 5; if (_overlayTimer >= 20) { _overlayTimer = 0; unload(); toast('Connection timed out — please try again'); } }
+    else { _overlayTimer = 0; }
+  }, 5000);
   // Safety net — if no active screen for 15s, go home
   setInterval(function() {
     var active = document.querySelector('.step.active');
@@ -3164,11 +3172,22 @@ function load(text, sub) {
 }
 function unload() {
   clearInterval(_loadMsgTimer);
-  var el = document.getElementById('overlay');
-  el.classList.remove('show');
-  el.style.display = 'none';
-  var btn = document.querySelector('.type-confirm');
-  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.background = ''; btn.style.color = ''; btn.textContent = 'Check this message →'; }
+  try {
+    var el = document.getElementById('overlay');
+    if (el) { el.classList.remove('show'); el.style.display = 'none'; }
+  } catch(e) {}
+  // Always re-enable ALL check buttons
+  try {
+    document.querySelectorAll('.type-confirm, [onclick*="confirmType"], [onclick*="checkOut"]').forEach(function(btn) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.background = '';
+      btn.style.color = '';
+      if (btn.textContent.indexOf('Reading') > -1 || btn.textContent.indexOf('Checking') > -1) {
+        btn.textContent = btn.getAttribute('data-label') || 'Check this message →';
+      }
+    });
+  } catch(e) {}
 }
 function toast(msg) {
   var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
