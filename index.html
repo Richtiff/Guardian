@@ -5575,102 +5575,86 @@ async function _gen(ctx) {
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
       unload();
-    // Always navigate to sReply — show whatever we got
-    var _reply = (p && p.reply) ? p.reply : 'Guardian is processing your reply — please try again.';
-    var _score = (p && p.score) ? p.score : 5;
-    var _why = (p && p.why) ? p.why : '';
-    try {
-      var _sb = document.getElementById('scoreBadge');
-      if (_sb) { _sb.textContent = _score >= 8 ? '✅ Safe' : _score >= 5 ? '🟡 Review' : '🔴 Caution'; _sb.style.background = _score >= 8 ? 'rgba(76,175,80,0.2)' : _score >= 5 ? 'rgba(255,152,0,0.2)' : 'rgba(244,67,54,0.2)'; }
-      var _sr = document.getElementById('suggestedReply');
-      if (_sr) _sr.value = _reply;
-      var _rw = document.getElementById('replyWhy');
-      if (_rw) _rw.textContent = _why;
-      st.reply = _reply; st.score = _score;
-      if (p && p.reply) {
-        checks++; localStorage.setItem('gChecks', checks);
-        try { startBreathTimer(); } catch(e) {}
-      }
-    } catch(e) {}
-    go('sReply');
-    window.scrollTo(0,0);
-    if (false) { // old conditional kept for reference
+    unload();
     if(p&&p.reply!==undefined){
-      st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
+      st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning';
       checks++; localStorage.setItem('gChecks',checks);
       msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
       localStorage.setItem('gLog',JSON.stringify(msgLog));
       saveProfileToSupabase();
-      // Upsell triggers
-      if (checks === 6) checkUpsellTriggers('check3');
-      if (checks === 10) checkUpsellTriggers('check5');
-      // Pattern upsell - if 3+ red flags in last 10 messages
-      var recentRed = msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
-      if (recentRed >= 3) checkUpsellTriggers('pattern');
+      if(checks===6)checkUpsellTriggers('check3');
+      if(checks===10)checkUpsellTriggers('check5');
+      var recentRed=msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
+      if(recentRed>=3)checkUpsellTriggers('pattern');
+      // Score badge
       var badge=document.getElementById('scoreBadge');
-      if(p.score>=8){badge.textContent='✅ Safe to send';badge.className='score-badge sc-safe';}
-      else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
-      else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
-      var replyText = p.reply||'';
-      var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply needed') !== -1 || replyText.toLowerCase().indexOf('silence is the stronger') !== -1;
-      var _rt = replyText || '(No reply needed)'; storeOriginalReply(_rt); document.getElementById('suggestedReply').value = _rt;
-      // Save last message so refresh can resume
-      try { var _exp = Date.now() + (3*24*60*60*1000); localStorage.setItem('lastMsg', JSON.stringify({msg:st.msg||'',exp:_exp})); } catch(e) {}
-      // Start breath timer
-      startBreathTimer();
-      document.getElementById('replyWhy').textContent = p.why||'';
-      // Hide/show reply UI based on whether reply is needed
-      var replyCard = document.getElementById('replyCard');
-      var noReplyBanner = document.getElementById('noReplyBanner');
-      var replySendSection = document.getElementById('replySendSection');
-      if (noReplyNeeded) {
-        if (replyCard) replyCard.style.display='none';
-        if (noReplyBanner) noReplyBanner.style.display='block';
-        if (replySendSection) replySendSection.style.display='none';
+      if(badge){
+        if(p.score>=8){badge.textContent='✅ Safe to send';badge.className='score-badge sc-safe';}
+        else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
+        else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
+      }
+      // Set reply text
+      var replyText=p.reply||'';
+      var noReplyNeeded=!replyText||replyText.toLowerCase().indexOf('no reply needed')!==-1;
+      var _rt=replyText||'(No reply needed)';
+      storeOriginalReply(_rt);
+      var srEl=document.getElementById('suggestedReply');
+      if(srEl) srEl.value=_rt;
+      // Save last message
+      try{var _exp=Date.now()+(3*24*60*60*1000);localStorage.setItem('lastMsg',JSON.stringify({msg:st.msg||'',exp:_exp}));}catch(e){}
+      // Breath timer
+      try{startBreathTimer();}catch(e){}
+      // Why
+      var rwEl=document.getElementById('replyWhy');
+      if(rwEl) rwEl.textContent=p.why||'';
+      // Show/hide reply card
+      var replyCard=document.getElementById('replyCard');
+      var noReplyBanner=document.getElementById('noReplyBanner');
+      if(noReplyNeeded){
+        if(replyCard)replyCard.style.display='none';
+        if(noReplyBanner)noReplyBanner.style.display='block';
       } else {
-        if (replyCard) replyCard.style.display='block';
-        if (noReplyBanner) noReplyBanner.style.display='none';
-        if (replySendSection) replySendSection.style.display='block';
-        var redHitsS = checkRedLines(replyText);
-        var rlDiv = document.getElementById('replyRedLines');
-        if (rlDiv) {
-          rlDiv.style.display = redHitsS.length > 0 ? 'block' : 'none';
-          if (redHitsS.length > 0) rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
-        }
-        setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
-        // Stay where we are — user scrolls naturally
-        // Auto-populate chat context and chips after reply — delay so scoring finishes first
-        setTimeout(function(){ openGuardianChat(); }, 3000);
+        if(replyCard)replyCard.style.display='block';
+        if(noReplyBanner)noReplyBanner.style.display='none';
+        setTimeout(function(){openGuardianChat();},3000);
       }
-      // Smart document router
-      showDocRouter(currentMsg||'', p);
-      // Red line check on single message reply
-      var redHitsS = checkRedLines(p.reply||'');
-      var rlDiv = document.getElementById('replyRedLines');
-      if (rlDiv) {
-        if (redHitsS.length > 0) {
-          rlDiv.style.display='block';
-          rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
-        } else { rlDiv.style.display='none'; }
-      }
-      // Auto-score
-      setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
-      if(p.tips&&p.tips.length){
-        var ti=document.getElementById('tipItems'); ti.innerHTML='';
-        p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});
-        document.getElementById('tipCard').style.display='block';
-      } else { document.getElementById('tipCard').style.display='none'; }
+      // Nuclear warning
+      var nucEl=document.getElementById('nuclearWarn');
+      var rcEl=document.getElementById('replyContent');
       if(p.score<5&&p.dangerReasons){
-        document.getElementById('nuclearWarn').style.display='block';
-        document.getElementById('replyContent').style.display='none';
-        document.getElementById('nuclearReasons').textContent=p.dangerReasons;
+        if(nucEl)nucEl.style.display='block';
+        if(rcEl)rcEl.style.display='none';
+        var nrEl=document.getElementById('nuclearReasons');
+        if(nrEl)nrEl.textContent=p.dangerReasons;
       } else {
-        document.getElementById('nuclearWarn').style.display='none';
-        document.getElementById('replyContent').style.display='block';
+        if(nucEl)nucEl.style.display='none';
+        if(rcEl)rcEl.style.display='block';
       }
-          // (old go sReply — now handled above)
-    } } else { unload(); go('sCoach'); toast('Could not generate a reply — please try again'); }
-  } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
+      // Tips
+      if(p.tips&&p.tips.length){
+        var ti=document.getElementById('tipItems');
+        var tc=document.getElementById('tipCard');
+        if(ti){ti.innerHTML='';p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});}
+        if(tc)tc.style.display='block';
+      }
+      // Red lines
+      try{
+        var redHits=checkRedLines(replyText);
+        var rlDiv=document.getElementById('replyRedLines');
+        if(rlDiv){
+          rlDiv.style.display=redHits.length>0?'block':'none';
+          if(redHits.length>0)rlDiv.innerHTML='<div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:6px;">⚠ EDIT BEFORE SENDING</div>'+redHits.map(function(r){return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• '+r+'</div>';}).join('');
+        }
+      }catch(e){}
+      // Navigate
+      go('sReply');
+      window.scrollTo(0,0);
+      // Auto-score after navigation
+      setTimeout(function(){try{scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay');}catch(e){}},1000);
+    } else {
+      toast('Could not generate a reply — please try again');
+    }
+    } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
 
 function fixReply(){st.answer=(st.answer||'')+' [Please generate a safer calmer version]';genReply();}
