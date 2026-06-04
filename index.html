@@ -479,8 +479,6 @@ p, .body-text { font-size: 16px !important; }
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.0.1/eruda.min.js"></script>
-<script>eruda.init();</script>
 </head>
 <body>
 <div id="appLoader" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;">
@@ -2421,8 +2419,7 @@ function initSupabase() {
           detectSessionInUrl: false
         }
       });
-      console.log('Supabase ready');
-      return true;
+          return true;
     } else if (window.supabaseJs && window.supabaseJs.createClient) {
       supabase = window.supabaseJs.createClient(SUPA_URL, SUPA_KEY, {
         auth: {
@@ -2432,8 +2429,7 @@ function initSupabase() {
           detectSessionInUrl: false
         }
       });
-      console.log('Supabase ready (alt)');
-      return true;
+          return true;
     }
   } catch(e) {
     console.warn('Supabase init failed:', e);
@@ -2843,8 +2839,7 @@ window.onload = function() { (async function() {
   }
 
   if (supabase) {
-    console.log('Supabase connected after', attempts, 'attempts');
-    try {
+      try {
       var sessionResult = await supabase.auth.getSession();
       if (sessionResult.data && sessionResult.data.session) {
         currentUser = sessionResult.data.session.user;
@@ -2876,15 +2871,13 @@ window.onload = function() { (async function() {
       var sess = JSON.parse(stored);
       if (sess.expiry && Date.now() < sess.expiry) {
         currentUser = { id: sess.userId || sess.email, email: sess.email };
-        console.log("Session valid:", sess.email, "userId:", currentUser.id);
-        // Try to get real Supabase UUID
+              // Try to get real Supabase UUID
         if (supabase) {
           try {
             var userCheck = await supabase.auth.getUser();
             if (userCheck.data && userCheck.data.user) {
               currentUser = userCheck.data.user;
-              console.log("Got Supabase UUID:", currentUser.id);
-            }
+                        }
           } catch(e) { console.warn("Could not get Supabase user:", e); }
         }
         var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
@@ -2904,8 +2897,7 @@ window.onload = function() { (async function() {
 
   // ── LAST RESORT: Profile exists without session ──
   if (profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1))) {
-    console.log('Profile in localStorage — attempting silent Supabase re-auth');
-    profile.complete = true;
+      profile.complete = true;
     // Try to silently re-authenticate with stored credentials
     var storedEmail = localStorage.getItem('gUserEmail');
     var storedPass = localStorage.getItem('gUserPass');
@@ -2914,9 +2906,7 @@ window.onload = function() { (async function() {
         var reauth = await supabase.auth.signInWithPassword({ email: storedEmail, password: storedPass });
         if (reauth.data && reauth.data.user) {
           currentUser = reauth.data.user;
-          console.log('Silent re-auth successful:', currentUser.id);
-              console.log('Silent re-auth successful:', currentUser.id);
-              // Load full profile from Supabase — restores all saved data
+                                  // Load full profile from Supabase — restores all saved data
               await loadProfileFromSupabase();
               return;
           console.warn('Silent re-auth failed — continuing without Supabase');
@@ -3084,6 +3074,7 @@ function goBack() {
   stepHistory.pop();
   var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
   var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
+  window._checkRunning = false;
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(landing);
   if (t) t.classList.add('active');
@@ -3173,6 +3164,7 @@ function load(text, sub) {
   }, 3000);
 }
 function unload() {
+  window._checkRunning = false;
   clearInterval(_loadMsgTimer);
   try {
     var el = document.getElementById('overlay');
@@ -3399,8 +3391,7 @@ function handleBundleInSetup(event) {
     if (b64.length > maxSize) {
       b64 = b64.substring(0, maxSize);
       truncated = true;
-      console.log('Bundle truncated to', maxSize, 'chars');
-    }
+        }
     try {
       var res = await fetch(API, {
         method: 'POST',
@@ -3586,7 +3577,6 @@ async function skipDocs() {
 }
 
 async function buildSummary() {
-  console.log('buildSummary called, profile:', JSON.stringify(profile).substring(0,100));
   load('Building your case profile...','Almost ready');
   var ctx=getCTX();
   try {
@@ -3602,7 +3592,6 @@ async function buildSummary() {
 }
 
 function renderSummary(parsed) {
-  console.log('renderSummary called, parsed:', parsed);
   unload();
   go('sSummary');
   var c=document.getElementById('summaryContent');
@@ -5083,8 +5072,7 @@ async function analyseThread() {
     });
     // Warn if payload is very large (Vercel 4.5MB limit)
     var bodySizeMB = (new TextEncoder().encode(bodyStr).length / (1024*1024)).toFixed(1);
-    console.log('Thread analysis payload:', bodySizeMB + 'MB');
-    // Show size info in loading overlay so we can see it
+      // Show size info in loading overlay so we can see it
     var ls = document.getElementById('overlaySub');
     if (ls) ls.textContent = 'Payload: ' + bodySizeMB + 'MB — ' + threadImages.length + ' files';
     if (parseFloat(bodySizeMB) > 2.0) {
@@ -5341,9 +5329,9 @@ async function handleUpload(event) {
 }
 
 function confirmType() {
-  console.log('confirmType called');
+  if (window._checkRunning) return;
+  window._checkRunning = true;
   var btn = document.querySelector('.type-confirm');
-  // Always re-enable first — clears any stuck state from previous attempt
   if (btn) { btn.disabled = false; }
   var v = document.getElementById('typeIn').value.trim();
   if (!v) { toast('Please paste their message first'); return; }
@@ -5404,7 +5392,6 @@ function devReset(){
 }
 
 async function askQ() {
-  console.log('askQ started');
   if(!checkTrial()) return;
   var isOut = st.outgoing === true;
   // Set message text first so it shows on any screen
@@ -5430,8 +5417,7 @@ async function askQ() {
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
       : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
     var askTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
-    console.log('askQ fetch starting...');
-    var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})}), askTimeout]);
+      var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})}), askTimeout]);
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
@@ -5540,7 +5526,6 @@ async function genReply(){
 async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
 
 async function _gen(ctx) {
-  console.log('_gen called');
   load('Writing your reply...','Keeping it safe and human');
   var caseCtx=getCTX();
   var modeInstructions = {
@@ -5553,14 +5538,12 @@ async function _gen(ctx) {
 
   var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message(s): "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
-    console.log('_gen fetch starting...');
-    var fetchTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
+      var fetchTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
     var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})}), fetchTimeout]);
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
-    console.log('_gen response received, p:', p ? 'has data, score='+p.score : 'NULL');
-    unload();
+      unload();
     if(p&&p.reply!==undefined){
       st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
       checks++; localStorage.setItem('gChecks',checks);
@@ -5634,8 +5617,8 @@ async function _gen(ctx) {
         document.getElementById('nuclearWarn').style.display='none';
         document.getElementById('replyContent').style.display='block';
       }
-      console.log('Navigating to sReply...');
-      go('sReply');
+          go('sReply');
+      setTimeout(function(){ window.scrollTo(0,0); }, 100);
     } else { unload(); go('sCoach'); toast('Could not generate a reply — please try again'); }
   } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
@@ -5926,8 +5909,7 @@ async function loadProfileFromSupabase() {
       // Consider setup complete if they have a name and child name — don't rely solely on complete flag
       // Complete if name AND child name set — caseType not required to get home
       var isComplete = profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1);
-      console.log('Profile loaded from Supabase — name:', profile.myName, 'child:', profile.childName, 'complete:', isComplete);
-      if (isComplete) {
+          if (isComplete) {
         profile.complete = true;
         localStorage.setItem('gProfile', JSON.stringify(profile));
         showHome();
@@ -5976,8 +5958,7 @@ async function saveProfileToSupabase() {
     try { data.brain_log_json = JSON.stringify(brainLog || []); } catch(e){}
     try { data.msg_log_json = JSON.stringify(msgLog || []); } catch(e){}
 
-    console.log('Saving to Supabase — user:', currentUser.id, 'complete:', data.complete, 'name:', data.my_name);
-    var result = await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
+      var result = await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
     if (result.error) {
       console.warn('Supabase upsert error:', result.error.message);
       if (typeof toast === 'function') toast('Save error: ' + result.error.message.substring(0, 80));
@@ -5994,11 +5975,9 @@ async function saveProfileToSupabase() {
         console.error('Minimal save also failed:', minResult.error.message);
         if (typeof toast === 'function') toast('Minimal save failed: ' + minResult.error.message.substring(0, 60));
       } else {
-        console.log('Minimal save succeeded');
-      }
+            }
     } else {
-      console.log('Supabase save OK');
-    }
+        }
   } catch(e) { console.warn('Supabase save exception:', e.message || e); }
 }
 
@@ -6368,7 +6347,6 @@ async function scanStatement(event, forcedType) {
   if (!files.length) return;
   var type = forcedType || 'mine';
   var file = files[0]; // Process first file — if multiple, combine
-  console.log('Scanning statement, type:', type, 'files:', files.length);
   // If multiple images, toast to say we'll process the first
   if (files.length > 1) toast('Reading ' + files.length + ' files — processing together');
   var statusId = type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus';
