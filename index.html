@@ -5433,8 +5433,8 @@ async function askQ() {
     // Don't unload — keep overlay showing, update text for next stage
     load('Building your reply...', 'Almost ready');
     if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
-    else{ unload(); toast('Could not read — please try again'); }
-  } catch(e){ unload(); toast('Something went wrong — please try again'); }
+    else{ unload(); go('sCoach'); toast('Could not read — please try again'); }
+  } catch(e){ unload(); go('sCoach'); toast('askQ error: ' + (e ? e.message : 'unknown')); }
 }
 
 function doQuestion(p) {
@@ -5494,7 +5494,7 @@ function doQuestion(p) {
   if (modeEl) modeEl.classList.add('active');
   load('Generating your reply...', 'Reading the message carefully');
   genReplyDirect();
-  } catch(e) { unload(); go('sCoach'); toast('Something went wrong — please try again'); }
+  } catch(e) { unload(); go('sCoach'); toast('doQuestion error: ' + (e ? e.message : 'unknown')); }
 }
 
 function toggleVoice(){
@@ -5626,8 +5626,8 @@ async function _gen(ctx) {
         document.getElementById('replyContent').style.display='block';
       }
       go('sReply');
-    } else { toast('Could not generate a reply — please try again'); }
-  } catch(e){ unload(); toast('Something went wrong — please try again'); }
+    } else { unload(); go('sCoach'); toast('Could not generate a reply — please try again'); }
+  } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
 
 function fixReply(){st.answer=(st.answer||'')+' [Please generate a safer calmer version]';genReply();}
