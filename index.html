@@ -1039,7 +1039,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their message — or several messages if they sent a few quickly..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
       <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste their last message, or several messages if they came through quickly. Guardian will read them all.</div>
-      <button class="type-confirm" onclick="alert('BTN TAP - button fired');confirmType()" style="touch-action:manipulation;width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
+      <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
     <div id="screenshotSection">
@@ -5340,10 +5340,11 @@ async function handleUpload(event) {
 
 function confirmType() {
   var btn = document.querySelector('.type-confirm');
-  if (btn && btn.disabled) return; // Already running
+  // Always re-enable first — clears any stuck state from previous attempt
+  if (btn) { btn.disabled = false; }
   var v = document.getElementById('typeIn').value.trim();
   if (!v) { toast('Please paste their message first'); return; }
-  // Disable immediately to prevent multiple fires
+  // Disable to prevent double-tap
   if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.style.background = 'rgba(196,154,60,0.15)'; btn.style.color = 'var(--gold)'; btn.textContent = '⏳ Reading your message...'; }
   currentMsg = v; st.msg = v;
   load('Reading your message...', 'Checking tone and context');
