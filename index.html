@@ -5575,6 +5575,7 @@ async function _gen(ctx) {
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
       unload();
+    toast('API result: ' + (p ? 'score='+p.score+' reply='+(p.reply?'YES':'EMPTY') : 'NULL - parse failed'));
     if(p&&p.reply!==undefined){
       st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
       checks++; localStorage.setItem('gChecks',checks);
