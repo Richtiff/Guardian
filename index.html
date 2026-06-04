@@ -2428,7 +2428,6 @@ p, .body-text { font-size: 16px !important; }
   </div>
 </div>
 
-<div id="debugBanner" style="position:fixed;top:0;left:0;right:0;background:#b71c1c;color:white;font-size:14px;font-weight:bold;z-index:99999;padding:6px 12px;text-align:center;"></div>
 <div class="toast" id="toast"></div>
 <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
@@ -3127,7 +3126,6 @@ function go(id) {
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
   if (t) t.classList.add('active');
-  var _db=document.getElementById('debugBanner'); if(_db) _db.textContent='SCREEN: '+id;
   if (id === 'sHome') { try { showHome(); } catch(e) {} }
   window.scrollTo({top:0,behavior:'smooth'});
   stepHistory.push(id);
@@ -5575,86 +5573,19 @@ async function _gen(ctx) {
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
       unload();
       unload();
-    if(p&&p.reply!==undefined){
-      try {
-      st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning';
-      checks++; localStorage.setItem('gChecks',checks);
-      msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
-      localStorage.setItem('gLog',JSON.stringify(msgLog));
-      try{ if(profile && profile.userId && profile.userId.length > 20 && profile.userId.indexOf('@') === -1) saveProfileToSupabase(); }catch(e){}
-      if(checks===6)checkUpsellTriggers('check3');
-      if(checks===10)checkUpsellTriggers('check5');
-      var recentRed=msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
-      if(recentRed>=3)checkUpsellTriggers('pattern');
-      // Score badge
-      var badge=document.getElementById('scoreBadge');
-      if(badge){
-        if(p.score>=8){badge.textContent='✅ Safe to send';badge.className='score-badge sc-safe';}
-        else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
-        else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
-      }
-      // Set reply text
-      var replyText=p.reply||'';
-      var noReplyNeeded=!replyText||replyText.toLowerCase().indexOf('no reply needed')!==-1;
-      var _rt=replyText||'(No reply needed)';
-      storeOriginalReply(_rt);
-      var srEl=document.getElementById('suggestedReply');
-      if(srEl) srEl.value=_rt;
-      // Save last message
-      try{var _exp=Date.now()+(3*24*60*60*1000);localStorage.setItem('lastMsg',JSON.stringify({msg:st.msg||'',exp:_exp}));}catch(e){}
-      // Breath timer
-      try{startBreathTimer();}catch(e){}
-      // Why
-      var rwEl=document.getElementById('replyWhy');
-      if(rwEl) rwEl.textContent=p.why||'';
-      // Show/hide reply card
-      var replyCard=document.getElementById('replyCard');
-      var noReplyBanner=document.getElementById('noReplyBanner');
-      if(noReplyNeeded){
-        if(replyCard)replyCard.style.display='none';
-        if(noReplyBanner)noReplyBanner.style.display='block';
-      } else {
-        if(replyCard)replyCard.style.display='block';
-        if(noReplyBanner)noReplyBanner.style.display='none';
-        setTimeout(function(){openGuardianChat();},3000);
-      }
-      // Nuclear warning
-      var nucEl=document.getElementById('nuclearWarn');
-      var rcEl=document.getElementById('replyContent');
-      if(p.score<5&&p.dangerReasons){
-        if(nucEl)nucEl.style.display='block';
-        if(rcEl)rcEl.style.display='none';
-        var nrEl=document.getElementById('nuclearReasons');
-        if(nrEl)nrEl.textContent=p.dangerReasons;
-      } else {
-        if(nucEl)nucEl.style.display='none';
-        if(rcEl)rcEl.style.display='block';
-      }
-      // Tips
-      if(p.tips&&p.tips.length){
-        var ti=document.getElementById('tipItems');
-        var tc=document.getElementById('tipCard');
-        if(ti){ti.innerHTML='';p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});}
-        if(tc)tc.style.display='block';
-      }
-      // Red lines
-      try{
-        var redHits=checkRedLines(replyText);
-        var rlDiv=document.getElementById('replyRedLines');
-        if(rlDiv){
-          rlDiv.style.display=redHits.length>0?'block':'none';
-          if(redHits.length>0)rlDiv.innerHTML='<div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:6px;">⚠ EDIT BEFORE SENDING</div>'+redHits.map(function(r){return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• '+r+'</div>';}).join('');
-        }
-      }catch(e){}
-      // Navigate
-      } catch(setupErr) { console.log('SETUP ERR:', setupErr && setupErr.message); }
-          go('sReply');
-      try{window.scrollTo({top:0});}catch(e){}
-      // Auto-score after navigation
-      setTimeout(function(){try{scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay');}catch(e){}},1000);
-    } else {
-      toast('Could not generate a reply — please try again');
-    }
+    // Absolute minimum — navigate to sReply with reply text
+    var _r = (p && p.reply) ? p.reply : '';
+    var _s = (p && p.score) ? p.score : 5;
+    var _w = (p && p.why) ? p.why : '';
+    try { var srEl=document.getElementById('suggestedReply'); if(srEl) srEl.value = _r; } catch(e){}
+    try { var rwEl=document.getElementById('replyWhy'); if(rwEl) rwEl.textContent = _w; } catch(e){}
+    try { var sbEl=document.getElementById('scoreBadge'); if(sbEl){ sbEl.textContent=_s>=8?'✅ Safe':_s>=6?'⚠️ Review':'❌ Caution'; sbEl.className='score-badge '+(_s>=8?'sc-safe':_s>=6?'sc-caution':'sc-danger'); } } catch(e){}
+    try { st.reply=_r; st.score=_s; checks++; localStorage.setItem('gChecks',checks); saveProfileToSupabase(); } catch(e){}
+    try { startBreathTimer(); } catch(e){}
+    try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
+    go('sReply');
+    try { window.scrollTo({top:0}); } catch(e){}
+    try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
     } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
 
