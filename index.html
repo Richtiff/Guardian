@@ -2428,6 +2428,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
 </div>
 
+<div id="debugBanner" style="position:fixed;top:0;left:0;right:0;background:#b71c1c;color:white;font-size:14px;font-weight:bold;z-index:99999;padding:6px 12px;text-align:center;"></div>
 <div class="toast" id="toast"></div>
 <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
@@ -3126,6 +3127,7 @@ function go(id) {
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
   if (t) t.classList.add('active');
+  var _db=document.getElementById('debugBanner'); if(_db) _db.textContent='SCREEN: '+id;
   if (id === 'sHome') { try { showHome(); } catch(e) {} }
   window.scrollTo({top:0,behavior:'smooth'});
   stepHistory.push(id);
