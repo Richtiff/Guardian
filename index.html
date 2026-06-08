@@ -2477,6 +2477,12 @@ var qaTyping = false;
 var qaHistory = [];
 var qaAttachment = null;
 var selCaseType = '', selCommStyle = '';
+
+function safeJSON(str, fallback) {
+  if (!str || str === 'null' || str === 'undefined') return fallback;
+  try { return JSON.parse(str); } catch(e) { return fallback; }
+}
+
 function safeJSONParse(str, fallback) {
   if (!str || !str.trim()) return fallback;
   try { return JSON.parse(str); } catch(e) { return fallback; }
@@ -2973,29 +2979,7 @@ if (supabase) {
 }
 
 // GLOBAL ERROR HANDLER — shows any crash on screen
-window.onerror = function(msg, src, line, col, err) {
-  var errDiv = document.getElementById('globalError');
-  if (!errDiv) {
-    errDiv = document.createElement('div');
-    errDiv.id = 'globalError';
-    errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b71c1c;color:white;padding:16px;z-index:99999;font-size:14px;font-family:monospace;word-break:break-all;';
-    document.body.appendChild(errDiv);
-  }
-  errDiv.textContent = 'ERROR: ' + msg + ' (line ' + line + ')';
-  errDiv.style.display = 'block';
-  return false;
-};
-window.onunhandledrejection = function(e) {
-  var errDiv = document.getElementById('globalError');
-  if (!errDiv) {
-    errDiv = document.createElement('div');
-    errDiv.id = 'globalError';
-    errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b71c1c;color:white;padding:16px;z-index:99999;font-size:14px;font-family:monospace;word-break:break-all;';
-    document.body.appendChild(errDiv);
-  }
-  errDiv.textContent = 'PROMISE ERROR: ' + (e.reason ? (e.reason.message || e.reason) : 'unknown');
-  errDiv.style.display = 'block';
-};
+// Error handlers removed
 
 var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian','sImport'];
 
