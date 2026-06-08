@@ -3124,10 +3124,12 @@ function goBack() {
 function go(id) {
   // Hide the app loader once we navigate anywhere
   var loader = document.getElementById('appLoader');
-  if (loader) loader.style.display = 'none';
+  if (loader) { loader.style.display = 'none'; loader.style.visibility = 'hidden'; loader.style.zIndex = '-1'; }
+  var ov = document.getElementById('overlay');
+  if (ov) { ov.classList.remove('show'); ov.style.display = 'none'; }
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
-  if (t) { t.style.display = ''; t.classList.add('active'); }
+  if (t) { t.style.display = 'block'; t.classList.add('active'); }
   if (id === 'sHome')
  { try { showHome(); } catch(e) {} }
   window.scrollTo({top:0,behavior:'smooth'});
