@@ -3128,7 +3128,8 @@ function go(id) {
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
   if (t) { t.style.display = ''; t.classList.add('active'); }
-  if (id === 'sHome') { try { showHome(); } catch(e) {} }
+  if (id === 'sHome')
+ { try { showHome(); } catch(e) {} }
   window.scrollTo({top:0,behavior:'smooth'});
   stepHistory.push(id);
   // Show home button on all screens except setup and home itself
@@ -5584,23 +5585,7 @@ async function _gen(ctx) {
     try { st.reply=_r; st.score=_s; checks++; localStorage.setItem('gChecks',checks); saveProfileToSupabase(); } catch(e){}
     try { startBreathTimer(); } catch(e){}
     try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
-    // NUCLEAR: completely replace page content with reply
-    try {
-      document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
-      var sr = document.getElementById('sReply');
-      if (sr) {
-        sr.style.cssText = 'display:block !important; min-height:100vh; background:#0d1117; padding:16px; position:relative; z-index:1;';
-        sr.classList.add('active');
-        // Directly populate reply
-        var srEl = document.getElementById('suggestedReply');
-        var rwEl = document.getElementById('replyWhy');
-        if (srEl) { srEl.value = _r; srEl.style.cssText = 'width:100%;background:rgba(255,255,255,0.08);color:#ffffff;font-size:16px;padding:14px;border:2px solid rgba(196,154,60,0.4);border-radius:12px;font-family:inherit;min-height:120px;display:block;'; }
-        if (rwEl) { rwEl.textContent = _w; rwEl.style.cssText = 'color:#aaa;font-size:14px;padding:8px 0;display:block;'; }
-        document.getElementById('overlay').style.display='none';
-        document.getElementById('overlay').classList.remove('show');
-        window.scrollTo(0,0);
-      }
-    } catch(forceErr) { alert('FORCE ERROR: ' + forceErr.message); }
+      go('sReply');
     try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
     } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
