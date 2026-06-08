@@ -1246,6 +1246,7 @@ p, .body-text { font-size: 16px !important; }
       </div>
       <div class="coach-body">
 
+      <div id="replyContent">
         <!-- Breath timer -->
         <div class="breathe" id="breatheDiv" style="font-size:14px;color:var(--muted);text-align:center;padding:10px 0 6px;line-height:1.6;">
           <span id="breatheText"></span>
@@ -1276,6 +1277,7 @@ p, .body-text { font-size: 16px !important; }
 
       </div>
 
+            </div><!-- end replyContent -->
       <!-- Refine buttons -->
       <div class="refine-section">
         <div class="refine-lbl">How does this feel?</div>
@@ -3192,7 +3194,7 @@ function load(text, sub) {
   }, 3000);
 }
 function unload() {
-  window._checkRunning = false;
+  try { var btn=document.querySelector('.type-confirm'); if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent='Check this message →';} } catch(e) {}
   clearInterval(_loadMsgTimer);
   try {
     var el = document.getElementById('overlay');
@@ -5357,10 +5359,9 @@ async function handleUpload(event) {
 }
 
 function confirmType() {
-  if (window._checkRunning) { return; }
-  window._checkRunning = true;
   var btn = document.querySelector('.type-confirm');
-  if (btn) { btn.disabled = false; }
+  if (btn && btn.disabled) return;
+  if (btn) btn.disabled = true;
   var v = document.getElementById('typeIn').value.trim();
   if (!v) { toast('Please paste their message first'); return; }
   // Disable to prevent double-tap
