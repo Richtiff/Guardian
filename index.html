@@ -3122,42 +3122,31 @@ function goBack() {
 }
 
 function go(id) {
-  // Hide the app loader once we navigate anywhere
-  var loader = document.getElementById('appLoader');
-  if (loader) { loader.style.display = 'none'; loader.style.visibility = 'hidden'; loader.style.zIndex = '-1'; }
-  var ov = document.getElementById('overlay');
-  if (ov) { ov.classList.remove('show'); ov.style.display = 'none'; }
-  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e){ e.classList.remove('active'); e.style.display='none'; } });
+  // Hide ALL step elements
+  var all = document.querySelectorAll('.step');
+  for (var i=0; i<all.length; i++) { all[i].style.display='none'; all[i].classList.remove('active'); }
+  // Show target
   var t = document.getElementById(id);
-  if (t) { t.style.display = 'block'; t.classList.add('active'); }
-  if (id === 'sHome')
- { try { showHome(); } catch(e) {} }
-  window.scrollTo(0, 0);
+  if (t) { t.style.display='block'; t.classList.add('active'); }
+  // Hide loader and overlay
+  var loader=document.getElementById('appLoader'); if(loader) loader.style.display='none';
+  var ov=document.getElementById('overlay'); if(ov){ ov.classList.remove('show'); ov.style.display='none'; }
+  // Scroll to top
+  window.scrollTo(0,0);
+  // Track history
   stepHistory.push(id);
-  // Show home button on all screens except setup and home itself
-  var homeBtn = document.getElementById('homeBtn');
-  if (homeBtn) {
-    var hideOn = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
-    homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
-  }
-  // Load screen data
-  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); var fc=document.getElementById('brainFactCount'); if(fc&&brainLog) fc.textContent=brainLog.length>0?'&#129504; '+brainLog.length+' facts extracted':''; }, 50); }
-  if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
-  if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
-  if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
-  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
-  // Inject ? help button and auto-show video on first visit
-  setTimeout(function(){
-    injectVideoBtn(id);
-    showVideoForScreen(id);
-  }, 300);
-  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
-  if (id==='sStatements') {}
-  if (id==='sCoach') { var btn=document.querySelector('.type-confirm'); if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.background='';btn.style.color='';btn.textContent='Check this message →';} document.getElementById('overlay').style.display='none'; document.getElementById('overlay').classList.remove('show'); }
-  if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
-  if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
-  if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
+  // Home button visibility
+  var homeBtn=document.getElementById('homeBtn');
+  if(homeBtn){ var hideOn=['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome']; homeBtn.style.display=hideOn.indexOf(id)===-1?'block':'none'; }
+  // Screen-specific init
+  if(id==='sHome'){ try{showHome();}catch(e){} }
+  if(id==='sBrain'){ setTimeout(function(){try{loadBrainScreen();}catch(e){}},50); }
+  if(id==='sDiary'){ setTimeout(function(){try{loadDiaryScreen();renderCalendar();}catch(e){}},50); }
+  if(id==='sDocs'){ setTimeout(function(){try{renderTimeline();}catch(e){}},50); }
+  if(id==='sCoach'){ var btn=document.querySelector('.type-confirm'); if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.background='';btn.style.color='';btn.textContent='Check this message →';} }
+  if(id==='sTalkGuardian'){ setTimeout(function(){try{initTalkGuardian();}catch(e){}},100); }
 }
+
 
 // Intercept browser back button
 window.addEventListener('popstate', function(e) {
