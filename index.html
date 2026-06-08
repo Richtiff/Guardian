@@ -3132,7 +3132,7 @@ function go(id) {
   if (t) { t.style.display = 'block'; t.classList.add('active'); }
   if (id === 'sHome')
  { try { showHome(); } catch(e) {} }
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo(0, 0);
   stepHistory.push(id);
   // Show home button on all screens except setup and home itself
   var homeBtn = document.getElementById('homeBtn');
