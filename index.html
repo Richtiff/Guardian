@@ -3127,7 +3127,7 @@ function go(id) {
   if (loader) { loader.style.display = 'none'; loader.style.visibility = 'hidden'; loader.style.zIndex = '-1'; }
   var ov = document.getElementById('overlay');
   if (ov) { ov.classList.remove('show'); ov.style.display = 'none'; }
-  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e){ e.classList.remove('active'); e.style.display='none'; } });
   var t = document.getElementById(id);
   if (t) { t.style.display = 'block'; t.classList.add('active'); }
   if (id === 'sHome')
