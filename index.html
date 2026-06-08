@@ -39,8 +39,8 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .logo { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; }
 .logo span { color:var(--gold); }
 .badge { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); background:var(--gold-dim); border:1px solid rgba(245,200,66,0.2); padding:4px 10px; border-radius:20px; }
-.step { display:none; animation:fadeUp 0.2s ease; }
-.step.active { display:block; min-height:50vh; }
+.step { display:none; }
+.step.active { display:block; min-height:50vh; opacity:1; }
 @keyframes spin { to { transform:rotate(360deg); } }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes spin { to{transform:rotate(360deg)} }
