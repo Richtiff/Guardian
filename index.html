@@ -3108,7 +3108,7 @@ function goBack() {
   var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
   var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
   window._checkRunning = false;
-  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e){ e.classList.remove('active'); e.style.display=''; } });
   var t = document.getElementById(landing);
   if (t) t.classList.add('active');
   window.scrollTo({top:0,behavior:'instant'});
