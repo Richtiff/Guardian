@@ -5528,7 +5528,10 @@ async function genReply(){
   if(!ctx) ctx='No context provided.';
   await _gen(ctx);
 }
-async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
+async function genReplyDirect(){
+  var ctx = 'Flag: '+(st.flag||'green')+'. '+(st.flagText||'')+'. '+(st.answer?'Parent context: '+st.answer:'');
+  _gen(ctx);
+}
 
 async function _gen(ctx) {
   load('Writing your reply...','Keeping it safe and human');
@@ -5559,83 +5562,130 @@ async function _gen(ctx) {
     try { st.reply=_r; st.score=_s; checks++; localStorage.setItem('gChecks',checks); saveProfileToSupabase(); } catch(e){}
     try { startBreathTimer(); } catch(e){}
     try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
-      // Build full reply workflow overlay
-      var _sc = _s>=8?'✅ Safe to send':_s>=6?'⚠️ Review first':'❌ Needs work';
-      var _scColor = _s>=8?'#1a9e72':_s>=6?'#c9943a':'#b84444';
-      var _msgText = st.msg || '';
+      // Build full workflow overlay
+      var _sc = _s>=8?'✅ Safe':_s>=6?'⚠️ Review':'❌ Caution';
+      var _scBg = _s>=8?'#1a9e72':_s>=6?'#c9943a':'#b84444';
+      var _flagBg = st.flag==='red'?'rgba(184,68,68,0.15)':st.flag==='amber'?'rgba(201,148,58,0.15)':'rgba(26,158,114,0.12)';
+      var _flagBorder = st.flag==='red'?'rgba(184,68,68,0.5)':st.flag==='amber'?'rgba(201,148,58,0.5)':'rgba(26,158,114,0.4)';
+      var _flagIcon = st.flag==='red'?'🔴':st.flag==='amber'?'🟡':'🟢';
+      var _flagTitle = st.flag==='red'?'This needs care — Guardian has your back':st.flag==='amber'?'Loaded message — stay calm and factual':'Routine — keep it brief and warm';
+      var _msgSafe = (_msgText||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       var ro = document.getElementById('replyOverlay');
       if (!ro) { ro = document.createElement('div'); ro.id = 'replyOverlay'; document.body.appendChild(ro); }
       ro.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0f1a;z-index:5000;overflow-y:auto;-webkit-overflow-scrolling:touch;box-sizing:border-box;font-family:DM Sans,sans-serif;';
       ro.innerHTML =
-        '<div style="max-width:480px;margin:0 auto;padding:16px 16px 100px;">' +
+        '<div style="max-width:480px;margin:0 auto;padding:16px 16px 120px;">' +
         // Header
-        '<div style="display:flex;align-items:center;gap:12px;padding:12px 0 16px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:16px;">' +
-        '<button id="roBack1" style="background:transparent;border:none;color:#d4a843;font-size:22px;cursor:pointer;padding:4px;touch-action:manipulation;">←</button>' +
+        '<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:14px;">' +
+        '<button id="roBack1" style="background:transparent;border:none;color:#d4a843;font-size:22px;cursor:pointer;padding:4px 8px;touch-action:manipulation;">←</button>' +
         '<span style="color:#e8edf5;font-size:18px;font-weight:700;flex:1;">Reply Ready</span>' +
-        '<span style="background:' + _scColor + ';color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">' + _sc + '</span>' +
+        '<span style="background:'+_scBg+';color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">'+_sc+'</span>' +
         '</div>' +
+        // Flag banner
+        (st.flag ? '<div style="background:'+_flagBg+';border:1.5px solid '+_flagBorder+';border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;">' +
+        '<span style="font-size:18px;">'+_flagIcon+'</span>' +
+        '<div><div style="color:#e8edf5;font-size:13px;font-weight:700;margin-bottom:2px;">'+_flagTitle+'</div>' +
+        '<div style="color:#7a8aaa;font-size:12px;">'+st.flagText+'</div></div></div>' : '') +
         // Their message
         '<div style="background:#111827;border-radius:12px;padding:12px 14px;margin-bottom:14px;">' +
-        '<div style="color:#4a5878;font-size:11px;font-weight:700;margin-bottom:6px;">THEIR MESSAGE</div>' +
-        '<div style="color:#7a8aaa;font-size:14px;line-height:1.6;">' + _msgText.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
-        '</div>' +
+        '<div style="color:#4a5878;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">THEIR MESSAGE</div>' +
+        '<div style="color:#aab4c8;font-size:14px;line-height:1.6;">'+_msgSafe+'</div></div>' +
         // Why this reply works
-        (_w ? '<div style="color:#7a8aaa;font-size:13px;font-style:italic;margin-bottom:12px;padding:0 4px;">💡 ' + _w + '</div>' : '') +
-        // Reply text (editable)
-        '<div style="color:#d4a843;font-size:11px;font-weight:700;margin-bottom:6px;">YOUR REPLY</div>' +
-        '<textarea id="roEditReply" style="width:100%;background:#111827;border:2px solid rgba(212,168,67,0.4);border-radius:12px;padding:14px;color:#ffffff;font-size:16px;line-height:1.7;font-family:DM Sans,sans-serif;min-height:100px;box-sizing:border-box;resize:none;outline:none;-webkit-appearance:none;" rows="4">' + _r + '</textarea>' +
-        '<div style="color:#4a5878;font-size:11px;margin:6px 0 16px;padding:0 2px;">✏️ Tap to edit before sending</div>' +
+        (_w ? '<div style="color:#7a8aaa;font-size:13px;font-style:italic;margin-bottom:12px;padding:0 4px;line-height:1.5;">💡 '+_w+'</div>' : '') +
+        // Reply label
+        '<div style="color:#d4a843;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">YOUR REPLY — tap to edit</div>' +
+        // Reply textarea
+        '<textarea id="roEditReply" style="width:100%;background:#111827;border:2px solid rgba(212,168,67,0.4);border-radius:12px;padding:14px;color:#ffffff;font-size:16px;line-height:1.7;font-family:DM Sans,sans-serif;min-height:90px;box-sizing:border-box;resize:none;outline:none;-webkit-appearance:none;display:block;" rows="4">'+_r+'</textarea>' +
         // Copy button
-        '<button id="roCopyBtn" style="width:100%;padding:16px;background:#d4a843;border:none;border-radius:14px;color:#0a0600;font-size:17px;font-weight:800;cursor:pointer;margin-bottom:8px;touch-action:manipulation;">📋 Copy Reply</button>' +
-        '<div style="color:#4a5878;font-size:12px;text-align:center;margin-bottom:16px;">Open WhatsApp → long-press → Paste</div>' +
-        // Refine buttons
-        '<div style="color:#4a5878;font-size:11px;font-weight:700;margin-bottom:8px;">HOW DOES THIS FEEL?</div>' +
+        '<button id="roCopyBtn" style="width:100%;padding:16px;background:#d4a843;border:none;border-radius:14px;color:#0a0600;font-size:17px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">📋 Copy Reply</button>' +
+        '<div style="color:#4a5878;font-size:12px;text-align:center;margin:6px 0 16px;">Open WhatsApp · long-press · Paste</div>' +
+        // Refine
+        '<div style="color:#4a5878;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:8px;">REFINE THIS REPLY</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">' +
-        '<button class="ro-refine" data-mode="formal" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too formal</button>' +
-        '<button class="ro-refine" data-mode="harsh" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too harsh</button>' +
-        '<button class="ro-refine" data-mode="soft" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too soft</button>' +
-        '<button class="ro-refine" data-mode="different" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Say differently</button>' +
+        '<button class="ro-ref" data-m="formal" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too formal</button>' +
+        '<button class="ro-ref" data-m="harsh" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too harsh</button>' +
+        '<button class="ro-ref" data-m="soft" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too soft</button>' +
+        '<button class="ro-ref" data-m="different" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Try again</button>' +
         '</div>' +
-        // Feedback
-        '<div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,0.06);margin-bottom:12px;">' +
-        '<span style="color:#4a5878;font-size:13px;">Was this helpful?</span>' +
-        '<button id="roFbUp" style="background:transparent;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;color:#e8edf5;font-size:16px;cursor:pointer;touch-action:manipulation;">👍</button>' +
-        '<button id="roFbDn" style="background:transparent;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;color:#e8edf5;font-size:16px;cursor:pointer;touch-action:manipulation;">👎</button>' +
+        // Diary + Feedback row
+        '<div style="display:flex;gap:10px;margin-bottom:16px;">' +
+        '<button id="roDiaryBtn" style="flex:1;padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;color:#81c784;font-size:14px;cursor:pointer;touch-action:manipulation;">📓 Save to Diary</button>' +
+        '<button id="roFbUp" style="padding:12px 16px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;font-size:18px;cursor:pointer;touch-action:manipulation;">👍</button>' +
+        '<button id="roFbDn" style="padding:12px 16px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;font-size:18px;cursor:pointer;touch-action:manipulation;">👎</button>' +
         '</div>' +
+        // Guardian chat
+        '<div style="border-top:1.5px solid rgba(212,168,67,0.2);margin-bottom:14px;padding-top:14px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+        '<span style="color:#d4a843;font-size:14px;font-weight:700;">🛡 Ask Guardian</span>' +
+        '<span style="color:#4a5878;font-size:12px;">Ask anything about this reply</span></div>' +
+        '<div id="roChatMsgs" style="min-height:0;margin-bottom:8px;display:flex;flex-direction:column;gap:10px;"></div>' +
+        '<div style="display:flex;gap:8px;">' +
+        '<input id="roChatIn" type="text" placeholder="Ask Guardian..." style="flex:1;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:#fff;font-size:15px;font-family:DM Sans,sans-serif;outline:none;-webkit-appearance:none;">' +
+        '<button id="roChatSend" style="padding:10px 16px;background:#d4a843;border:none;border-radius:10px;color:#000;font-weight:800;font-size:16px;cursor:pointer;touch-action:manipulation;">➤</button>' +
+        '</div></div>' +
         // Back button
-        '<button id="roBackBtn" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(255,255,255,0.12);border-radius:14px;color:#4a5878;font-size:15px;cursor:pointer;touch-action:manipulation;">← Check another message</button>' +
+        '<button id="roBackBtn" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(255,255,255,0.1);border-radius:14px;color:#4a5878;font-size:15px;cursor:pointer;touch-action:manipulation;">← Check another message</button>' +
         '</div>';
 
-      // Wire up buttons
+      // Wire buttons
       var roBack = function(){ ro.style.display='none'; go('sCoach'); };
       document.getElementById('roBack1').onclick = roBack;
       document.getElementById('roBackBtn').onclick = roBack;
+
       document.getElementById('roCopyBtn').onclick = function(){
         var txt = document.getElementById('roEditReply').value;
-        if(navigator.clipboard){ navigator.clipboard.writeText(txt).catch(function(){}); }
-        this.textContent='✅ Copied! Open WhatsApp → long-press → Paste';
-        this.style.background='#1a9e72';
+        try{ navigator.clipboard.writeText(txt); }catch(e){}
+        this.textContent='✅ Copied!'; this.style.background='#1a9e72';
         var self=this; setTimeout(function(){ self.textContent='📋 Copy Reply'; self.style.background='#d4a843'; },3000);
       };
-      var refBtns = ro.querySelectorAll('.ro-refine');
-      for(var i=0;i<refBtns.length;i++){
-        refBtns[i].onclick = function(){
-          var mode=this.getAttribute('data-mode');
+
+      document.getElementById('roDiaryBtn').onclick = function(){
+        try{ saveExchangeToDiary(); this.textContent='✅ Saved!'; }catch(e){ this.textContent='✅ Saved!'; }
+      };
+
+      document.getElementById('roFbUp').onclick = function(){ this.style.background='rgba(26,158,114,0.3)'; try{doFeedback('up');}catch(e){} };
+      document.getElementById('roFbDn').onclick = function(){ this.style.background='rgba(184,68,68,0.3)'; try{doFeedback('down');}catch(e){} };
+
+      // Refine buttons
+      ro.querySelectorAll('.ro-ref').forEach(function(btn){
+        btn.onclick = function(){
+          var mode=this.getAttribute('data-m');
           var cur=document.getElementById('roEditReply').value;
-          var roCopy=document.getElementById('roCopyBtn');
-          roCopy.textContent='⏳ Refining...'; roCopy.disabled=true;
-          var refinePrompt='Rewrite this reply to sound less '+mode+'. Keep same meaning and length. Return ONLY the rewritten reply text, no explanation.\nOriginal: '+cur;
-          fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:'You rewrite messages. Return ONLY the rewritten text.',messages:[{role:'user',content:refinePrompt}]})})
+          var copyBtn=document.getElementById('roCopyBtn');
+          copyBtn.textContent='⏳ Rewriting...'; copyBtn.disabled=true;
+          fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,
+              system:'Rewrite the message as instructed. Return ONLY the rewritten text, nothing else.',
+              messages:[{role:'user',content:'Rewrite this reply to sound less '+mode+'. Same meaning, same length. Reply text only. Original: '+cur}]})})
           .then(function(r){return r.json();})
           .then(function(d){
-            var newReply=((d.content||[]).map(function(b){return b.text||'';}).join('').trim());
-            if(newReply){ document.getElementById('roEditReply').value=newReply; }
-            roCopy.textContent='📋 Copy Reply'; roCopy.disabled=false;
-          }).catch(function(){ roCopy.textContent='📋 Copy Reply'; roCopy.disabled=false; });
+            var t=((d.content||[]).map(function(b){return b.text||'';}).join('').trim());
+            if(t) document.getElementById('roEditReply').value=t;
+            copyBtn.textContent='📋 Copy Reply'; copyBtn.disabled=false;
+          }).catch(function(){ copyBtn.textContent='📋 Copy Reply'; copyBtn.disabled=false; });
         };
-      }
-      document.getElementById('roFbUp').onclick = function(){ this.style.background='#1a9e72'; try{doFeedback('up');}catch(e){} };
-      document.getElementById('roFbDn').onclick = function(){ this.style.background='#b84444'; try{doFeedback('down');}catch(e){} };
+      });
+
+      // Guardian chat
+      document.getElementById('roChatSend').onclick = function(){
+        var q=document.getElementById('roChatIn').value.trim();
+        if(!q) return;
+        var msgs=document.getElementById('roChatMsgs');
+        msgs.innerHTML+='<div style="background:rgba(212,168,67,0.1);border-radius:10px;padding:10px 12px;color:#e8edf5;font-size:14px;line-height:1.5;align-self:flex-end;max-width:85%;">'+q+'</div>';
+        document.getElementById('roChatIn').value='';
+        var ctx2=getCTX()+'\n\nMessage being replied to: '+st.msg+'\n\nGenerated reply: '+document.getElementById('roEditReply').value;
+        fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:SYS,
+            messages:[{role:'user',content:ctx2+'\n\nQuestion about this reply: '+q}]})})
+        .then(function(r){return r.json();})
+        .then(function(d){
+          var ans=((d.content||[]).map(function(b){return b.text||'';}).join('').trim());
+          msgs.innerHTML+='<div style="background:#111827;border-left:3px solid #d4a843;border-radius:10px;padding:10px 12px;color:#e8edf5;font-size:14px;line-height:1.5;max-width:90%;"><span style=\"color:#d4a843;font-size:11px;font-weight:700;\">🛡 GUARDIAN</span><br>'+ans+'</div>';
+          msgs.scrollTop=msgs.scrollHeight;
+        }).catch(function(){});
+      };
+      document.getElementById('roChatIn').addEventListener('keypress',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); document.getElementById('roChatSend').click(); } });
+
       go('sReply');
     try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
     } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
