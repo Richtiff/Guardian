@@ -5551,7 +5551,6 @@ async function _gen(ctx) {
       unload();
     // Absolute minimum — navigate to sReply with reply text
     var _r = (p && p.reply) ? p.reply : '(Guardian could not generate a reply — tap Check again)';
-    alert('DEBUG: reply=' + (_r ? _r.substring(0,40) : 'EMPTY') + ' score=' + _s);
     var _s = (p && p.score) ? p.score : 5;
     var _w = (p && p.why) ? p.why : '';
     try { var srEl=document.getElementById('suggestedReply'); if(srEl) srEl.value = _r; } catch(e){}
@@ -5560,21 +5559,83 @@ async function _gen(ctx) {
     try { st.reply=_r; st.score=_s; checks++; localStorage.setItem('gChecks',checks); saveProfileToSupabase(); } catch(e){}
     try { startBreathTimer(); } catch(e){}
     try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
-      // Show reply in fixed overlay
+      // Build full reply workflow overlay
+      var _sc = _s>=8?'✅ Safe to send':_s>=6?'⚠️ Review first':'❌ Needs work';
+      var _scColor = _s>=8?'#1a9e72':_s>=6?'#c9943a':'#b84444';
+      var _msgText = st.msg || '';
       var ro = document.getElementById('replyOverlay');
       if (!ro) { ro = document.createElement('div'); ro.id = 'replyOverlay'; document.body.appendChild(ro); }
-      var scoreLabel = _s>=8 ? 'Safe to send' : _s>=6 ? 'Review first' : 'Needs work';
-      ro.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0f1a;z-index:5000;overflow-y:auto;padding:20px;box-sizing:border-box;';
-      ro.innerHTML = '<div style="max-width:480px;margin:0 auto;padding-bottom:40px;">' +
-        '<div style="padding:16px 0 20px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:20px;">' +
-        '<span style="color:#e8edf5;font-size:20px;font-weight:700;">💬 Your Reply</span></div>' +
-        '<div style="color:#d4a843;font-size:12px;font-weight:700;margin-bottom:10px;">Score: ' + _s + '/10 — ' + scoreLabel + '</div>' +
-        '<div id="roReplyText" style="background:#111827;border:2px solid rgba(212,168,67,0.4);border-radius:14px;padding:16px;margin-bottom:20px;color:#ffffff;font-size:16px;line-height:1.8;">' + _r + '</div>' +
-        '<button id="roCopyBtn" style="width:100%;padding:16px;background:#d4a843;border:none;border-radius:14px;color:#000;font-size:17px;font-weight:800;cursor:pointer;margin-bottom:12px;touch-action:manipulation;">📋 Copy Reply</button>' +
-        '<button id="roBackBtn" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(255,255,255,0.15);border-radius:14px;color:#7a8aaa;font-size:15px;cursor:pointer;touch-action:manipulation;">← Check another message</button>' +
+      ro.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0f1a;z-index:5000;overflow-y:auto;-webkit-overflow-scrolling:touch;box-sizing:border-box;font-family:DM Sans,sans-serif;';
+      ro.innerHTML =
+        '<div style="max-width:480px;margin:0 auto;padding:16px 16px 100px;">' +
+        // Header
+        '<div style="display:flex;align-items:center;gap:12px;padding:12px 0 16px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:16px;">' +
+        '<button id="roBack1" style="background:transparent;border:none;color:#d4a843;font-size:22px;cursor:pointer;padding:4px;touch-action:manipulation;">←</button>' +
+        '<span style="color:#e8edf5;font-size:18px;font-weight:700;flex:1;">Reply Ready</span>' +
+        '<span style="background:' + _scColor + ';color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">' + _sc + '</span>' +
+        '</div>' +
+        // Their message
+        '<div style="background:#111827;border-radius:12px;padding:12px 14px;margin-bottom:14px;">' +
+        '<div style="color:#4a5878;font-size:11px;font-weight:700;margin-bottom:6px;">THEIR MESSAGE</div>' +
+        '<div style="color:#7a8aaa;font-size:14px;line-height:1.6;">' + _msgText.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+        '</div>' +
+        // Why this reply works
+        (_w ? '<div style="color:#7a8aaa;font-size:13px;font-style:italic;margin-bottom:12px;padding:0 4px;">💡 ' + _w + '</div>' : '') +
+        // Reply text (editable)
+        '<div style="color:#d4a843;font-size:11px;font-weight:700;margin-bottom:6px;">YOUR REPLY</div>' +
+        '<textarea id="roEditReply" style="width:100%;background:#111827;border:2px solid rgba(212,168,67,0.4);border-radius:12px;padding:14px;color:#ffffff;font-size:16px;line-height:1.7;font-family:DM Sans,sans-serif;min-height:100px;box-sizing:border-box;resize:none;outline:none;-webkit-appearance:none;" rows="4">' + _r + '</textarea>' +
+        '<div style="color:#4a5878;font-size:11px;margin:6px 0 16px;padding:0 2px;">✏️ Tap to edit before sending</div>' +
+        // Copy button
+        '<button id="roCopyBtn" style="width:100%;padding:16px;background:#d4a843;border:none;border-radius:14px;color:#0a0600;font-size:17px;font-weight:800;cursor:pointer;margin-bottom:8px;touch-action:manipulation;">📋 Copy Reply</button>' +
+        '<div style="color:#4a5878;font-size:12px;text-align:center;margin-bottom:16px;">Open WhatsApp → long-press → Paste</div>' +
+        // Refine buttons
+        '<div style="color:#4a5878;font-size:11px;font-weight:700;margin-bottom:8px;">HOW DOES THIS FEEL?</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">' +
+        '<button class="ro-refine" data-mode="formal" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too formal</button>' +
+        '<button class="ro-refine" data-mode="harsh" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too harsh</button>' +
+        '<button class="ro-refine" data-mode="soft" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too soft</button>' +
+        '<button class="ro-refine" data-mode="different" style="padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Say differently</button>' +
+        '</div>' +
+        // Feedback
+        '<div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,0.06);margin-bottom:12px;">' +
+        '<span style="color:#4a5878;font-size:13px;">Was this helpful?</span>' +
+        '<button id="roFbUp" style="background:transparent;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;color:#e8edf5;font-size:16px;cursor:pointer;touch-action:manipulation;">👍</button>' +
+        '<button id="roFbDn" style="background:transparent;border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;color:#e8edf5;font-size:16px;cursor:pointer;touch-action:manipulation;">👎</button>' +
+        '</div>' +
+        // Back button
+        '<button id="roBackBtn" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(255,255,255,0.12);border-radius:14px;color:#4a5878;font-size:15px;cursor:pointer;touch-action:manipulation;">← Check another message</button>' +
         '</div>';
-      document.getElementById('roCopyBtn').onclick = function(){ var t=document.getElementById('roReplyText').textContent; if(navigator.clipboard){navigator.clipboard.writeText(t);} this.textContent='✅ Copied!'; };
-      document.getElementById('roBackBtn').onclick = function(){ document.getElementById('replyOverlay').style.display='none'; go('sCoach'); };
+
+      // Wire up buttons
+      var roBack = function(){ ro.style.display='none'; go('sCoach'); };
+      document.getElementById('roBack1').onclick = roBack;
+      document.getElementById('roBackBtn').onclick = roBack;
+      document.getElementById('roCopyBtn').onclick = function(){
+        var txt = document.getElementById('roEditReply').value;
+        if(navigator.clipboard){ navigator.clipboard.writeText(txt).catch(function(){}); }
+        this.textContent='✅ Copied! Open WhatsApp → long-press → Paste';
+        this.style.background='#1a9e72';
+        var self=this; setTimeout(function(){ self.textContent='📋 Copy Reply'; self.style.background='#d4a843'; },3000);
+      };
+      var refBtns = ro.querySelectorAll('.ro-refine');
+      for(var i=0;i<refBtns.length;i++){
+        refBtns[i].onclick = function(){
+          var mode=this.getAttribute('data-mode');
+          var cur=document.getElementById('roEditReply').value;
+          var roCopy=document.getElementById('roCopyBtn');
+          roCopy.textContent='⏳ Refining...'; roCopy.disabled=true;
+          var refinePrompt='Rewrite this reply to sound less '+mode+'. Keep same meaning and length. Return ONLY the rewritten reply text, no explanation.\nOriginal: '+cur;
+          fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:'You rewrite messages. Return ONLY the rewritten text.',messages:[{role:'user',content:refinePrompt}]})})
+          .then(function(r){return r.json();})
+          .then(function(d){
+            var newReply=((d.content||[]).map(function(b){return b.text||'';}).join('').trim());
+            if(newReply){ document.getElementById('roEditReply').value=newReply; }
+            roCopy.textContent='📋 Copy Reply'; roCopy.disabled=false;
+          }).catch(function(){ roCopy.textContent='📋 Copy Reply'; roCopy.disabled=false; });
+        };
+      }
+      document.getElementById('roFbUp').onclick = function(){ this.style.background='#1a9e72'; try{doFeedback('up');}catch(e){} };
+      document.getElementById('roFbDn').onclick = function(){ this.style.background='#b84444'; try{doFeedback('down');}catch(e){} };
       go('sReply');
     try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
     } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
