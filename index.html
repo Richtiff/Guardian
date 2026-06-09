@@ -1261,7 +1261,7 @@ p, .body-text { font-size: 16px !important; }
 
         <!-- The reply -->
         <textarea class="suggested" id="suggestedReply" onclick="oneTouchCopy(this)" title="Tap to copy"
-          style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5"
+          style="width:100%;background:rgba(255,255,255,0.1);border:2px solid rgba(196,154,60,0.5);border-radius:12px;color:#ffffff;font-size:16px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:120px;padding:12px;display:block;" rows="5"
           placeholder="Your reply will appear here..."></textarea>
 
         <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
@@ -5549,9 +5549,8 @@ async function _gen(ctx) {
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
       unload();
-      unload();
     // Absolute minimum — navigate to sReply with reply text
-    var _r = (p && p.reply) ? p.reply : '';
+    var _r = (p && p.reply) ? p.reply : '(Guardian could not generate a reply — tap Check again)';
     var _s = (p && p.score) ? p.score : 5;
     var _w = (p && p.why) ? p.why : '';
     try { var srEl=document.getElementById('suggestedReply'); if(srEl) srEl.value = _r; } catch(e){}
@@ -5561,6 +5560,7 @@ async function _gen(ctx) {
     try { startBreathTimer(); } catch(e){}
     try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
       go('sReply');
+    try { var rc=document.getElementById('replyContent'); if(rc) rc.style.display='block'; } catch(e) {}
     try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
     } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
 }
