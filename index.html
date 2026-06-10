@@ -895,7 +895,7 @@ p, .body-text { font-size: 16px !important; }
     <button type="button" class="home-btn home-btn-gold" onclick="go('sCoach')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">💬</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Reply Ready</div><div class="home-btn-sub">Paste their message. Get a reply. Send with confidence.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sTalkGuardian')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="agOpen()" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🛡️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Ask Guardian</div><div class="home-btn-sub">Messages, documents, hearings — ask me anything.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
     <button type="button" class="home-btn home-btn-gold" onclick="go('sDiary')" style="text-align:left;padding:16px 20px;">
@@ -2306,6 +2306,37 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
 
+
+
+<div id="agModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;background:#0a0f1a;overflow-y:auto;padding:16px 16px 140px;box-sizing:border-box;">
+  <div style="max-width:480px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;padding:16px 0 14px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:20px;">
+      <button onclick="agClose()" style="background:#1a1f2e;border:1.5px solid #2a3040;border-radius:10px;color:#7a8aaa;font-size:14px;padding:7px 14px;cursor:pointer;touch-action:manipulation;">&#8592; Back</button>
+      <div style="font-size:16px;font-weight:800;color:#e8edf5;">Ask Guardian</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <button onclick="agChip('rate')" style="padding:8px 14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:20px;color:#d4a843;font-size:13px;cursor:pointer;touch-action:manipulation;">&#11088; Rate my reply</button>
+      <button onclick="agChip('write')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Help me write one</button>
+      <button onclick="agChip('judge')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Judge view</button>
+      <button onclick="agChip('pattern')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Pattern check</button>
+      <button onclick="agChip('log')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">What to log</button>
+    </div>
+    <div id="agRatePanel" style="display:none;background:#1a1f2e;border:1.5px solid #2a3040;border-radius:14px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#d4a843;margin-bottom:8px;">THEIR MESSAGE</div>
+      <textarea id="agTheirMsg" rows="3" placeholder="Paste their message..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#e8edf5;font-size:14px;font-family:inherit;resize:none;outline:none;box-sizing:border-box;"></textarea>
+      <div style="font-size:11px;font-weight:700;color:#d4a843;margin:10px 0 8px;">YOUR REPLY</div>
+      <textarea id="agMyReply" rows="3" placeholder="Paste your reply..." style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#e8edf5;font-size:14px;font-family:inherit;resize:none;outline:none;box-sizing:border-box;"></textarea>
+      <button onclick="agSubmitRating()" style="width:100%;padding:13px;background:#d4a843;border:none;border-radius:12px;color:#0a0600;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">Rate this reply</button>
+    </div>
+    <div id="agMessages" style="display:flex;flex-direction:column;gap:14px;"></div>
+  </div>
+  <div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#0a0f1a;border-top:1.5px solid rgba(212,168,67,0.2);padding:10px 16px 24px;z-index:9502;box-sizing:border-box;">
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <textarea id="agInput" rows="1" placeholder="Ask Guardian anything about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:#e8edf5;font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
+      <button onclick="agSend()" style="width:44px;height:44px;background:#d4a843;border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">&#9658;</button>
+    </div>
+  </div>
+</div>
 <div class="step" id="sKeyDates">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
@@ -9730,6 +9761,90 @@ function agSubmitRating() {
 }
 
 // ── END ASK GUARDIAN ──────────────────────────────────────────────────────────
+
+
+function agOpen() {
+  var m = document.getElementById('agModal');
+  if (!m) return;
+  m.style.display = 'block';
+  window.scrollTo(0,0);
+  var msgs = document.getElementById('agMessages');
+  if (msgs && msgs.children.length === 0) {
+    agAddMsg('g', 'Hi Richard. I know your case inside out.\n\nAsk me anything about a message, hearing, reply, or document. Tap Rate my reply to get feedback on something you have written.');
+  }
+}
+function agClose() {
+  var m = document.getElementById('agModal');
+  if (m) m.style.display = 'none';
+}
+function agAddMsg(role, text) {
+  var msgs = document.getElementById('agMessages');
+  if (!msgs) return;
+  var div = document.createElement('div');
+  div.style.cssText = role === 'u' ? 'background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.2);border-radius:12px;padding:12px 14px;color:#e8edf5;font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word;margin-bottom:2px;' : 'background:#1a1f2e;border-left:3px solid #d4a843;border-radius:12px;padding:12px 14px;color:#e8edf5;font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word;margin-bottom:2px;';
+  if (role === 'g') {
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:10px;font-weight:700;color:#d4a843;margin-bottom:6px;letter-spacing:0.5px;';
+    lbl.textContent = 'GUARDIAN';
+    div.appendChild(lbl);
+  }
+  var t = document.createElement('div');
+  t.textContent = text;
+  div.appendChild(t);
+  msgs.appendChild(div);
+  div.scrollIntoView({behavior:'smooth',block:'end'});
+}
+async function agCallAPI(prompt) {
+  var msgs = document.getElementById('agMessages');
+  var ld = document.createElement('div');
+  ld.style.cssText = 'color:#7a8aaa;font-size:14px;padding:8px 4px;';
+  ld.textContent = 'Guardian is thinking...';
+  if (msgs) msgs.appendChild(ld);
+  try {
+    var ctx = typeof getCTX === 'function' ? getCTX() : '';
+    var sys = typeof SYS !== 'undefined' ? SYS : 'You are Guardian, a co-parenting communication coach.';
+    var api = typeof API !== 'undefined' ? API : '/api/anthropic';
+    var res = await fetch(api, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,system:sys,messages:[{role:'user',content:ctx+' '+prompt}]})});
+    var d = await res.json();
+    var reply = (d.content||[]).map(function(b){return b.text||'';}).join('').trim();
+    if (ld.parentNode) ld.parentNode.removeChild(ld);
+    agAddMsg('g', reply || 'Something went wrong. Please try again.');
+  } catch(e) {
+    if (ld.parentNode) ld.parentNode.removeChild(ld);
+    agAddMsg('g', 'Connection error. Please try again.');
+  }
+}
+function agSend() {
+  var inp = document.getElementById('agInput');
+  if (!inp) return;
+  var v = (inp.value||'').trim();
+  if (!v) return;
+  inp.value = '';
+  var panel = document.getElementById('agRatePanel');
+  if (panel) panel.style.display = 'none';
+  agAddMsg('u', v);
+  agCallAPI(v);
+}
+function agChip(type) {
+  if (type === 'rate') {
+    var p = document.getElementById('agRatePanel');
+    if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  var prompts = {write:'Help me write a reply to a message from the other parent.',judge:'What would a judge think of this exchange? I will paste the messages.',pattern:'Is the other parent building a pattern? What should I document?',log:'What should I log tonight based on recent events?'};
+  var inp = document.getElementById('agInput');
+  if (inp && prompts[type]) { inp.value = prompts[type]; inp.focus(); }
+}
+function agSubmitRating() {
+  var their = (document.getElementById('agTheirMsg').value||'').trim();
+  var mine = (document.getElementById('agMyReply').value||'').trim();
+  if (!their || !mine) { alert('Paste both messages first'); return; }
+  document.getElementById('agRatePanel').style.display = 'none';
+  document.getElementById('agTheirMsg').value = '';
+  document.getElementById('agMyReply').value = '';
+  agAddMsg('u', 'Rate my reply to: '+their.substring(0,60)+(their.length>60?'...':''));
+  agCallAPI('Rate this reply out of 10. Their message: ['+their+'] My reply: ['+mine+']. Score, what works, what to improve. Brief. Father not carer framing.');
+}
 
 </script>
 <!-- VIDEO HELP MODAL -->
