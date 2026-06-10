@@ -2777,7 +2777,7 @@ window.onload = function() { (async function() {
         if (sess.expiry && Date.now() < sess.expiry) {
           currentUser = { id: sess.userId || sess.email, email: sess.email };
           var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
-          if (isComplete) { profile.complete = true; showHome(); return; }
+          if (isComplete) { profile.complete = true; go('sHome'); return; }
           // setupStep navigation removed
           go('sWelcome'); return;
         } else { localStorage.removeItem('gSession'); }
@@ -2806,7 +2806,7 @@ window.onload = function() { (async function() {
         if (isComplete) {
           profile.complete = true;
           if (supabase && currentUser) saveProfileToSupabase().catch(function(){});
-          showHome();
+          go('sHome');
         } else {
           go("sWelcome");
         }
@@ -2840,7 +2840,7 @@ window.onload = function() { (async function() {
         console.warn('Silent re-auth error:', e.message);
       }
     }
-    showHome();
+    go('sHome');
     return;
   }
 
@@ -2997,7 +2997,7 @@ function go(id) {
   if (!t) { toast('ERROR: ' + id + ' not in DOM'); return; }
   t.classList.add('active');
   toast('active added to ' + id);
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo(0, 0);
   stepHistory.push(id);
   // Show home button on all screens except setup and home itself
   var homeBtn = document.getElementById('homeBtn');
