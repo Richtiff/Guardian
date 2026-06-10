@@ -2746,10 +2746,9 @@ window.onload = function() { (async function() {
   document.getElementById('overlay').style.display = 'none';
 
   // Android PWA back button support
-  window.addEventListener('popstate', function(e) { goBack(); });
+  // popstate removed — no longer using history API
 
-  // Push initial state
-  history.pushState({step:'init'}, '');
+  // history API removed
 
   // Wait for Supabase library to load — retry up to 20 times
   var attempts = 0;
@@ -2989,17 +2988,17 @@ function goBack() {
 }
 
 function go(id) {
+  toast('go: ' + id);
   // Hide the app loader once we navigate anywhere
   var loader = document.getElementById('appLoader');
   if (loader) loader.style.display = 'none';
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
-  if (t) t.classList.add('active');
+  if (!t) { toast('ERROR: ' + id + ' not in DOM'); return; }
+  t.classList.add('active');
+  toast('active added to ' + id);
   window.scrollTo({top:0,behavior:'smooth'});
-  navLock = true;
-  history.pushState({step:id}, '', '');
   stepHistory.push(id);
-  setTimeout(function(){ navLock = false; }, 100);
   // Show home button on all screens except setup and home itself
   var homeBtn = document.getElementById('homeBtn');
   if (homeBtn) {
