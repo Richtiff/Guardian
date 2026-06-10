@@ -40,8 +40,7 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .logo span { color:var(--gold); }
 .badge { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:var(--gold); background:var(--gold-dim); border:1px solid rgba(245,200,66,0.2); padding:4px 10px; border-radius:20px; }
 .step { display:none; }
-.step.active { display:block; min-height:50vh; opacity:1; }
-@keyframes spin { to { transform:rotate(360deg); } }
+.step.active { display:block; min-height:50vh; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes spin { to{transform:rotate(360deg)} }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
@@ -323,14 +322,14 @@ html,body { background:var(--bg); color:var(--white); font-family:'Inter',sans-s
 .type-header { padding:11px 14px; border-bottom:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:var(--amber); }
 .type-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 14px; resize:none; outline:none; min-height:90px; }
 .type-textarea::placeholder { color:var(--muted); }
-.type-confirm { touch-action:manipulation; width:100%; padding:13px; background:linear-gradient(135deg,var(--gold),#c9943a); border:none; color:#0a0600; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
+.type-confirm { touch-action:manipulation; width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
 .out-card { background:var(--card); border:1.5px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
 .out-header { padding:14px 16px; border-bottom:1px solid var(--border); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:700; color:var(--blue); }
 .out-textarea { width:100%; background:transparent; border:none; color:var(--white); font-family:'Inter',sans-serif; font-size:14px; line-height:1.65; padding:13px 16px; resize:none; outline:none; min-height:90px; }
 .out-textarea::placeholder { color:var(--muted); }
 .out-check { width:100%; padding:13px; background:linear-gradient(135deg,#2563eb,var(--blue)); border:none; color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
 .reading { text-align:center; padding:60px 20px; }
-.spinner { width:52px; height:52px; margin:0 auto 20px; border:4px solid rgba(196,154,60,0.3); border-top:4px solid var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; }
+.spinner { width:52px; height:52px; margin:0 auto 20px; position:relative; }
 .spinner::before { content:''; position:absolute; inset:0; border-radius:50%; border:2.5px solid var(--border); border-top-color:var(--gold); animation:spin 0.8s linear infinite; }
 .reading-title { font-family:'DM Sans',sans-serif; font-size:17px; font-weight:800; margin-bottom:6px; }
 .reading-sub { font-size:13px; color:var(--muted-hi); }
@@ -879,23 +878,23 @@ p, .body-text { font-size: 16px !important; }
     <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">Tap to regenerate reply →</div>
   </div>
   <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sCoach')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">💬</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Reply Ready</div><div class="home-btn-sub">Paste their message. Get a reply. Send with confidence.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sTalkGuardian');setTimeout(initTalkGuardian,100)" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🛡️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Ask Guardian</div><div class="home-btn-sub">Messages, documents, hearings — ask me anything.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sDiary')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDiary','diary')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📓</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Diary</div><div class="home-btn-sub">Log every session. Build your evidence record.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sStatements')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sStatements','scanner')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📋</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Statements</div><div class="home-btn-sub">Read theirs. Check yours. Write your position statement.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sBrain')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sBrain','brain')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🧠</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Guardian Brain</div><div class="home-btn-sub">Everything Guardian knows about your case.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
 
-    <button type="button" class="home-btn home-btn-gold" onclick="go('sDocs')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDocs','docs')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🗂️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Case</div><div class="home-btn-sub">Your case file. Stored and ready when you need it.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
   </div>
@@ -1037,9 +1036,9 @@ p, .body-text { font-size: 16px !important; }
     <!-- PASTE FIRST — primary action -->
     <div class="type-panel" style="margin-bottom:12px;min-height:160px;">
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
-      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their message — or several messages if they sent a few quickly..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
-      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste their last message, or several messages if they came through quickly. Guardian will read them all.</div>
-      <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
+      <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
+      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
+      <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
     <div id="screenshotSection">
@@ -1052,13 +1051,12 @@ p, .body-text { font-size: 16px !important; }
     </div><!-- end screenshotSection -->
   </div>
   <div id="outPanel" style="display:none;">
-    <div style="background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px;margin-bottom:12px;">
-      <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT DO YOU WANT TO SAY?</div>
-      <textarea class="out-textarea" id="outIn" rows="3" placeholder="Type what you are thinking of sending..." oninput="autoGrow(this)" style="width:100%;min-height:80px;overflow:hidden;resize:none;background:transparent;border:none;outline:none;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;line-height:1.6;"></textarea>
+    <div class="out-card">
+      <div class="out-header">WHAT DO YOU WANT TO SAY?</div>
+      <textarea class="out-textarea" id="outIn" rows="3" placeholder="Type what you are thinking of sending..." oninput="autoGrow(this)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
+      <button class="out-check" onclick="checkOut()">Check before I send →</button>
     </div>
-    <button type="button" onclick="checkOut()" style="width:100%;padding:16px;background:rgba(196,154,60,0.12);border:2px solid rgba(196,154,60,0.4);border-radius:14px;color:var(--gold);font-size:16px;font-weight:800;cursor:pointer;font-family:DM Sans,sans-serif;touch-action:manipulation;margin-top:4px;">Check before I send →</button>
-    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;">Guardian will check your tone, flag anything that could be used against you, and suggest a cleaner version if needed.</div>
-  
+  </div>
 
   <!-- THREAD ANALYSIS -->
   <div id="threadPanel" style="display:none;">
@@ -1214,71 +1212,29 @@ p, .body-text { font-size: 16px !important; }
 
 <!-- REPLY -->
 <div class="step" id="sReply">
-
-  <!-- Flag banner -->
-  <div id="flagBanner"></div>
-
-  <!-- Their message -->
-  <div class="their-bubble" id="msgBubble">
-    <div class="their-label" id="msgBubbleLabel">Their message</div>
-    <div class="their-text" id="rTheirText"></div>
-  </div>
-
-  <!-- Nuclear warning (score < 5) -->
+  <div class="their-bubble" id="msgBubble"><div class="their-label" id="msgBubbleLabel">Their message</div><div class="their-text" id="rTheirText"></div></div>
   <div id="nuclearWarn" style="display:none;">
     <div class="nuclear-card">
       <div class="nuclear-title">⚠️ Do not send this yet</div>
-      <div class="nuclear-text">This reply could make things worse:</div>
-      <div id="nuclearReasons"></div>
-      <div class="nuclear-row">
-        <button type="button" onclick="fixReply()">Fix it for me</button>
-        <button type="button" onclick="showAnyway()">Show anyway</button>
-      </div>
+      <div class="nuclear-text">This reply could make things worse. Here is why:</div>
+      <div class="nuclear-reasons" id="nuclearReasons"></div>
+      <div class="nuclear-row"><button type="button" class="nuclear-fix" onclick="fixReply()">Fix it for me</button><button type="button" class="nuclear-skip" onclick="showAnyway()">Show it anyway</button></div>
     </div>
   </div>
-
-  <!-- Reply card -->
-  <div id="replyCard">
+  <div id="replyContent" style="display:none;">
     <div class="coach-card">
-      <div class="coach-header">
-        <span class="coach-lbl">💬 Reply Ready</span>
-        <span class="score-badge" id="scoreBadge"></span>
-      </div>
+      <div class="coach-header"><span class="coach-lbl">💬 Reply Ready</span><span class="score-badge" id="scoreBadge"></span></div>
       <div class="coach-body">
-
-      <div id="replyContent">
-        <!-- Breath timer -->
-        <div class="breathe" id="breatheDiv" style="font-size:14px;color:var(--muted);text-align:center;padding:10px 0 6px;line-height:1.6;">
-          <span id="breatheText"></span>
-          <span id="breatheTimer" style="color:var(--gold);font-weight:800;font-size:18px;"></span>
-          <span id="breatheReason"></span>
-        </div>
-
-        <!-- Restore bar -->
+        <div id="noReplyBanner" style="display:none;"></div>
+        <div class="breathe" id="breatheDiv" style="font-size:14px;color:var(--muted);text-align:center;padding:10px 0 6px;font-style:normal;line-height:1.6;"><span id="breatheText">Take a breath — </span><span id="breatheTimer" style="color:var(--gold);font-weight:800;font-size:18px;">15s</span> <span id="breatheReason">before you send. Rushed replies can be used against you.</span></div>
         <div id="restoreBar" style="display:none;padding:4px 0 6px;">
-          <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;">↩ Restore original reply</button>
-        </div>
-
-        <!-- The reply -->
-        <textarea class="suggested" id="suggestedReply" onclick="oneTouchCopy(this)" title="Tap to copy"
-          style="width:100%;background:rgba(255,255,255,0.1);border:2px solid rgba(196,154,60,0.5);border-radius:12px;color:#ffffff;font-size:16px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:120px;padding:12px;display:block;" rows="5"
-          placeholder="Your reply will appear here..."></textarea>
-
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
-
-        <!-- Why this reply works -->
-        <div class="reply-why" id="replyWhy"></div>
-
-        <!-- Tips -->
-        <div class="tip-card" id="tipCard" style="display:none;">
-          <div class="tip-lbl">💡 What to do now</div>
-          <div id="tipItems"></div>
-        </div>
-
+        <button onclick="restoreOriginalReply()" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;">↩ Restore original reply</button>
       </div>
-
-            </div><!-- end replyContent -->
-      <!-- Refine buttons -->
+      <textarea class="suggested" id="suggestedReply" style="width:100%;background:transparent;border:none;color:var(--white);font-size:15px;line-height:1.7;resize:vertical;outline:none;font-family:inherit;min-height:100px;" rows="5" placeholder="Your reply will appear here..."></textarea>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">✏️ Tap the reply above to edit before sending</div>
+        <div class="reply-why" id="replyWhy"></div>
+      </div>
+      <div class="tip-card" id="tipCard" style="cursor:pointer;" onclick="this.querySelector('#tipItems').style.display=this.querySelector('#tipItems').style.display==='none'?'block':'none'"><div class="tip-lbl">💡 What to do now <span style="font-size:10px;color:var(--muted);margin-left:6px;">tap to expand</span></div><div id="tipItems" style="display:none;"></div></div>
       <div class="refine-section">
         <div class="refine-lbl">How does this feel?</div>
         <div class="refine-row">
@@ -1287,63 +1243,66 @@ p, .body-text { font-size: 16px !important; }
           <button type="button" class="refine-btn" onclick="refine('different')">Say something different</button>
           <button type="button" class="refine-btn refine-use" onclick="confirmReply()">✓ Use this</button>
         </div>
+      <div id="docRouter" style="display:none;"></div>
+      
+      
+      <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
+      <div id="replyScoreDisplay" style="display:none;"></div>
+      <div style="padding:0 16px 12px;">
+        <button type="button" onclick="scoreReply(storeOriginalReply(suggestedReply_val); document.getElementById('suggestedReply').value,'replyScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
       </div>
-
-    </div>
-  </div>
-
-  <!-- No reply needed banner -->
-  <div id="noReplyBanner" style="display:none;"></div>
-
-  <!-- Red lines -->
-  <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
-
-  <!-- Score display -->
-  <div id="replyScoreDisplay" style="display:none;"></div>
-
-  <!-- Doc router -->
-  <div id="docRouter" style="display:none;"></div>
-
-  <!-- Feedback -->
-  <div class="feedback-row">
-    <span class="feedback-lbl">Was this helpful?</span>
-    <button type="button" class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
-    <button type="button" class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
-  </div>
-  <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
-
-  <!-- Replace send section -->
-  <div id="replySendSection"></div>
-
-  <!-- Guardian Chat -->
-  <div id="guardianChat" style="display:none;margin-top:16px;border-top:2px solid rgba(196,154,60,0.2);">
-    <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
-      <div style="width:28px;height:28px;background:rgba(196,154,60,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🛡️</div>
-      <div style="flex:1;font-size:12px;color:var(--muted);">Ask Guardian anything about this reply</div>
-      <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:8px;cursor:pointer;">Clear</button>
-    </div>
-    <div id="chatMessages" style="padding:16px;display:flex;flex-direction:column;gap:14px;"></div>
-    <div id="chatSuggestions" style="display:none;"></div>
-    <div style="display:flex;gap:16px;padding:4px 16px 8px;justify-content:flex-end;">
-      <button onclick="updateReplyFromChat()" id="updateReplyBtn" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;touch-action:manipulation;">↑ Update reply</button>
-      <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;touch-action:manipulation;">📓 Diary</button>
-    </div>
-    <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:6px 12px 8px;z-index:50;display:flex;gap:6px;align-items:flex-end;">
-      <textarea id="chatInput" rows="2" placeholder="Ask Guardian anything about this reply..."
-        style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:48px;max-height:100px;overflow-y:auto;-webkit-appearance:none;"
-        onfocus="this.style.borderColor='rgba(196,154,60,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.12)'"></textarea>
-      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-        <label style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
-        </label>
-        <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
+      <div class="feedback-row">
+        <span class="feedback-lbl">Was this helpful?</span>
+        <button type="button" class="fb-btn" id="fbUp" onclick="doFeedback('up')">👍</button>
+        <button type="button" class="fb-btn" id="fbDn" onclick="doFeedback('down')">👎</button>
       </div>
-      <button onclick="sendChatMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
+      <div class="fb-thanks" id="fbThanks">Thanks — that helps us improve Guardian.</div>
     </div>
-    <div style="height:80px;"></div>
+
+    <!-- GUARDIAN CHAT -->
+    <div id="guardianChat" style="display:block;margin-top:16px;border-top:2px solid rgba(196,154,60,0.2);">
+
+  <!-- Header -->
+  <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+    <div style="width:28px;height:28px;background:rgba(196,154,60,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🛡️</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:12px;color:var(--muted);">Ask Guardian anything about this reply</div>
+    </div>
+    <button onclick="confirmClearChat()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:8px;cursor:pointer;flex-shrink:0;white-space:nowrap;">Clear</button>
   </div>
 
-  <div style="height:20px;"></div>
+  <!-- Messages — no fixed height, grows naturally -->
+  <div id="chatMessages" style="padding:16px;display:flex;flex-direction:column;gap:14px;"></div>
+
+  <!-- Suggestions rendered inline by JS -->
+  <div id="chatSuggestions" style="display:none;"></div>
+
+  <!-- Utility links -->
+  <div style="display:flex;gap:16px;padding:4px 16px 8px;justify-content:flex-end;">
+    <button onclick="updateReplyFromChat()" id="updateReplyBtn" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">↑ Update reply</button>
+    <button onclick="saveExchangeToDiary()" style="background:transparent;border:none;color:#81c784;font-size:12px;cursor:pointer;padding:0;white-space:nowrap;touch-action:manipulation;">📓 Diary</button>
+  </div>
+
+  <!-- Input — fixed to bottom of screen -->
+  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:6px 12px 8px;z-index:50;display:flex;gap:6px;align-items:flex-end;">
+    <textarea id="chatInput" rows="3"
+      placeholder="Ask Guardian anything about this reply..."
+      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;min-height:48px;max-height:100px;overflow-y:auto;-webkit-appearance:none;"
+      onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
+      onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
+      onkeydown=""></textarea>
+    <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+      <label style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:20px;">📎</span><input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToChat(event)" style="display:none;">
+      </label>
+      <button id="chatMicBtn" onclick="toggleChatVoice()" style="width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;touch-action:manipulation;">🎙️</button>
+    </div>
+    <button onclick="sendChatMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
+  </div>
+
+</div>
+
 
 
 
@@ -1354,8 +1313,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="confirmed-reply" id="confirmedReply"></div>
     <div id="confirmScoreDisplay" style="display:none;"></div>
     <button type="button" onclick="scoreReply(document.getElementById('confirmedReply').textContent, 'confirmScoreDisplay')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Score before I send &#8594;</button>
-    <button type="button" onclick="copyReply()" style="width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:17px;font-weight:800;cursor:pointer;margin-bottom:8px;touch-action:manipulation;font-family:'DM Sans',sans-serif;">📋 Copy reply</button>
-    <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px;">Open WhatsApp · long-press in text box · Paste</div>
+    <button type="button" class="btn-green" onclick="copyReply()" style="margin-bottom:10px;">Copy &amp; send</button>
     <div class="timing-card" id="timingCard">
       <div class="timing-top"><span class="timing-headline" id="timingHL"></span><span class="timing-countdown" id="timingCD"></span></div>
       <div class="timing-reason" id="timingReason"></div>
@@ -1602,35 +1560,6 @@ p, .body-text { font-size: 16px !important; }
     </div>
     <div id="brainEvidenceStatus" style="display:none;margin-top:8px;font-size:12px;color:var(--green);text-align:center;"></div>
   </div>
-
-  <!-- WHAT'S BEEN SAID — memory tracker -->
-  <div style="margin-top:20px;">
-    <!-- Import from AI button -->
-  <button onclick="go('sImport')" style="width:100%;padding:14px;background:rgba(196,154,60,0.08);border:1.5px solid rgba(196,154,60,0.25);border-radius:14px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:16px;touch-action:manipulation;">📥 Import case from ChatGPT or another AI</button>
-
-  <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">WHAT'S BEEN SAID</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Log statements, promises, or positions taken by anyone in your case. Guardian will quietly flag when something changes.</div>
-
-    <!-- Add new statement -->
-    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;">
-      <select id="saidByWho" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:14px;margin-bottom:10px;font-family:'DM Sans',sans-serif;">
-        <option value="">Who said it?</option>
-        <option value="other_parent">Other parent</option>
-        <option value="cafcass">Cafcass</option>
-        <option value="social_services">Social Services</option>
-        <option value="court">Court / Judge</option>
-        <option value="school">School / Nursery</option>
-        <option value="other">Someone else</option>
-      </select>
-      <textarea id="saidWhat" rows="2" placeholder="What was said or agreed..." style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;margin-bottom:10px;"></textarea>
-      <input type="text" id="saidContext" placeholder="Context — where, when, how (message / court / in person)" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:10px;">
-      <button onclick="saveSaidStatement()" style="width:100%;padding:12px;background:rgba(196,154,60,0.12);border:1.5px solid rgba(196,154,60,0.3);border-radius:10px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;touch-action:manipulation;">Remember this</button>
-    </div>
-
-    <!-- Logged statements -->
-    <div id="saidStatements"></div>
-  </div>
-
 </div>
 
 <!-- DOCUMENT EXPLAINER -->
@@ -2362,74 +2291,6 @@ p, .body-text { font-size: 16px !important; }
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
 <button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:200px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
 <button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
-
-<div class="step" id="sTalkGuardian">
-  <div class="section-header">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div>
-      <div class="section-title">Ask Guardian</div>
-      <div class="section-sub">Messages, documents, hearings — ask me anything</div>
-    </div>
-  </div>
-
-  <!-- Messages area — scrollable -->
-  <div id="talkMessages" style="padding:0 0 16px;display:flex;flex-direction:column;gap:16px;min-height:200px;"></div>
-
-  <!-- Fixed input bar -->
-  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:8px 16px 12px;z-index:50;display:flex;gap:8px;align-items:flex-end;">
-    <textarea id="talkInput" rows="2"
-      placeholder="Ask anything about your case..."
-      style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:var(--white);font-size:16px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.6;min-height:52px;max-height:120px;overflow-y:auto;-webkit-appearance:none;"
-      onfocus="this.style.borderColor='rgba(196,154,60,0.5)'"
-      onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
-      onkeydown=""></textarea>
-    <label style="width:42px;height:42px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-      📎<input type="file" accept=".pdf,.doc,.docx,.txt,image/*" onchange="uploadDocToTalk(event)" style="display:none;">
-    </label>
-    <button id="talkMicBtn" onclick="toggleTalkVoice()" style="width:42px;height:42px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;">🎙️</button>
-    <button onclick="sendTalkMsg()" style="width:46px;height:46px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end;touch-action:manipulation;">➤</button>
-  </div>
-
-  <!-- Spacer for fixed input -->
-  <div style="height:100px;"></div>
-</div>
-<div class="step" id="sImport">
-  <div class="section-header">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Import Your Case</div><div class="section-sub">Bring your context across from another AI</div></div>
-  </div>
-  <div style="background:rgba(196,154,60,0.08);border:1.5px solid rgba(196,154,60,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
-    <div style="font-size:13px;color:var(--white);line-height:1.7;">ChatGPT is a great starting point. But it does not know family court in England and Wales the way this does. It does not spot patterns across your messages or know what a judge will think when they read your reply.<br><br>This app was built by someone who spent many years as a litigant in person and won. Every feature exists because it was needed in a real case.<br><br><span style="color:var(--gold);font-weight:700;">Paste your conversation and we will bring everything useful across.</span></div>
-  </div>
-  <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHICH APP DID YOU USE?</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
-    <button onclick="selectImportApp('chatgpt')" id="imp-chatgpt" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">🤖</div>ChatGPT</button>
-    <button onclick="selectImportApp('gemini')" id="imp-gemini" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">✨</div>Gemini</button>
-    <button onclick="selectImportApp('other')" id="imp-other" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">💬</div>Other AI</button>
-    <button onclick="selectImportApp('none')" id="imp-none" style="padding:14px;text-align:center;border-radius:12px;background:var(--card);border:1.5px solid var(--border);color:var(--white);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;touch-action:manipulation;"><div style="font-size:22px;margin-bottom:4px;">❌</div>Not used one</button>
-  </div>
-  <div id="importInstructions" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">HOW TO COPY YOUR CONVERSATION</div>
-    <div id="importSteps" style="font-size:14px;color:var(--white);line-height:1.9;"></div>
-  </div>
-  <div id="importPasteArea" style="display:none;">
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">PASTE YOUR CONVERSATION HERE</div>
-    <textarea id="importPaste" rows="6" placeholder="Paste your conversation here — do not worry about how much text, Guardian will do the work..." style="width:100%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;color:var(--white);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.6;min-height:140px;margin-bottom:12px;"></textarea>
-    <button onclick="processImport()" style="width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:16px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;touch-action:manipulation;">Extract my case facts</button>
-    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px;">You will review everything before it saves. Nothing is automatic.</div>
-  </div>
-  <div id="importReview" style="display:none;">
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">REVIEW WHAT GUARDIAN FOUND</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Read through carefully. Edit anything that does not look right before saving.</div>
-    <textarea id="importExtracted" rows="10" style="width:100%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.7;min-height:200px;margin-bottom:12px;"></textarea>
-    <button onclick="saveImport()" style="width:100%;padding:16px;background:var(--gold);border:none;border-radius:14px;color:#0a0600;font-size:16px;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;touch-action:manipulation;">Save to Guardian Brain</button>
-    <button onclick="go('sBrain')" style="width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:14px;color:var(--muted);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Start again</button>
-  </div>
-  <div style="text-align:center;padding:20px 0 8px;">
-    <button onclick="goBack()" style="background:transparent;border:none;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline;">Skip — I will build my case as I go</button>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
 
@@ -2452,7 +2313,8 @@ function initSupabase() {
           detectSessionInUrl: false
         }
       });
-          return true;
+      console.log('Supabase ready');
+      return true;
     } else if (window.supabaseJs && window.supabaseJs.createClient) {
       supabase = window.supabaseJs.createClient(SUPA_URL, SUPA_KEY, {
         auth: {
@@ -2462,7 +2324,8 @@ function initSupabase() {
           detectSessionInUrl: false
         }
       });
-          return true;
+      console.log('Supabase ready (alt)');
+      return true;
     }
   } catch(e) {
     console.warn('Supabase init failed:', e);
@@ -2477,12 +2340,6 @@ var qaTyping = false;
 var qaHistory = [];
 var qaAttachment = null;
 var selCaseType = '', selCommStyle = '';
-
-function safeJSON(str, fallback) {
-  if (!str || str === 'null' || str === 'undefined') return fallback;
-  try { return JSON.parse(str); } catch(e) { return fallback; }
-}
-
 function safeJSONParse(str, fallback) {
   if (!str || !str.trim()) return fallback;
   try { return JSON.parse(str); } catch(e) { return fallback; }
@@ -2839,25 +2696,6 @@ function getCTX() {
 }
 
 window.onload = function() { (async function() {
-  // Recovery — if overlay stuck for >20s, force unload
-  var _overlayTimer = 0;
-  setInterval(function() {
-    var el = document.getElementById('overlay');
-    var showing = el && el.classList.contains('show');
-    if (showing) { _overlayTimer += 5; if (_overlayTimer >= 20) { _overlayTimer = 0; unload(); toast('Connection timed out — please try again'); } }
-    else { _overlayTimer = 0; }
-  }, 5000);
-  // Safety net — if no active screen for 15s, go home
-  setInterval(function() {
-    var active = document.querySelector('.step.active');
-    var overlay = document.getElementById('overlay');
-    var overlayVisible = overlay && overlay.style.display !== 'none' && overlay.classList.contains('show');
-    if (!active && !overlayVisible) {
-      console.warn('No active screen — recovering to home');
-      var home = document.getElementById('sHome');
-      if (home) home.classList.add('active');
-    }
-  }, 15000);
   // Dismiss all intros permanently if already seen
   try { if(localStorage.getItem('allIntrosSeen')) { var si=document.getElementById('sectionIntro'); if(si) si.classList.remove('show'); } } catch(e) {}
   // Safety — always hide overlay on load
@@ -2865,10 +2703,10 @@ window.onload = function() { (async function() {
   document.getElementById('overlay').style.display = 'none';
 
   // Android PWA back button support
-  window.addEventListener('popstate_disabled', function(e) { goBack(); });
+  window.addEventListener('popstate', function(e) { goBack(); });
 
   // Push initial state
-  // history.pushState removed to prevent Chrome throttling
+  history.pushState({step:'init'}, '');
 
   // Wait for Supabase library to load — retry up to 20 times
   var attempts = 0;
@@ -2878,7 +2716,8 @@ window.onload = function() { (async function() {
   }
 
   if (supabase) {
-      try {
+    console.log('Supabase connected after', attempts, 'attempts');
+    try {
       var sessionResult = await supabase.auth.getSession();
       if (sessionResult.data && sessionResult.data.session) {
         currentUser = sessionResult.data.session.user;
@@ -2910,13 +2749,15 @@ window.onload = function() { (async function() {
       var sess = JSON.parse(stored);
       if (sess.expiry && Date.now() < sess.expiry) {
         currentUser = { id: sess.userId || sess.email, email: sess.email };
-              // Try to get real Supabase UUID
+        console.log("Session valid:", sess.email, "userId:", currentUser.id);
+        // Try to get real Supabase UUID
         if (supabase) {
           try {
             var userCheck = await supabase.auth.getUser();
             if (userCheck.data && userCheck.data.user) {
               currentUser = userCheck.data.user;
-                        }
+              console.log("Got Supabase UUID:", currentUser.id);
+            }
           } catch(e) { console.warn("Could not get Supabase user:", e); }
         }
         var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
@@ -2936,7 +2777,8 @@ window.onload = function() { (async function() {
 
   // ── LAST RESORT: Profile exists without session ──
   if (profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1))) {
-      profile.complete = true;
+    console.log('Profile in localStorage — attempting silent Supabase re-auth');
+    profile.complete = true;
     // Try to silently re-authenticate with stored credentials
     var storedEmail = localStorage.getItem('gUserEmail');
     var storedPass = localStorage.getItem('gUserPass');
@@ -2945,7 +2787,9 @@ window.onload = function() { (async function() {
         var reauth = await supabase.auth.signInWithPassword({ email: storedEmail, password: storedPass });
         if (reauth.data && reauth.data.user) {
           currentUser = reauth.data.user;
-                                  // Load full profile from Supabase — restores all saved data
+          console.log('Silent re-auth successful:', currentUser.id);
+              console.log('Silent re-auth successful:', currentUser.id);
+              // Load full profile from Supabase — restores all saved data
               await loadProfileFromSupabase();
               return;
           console.warn('Silent re-auth failed — continuing without Supabase');
@@ -2978,10 +2822,7 @@ if (supabase) {
   });
 }
 
-// GLOBAL ERROR HANDLER — shows any crash on screen
-// Error handlers removed
-
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian','sImport'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
 
 var stepHistory = [];
 var navLock = false;
@@ -3091,8 +2932,7 @@ function goBack() {
   stepHistory.pop();
   var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
   var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
-  window._checkRunning = false;
-  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e){ e.classList.remove('active'); e.style.display=''; } });
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(landing);
   if (t) t.classList.add('active');
   window.scrollTo({top:0,behavior:'instant'});
@@ -3106,32 +2946,40 @@ function goBack() {
 }
 
 function go(id) {
-  // Hide ALL step elements
-  var all = document.querySelectorAll('.step');
-  for (var i=0; i<all.length; i++) { all[i].style.display='none'; all[i].classList.remove('active'); }
-  // Show target
+  // Hide the app loader once we navigate anywhere
+  var loader = document.getElementById('appLoader');
+  if (loader) loader.style.display = 'none';
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
-  if (t) { t.style.display='block'; t.classList.add('active'); }
-  // Hide loader and overlay
-  var loader=document.getElementById('appLoader'); if(loader) loader.style.display='none';
-  var ov=document.getElementById('overlay'); if(ov){ ov.classList.remove('show'); ov.style.display='none'; }
-  var ro=document.getElementById('replyOverlay'); if(ro) ro.style.display='none';
-  // Scroll to top
-  window.scrollTo(0,0);
-  // Track history
+  if (t) t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  navLock = true;
+  history.pushState({step:id}, '', '');
   stepHistory.push(id);
-  // Home button visibility
-  var homeBtn=document.getElementById('homeBtn');
-  if(homeBtn){ var hideOn=['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome']; homeBtn.style.display=hideOn.indexOf(id)===-1?'block':'none'; }
-  // Screen-specific init
-  if(id==='sHome'){ try{showHome();}catch(e){} }
-  if(id==='sBrain'){ setTimeout(function(){try{loadBrainScreen();}catch(e){}},50); }
-  if(id==='sDiary'){ setTimeout(function(){try{loadDiaryScreen();renderCalendar();}catch(e){}},50); }
-  if(id==='sDocs'){ setTimeout(function(){try{renderTimeline();}catch(e){}},50); }
-  if(id==='sCoach'){ var btn=document.querySelector('.type-confirm'); if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.background='';btn.style.color='';btn.textContent='Check this message →';} }
-  if(id==='sTalkGuardian'){ setTimeout(function(){try{initTalkGuardian();}catch(e){}},100); }
+  setTimeout(function(){ navLock = false; }, 100);
+  // Show home button on all screens except setup and home itself
+  var homeBtn = document.getElementById('homeBtn');
+  if (homeBtn) {
+    var hideOn = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
+    homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
+  }
+  // Load screen data
+  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); var fc=document.getElementById('brainFactCount'); if(fc&&brainLog) fc.textContent=brainLog.length>0?'&#129504; '+brainLog.length+' facts extracted':''; }, 50); }
+  if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
+  if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
+  if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
+  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
+  // Inject ? help button and auto-show video on first visit
+  setTimeout(function(){
+    injectVideoBtn(id);
+    showVideoForScreen(id);
+  }, 300);
+  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
+  if (id==='sStatements') {}
+  if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
+  if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
+  if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
 }
-
 
 // Intercept browser back button
 window.addEventListener('popstate', function(e) {
@@ -3171,24 +3019,12 @@ function load(text, sub) {
   }, 3000);
 }
 function unload() {
-  try { var btn=document.querySelector('.type-confirm'); if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent='Check this message →';} } catch(e) {}
   clearInterval(_loadMsgTimer);
-  try {
-    var el = document.getElementById('overlay');
-    if (el) { el.classList.remove('show'); el.style.display = 'none'; }
-  } catch(e) {}
-  // Always re-enable ALL check buttons
-  try {
-    document.querySelectorAll('.type-confirm, [onclick*="confirmType"], [onclick*="checkOut"]').forEach(function(btn) {
-      btn.disabled = false;
-      btn.style.opacity = '1';
-      btn.style.background = '';
-      btn.style.color = '';
-      if (btn.textContent.indexOf('Reading') > -1 || btn.textContent.indexOf('Checking') > -1) {
-        btn.textContent = btn.getAttribute('data-label') || 'Check this message →';
-      }
-    });
-  } catch(e) {}
+  var el = document.getElementById('overlay');
+  el.classList.remove('show');
+  el.style.display = 'none';
+  var btn = document.querySelector('.type-confirm');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.background = ''; btn.style.color = ''; btn.textContent = 'Check this message →'; }
 }
 function toast(msg) {
   var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
@@ -3398,7 +3234,8 @@ function handleBundleInSetup(event) {
     if (b64.length > maxSize) {
       b64 = b64.substring(0, maxSize);
       truncated = true;
-        }
+      console.log('Bundle truncated to', maxSize, 'chars');
+    }
     try {
       var res = await fetch(API, {
         method: 'POST',
@@ -3584,6 +3421,7 @@ async function skipDocs() {
 }
 
 async function buildSummary() {
+  console.log('buildSummary called, profile:', JSON.stringify(profile).substring(0,100));
   load('Building your case profile...','Almost ready');
   var ctx=getCTX();
   try {
@@ -3599,6 +3437,7 @@ async function buildSummary() {
 }
 
 function renderSummary(parsed) {
+  console.log('renderSummary called, parsed:', parsed);
   unload();
   go('sSummary');
   var c=document.getElementById('summaryContent');
@@ -5079,7 +4918,8 @@ async function analyseThread() {
     });
     // Warn if payload is very large (Vercel 4.5MB limit)
     var bodySizeMB = (new TextEncoder().encode(bodyStr).length / (1024*1024)).toFixed(1);
-      // Show size info in loading overlay so we can see it
+    console.log('Thread analysis payload:', bodySizeMB + 'MB');
+    // Show size info in loading overlay so we can see it
     var ls = document.getElementById('overlaySub');
     if (ls) ls.textContent = 'Payload: ' + bodySizeMB + 'MB — ' + threadImages.length + ' files';
     if (parseFloat(bodySizeMB) > 2.0) {
@@ -5337,11 +5177,10 @@ async function handleUpload(event) {
 
 function confirmType() {
   var btn = document.querySelector('.type-confirm');
-  if (btn && btn.disabled) return;
-  if (btn) btn.disabled = true;
+  if (btn && btn.disabled) return; // Already running
   var v = document.getElementById('typeIn').value.trim();
   if (!v) { toast('Please paste their message first'); return; }
-  // Disable to prevent double-tap
+  // Disable immediately to prevent multiple fires
   if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.style.background = 'rgba(196,154,60,0.15)'; btn.style.color = 'var(--gold)'; btn.textContent = '⏳ Reading your message...'; }
   currentMsg = v; st.msg = v;
   load('Reading your message...', 'Checking tone and context');
@@ -5422,8 +5261,7 @@ async function askQ() {
     var prompt = isOut
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
       : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
-    var askTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
-      var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})}), askTimeout]);
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
@@ -5431,13 +5269,13 @@ async function askQ() {
     // Don't unload — keep overlay showing, update text for next stage
     load('Building your reply...', 'Almost ready');
     if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
-    else{ unload(); go('sCoach'); toast('Could not read — please try again'); }
-  } catch(e){ unload(); go('sCoach'); toast('askQ error: ' + (e ? e.message : 'unknown')); }
+    else{ unload(); toast('Could not read — please try again'); }
+  } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
 
 function doQuestion(p) {
   if (!p) { go('sCoach'); toast('Could not read — please try again'); return; }
-  try {
+  if (!p) { go('sCoach'); toast('Could not read that — please try again'); return; }
   // Court/HMCTS document detection — skip reply flow entirely
   // Only show court guide for official document types, never for co-parent messages
   
@@ -5450,8 +5288,8 @@ function doQuestion(p) {
     fb.innerHTML='<div class="flag-card '+cls+'"><span class="flag-icon">'+fl.icon+'</span><div class="flag-body"><div class="flag-title">'+fl.lbl+'</div><div class="flag-desc">'+st.flagText+'</div></div></div>';
   } else { fb.innerHTML=''; }
   if(p&&p.question){
-    if(document.getElementById('qText')) document.getElementById('qText').textContent=p.question;
-    var opts=document.getElementById('qOpts'); if(opts) opts.innerHTML='';
+    document.getElementById('qText').textContent=p.question;
+    var opts=document.getElementById('qOpts'); opts.innerHTML='';
     (p.options||['Yes','No','Partly']).forEach(function(opt){
       var btn=document.createElement('button'); btn.className='q-opt'; btn.textContent=opt;
       btn.onclick=function(){
@@ -5492,7 +5330,6 @@ function doQuestion(p) {
   if (modeEl) modeEl.classList.add('active');
   load('Generating your reply...', 'Reading the message carefully');
   genReplyDirect();
-  } catch(e) { unload(); go('sCoach'); toast('doQuestion error: ' + (e ? e.message : 'unknown')); }
 }
 
 function toggleVoice(){
@@ -5529,10 +5366,7 @@ async function genReply(){
   if(!ctx) ctx='No context provided.';
   await _gen(ctx);
 }
-async function genReplyDirect(){
-  var ctx = 'Flag: '+(st.flag||'green')+'. '+(st.flagText||'')+'. '+(st.answer?'Parent context: '+st.answer:'');
-  _gen(ctx);
-}
+async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
 
 async function _gen(ctx) {
   load('Writing your reply...','Keeping it safe and human');
@@ -5545,151 +5379,89 @@ async function _gen(ctx) {
 
   var universalRules = "UNIVERSAL RULES THAT APPLY IN ALL MODES: 1) Always acknowledge any concern raised — never leave it unaddressed even if the message seems routine. 2) Always confirm receipt of any health, welfare or practical information. 3) Always state what action you are taking or will take. 4) Friendly messages can be traps — a co-parent building a paper trail of ignored concerns. Close every loop. 5) The reply must create a clear record that the parent engaged, noticed, and acted — without ever sounding like that is what it is doing.";
 
-  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message(s): "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
+  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
-      var fetchTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 25000); });
-    var res=await Promise.race([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:SYS,messages:[{role:'user',content:prompt}]})}), fetchTimeout]);
+    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
-      unload();
-    // Absolute minimum — navigate to sReply with reply text
-    var _r = (p && p.reply) ? p.reply : '(Guardian could not generate a reply — tap Check again)';
-    var _s = (p && p.score) ? p.score : 5;
-    var _w = (p && p.why) ? p.why : '';
-    try { var srEl=document.getElementById('suggestedReply'); if(srEl) srEl.value = _r; } catch(e){}
-    try { var rwEl=document.getElementById('replyWhy'); if(rwEl) rwEl.textContent = _w; } catch(e){}
-    try { var sbEl=document.getElementById('scoreBadge'); if(sbEl){ sbEl.textContent=_s>=8?'✅ Safe':_s>=6?'⚠️ Review':'❌ Caution'; sbEl.className='score-badge '+(_s>=8?'sc-safe':_s>=6?'sc-caution':'sc-danger'); } } catch(e){}
-    try { st.reply=_r; st.score=_s; checks++; localStorage.setItem('gChecks',checks); saveProfileToSupabase(); } catch(e){}
-    try { startBreathTimer(); } catch(e){}
-    try { setTimeout(function(){ openGuardianChat(); }, 3000); } catch(e){}
-      // Build full workflow overlay
-      var _sc = _s>=8?'✅ Safe':_s>=6?'⚠️ Review':'❌ Caution';
-      var _scBg = _s>=8?'#1a9e72':_s>=6?'#c9943a':'#b84444';
-      var _flagBg = st.flag==='red'?'rgba(184,68,68,0.15)':st.flag==='amber'?'rgba(201,148,58,0.15)':'rgba(26,158,114,0.12)';
-      var _flagBorder = st.flag==='red'?'rgba(184,68,68,0.5)':st.flag==='amber'?'rgba(201,148,58,0.5)':'rgba(26,158,114,0.4)';
-      var _flagIcon = st.flag==='red'?'🔴':st.flag==='amber'?'🟡':'🟢';
-      var _flagTitle = st.flag==='red'?'This needs care — Guardian has your back':st.flag==='amber'?'Loaded message — stay calm and factual':'Routine — keep it brief and warm';
-      var _msgSafe = (_msgText||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      var ro = document.getElementById('replyOverlay');
-      if (!ro) { ro = document.createElement('div'); ro.id = 'replyOverlay'; document.body.appendChild(ro); }
-      ro.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0f1a;z-index:5000;overflow-y:auto;-webkit-overflow-scrolling:touch;box-sizing:border-box;font-family:DM Sans,sans-serif;';
-      ro.innerHTML =
-        '<div style="max-width:480px;margin:0 auto;padding:16px 16px 120px;">' +
-        // Header
-        '<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:14px;">' +
-        '<button id="roBack1" style="background:transparent;border:none;color:#d4a843;font-size:22px;cursor:pointer;padding:4px 8px;touch-action:manipulation;">←</button>' +
-        '<span style="color:#e8edf5;font-size:18px;font-weight:700;flex:1;">Reply Ready</span>' +
-        '<span style="background:'+_scBg+';color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;">'+_sc+'</span>' +
-        '</div>' +
-        // Flag banner
-        (st.flag ? '<div style="background:'+_flagBg+';border:1.5px solid '+_flagBorder+';border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;">' +
-        '<span style="font-size:18px;">'+_flagIcon+'</span>' +
-        '<div><div style="color:#e8edf5;font-size:13px;font-weight:700;margin-bottom:2px;">'+_flagTitle+'</div>' +
-        '<div style="color:#7a8aaa;font-size:12px;">'+st.flagText+'</div></div></div>' : '') +
-        // Their message
-        '<div style="background:#111827;border-radius:12px;padding:12px 14px;margin-bottom:14px;">' +
-        '<div style="color:#4a5878;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">THEIR MESSAGE</div>' +
-        '<div style="color:#aab4c8;font-size:14px;line-height:1.6;">'+_msgSafe+'</div></div>' +
-        // Why this reply works
-        (_w ? '<div style="color:#7a8aaa;font-size:13px;font-style:italic;margin-bottom:12px;padding:0 4px;line-height:1.5;">💡 '+_w+'</div>' : '') +
-        // Reply label
-        '<div style="color:#d4a843;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">YOUR REPLY — tap to edit</div>' +
-        // Reply textarea
-        '<textarea id="roEditReply" style="width:100%;background:#111827;border:2px solid rgba(212,168,67,0.4);border-radius:12px;padding:14px;color:#ffffff;font-size:16px;line-height:1.7;font-family:DM Sans,sans-serif;min-height:90px;box-sizing:border-box;resize:none;outline:none;-webkit-appearance:none;display:block;" rows="4">'+_r+'</textarea>' +
-        // Copy button
-        '<button id="roCopyBtn" style="width:100%;padding:16px;background:#d4a843;border:none;border-radius:14px;color:#0a0600;font-size:17px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">📋 Copy Reply</button>' +
-        '<div style="color:#4a5878;font-size:12px;text-align:center;margin:6px 0 16px;">Open WhatsApp · long-press · Paste</div>' +
-        // Refine
-        '<div style="color:#4a5878;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:8px;">REFINE THIS REPLY</div>' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">' +
-        '<button class="ro-ref" data-m="formal" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too formal</button>' +
-        '<button class="ro-ref" data-m="harsh" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too harsh</button>' +
-        '<button class="ro-ref" data-m="soft" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Too soft</button>' +
-        '<button class="ro-ref" data-m="different" style="padding:11px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#e8edf5;font-size:14px;cursor:pointer;touch-action:manipulation;">Try again</button>' +
-        '</div>' +
-        // Diary + Feedback row
-        '<div style="display:flex;gap:10px;margin-bottom:16px;">' +
-        '<button id="roDiaryBtn" style="flex:1;padding:12px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;color:#81c784;font-size:14px;cursor:pointer;touch-action:manipulation;">📓 Save to Diary</button>' +
-        '<button id="roFbUp" style="padding:12px 16px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;font-size:18px;cursor:pointer;touch-action:manipulation;">👍</button>' +
-        '<button id="roFbDn" style="padding:12px 16px;background:#111827;border:1.5px solid rgba(255,255,255,0.08);border-radius:12px;font-size:18px;cursor:pointer;touch-action:manipulation;">👎</button>' +
-        '</div>' +
-        // Guardian chat
-        '<div style="border-top:1.5px solid rgba(212,168,67,0.2);margin-bottom:14px;padding-top:14px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-        '<span style="color:#d4a843;font-size:14px;font-weight:700;">🛡 Ask Guardian</span>' +
-        '<span style="color:#4a5878;font-size:12px;">Ask anything about this reply</span></div>' +
-        '<div id="roChatMsgs" style="min-height:0;margin-bottom:8px;display:flex;flex-direction:column;gap:10px;"></div>' +
-        '<div style="display:flex;gap:8px;">' +
-        '<input id="roChatIn" type="text" placeholder="Ask Guardian..." style="flex:1;background:#111827;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;color:#fff;font-size:15px;font-family:DM Sans,sans-serif;outline:none;-webkit-appearance:none;">' +
-        '<button id="roChatSend" style="padding:10px 16px;background:#d4a843;border:none;border-radius:10px;color:#000;font-weight:800;font-size:16px;cursor:pointer;touch-action:manipulation;">➤</button>' +
-        '</div></div>' +
-        // Back button
-        '<button id="roBackBtn" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(255,255,255,0.1);border-radius:14px;color:#4a5878;font-size:15px;cursor:pointer;touch-action:manipulation;">← Check another message</button>' +
-        '</div>';
-
-      // Wire buttons
-      var roBack = function(){ ro.style.display='none'; go('sCoach'); };
-      document.getElementById('roBack1').onclick = roBack;
-      document.getElementById('roBackBtn').onclick = roBack;
-
-      document.getElementById('roCopyBtn').onclick = function(){
-        var txt = document.getElementById('roEditReply').value;
-        try{ navigator.clipboard.writeText(txt); }catch(e){}
-        this.textContent='✅ Copied!'; this.style.background='#1a9e72';
-        var self=this; setTimeout(function(){ self.textContent='📋 Copy Reply'; self.style.background='#d4a843'; },3000);
-      };
-
-      document.getElementById('roDiaryBtn').onclick = function(){
-        try{ saveExchangeToDiary(); this.textContent='✅ Saved!'; }catch(e){ this.textContent='✅ Saved!'; }
-      };
-
-      document.getElementById('roFbUp').onclick = function(){ this.style.background='rgba(26,158,114,0.3)'; try{doFeedback('up');}catch(e){} };
-      document.getElementById('roFbDn').onclick = function(){ this.style.background='rgba(184,68,68,0.3)'; try{doFeedback('down');}catch(e){} };
-
-      // Refine buttons
-      ro.querySelectorAll('.ro-ref').forEach(function(btn){
-        btn.onclick = function(){
-          var mode=this.getAttribute('data-m');
-          var cur=document.getElementById('roEditReply').value;
-          var copyBtn=document.getElementById('roCopyBtn');
-          copyBtn.textContent='⏳ Rewriting...'; copyBtn.disabled=true;
-          fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,
-              system:'Rewrite the message as instructed. Return ONLY the rewritten text, nothing else.',
-              messages:[{role:'user',content:'Rewrite this reply to sound less '+mode+'. Same meaning, same length. Reply text only. Original: '+cur}]})})
-          .then(function(r){return r.json();})
-          .then(function(d){
-            var t=((d.content||[]).map(function(b){return b.text||'';}).join('').trim());
-            if(t) document.getElementById('roEditReply').value=t;
-            copyBtn.textContent='📋 Copy Reply'; copyBtn.disabled=false;
-          }).catch(function(){ copyBtn.textContent='📋 Copy Reply'; copyBtn.disabled=false; });
-        };
-      });
-
-      // Guardian chat
-      document.getElementById('roChatSend').onclick = function(){
-        var q=document.getElementById('roChatIn').value.trim();
-        if(!q) return;
-        var msgs=document.getElementById('roChatMsgs');
-        msgs.innerHTML+='<div style="background:rgba(212,168,67,0.1);border-radius:10px;padding:10px 12px;color:#e8edf5;font-size:14px;line-height:1.5;align-self:flex-end;max-width:85%;">'+q+'</div>';
-        document.getElementById('roChatIn').value='';
-        var ctx2=getCTX()+'\n\nMessage being replied to: '+st.msg+'\n\nGenerated reply: '+document.getElementById('roEditReply').value;
-        fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:SYS,
-            messages:[{role:'user',content:ctx2+'\n\nQuestion about this reply: '+q}]})})
-        .then(function(r){return r.json();})
-        .then(function(d){
-          var ans=((d.content||[]).map(function(b){return b.text||'';}).join('').trim());
-          msgs.innerHTML+='<div style="background:#111827;border-left:3px solid #d4a843;border-radius:10px;padding:10px 12px;color:#e8edf5;font-size:14px;line-height:1.5;max-width:90%;"><span style=\"color:#d4a843;font-size:11px;font-weight:700;\">🛡 GUARDIAN</span><br>'+ans+'</div>';
-          msgs.scrollTop=msgs.scrollHeight;
-        }).catch(function(){});
-      };
-      document.getElementById('roChatIn').addEventListener('keypress',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); document.getElementById('roChatSend').click(); } });
-
+    unload();
+    if(p&&p.reply!==undefined){
+      st.reply=p.reply; st.score=p.score||8; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
+      checks++; localStorage.setItem('gChecks',checks);
+      msgLog.push({flag:st.flag,score:st.score,summary:(st.flagText||'Message checked')+' — '+new Date().toLocaleDateString('en-GB'),ts:new Date().toISOString()});
+      localStorage.setItem('gLog',JSON.stringify(msgLog));
+      saveProfileToSupabase();
+      // Upsell triggers
+      if (checks === 6) checkUpsellTriggers('check3');
+      if (checks === 10) checkUpsellTriggers('check5');
+      // Pattern upsell - if 3+ red flags in last 10 messages
+      var recentRed = msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
+      if (recentRed >= 3) checkUpsellTriggers('pattern');
+      var badge=document.getElementById('scoreBadge');
+      if(p.score>=8){badge.textContent='✅ Safe to send';badge.className='score-badge sc-safe';}
+      else if(p.score>=6){badge.textContent='⚠️ Send with care';badge.className='score-badge sc-caution';}
+      else{badge.textContent='❌ Needs work';badge.className='score-badge sc-danger';}
+      var replyText = p.reply||'';
+      var noReplyNeeded = !replyText || replyText.toLowerCase().indexOf('no reply needed') !== -1 || replyText.toLowerCase().indexOf('silence is the stronger') !== -1;
+      var _rt = replyText || '(No reply needed)'; storeOriginalReply(_rt); document.getElementById('suggestedReply').value = _rt;
+      // Save last message so refresh can resume
+      try { var _exp = Date.now() + (3*24*60*60*1000); localStorage.setItem('lastMsg', JSON.stringify({msg:st.msg||'',exp:_exp})); } catch(e) {}
+      // Start breath timer
+      startBreathTimer();
+      document.getElementById('replyWhy').textContent = p.why||'';
+      // Hide/show reply UI based on whether reply is needed
+      var replyCard = document.getElementById('replyCard');
+      var noReplyBanner = document.getElementById('noReplyBanner');
+      var replySendSection = document.getElementById('replySendSection');
+      if (noReplyNeeded) {
+        if (replyCard) replyCard.style.display='none';
+        if (noReplyBanner) noReplyBanner.style.display='block';
+        if (replySendSection) replySendSection.style.display='none';
+      } else {
+        if (replyCard) replyCard.style.display='block';
+        if (noReplyBanner) noReplyBanner.style.display='none';
+        if (replySendSection) replySendSection.style.display='block';
+        var redHitsS = checkRedLines(replyText);
+        var rlDiv = document.getElementById('replyRedLines');
+        if (rlDiv) {
+          rlDiv.style.display = redHitsS.length > 0 ? 'block' : 'none';
+          if (redHitsS.length > 0) rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
+        }
+        setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
+        // Stay where we are — user scrolls naturally
+        // Auto-populate chat context and chips after reply — delay so scoring finishes first
+        setTimeout(function(){ openGuardianChat(); }, 3000);
+      }
+      // Smart document router
+      showDocRouter(currentMsg||'', p);
+      // Red line check on single message reply
+      var redHitsS = checkRedLines(p.reply||'');
+      var rlDiv = document.getElementById('replyRedLines');
+      if (rlDiv) {
+        if (redHitsS.length > 0) {
+          rlDiv.style.display='block';
+          rlDiv.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.5px;margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + redHitsS.map(function(r){ return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• ' + r + '</div>'; }).join('');
+        } else { rlDiv.style.display='none'; }
+      }
+      // Auto-score
+      setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); }, 800);
+      if(p.tips&&p.tips.length){
+        var ti=document.getElementById('tipItems'); ti.innerHTML='';
+        p.tips.forEach(function(t){var d=document.createElement('div');d.className='tip-item';d.textContent=t;ti.appendChild(d);});
+        document.getElementById('tipCard').style.display='block';
+      } else { document.getElementById('tipCard').style.display='none'; }
+      if(p.score<5&&p.dangerReasons){
+        document.getElementById('nuclearWarn').style.display='block';
+        document.getElementById('replyContent').style.display='none';
+        document.getElementById('nuclearReasons').textContent=p.dangerReasons;
+      } else {
+        document.getElementById('nuclearWarn').style.display='none';
+        document.getElementById('replyContent').style.display='block';
+      }
       go('sReply');
-    try { setTimeout(function(){ scoreReply(document.getElementById('suggestedReply').value,'replyScoreDisplay'); },1000); } catch(e){}
-    } catch(e){ unload(); go('sCoach'); toast('Error: ' + (e ? e.message : 'unknown')); }
+    } else { toast('Could not generate a reply — please try again'); }
+  } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
 
 function fixReply(){st.answer=(st.answer||'')+' [Please generate a safer calmer version]';genReply();}
@@ -5733,22 +5505,6 @@ function confirmReply(){
   } else { tc.style.display='none'; }
   setTimeout(function(){document.getElementById('sentCard').style.display='block';},1500);
   go('sConfirmed');
-}
-
-function oneTouchCopy(el) {
-  var text = el.value;
-  if (!text) return;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function() {
-      toast('✅ Copied — open WhatsApp and paste');
-      el.style.borderColor = 'rgba(76,175,80,0.6)';
-      setTimeout(function(){ el.style.borderColor = ''; }, 2000);
-    });
-  } else {
-    el.select();
-    document.execCommand('copy');
-    toast('✅ Copied — open WhatsApp and paste');
-  }
 }
 
 function copyReply(){
@@ -5978,7 +5734,8 @@ async function loadProfileFromSupabase() {
       // Consider setup complete if they have a name and child name — don't rely solely on complete flag
       // Complete if name AND child name set — caseType not required to get home
       var isComplete = profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1);
-          if (isComplete) {
+      console.log('Profile loaded from Supabase — name:', profile.myName, 'child:', profile.childName, 'complete:', isComplete);
+      if (isComplete) {
         profile.complete = true;
         localStorage.setItem('gProfile', JSON.stringify(profile));
         showHome();
@@ -6027,7 +5784,8 @@ async function saveProfileToSupabase() {
     try { data.brain_log_json = JSON.stringify(brainLog || []); } catch(e){}
     try { data.msg_log_json = JSON.stringify(msgLog || []); } catch(e){}
 
-      var result = await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
+    console.log('Saving to Supabase — user:', currentUser.id, 'complete:', data.complete, 'name:', data.my_name);
+    var result = await supabase.from('profiles').upsert(data, { onConflict: 'user_id' });
     if (result.error) {
       console.warn('Supabase upsert error:', result.error.message);
       if (typeof toast === 'function') toast('Save error: ' + result.error.message.substring(0, 80));
@@ -6044,9 +5802,11 @@ async function saveProfileToSupabase() {
         console.error('Minimal save also failed:', minResult.error.message);
         if (typeof toast === 'function') toast('Minimal save failed: ' + minResult.error.message.substring(0, 60));
       } else {
-            }
+        console.log('Minimal save succeeded');
+      }
     } else {
-        }
+      console.log('Supabase save OK');
+    }
   } catch(e) { console.warn('Supabase save exception:', e.message || e); }
 }
 
@@ -6114,7 +5874,6 @@ function checkSevenDayUpsell() {
 var brainLog = safeJSONParse(localStorage.getItem('gBrainLog'), []);
 
 function loadBrainScreen() {
-  renderSaidStatements();
   var fc = document.getElementById('brainFactCount');
   var facts = (brainLog||[]).filter(function(b){ return b.summary||b.text; });
   if (fc) fc.textContent = facts.length > 0 ? facts.length + ' facts extracted' : '';
@@ -6416,6 +6175,7 @@ async function scanStatement(event, forcedType) {
   if (!files.length) return;
   var type = forcedType || 'mine';
   var file = files[0]; // Process first file — if multiple, combine
+  console.log('Scanning statement, type:', type, 'files:', files.length);
   // If multiple images, toast to say we'll process the first
   if (files.length > 1) toast('Reading ' + files.length + ' files — processing together');
   var statusId = type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus';
@@ -8464,7 +8224,7 @@ function getDocActions(docType, msgText) {
       { icon: '📁', label: 'Add to Case File', sub: 'So every feature knows about this', fn: "go('sDocs')" },
       { icon: '📅', label: 'Set Key Date', sub: hearingDate ? 'Hearing: ' + hearingDate : 'Track your deadline', fn: "goToKeyDatesPreFilled('" + (hearingDate||'') + "', 'DRA')" },
       { icon: '📝', label: 'Log in Contact Diary', sub: hearingDate ? 'Record hearing notice received — ' + hearingDate : 'Date-stamp this in your diary', fn: "goToDiaryPreFilled('message', '', 'Court hearing notice received. DRA hearing listed for " + (hearingDate||'date TBC') + ".')" },
-      { icon: '✍️', label: 'Start Position Statement', sub: 'Due 48 hours before the hearing', fn: "go('sStatements')" },
+      { icon: '✍️', label: 'Start Position Statement', sub: 'Due 48 hours before the hearing', fn: "go('sStatement')" },
       { icon: '🧠', label: 'Ask Court Guru about DRA', sub: 'What to expect and how to prepare', fn: "askCourtGuru('What should I know about a DRA hearing and how should I prepare?')" },
     ];
   } else if (docType === 'cafcass') {
@@ -8479,7 +8239,7 @@ function getDocActions(docType, msgText) {
       { icon: '📖', label: 'Read Their Statement', sub: 'Guardian reads it and tells you what to do', fn: "go('sReadTheirs')" },
       { icon: '📁', label: 'Add to Case File', sub: 'Store it for Statement Writer to read', fn: "go('sDocs')" },
       { icon: '📝', label: 'Log in Contact Diary', sub: 'Record date their statement was received', fn: "goToDiaryPreFilled('message', '', 'Position statement received from other party.')" },
-      { icon: '✍️', label: 'Write Your Response', sub: 'Start your position statement', fn: "go('sStatements')" },
+      { icon: '✍️', label: 'Write Your Response', sub: 'Start your position statement', fn: "go('sStatement')" },
     ];
   } else if (docType === 'court_order') {
     actions = [
@@ -8918,169 +8678,6 @@ function toggleScreenshotSection(val) {
   var ss = document.getElementById('screenshotSection');
   if (!ss) return;
   ss.style.display = (val && val.trim().length > 2) ? 'none' : 'block';
-}
-
-// ── AI IMPORT ──
-var selectedImportApp = null;
-
-function selectImportApp(app) {
-  selectedImportApp = app;
-  // Highlight selected
-  ['chatgpt','gemini','other','none'].forEach(function(a) {
-    var btn = document.getElementById('imp-' + a);
-    if (btn) {
-      btn.style.background = a === app ? 'rgba(196,154,60,0.15)' : 'var(--card)';
-      btn.style.borderColor = a === app ? 'var(--gold)' : 'var(--border)';
-    }
-  });
-
-  if (app === 'none') {
-    document.getElementById('importInstructions').style.display = 'none';
-    document.getElementById('importPasteArea').style.display = 'none';
-    toast('No problem — Guardian will learn your case as you go');
-    return;
-  }
-
-  var instructions = {
-    chatgpt: '1. Open ChatGPT\n2. Find your case conversation\n3. Tap and hold on any message\n4. Choose Select All then Copy\n5. Come back here and paste below',
-    gemini: '1. Open Google Gemini\n2. Find your case conversation\n3. Press and hold, select all text\n4. Copy and paste below',
-    other: '1. Open your AI app\n2. Find your case conversation\n3. Select all the text (press and hold, Select All)\n4. Copy it\n5. Paste below\n\nDont worry about getting it perfect — Guardian will extract what matters.'
-  };
-
-  var stepsEl = document.getElementById('importSteps');
-  if (stepsEl) {
-    var instrLines = (instructions[app] || instructions.other); stepsEl.innerHTML = instrLines.replace(/\\n/g, '___NL___').split('___NL___').map(function(l){ return l.trim() ? '<div style="padding:2px 0;">' + l + '</div>' : ''; }).join('');
-  }
-
-  document.getElementById('importInstructions').style.display = 'block';
-  document.getElementById('importPasteArea').style.display = 'block';
-}
-
-async function processImport() {
-  var text = document.getElementById('importPaste').value.trim();
-  if (!text || text.length < 50) { toast('Please paste your conversation first'); return; }
-
-  load('Reading your conversation...', 'This may take a moment');
-
-  try {
-    var res = await fetch(API, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2000,
-        messages: [{
-          role: 'user',
-          content: 'You are extracting case facts from an AI conversation for a family court litigant in person in England and Wales. Extract ONLY relevant case facts. Return a structured summary max 1500 words: names, allegations, court history, communication patterns, important dates, concerns raised, what has and has not worked, current live issues. Do NOT include generic AI advice. Be concise and factual.' + ' Conversation: ' + text.substring(0, 30000)
-        }]
-      })
-    });
-
-    unload();
-
-    if (!res.ok) { toast('Could not process — please try again'); return; }
-    var data = await res.json();
-    var extracted = (data.content||[]).map(function(b){ return b.text||''; }).join('').trim();
-
-    if (!extracted || extracted.length < 50) { toast('Could not find case facts — try pasting more of the conversation'); return; }
-
-    document.getElementById('importExtracted').value = extracted;
-    document.getElementById('importPasteArea').style.display = 'none';
-    document.getElementById('importInstructions').style.display = 'none';
-    document.getElementById('importReview').style.display = 'block';
-    window.scrollTo({top:0, behavior:'smooth'});
-
-  } catch(e) {
-    unload();
-    toast('Something went wrong — please try again');
-  }
-}
-
-function saveImport() {
-  var extracted = document.getElementById('importExtracted').value.trim();
-  if (!extracted) { toast('Nothing to save'); return; }
-
-  // Save to Guardian Brain as a special import entry
-  var brainFacts = getBrainFacts();
-  brainFacts.push('[IMPORTED CASE CONTEXT]\n' + extracted);
-  localStorage.setItem('brainFacts', JSON.stringify(brainFacts));
-
-  // Also store as dedicated import for getCTX
-  localStorage.setItem('importedCaseContext', extracted);
-
-  toast('✅ Case context saved to Guardian Brain');
-  setTimeout(function(){ go('sBrain'); }, 800);
-}
-
-// ── WHAT'S BEEN SAID — MEMORY TRACKER ──
-function saveSaidStatement() {
-  var who = document.getElementById('saidByWho').value;
-  var what = document.getElementById('saidWhat').value.trim();
-  var context = document.getElementById('saidContext').value.trim();
-  if (!who || !what) { toast('Please fill in who said it and what was said'); return; }
-
-  var statements = getSaidStatements();
-  var entry = {
-    id: Date.now(),
-    who: who,
-    what: what,
-    context: context,
-    date: new Date().toISOString(),
-    dateStr: new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})
-  };
-  statements.unshift(entry);
-  localStorage.setItem('saidStatements', JSON.stringify(statements));
-
-  // Clear form
-  document.getElementById('saidByWho').value = '';
-  document.getElementById('saidWhat').value = '';
-  document.getElementById('saidContext').value = '';
-
-  // Also add to brain context
-  var brainFacts = getBrainFacts();
-  brainFacts.push('[STATEMENT ' + entry.dateStr + '] ' + whoLabel(who) + ' said: "' + what + '"' + (context ? ' (' + context + ')' : ''));
-  localStorage.setItem('brainFacts', JSON.stringify(brainFacts));
-
-  renderSaidStatements();
-  toast('Remembered — Guardian will flag if this changes');
-}
-
-function whoLabel(who) {
-  var labels = {other_parent:'Other parent', cafcass:'Cafcass', social_services:'Social Services', court:'Court', school:'School/Nursery', other:'Other party'};
-  return labels[who] || who;
-}
-
-function getSaidStatements() {
-  try { return JSON.parse(localStorage.getItem('saidStatements') || '[]'); } catch(e) { return []; }
-}
-
-function deleteSaidStatement(id) {
-  var statements = getSaidStatements().filter(function(s){ return s.id !== id; });
-  localStorage.setItem('saidStatements', JSON.stringify(statements));
-  renderSaidStatements();
-}
-
-function renderSaidStatements() {
-  var el = document.getElementById('saidStatements');
-  if (!el) return;
-  var statements = getSaidStatements();
-  if (statements.length === 0) {
-    el.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px 0;">Nothing logged yet.</div>';
-    return;
-  }
-  el.innerHTML = statements.map(function(s) {
-    return '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">' +
-        '<span style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.3px;">' + whoLabel(s.who).toUpperCase() + '</span>' +
-        '<div style="display:flex;gap:8px;align-items:center;">' +
-          '<span style="font-size:11px;color:var(--muted);">' + s.dateStr + '</span>' +
-          '<button onclick="deleteSaidStatement(' + s.id + ')" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;">✕</button>' +
-        '</div>' +
-      '</div>' +
-      '<div style="font-size:14px;color:var(--white);line-height:1.6;margin-bottom:' + (s.context ? '6px' : '0') + ';">"' + s.what + '"</div>' +
-      (s.context ? '<div style="font-size:12px;color:var(--muted);">' + s.context + '</div>' : '') +
-    '</div>';
-  }).join('');
 }
 
 // ── DYNAMIC SUGGESTION CHIPS ──
@@ -10150,6 +9747,7 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 </body>
 </html>
+
 
 
 
