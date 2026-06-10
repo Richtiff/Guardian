@@ -2279,6 +2279,7 @@ p, .body-text { font-size: 16px !important; }
 
 
 <div class="step" id="sTalkGuardian">
+  <div style="margin-bottom:16px;padding:16px;background:rgba(212,168,67,0.15);border:2px solid #d4a843;border-radius:12px;color:#e8edf5;font-size:15px;font-weight:700;">Ask Guardian is ready</div>
   <div class="section-header">
     <button type="button" class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Ask Guardian</div><div class="section-sub">Your case. Your questions. Answered.</div></div>
@@ -2991,14 +2992,13 @@ function goBack() {
 }
 
 function go(id) {
-  toast('go: ' + id);
-  // Hide the app loader once we navigate anywhere
   var loader = document.getElementById('appLoader');
   if (loader) loader.style.display = 'none';
-  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
+  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e){ e.classList.remove('active'); e.style.display='none'; } });
   var t = document.getElementById(id);
-  if (!t) { toast('ERROR: ' + id + ' not in DOM'); return; }
+  if (!t) { return; }
   t.classList.add('active');
+  t.style.display = 'block';
   toast('active added to ' + id);
   window.scrollTo(0, 0);
   stepHistory.push(id);
