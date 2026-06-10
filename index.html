@@ -2988,13 +2988,15 @@ function goBack() {
 }
 
 function go(id) {
+  toast('go: ' + id);
   // Hide the app loader once we navigate anywhere
   var loader = document.getElementById('appLoader');
   if (loader) loader.style.display = 'none';
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
   var t = document.getElementById(id);
-  if (!t) return;
+  if (!t) { toast('ERROR: ' + id + ' not in DOM'); return; }
   t.classList.add('active');
+  toast('active added to ' + id);
   window.scrollTo({top:0,behavior:'smooth'});
   stepHistory.push(id);
   // Show home button on all screens except setup and home itself
