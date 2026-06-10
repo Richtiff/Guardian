@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080d14">
-<title>Guardian — Case Companion</title>
+<title>GuardianCC — Case Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -482,12 +482,26 @@ p, .body-text { font-size: 16px !important; }
 <body>
 <div id="appLoader" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#0a0a0a;z-index:9999;display:flex;align-items:center;justify-content:center;">
   <div style="text-align:center;">
-    <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px;">Guard<span style="color:#d4a843;">ian</span></div>
+    <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px;"><svg width="26" height="26" viewBox="0 0 68 68" style="display:inline-block;vertical-align:middle;margin-right:8px;" fill="none">
+  <circle cx="34" cy="34" r="29" stroke="#d4a843" stroke-width="2.5"/>
+  <circle cx="34" cy="34" r="4" fill="#d4a843"/>
+  <polygon points="34,8 30,34 34,30 38,34" fill="#d4a843"/>
+  <polygon points="34,60 30,34 34,38 38,34" fill="#d4a843" opacity="0.35"/>
+  <line x1="8" y1="34" x2="14" y2="34" stroke="#d4a843" stroke-width="2" opacity="0.5"/>
+  <line x1="54" y1="34" x2="60" y2="34" stroke="#d4a843" stroke-width="2" opacity="0.5"/>
+</svg>Guardian<span style="color:#d4a843;font-weight:900;letter-spacing:1px;">CC</span></div>
   </div>
 </div>
 <div class="app">
 <div class="header">
-  <div class="logo" onclick="goHome()" style="cursor:pointer;">Guard<span>ian</span></div>
+  <div class="logo" onclick="goHome()" style="cursor:pointer;"><svg width="26" height="26" viewBox="0 0 68 68" style="display:inline-block;vertical-align:middle;margin-right:8px;" fill="none">
+  <circle cx="34" cy="34" r="29" stroke="#d4a843" stroke-width="2.5"/>
+  <circle cx="34" cy="34" r="4" fill="#d4a843"/>
+  <polygon points="34,8 30,34 34,30 38,34" fill="#d4a843"/>
+  <polygon points="34,60 30,34 34,38 38,34" fill="#d4a843" opacity="0.35"/>
+  <line x1="8" y1="34" x2="14" y2="34" stroke="#d4a843" stroke-width="2" opacity="0.5"/>
+  <line x1="54" y1="34" x2="60" y2="34" stroke="#d4a843" stroke-width="2" opacity="0.5"/>
+</svg>Guardian<span style="color:#d4a843;font-weight:900;letter-spacing:1px;">CC</span></div>
   <div style="display:flex;align-items:center;gap:10px;">
     <button id="homeBtn" onclick="goHome()" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--muted-hi);font-size:12px;font-weight:600;padding:7px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;">🏠 Home</button>
     <div class="badge">CASE COMPANION</div>
@@ -878,23 +892,23 @@ p, .body-text { font-size: 16px !important; }
     <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">Tap to regenerate reply →</div>
   </div>
   <div class="home-grid" style="grid-template-columns:1fr;margin-bottom:20px;gap:10px;">
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sCoach','coach')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sCoach')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">💬</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Reply Ready</div><div class="home-btn-sub">Paste their message. Get a reply. Send with confidence.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
     <button type="button" class="home-btn home-btn-gold" onclick="openTalkGuardian()" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🛡️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Ask Guardian</div><div class="home-btn-sub">Messages, documents, hearings — ask me anything.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDiary','diary')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sDiary')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📓</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Diary</div><div class="home-btn-sub">Log every session. Build your evidence record.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sStatements','scanner')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sStatements')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">📋</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Statements</div><div class="home-btn-sub">Read theirs. Check yours. Write your position statement.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sBrain','brain')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sBrain')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🧠</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">Guardian Brain</div><div class="home-btn-sub">Everything Guardian knows about your case.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
 
-    <button type="button" class="home-btn home-btn-gold" onclick="showSection('sDocs','docs')" style="text-align:left;padding:16px 20px;">
+    <button type="button" class="home-btn home-btn-gold" onclick="go('sDocs')" style="text-align:left;padding:16px 20px;">
       <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:26px;">🗂️</span><div style="flex:1;"><div class="home-btn-label" style="font-size:17px;">My Case</div><div class="home-btn-sub">Your case file. Stored and ready when you need it.</div></div><span style="opacity:0.5;font-size:20px;">›</span></div>
     </button>
   </div>
@@ -1514,6 +1528,8 @@ p, .body-text { font-size: 16px !important; }
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">🧠 Guardian Brain</div><div class="section-sub">The more Guardian knows, the better it helps</div><div id="brainFactCount" style="font-size:11px;color:var(--gold);margin-top:3px;"></div></div>
+  <button id="brainSummaryBtn" onclick="generateBrainSummary()" style="width:100%;padding:14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:12px;color:var(--gold);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px;touch-action:manipulation;">🧠 What's been happening — Guardian summary</button>
+  <div id="brainSummary" style="display:none;background:var(--card);border:1.5px solid rgba(212,168,67,0.3);border-radius:12px;padding:14px;margin-bottom:16px;color:var(--white);font-size:14px;line-height:1.7;white-space:pre-wrap;"></div>
   </div>
   <div id="brainContent" style="margin-bottom:14px;"></div>
   <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
@@ -2260,6 +2276,32 @@ p, .body-text { font-size: 16px !important; }
 </div>
 
 <!-- KEY DATES -->
+
+
+<div class="step" id="sTalkGuardian">
+  <div class="section-header">
+    <button type="button" class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Ask Guardian</div><div class="section-sub">Rate replies · refine your voice · ask anything</div></div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+    <button onclick="talkChip('Rate my reply')" style="padding:8px 14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:20px;color:var(--gold);font-size:13px;cursor:pointer;touch-action:manipulation;">⭐ Rate my reply</button>
+    <button onclick="talkChip('Help me write a reply')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">✏️ Help me write one</button>
+    <button onclick="talkChip('Is this too much?')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">🤔 Is this too much?</button>
+    <button onclick="talkChip('What would a judge think?')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">⚖️ Judge view</button>
+  </div>
+  <div id="ratePanel" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">THEIR MESSAGE</div>
+    <textarea id="rateTheirMsg" placeholder="Paste their message here..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:DM Sans,sans-serif;min-height:70px;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:10px 0 8px;">YOUR REPLY</div>
+    <textarea id="rateMyReply" placeholder="Paste your reply here..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:DM Sans,sans-serif;min-height:70px;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
+    <button onclick="submitRating()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">Rate this reply →</button>
+  </div>
+  <div id="talkMessages" style="display:flex;flex-direction:column;gap:14px;padding-bottom:120px;"></div>
+  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:8px 12px;z-index:50;display:flex;gap:8px;align-items:flex-end;box-sizing:border-box;">
+    <textarea id="talkInput" rows="1" placeholder="Ask Guardian anything..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:var(--white);font-size:15px;font-family:DM Sans,sans-serif;resize:none;outline:none;min-height:44px;max-height:100px;overflow-y:auto;-webkit-appearance:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
+    <button onclick="sendTalkMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">➤</button>
+  </div>
+
 <div class="step" id="sKeyDates">
   <div class="section-header">
     <button class="back-btn" onclick="goBack()">←</button>
@@ -2980,6 +3022,10 @@ function go(id) {
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
   if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
+  if(id==='sBrain'){ setTimeout(function(){try{loadBrainScreen();}catch(e){}},50); }
+  if(id==='sDiary'){ setTimeout(function(){try{loadDiaryScreen();renderCalendar();}catch(e){}},50); }
+  if(id==='sDocs'){ setTimeout(function(){try{renderTimeline();}catch(e){}},50); }
+  if(id==='sTalkGuardian'){ setTimeout(function(){try{initTalkGuardian();}catch(e){}},100); }
 }
 
 // Intercept browser back button
@@ -5874,6 +5920,33 @@ function checkSevenDayUpsell() {
 // ── GUARDIAN BRAIN ──
 var brainLog = safeJSONParse(localStorage.getItem('gBrainLog'), []);
 
+
+function generateBrainSummary() {
+  var btn = document.getElementById('brainSummaryBtn');
+  var div = document.getElementById('brainSummary');
+  if (!btn || !div) return;
+  btn.textContent = '⏳ Guardian is reading your case...';
+  btn.disabled = true;
+  div.style.display = 'none';
+  var ctx = getCTX();
+  var prompt = ctx + '\n\nBased on everything above — diary entries, brain facts, documents, and the pattern of messages — write a plain-English summary of what has been happening in this case recently. Focus on: key events, patterns in the other parent\'s behaviour, what has changed, what is improving, what needs attention. Be specific to this case. Write as Guardian speaking directly to Richard. 3-5 paragraphs max.';
+  fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:800, system:SYS,
+      messages:[{role:'user', content:prompt}]})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var reply = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    div.textContent = reply;
+    div.style.display = 'block';
+    btn.textContent = '🧠 Refresh summary';
+    btn.disabled = false;
+  })
+  .catch(function(){
+    btn.textContent = '🧠 What\'s been happening — Guardian summary';
+    btn.disabled = false;
+  });
+}
+
 function loadBrainScreen() {
   var fc = document.getElementById('brainFactCount');
   var facts = (brainLog||[]).filter(function(b){ return b.summary||b.text; });
@@ -7831,7 +7904,7 @@ function saveEditProfile() {
 // ── VIDEO HELP SYSTEM ──
 var VIDEOS = {
   sHome: {
-    title: "Welcome to Guardian",
+    title: "Welcome to GuardianCC",
     desc: "What Guardian is, how it works, and why it exists. Built by a parent who spent three years in family court wishing this existed.",
     url: ""
   },
@@ -9838,29 +9911,4 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 
 
-
-
-id="sTalkGuardian">
-  <div class="section-header">
-    <button type="button" class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Ask Guardian</div><div class="section-sub">Rate replies · refine your voice · ask anything</div></div>
-  </div>
-  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-    <button onclick="talkChip('Rate my reply')" style="padding:8px 14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:20px;color:var(--gold);font-size:13px;cursor:pointer;touch-action:manipulation;">⭐ Rate my reply</button>
-    <button onclick="talkChip('Help me write a reply')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">✏️ Help me write one</button>
-    <button onclick="talkChip('Is this too much?')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">🤔 Is this too much?</button>
-    <button onclick="talkChip('What would a judge think?')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">⚖️ Judge view</button>
-  </div>
-  <div id="ratePanel" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">THEIR MESSAGE</div>
-    <textarea id="rateTheirMsg" placeholder="Paste their message here..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:DM Sans,sans-serif;min-height:70px;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:10px 0 8px;">YOUR REPLY</div>
-    <textarea id="rateMyReply" placeholder="Paste your reply here..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:DM Sans,sans-serif;min-height:70px;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
-    <button onclick="submitRating()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">Rate this reply →</button>
-  </div>
-  <div id="talkMessages" style="display:flex;flex-direction:column;gap:14px;padding-bottom:120px;"></div>
-  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:8px 12px;z-index:50;display:flex;gap:8px;align-items:flex-end;box-sizing:border-box;">
-    <textarea id="talkInput" rows="1" placeholder="Ask Guardian anything..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:var(--white);font-size:15px;font-family:DM Sans,sans-serif;resize:none;outline:none;min-height:44px;max-height:100px;overflow-y:auto;-webkit-appearance:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
-    <button onclick="sendTalkMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">➤</button>
-  </div>
 
