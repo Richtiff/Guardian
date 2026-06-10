@@ -2352,8 +2352,9 @@ var uploadedDocs = {};
 var st = { msg:'', answer:'', question:'', reply:'', score:0, timing:'', timingNote:'', flag:'', flagText:'', outgoing:false, outMsg:'', replyMode:'natural' };
 
 var SYS = [
-  'You are Guardian, a co-parenting communication safety assistant for parents in family court in England and Wales.',
-  'Help the user reply to messages from the other parent in a way that is calm, child-focused, legally safe, and unlikely to escalate conflict.',
+  'You are Guardian, a co-parenting communication coach for parents in family court in England and Wales.',
+  'You know this case in depth — the parent, the child, the other parent dynamic, the allegations, the tone profile, the diary entries, the court documents. Draw on ALL of this in every single response.',
+  'VOICE PROFILE: Replies must be brief, warm, fatherly — never robotic or formal. Format: Hi [name] / 1-2 sentences / Thanks, Richard. Use plain natural language. Never use clinical terms. Never echo or confirm the other parent\'s instructions as binding. The user is a father with his own parenting style, not a carer. Use \'I\'ve noted\' not \'I\'ll follow\'. Never position the other parent as authority over this parent\'s home. Cooperative without deference. Shortest safe reply is often best.',
   'Use the case context provided in every response.',
   '',
   'CORE RULES:',
@@ -9270,7 +9271,84 @@ function openTalkGuardian() {
   }, 100);
 }
 
+function talkChip(text) {
+  var ratePanel = document.getElementById('ratePanel');
+  if (text === 'Rate my reply') {
+    ratePanel.style.display = ratePanel.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  var inp = document.getElementById('talkInput');
+  if (inp) { inp.value = text; inp.focus(); }
+}
+
+function submitRating() {
+  var theirMsg = (document.getElementById('rateTheirMsg').value||'').trim();
+  var myReply = (document.getElementById('rateMyReply').value||'').trim();
+  if (!theirMsg || !myReply) { toast('Paste both messages first'); return; }
+  document.getElementById('ratePanel').style.display = 'none';
+  var prompt = 'The user received this message:\n"' + theirMsg + '"\n\nThey wrote this reply:\n"' + myReply + '"\n\nRate this reply out of 10. Be honest and specific. Consider: tone, brevity, legal safety, whether it positions the user as a cooperative father rather than a carer following instructions, whether it avoids confirming the other parent\'s framing as binding. Give a score, what works, what could be better, and a suggested improvement if needed. Keep feedback concise and practical.';
+  addTalkMsg('user', '⭐ Rate my reply to:\n"' + theirMsg.substring(0,60) + (theirMsg.length>60?'...':'"'));
+  sendToGuardian(prompt);
+}
+
+function addTalkMsg(role, text) {
+  var msgs = document.getElementById('talkMessages');
+  if (!msgs) return;
+  var div = document.createElement('div');
+  if (role === 'user') {
+    div.style.cssText = 'background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.2);border-radius:12px;padding:12px 14px;color:var(--white);font-size:15px;line-height:1.6;white-space:pre-wrap;';
+  } else {
+    div.style.cssText = 'background:var(--card);border-left:3px solid var(--gold);border-radius:12px;padding:12px 14px;color:var(--white);font-size:15px;line-height:1.6;white-space:pre-wrap;';
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--gold);margin-bottom:6px;letter-spacing:0.5px;';
+    lbl.textContent = '🛡 GUARDIAN';
+    div.prepend(lbl);
+  }
+  div.appendChild(document.createTextNode(text));
+  msgs.appendChild(div);
+  div.scrollIntoView({behavior:'smooth', block:'end'});
+}
+
+async function sendToGuardian(prompt) {
+  var msgs = document.getElementById('talkMessages');
+  var loadDiv = document.createElement('div');
+  loadDiv.style.cssText = 'color:var(--muted);font-size:14px;padding:8px 0;';
+  loadDiv.textContent = '🛡 Guardian is thinking...';
+  msgs.appendChild(loadDiv);
+  try {
+    var ctx = getCTX();
+    var res = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:600, system:SYS,
+        messages:[{role:'user', content: ctx + '\n\n' + prompt}]})});
+    var data = await res.json();
+    var reply = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim());
+    loadDiv.remove();
+    addTalkMsg('guardian', reply);
+  } catch(e) {
+    loadDiv.remove();
+    addTalkMsg('guardian', 'Sorry — something went wrong. Try again.');
+  }
+}
+
+function sendTalkMsg() {
+  var inp = document.getElementById('talkInput');
+  if (!inp) return;
+  var v = inp.value.trim();
+  if (!v) return;
+  inp.value = '';
+  addTalkMsg('user', v);
+  sendToGuardian(v);
+}
+
 function initTalkGuardian() {
+  var msgs = document.getElementById('talkMessages');
+  if (msgs && msgs.children.length === 0) {
+    addTalkMsg('guardian', 'Hi Richard — I know your case inside out.\n\nPaste a message and your reply and I\'ll rate it, or just ask me anything. The more we work through together, the better I get at matching your voice.');
+  }
+}
+
+// Legacy — keep original below
+function _initTalkGuardian_legacy() {
   var el = document.getElementById('talkMessages');
   if (el) el.innerHTML = '';
   talkHistory = [];
@@ -9762,4 +9840,27 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 
 
+id="sTalkGuardian">
+  <div class="section-header">
+    <button type="button" class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Ask Guardian</div><div class="section-sub">Rate replies · refine your voice · ask anything</div></div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+    <button onclick="talkChip('Rate my reply')" style="padding:8px 14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:20px;color:var(--gold);font-size:13px;cursor:pointer;touch-action:manipulation;">⭐ Rate my reply</button>
+    <button onclick="talkChip('Help me write a reply')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">✏️ Help me write one</button>
+    <button onclick="talkChip('Is this too much?')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">🤔 Is this too much?</button>
+    <button onclick="talkChip('What would a judge think?')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">⚖️ Judge view</button>
+  </div>
+  <div id="ratePanel" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">THEIR MESSAGE</div>
+    <textarea id="rateTheirMsg" placeholder="Paste their message here..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:DM Sans,sans-serif;min-height:70px;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
+    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:10px 0 8px;">YOUR REPLY</div>
+    <textarea id="rateMyReply" placeholder="Paste your reply here..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:DM Sans,sans-serif;min-height:70px;resize:none;outline:none;box-sizing:border-box;" oninput="autoGrow(this)"></textarea>
+    <button onclick="submitRating()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">Rate this reply →</button>
+  </div>
+  <div id="talkMessages" style="display:flex;flex-direction:column;gap:14px;padding-bottom:120px;"></div>
+  <div style="position:fixed;bottom:36px;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(196,154,60,0.2);padding:8px 12px;z-index:50;display:flex;gap:8px;align-items:flex-end;box-sizing:border-box;">
+    <textarea id="talkInput" rows="1" placeholder="Ask Guardian anything..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:var(--white);font-size:15px;font-family:DM Sans,sans-serif;resize:none;outline:none;min-height:44px;max-height:100px;overflow-y:auto;-webkit-appearance:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTalkMsg();}"></textarea>
+    <button onclick="sendTalkMsg()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">➤</button>
+  </div>
 
