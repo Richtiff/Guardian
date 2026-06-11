@@ -2332,46 +2332,11 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#0a0f1a;border-top:1.5px solid rgba(212,168,67,0.2);padding:10px 16px 24px;z-index:9502;box-sizing:border-box;">
     <div style="display:flex;gap:8px;align-items:flex-end;">
-      <textarea id="agInput" rows="1" placeholder="Ask Guardian anything about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:#e8edf5;font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
+      <textarea id="agInput" rows="1" placeholder="Ask Guardian anything..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:#e8edf5;font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();agSend();}"></textarea>
       <button onclick="agSend()" style="width:44px;height:44px;background:#d4a843;border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">&#9658;</button>
     </div>
   </div>
 </div>
-<div class="step" id="sKeyDates">
-  <div class="section-header">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Key Dates</div><div class="section-sub">Your deadlines and countdowns</div></div>
-  </div>
-  <div id="keyDatesContent"></div>
-</div><!-- end .app -->
-
-<!-- UPSELL TOAST -->
-<div class="upsell-toast" id="upsellToast">
-  <div class="upsell-msg" id="upsellMsg"></div>
-  <div class="upsell-row">
-    <button class="upsell-cta" onclick="goUpsell()">Keep Guardian protecting me →</button>
-    <button class="upsell-dismiss" onclick="dismissUpsell()">Not now</button>
-  </div>
-</div>
-
-<!-- SECTION INTRO OVERLAY -->
-<div class="section-intro" id="sectionIntro">
-  <div class="section-intro-card">
-    <div class="section-intro-icon" id="introIcon"></div>
-    <div class="section-intro-title" id="introTitle"></div>
-    <div class="section-intro-body" id="introBody"></div>
-    <button class="section-intro-close" onclick="closeIntro()">Got it — let's go →</button>
-    <button class="section-intro-skip" onclick="closeIntroSkip()">Don't show this again</button>
-  </div>
-</div>
-
-<div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
-<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:200px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
-<button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
-<div class="toast" id="toast"></div>
-<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
-
-
 <script>
 const API = '/api/anthropic';
 const SUPA_URL = 'https://khgfladykvpfarkllwmd.supabase.co';
