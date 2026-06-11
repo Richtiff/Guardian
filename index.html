@@ -990,7 +990,7 @@ p, .body-text { font-size: 16px !important; }
     <button type="button" class="qa-mic" id="qaMic" onclick="toggleQAVoice()">🎤</button>
     <label class="qa-clip" title="Attach a document or screenshot">
       📎
-      <input type="file" accept="image/*,.pdf,.txt" onchange="handleQAAttach(event)">
+<input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" onchange="handleQAAttach(event)">
     </label>
     <input class="qa-input" id="qaIn" type="text" placeholder="Ask Court Guru anything..." onkeydown="if(event.key==='Enter')sendQA()">
     <button type="button" class="qa-send" onclick="sendQA()">→</button>
@@ -1320,6 +1320,10 @@ p, .body-text { font-size: 16px !important; }
 
 
 
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRMED -->
 <div class="step" id="sConfirmed">
   <div class="confirmed-card">
@@ -1363,22 +1367,22 @@ p, .body-text { font-size: 16px !important; }
     <div class="upload-section-title">ADD A DOCUMENT</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="addDoc(event,'court')">
+      <input type="file" accept=".pdf,.docx,.txt,.rtf,image/*,.heic,.heif,.webp" multiple onchange="addDoc(event,'court')">
         <div class="upload-item-icon">⚖️</div>
         <div class="upload-item-body"><div class="upload-item-name">Court Document</div><div class="upload-item-hint">Order, CNF, C1A — multiple OK</div></div>
       </label>
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="addDoc(event,'cafcass')">
+      <input type="file" accept=".pdf,.docx,.txt,.rtf,image/*,.heic,.heif,.webp" multiple onchange="addDoc(event,'cafcass')">
         <div class="upload-item-icon">👥</div>
         <div class="upload-item-body"><div class="upload-item-name">Cafcass</div><div class="upload-item-hint">Letter or report</div></div>
       </label>
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept=".txt,.pdf,image/*" multiple onchange="addDoc(event,'messages')">
+      <input type="file" accept=".txt,.pdf,.docx,.rtf,image/*,.heic,.heif,.webp" multiple onchange="addDoc(event,'messages')">
         <div class="upload-item-icon">💬</div>
         <div class="upload-item-body"><div class="upload-item-name">Message Export</div><div class="upload-item-hint">WhatsApp .txt</div></div>
       </label>
       <label class="upload-item" style="margin-bottom:0;">
-        <input type="file" accept="image/*" multiple onchange="addDoc(event,'screenshot')">
+      <input type="file" accept="image/*,.heic,.heif,.webp" multiple onchange="addDoc(event,'screenshot')">
         <div class="upload-item-icon">🖼️</div>
         <div class="upload-item-body"><div class="upload-item-name">Gallery</div><div class="upload-item-hint">Select multiple photos</div></div>
       </label>
@@ -1391,10 +1395,14 @@ p, .body-text { font-size: 16px !important; }
       </label>
     </div>
     <label class="upload-item">
-      <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="addDoc(event,'other')">
+      <input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/*,.heic,.heif,.webp" multiple onchange="addDoc(event,'other')">
       <div class="upload-item-icon">📎</div>
       <div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">Letter, statement, report</div></div>
     </label>
+    <div style="font-size:11px;color:var(--muted-hi);line-height:1.55;padding:2px 4px 0;">
+      Reads PDF, DOCX, TXT, RTF, CSV, EML, JPEG, PNG and WebP. Convert old DOC or HEIC files first.
+      Guardian saves the extracted case history; keep original files in your phone or cloud storage.
+    </div>
   </div>
   <div id="docsProcessing" style="display:none;text-align:center;padding:16px;">
     <div class="spinner" style="margin:0 auto 10px;"></div>
@@ -1571,7 +1579,7 @@ p, .body-text { font-size: 16px !important; }
         <span style="font-size:20px;">📄</span>
         <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Document</span>
         <span style="font-size:10px;color:var(--muted);">PDF or file</span>
-        <input type="file" accept=".pdf,.doc,.docx" multiple style="display:none;" onchange="addBrainEvidence(event)">
+<input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="addBrainEvidence(event)">
       </label>
     </div>
     <div id="brainEvidenceStatus" style="display:none;margin-top:8px;font-size:12px;color:var(--green);text-align:center;"></div>
@@ -1586,12 +1594,12 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:16px;">Court documents are written for lawyers, not parents. Upload anything — court order, Cafcass letter, solicitor letter. Guardian reads it and tells you exactly what it means and what to do.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A — multiple OK</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document — multiple OK</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
-    <label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.doc,.docx,image/*" multiple onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
+<label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" onchange="explainDoc(event,'court')"><div class="upload-item-icon">⚖️</div><div class="upload-item-body"><div class="upload-item-name">Court document</div><div class="upload-item-hint">Order, CNF, C1A</div></div></label>
+<label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" onchange="explainDoc(event,'cafcass')"><div class="upload-item-icon">👥</div><div class="upload-item-body"><div class="upload-item-name">Cafcass letter</div><div class="upload-item-hint">Any Cafcass document</div></div></label>
+<label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" onchange="explainDoc(event,'solicitor')"><div class="upload-item-icon">📬</div><div class="upload-item-body"><div class="upload-item-name">Solicitor letter</div><div class="upload-item-hint">Any legal letter</div></div></label>
+<label class="upload-item" style="margin-bottom:0;"><input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" onchange="explainDoc(event,'social')"><div class="upload-item-icon">🏛️</div><div class="upload-item-body"><div class="upload-item-name">Social services</div><div class="upload-item-hint">CFA, referral, letter</div></div></label>
   </div>
-  <label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
+<label class="upload-item" style="margin-bottom:14px;"><input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" onchange="explainDoc(event,'other')"><div class="upload-item-icon">📎</div><div class="upload-item-body"><div class="upload-item-name">Anything else</div><div class="upload-item-hint">School report, mediation, any document</div></div></label>
   <div id="explainerResult" style="display:none;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
       <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT THIS DOCUMENT IS</div>
@@ -1665,7 +1673,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload whatever they have filed — position statement, witness statement, Cafcass letter, solicitor letter. Guardian reads every word and tells you what it means and how to respond.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="scanStatement(event,'theirs')">
+<input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" multiple onchange="scanStatement(event,'theirs')">
     <div class="upload-item-icon">📨</div>
     <div class="upload-item-body"><div class="upload-item-name">Upload their document</div><div class="upload-item-hint">Position statement, Cafcass letter, solicitor letter, anything filed</div></div>
     <div class="upload-status" id="theirsScanStatus">+</div>
@@ -1702,7 +1710,7 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload your draft statement. Guardian scores it out of 10, finds the weaknesses, flags any AI tells, and tells you exactly what to fix before you file it.</div>
   <label class="upload-item" style="margin-bottom:14px;">
-    <input type="file" accept=".pdf,.doc,.docx,image/*,.txt" multiple onchange="scanStatement(event,'mine')">
+<input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" multiple onchange="scanStatement(event,'mine')">
     <div class="upload-item-icon">🔍</div>
     <div class="upload-item-body"><div class="upload-item-name">Upload my statement</div><div class="upload-item-hint">PDF, image, or text file</div></div>
     <div class="upload-status" id="mineScanStatus">+</div>
@@ -1829,12 +1837,12 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
 
-  <!-- Hearing orders -->
-  <div id="diaryHearingOrders" style="display:none;">
+  <!-- Legacy hearing-order draft retained but disconnected -->
+  <div id="legacyDiaryHearingOrders" style="display:none;">
     <div class="field-group">
       <label class="field-label">WHAT WAS ORDERED?</label>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select all that apply</div>
-      <div style="display:flex;flex-direction:column;gap:8px;" id="hearingOrderOpts">
+      <div style="display:flex;flex-direction:column;gap:8px;" id="legacyHearingOrderOpts">
         <button type="button" class="opt" onclick="toggleHearingOrder(this,'section7')">Section 7 / welfare report ordered</button>
         <button type="button" class="opt" onclick="toggleHearingOrder(this,'next_hearing')">Next hearing date given</button>
         <button type="button" class="opt" onclick="toggleHearingOrder(this,'positions')">Position statements required</button>
@@ -1843,9 +1851,9 @@ p, .body-text { font-size: 16px !important; }
         <button type="button" class="opt" onclick="toggleHearingOrder(this,'concluded')">Case concluded</button>
       </div>
     </div>
-    <div id="nextHearingDateBox" class="field-group" style="display:none;">
+    <div id="legacyNextHearingDateBox" class="field-group" style="display:none;">
       <label class="field-label">NEXT HEARING DATE</label>
-      <input class="field-input" type="date" id="nextHearingDate" style="color-scheme:dark;">
+      <input class="field-input" type="date" id="legacyNextHearingDate" style="color-scheme:dark;">
     </div>
   </div>
 
@@ -1953,7 +1961,7 @@ p, .body-text { font-size: 16px !important; }
         <span style="font-size:22px;">📄</span>
         <span style="font-size:11px;color:var(--muted-hi);font-weight:600;">Document</span>
         <span style="font-size:10px;color:var(--muted);">PDF or file</span>
-        <input type="file" accept=".pdf,.doc,.docx" multiple style="display:none;" onchange="addDiaryPhotos(event)">
+        <input type="file" accept="image/*" multiple style="display:none;" onchange="addDiaryPhotos(event)">
       </label>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;" id="diaryPhotoRow"></div>
@@ -2045,7 +2053,7 @@ p, .body-text { font-size: 16px !important; }
             <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;">Upload their statement first</div>
             <div style="font-size:12px;color:var(--muted-hi);">Guardian reads every allegation and builds your response around each one</div>
           </div>
-          <input type="file" accept=".pdf,.doc,.docx,image/*" multiple style="display:none;" onchange="swUploadTheirDocs(event)">
+<input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="swUploadTheirDocs(event)">
         </label>
         <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px;">Or continue without — Guardian will still build your statement</div>
       </div>
@@ -2069,7 +2077,7 @@ p, .body-text { font-size: 16px !important; }
           </div>
         </div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">One sentence is enough. Guardian does the rest.</div>
-        <textarea class="field-input" id="swCourtAsk" rows="2" style="resize:none;" placeholder="e.g. I want contact to resume immediately and the order to be enforced."></textarea>
+        <textarea class="field-input" id="swCourtAskInitial" rows="2" style="resize:none;" placeholder="e.g. I want contact to resume immediately and the order to be enforced."></textarea>
       </div>
 
       <button type="button" class="btn-gold" id="swContinueBtn" onclick="swContinueToStatement()" style="display:none;margin-top:4px;">Build my statement →</button>
@@ -2291,22 +2299,21 @@ p, .body-text { font-size: 16px !important; }
     <button onclick="agChip('pattern')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#128269; Pattern check</button>
     <button onclick="agChip('log')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#128211; What to log</button>
   </div>
-  <div id="agRatePanel" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+  <div id="legacyAgRatePanel" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
     <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">THEIR MESSAGE</div>
-    <textarea id="agTheirMsg" rows="3" placeholder="Paste their message..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:inherit;min-height:60px;resize:none;outline:none;box-sizing:border-box;"></textarea>
+    <textarea id="legacyAgTheirMsg" rows="3" placeholder="Paste their message..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:inherit;min-height:60px;resize:none;outline:none;box-sizing:border-box;"></textarea>
     <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:10px 0 8px;">YOUR REPLY</div>
-    <textarea id="agMyReply" rows="3" placeholder="Paste your reply..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:inherit;min-height:60px;resize:none;outline:none;box-sizing:border-box;"></textarea>
+    <textarea id="legacyAgMyReply" rows="3" placeholder="Paste your reply..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:inherit;min-height:60px;resize:none;outline:none;box-sizing:border-box;"></textarea>
     <button onclick="agSubmitRating()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">Rate this reply</button>
   </div>
-  <div id="agMessages" style="display:flex;flex-direction:column;gap:14px;padding-bottom:140px;min-height:50px;"></div>
+  <div id="legacyAgMessages" style="display:flex;flex-direction:column;gap:14px;padding-bottom:140px;min-height:50px;"></div>
   <div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(212,168,67,0.2);padding:10px 16px 24px;z-index:50;box-sizing:border-box;">
     <div style="display:flex;gap:8px;align-items:flex-end;">
-      <textarea id="agInput" rows="1" placeholder="Ask Guardian anything about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:var(--white);font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
+      <textarea id="legacyAgInput" rows="1" placeholder="Ask Guardian anything about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:var(--white);font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
       <button onclick="agSend()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">&#9658;</button>
     </div>
   </div>
-
-
+</div>
 
 <div id="agModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;background:#0a0f1a;overflow-y:auto;padding:16px 16px 140px;box-sizing:border-box;">
   <div style="max-width:480px;margin:0 auto;">
@@ -2332,11 +2339,47 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#0a0f1a;border-top:1.5px solid rgba(212,168,67,0.2);padding:10px 16px 24px;z-index:9502;box-sizing:border-box;">
     <div style="display:flex;gap:8px;align-items:flex-end;">
-      <textarea id="agInput" rows="1" placeholder="Ask Guardian anything..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:#e8edf5;font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();agSend();}"></textarea>
+      <textarea id="agInput" rows="1" placeholder="Ask Guardian anything about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:#e8edf5;font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
       <button onclick="agSend()" style="width:44px;height:44px;background:#d4a843;border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">&#9658;</button>
     </div>
   </div>
 </div>
+<div class="step" id="sKeyDates">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Key Dates</div><div class="section-sub">Your deadlines and countdowns</div></div>
+  </div>
+  <div id="keyDatesContent"></div>
+</div>
+</div><!-- end .app -->
+
+<!-- UPSELL TOAST -->
+<div class="upsell-toast" id="upsellToast">
+  <div class="upsell-msg" id="upsellMsg"></div>
+  <div class="upsell-row">
+    <button class="upsell-cta" onclick="goUpsell()">Keep Guardian protecting me →</button>
+    <button class="upsell-dismiss" onclick="dismissUpsell()">Not now</button>
+  </div>
+</div>
+
+<!-- SECTION INTRO OVERLAY -->
+<div class="section-intro" id="sectionIntro">
+  <div class="section-intro-card">
+    <div class="section-intro-icon" id="introIcon"></div>
+    <div class="section-intro-title" id="introTitle"></div>
+    <div class="section-intro-body" id="introBody"></div>
+    <button class="section-intro-close" onclick="closeIntro()">Got it — let's go →</button>
+    <button class="section-intro-skip" onclick="closeIntroSkip()">Don't show this again</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="spinner"></div><div class="overlay-text" id="overlayText">Working...</div><div class="overlay-sub" id="overlaySub"></div></div>
+<button id="scrollToReplyBtn" onclick="scrollToReply()" style="display:none;position:fixed;bottom:200px;right:16px;z-index:100;width:40px;height:40px;background:var(--gold);border:none;border-radius:50%;color:#0a0600;font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↑</button>
+<button id="scrollToBottomBtn" onclick="scrollToBottom()" style="display:none;position:fixed;bottom:155px;right:16px;z-index:100;width:40px;height:40px;background:rgba(30,45,69,0.95);border:1.5px solid rgba(196,154,60,0.4);border-radius:50%;color:var(--gold);font-size:20px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.4);align-items:center;justify-content:center;touch-action:manipulation;">↓</button>
+<div class="toast" id="toast"></div>
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg);border-top:1px solid rgba(255,255,255,0.04);padding:4px 16px;text-align:center;pointer-events:none;"><p style="font-size:10px;color:rgba(255,255,255,0.25);margin:0;pointer-events:auto;">Guardian is AI and can make mistakes. <a href="https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" target="_blank" style="color:var(--muted);text-decoration:underline;">Please double-check responses.</a></p></div>
+
+
 <script>
 const API = '/api/anthropic';
 const SUPA_URL = 'https://khgfladykvpfarkllwmd.supabase.co';
@@ -2758,6 +2801,7 @@ window.onload = function() { (async function() {
   }
 
   if (supabase) {
+    attachAuthListener();
     console.log('Supabase connected after', attempts, 'attempts');
     try {
       var sessionResult = await supabase.auth.getSession();
@@ -2845,13 +2889,15 @@ window.onload = function() { (async function() {
   }
 
   go('sLogin');
-    go('sLogin');
   }
   })();
 };
 
-// Listen for auth state changes
-if (supabase) {
+// Listen for auth state changes after the Supabase client is available.
+var authListenerAttached = false;
+function attachAuthListener() {
+  if (!supabase || authListenerAttached) return;
+  authListenerAttached = true;
   supabase.auth.onAuthStateChange(async function(event, session) {
     if (event === 'SIGNED_IN' && session) {
       currentUser = session.user;
@@ -2974,10 +3020,24 @@ function goBack() {
   stepHistory.pop();
   var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
   var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
-  ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
+  ALL_STEPS.forEach(function(s){
+    var e=document.getElementById(s);
+    if(e) {
+      e.classList.remove('active');
+      e.style.display = 'none';
+    }
+  });
   var t = document.getElementById(landing);
-  if (t) t.classList.add('active');
-  window.scrollTo({top:0,behavior:'instant'});
+  if (t) {
+    t.classList.add('active');
+    t.style.display = 'block';
+  }
+  window.scrollTo(0, 0);
+  if (landing === 'sBrain') setTimeout(loadBrainScreen, 50);
+  if (landing === 'sDocs') setTimeout(renderTimeline, 50);
+  if (landing === 'sDiary') setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50);
+  if (landing === 'sKeyDates') setTimeout(renderKeyDates, 50);
+  if (landing === 'sEditProfile') setTimeout(loadEditProfile, 50);
   var homeBtn = document.getElementById('homeBtn');
   if (homeBtn) {
     var hideOn = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
@@ -2995,9 +3055,8 @@ function go(id) {
   if (!t) { return; }
   t.classList.add('active');
   t.style.display = 'block';
-  toast('active added to ' + id);
   window.scrollTo(0, 0);
-  stepHistory.push(id);
+  if (stepHistory[stepHistory.length - 1] !== id) stepHistory.push(id);
   // Show home button on all screens except setup and home itself
   var homeBtn = document.getElementById('homeBtn');
   if (homeBtn) {
@@ -3005,7 +3064,7 @@ function go(id) {
     homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
   }
   // Load screen data
-  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); var fc=document.getElementById('brainFactCount'); if(fc&&brainLog) fc.textContent=brainLog.length>0?'&#129504; '+brainLog.length+' facts extracted':''; }, 50); }
+  if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); }, 50); }
   if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
   if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
   if (id==='sDiary') { setTimeout(function(){ loadDiaryScreen(); renderCalendar(); }, 50); }
@@ -3015,15 +3074,10 @@ function go(id) {
     injectVideoBtn(id);
     showVideoForScreen(id);
   }, 300);
-  if (id==='sKeyDates') { setTimeout(function(){ renderKeyDates(); }, 50); }
   if (id==='sStatements') {}
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
   if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
-  if(id==='sBrain'){ setTimeout(function(){try{loadBrainScreen();}catch(e){}},50); }
-  if(id==='sDiary'){ setTimeout(function(){try{loadDiaryScreen();renderCalendar();}catch(e){}},50); }
-  if(id==='sDocs'){ setTimeout(function(){try{renderTimeline();}catch(e){}},50); }
-  if(id==='sTalkGuardian'){ setTimeout(function(){try{initTalkGuardian();}catch(e){}},100); }
 }
 
 // Intercept browser back button
@@ -3197,26 +3251,27 @@ function startObVoice() {
   obRecog.continuous=false;
   obRecog.interimResults=false;
   obRecog.lang='en-GB';
-  var prevText = document.getElementById('obText') ? document.getElementById('obText').value.trim() : '';
+  var transcript = document.getElementById('obTranscript');
+  var prevText = transcript ? transcript.value.trim() : '';
   obRecog.onresult=function(e){
     var t='';
     for(var i=0;i<e.results.length;i++){if(e.results[i].isFinal)t+=e.results[i][0].transcript+' ';}
     t=t.trim();
-    if(t){var v=document.getElementById('obText');if(v){v.value=(prevText?prevText+' '+t:t).trim();prevText=v.value;}}
+    if(t){var v=document.getElementById('obTranscript');if(v){v.value=(prevText?prevText+' '+t:t).trim();prevText=v.value;}}
   };
   obRecog.onend=function(){
-    if(isObRec){try{obRecog.start();}catch(er){isObRec=false;var b=document.getElementById('obVoiceBtn');if(b){b.classList.remove('rec');b.textContent='🎤';}}}
+    if(isObRec){try{obRecog.start();}catch(er){isObRec=false;var b=document.getElementById('obMicBtn');if(b){b.classList.remove('rec');b.textContent='🎤';}}}
     else{showVoiceConfirm();}
   };
   obRecog.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;stopObVoice();toast('Could not hear — tap mic and try again');};
   obRecog.start();isObRec=true;
-  var b=document.getElementById('obVoiceBtn');if(b){b.classList.add('rec');b.textContent='⏹ Tap to stop';}
+  var b=document.getElementById('obMicBtn');if(b){b.classList.add('rec');b.textContent='⏹';}
 }
 function stopObVoice() {
   if(obRecog){try{obRecog.stop();}catch(e){} obRecog=null;}
   isObRec=false;
   var b=document.getElementById('obMicBtn');
-  if(b){b.classList.remove('rec'); b.textContent='🎤 Speak your case';}
+  if(b){b.classList.remove('rec'); b.textContent='🎤';}
 }
 
 function showVoiceConfirm() {
@@ -3265,6 +3320,10 @@ async function showScreenshotCount(event) {
 function handleBundleInSetup(event) {
   var files = Array.from(event.target.files||[]); event.target.value = '';
   var file = files[0]; if (!file) return;
+  if (file.size > 12 * 1024 * 1024) {
+    toast('Bundle is over 12 MB. Split or compress the PDF, then try again.');
+    return;
+  }
   var status = document.getElementById('stBundle');
   var result = document.getElementById('bundleSetupResult');
   if (status) { status.textContent = ''; status.innerHTML = '<span style="font-size:11px;color:var(--gold);">Reading...</span>'; }
@@ -3276,7 +3335,7 @@ function handleBundleInSetup(event) {
     // Truncate large PDFs — API has size limits
     var maxSize = 700000; // ~700KB base64 — stays within API limits
     var truncated = false;
-    if (b64.length > maxSize) {
+    if (false && b64.length > maxSize) {
       b64 = b64.substring(0, maxSize);
       truncated = true;
       console.log('Bundle truncated to', maxSize, 'chars');
@@ -3333,7 +3392,7 @@ function handleBundleInSetup(event) {
       if (result) { result.style.display='block'; result.style.color='var(--red)'; result.innerHTML='❌ Something went wrong. The file may be too large. Try uploading individual documents from Case File after setup.'; }
     }
   };
-  if (isWord) { reader.readAsArrayBuffer(file); } else { reader.readAsDataURL(file); }
+  reader.readAsDataURL(file);
 }
 
 function handleDocMultiple(event, docType) {
@@ -3610,7 +3669,7 @@ function scheduleContactDayReminder() {
   }
 }
 
-function addBrainEvidence(event) {
+function legacyAddBrainEvidence(event) {
   var files = event.target.files;
   if (!files || !files.length) return;
   var status = document.getElementById('brainEvidenceStatus');
@@ -4426,7 +4485,24 @@ async function sendQA() {
 
   // Build message content - include attachment if present
   var msgContent;
-  if (qaAttachment) {
+  var qaAttachmentName = qaAttachment ? (qaAttachment.name || 'document') : 'document';
+  if (qaAttachment && qaAttachment.prepared) {
+    var preparedAttachment = qaAttachment.prepared;
+    if (preparedAttachment.kind === 'image') {
+      msgContent = [
+        { type:'image', source:{ type:'base64', media_type:preparedAttachment.mime, data:preparedAttachment.b64 } },
+        { type:'text', text:msg }
+      ];
+    } else if (preparedAttachment.kind === 'pdf') {
+      msgContent = [
+        { type:'document', source:{ type:'base64', media_type:'application/pdf', data:preparedAttachment.b64 } },
+        { type:'text', text:msg }
+      ];
+    } else {
+      msgContent = msg + '\n\nATTACHED DOCUMENT (' + (qaAttachment.name || 'document') + '):\n' + preparedAttachment.text;
+    }
+    removeAttach();
+  } else if (qaAttachment) {
     if (qaAttachment.type && qaAttachment.type.startsWith('image/')) {
       msgContent = [
         { type:'image', source:{ type:'base64', media_type:qaAttachment.type, data:qaAttachment.data } },
@@ -4456,7 +4532,7 @@ async function sendQA() {
   // Store a compact version in history to prevent context overflow
   if (Array.isArray(msgContent)) {
     var compactContent = msgContent.map(function(item) {
-      if (item.type === 'document') {
+      if (item.type === 'document' || item.type === 'image') {
         // Replace document data with a text reference to keep history small
         return { type:'text', text:'[Document attached and read by Guardian — ' + (qaAttachment ? qaAttachment.name || 'document' : 'document') + ']' };
       }
@@ -4702,7 +4778,7 @@ function addQAGuardianMsg(text) {
 }
 function scrollQA(){ var c=document.getElementById('qaMsgs'); c.scrollTop=c.scrollHeight; }
 
-function handleQAAttach(event) {
+function legacyHandleQAAttach(event) {
   var files = Array.from(event.target.files||[]); event.target.value = '';
   var file = files[0]; if (!file) return;
   var reader = new FileReader();
@@ -5916,6 +5992,46 @@ function checkSevenDayUpsell() {
 
 // ── GUARDIAN BRAIN ──
 var brainLog = safeJSONParse(localStorage.getItem('gBrainLog'), []);
+
+async function generateBrainSummary() {
+  var button = document.getElementById('brainSummaryBtn');
+  var output = document.getElementById('brainSummary');
+  if (!output) return;
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Building your case summary...';
+  }
+  output.style.display = 'block';
+  output.textContent = 'Guardian is reviewing your profile, documents, diary and case facts...';
+  try {
+    var response = await fetch(API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:700,
+        system:'You are Guardian, a family-court case companion for a parent in England and Wales. Summarise only the facts supplied. Clearly distinguish allegations, findings, user reports and Guardian inferences. Do not invent details or give legal advice.',
+        messages:[{role:'user', content:getCTX() + '\n\nWrite a concise plain-English case summary covering the current position, verified strengths, unresolved concerns, important patterns, upcoming deadlines, and three useful next actions. Use short headings and bullets.'}]
+      })
+    });
+    if (!response.ok) throw new Error('Summary request failed');
+    var data = await response.json();
+    var summary = ((data.content || []).map(function(block){ return block.text || ''; }).join('').trim());
+    if (!summary) throw new Error('No summary returned');
+    output.textContent = summary;
+    profile.brainSummary = summary;
+    profile.brainSummaryUpdatedAt = new Date().toISOString();
+    save();
+  } catch(e) {
+    output.textContent = 'Guardian could not build the summary right now. Check your connection and try again.';
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "🧠 What's been happening — Guardian summary";
+    }
+  }
+}
+
 function loadBrainScreen() {
   var fc = document.getElementById('brainFactCount');
   var facts = (brainLog||[]).filter(function(b){ return b.summary||b.text; });
@@ -6146,7 +6262,7 @@ function logBrainContact(outcome) {
 // ── DOCUMENT EXPLAINER ──
 var lastExplainedDoc = null;
 
-async function explainDoc(event, docType) {
+async function legacyExplainDoc(event, docType) {
   var files = Array.from(event.target.files||[]); event.target.value = '';
   var file = files[0]; if (!file) return;
   load('Reading your document...', 'Guardian is translating this into plain English');
@@ -6213,7 +6329,7 @@ function setScanType(type) {
   document.getElementById('theirsScanStatus').textContent = type==='mine' ? 'Upload my statement' : 'Upload their statement';
 }
 
-async function scanStatement(event, forcedType) {
+async function legacyScanStatement(event, forcedType) {
   var files = Array.from(event.target.files||[]); event.target.value = '';
   if (!files.length) return;
   var type = forcedType || 'mine';
@@ -6433,7 +6549,7 @@ function showDiaryActivityInput(btn) {
   }
 }
 
-function addDiaryPhotos(event) {
+function legacyAddDiaryPhotos(event) {
   var files = event.target.files;
   if (!files || !files.length) return;
   var row = document.getElementById('diaryPhotoRow');
@@ -6457,6 +6573,58 @@ function addDiaryPhotos(event) {
 var diaryPhotos = [];
 var lastSavedEntryId = null;
 var lastSavedEntryText = '';
+
+// Stable image-only diary attachment handler. Document attachments join the shared
+// upload engine in the next release stage.
+function addDiaryPhotos(event) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  var row = document.getElementById('diaryPhotoRow');
+  if (!files.length || !row) return;
+  files.forEach(function(file) {
+    if (!file.type || !file.type.startsWith('image/')) {
+      toast('Diary attachments currently support photos and screenshots');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var maxSide = 1200;
+        var scale = Math.min(maxSide / img.width, maxSide / img.height, 1);
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+        var attachment = { data:dataUrl, name:file.name, type:'image/jpeg' };
+        diaryPhotos.push(attachment);
+
+        var thumb = document.createElement('div');
+        thumb.style.cssText = 'width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;';
+        var preview = document.createElement('img');
+        preview.src = dataUrl;
+        preview.alt = file.name;
+        preview.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = '×';
+        remove.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+        remove.onclick = function() {
+          diaryPhotos = diaryPhotos.filter(function(item){ return item !== attachment; });
+          thumb.remove();
+        };
+        thumb.appendChild(preview);
+        thumb.appendChild(remove);
+        row.appendChild(thumb);
+      };
+      img.onerror = function() { toast('Could not open ' + file.name); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() { toast('Could not open ' + file.name); };
+    reader.readAsDataURL(file);
+  });
+}
 
 async function makeCourtSafe() {
   var text = lastSavedEntryText;
@@ -6516,6 +6684,10 @@ function saveCourtSafeToDiary() {
 }
 
 function saveDiaryEntry() {
+  var savedDiaryType = diaryType || 'contact';
+  var savedHearingOrders = hearingOrders.slice();
+  var nextHearingEl = document.getElementById('nextHearingDate');
+  var savedNextHearingDate = nextHearingEl ? nextHearingEl.value : '';
   // Build summary from quick prompts
   var rawText = document.getElementById('diaryText').value.trim();
   var promptParts = [];
@@ -6534,12 +6706,13 @@ function saveDiaryEntry() {
   var entry = {
     id: Date.now(),
     date: date,
-    type: diaryType || 'contact',
-    typeLabel: typeLabels[diaryType] || 'Entry',
+    type: savedDiaryType,
+    typeLabel: typeLabels[savedDiaryType] || 'Entry',
     mood: diaryMood,
     contactOk: diaryContact === 'no' ? false : true,
     contactIssue: document.getElementById('diaryContactIssue').value.trim(),
     text: text,
+    attachments: diaryPhotos.slice(),
     createdAt: new Date().toISOString()
   };
   diaryEntries.push(entry);
@@ -6553,10 +6726,8 @@ function saveDiaryEntry() {
   toast('✅ Diary entry saved');
   extractCaseFacts(entry.text, 'diary entry');
   // Calculate deadlines for hearing entries
-  if (diaryType === 'hearing' && hearingOrders.length > 0) {
-    var nhEl = document.getElementById('nextHearingDate');
-    var nhDate = nhEl ? nhEl.value : '';
-    var newDeadlines = calcDeadlines(hearingOrders, nhDate, date);
+  if (savedDiaryType === 'hearing' && savedHearingOrders.length > 0) {
+    var newDeadlines = calcDeadlines(savedHearingOrders, savedNextHearingDate, date);
     newDeadlines.forEach(function(d){ d.hearingType = entry.typeLabel; d.fromDiaryId = entry.id; });
     if (!profile.hearingDeadlines) profile.hearingDeadlines = [];
     profile.hearingDeadlines = profile.hearingDeadlines.concat(newDeadlines);
@@ -6568,7 +6739,11 @@ function saveDiaryEntry() {
       setTimeout(function(){ showHearingActionCard(newDeadlines, hearingOrders); }, 900);
     }
   }
+  diaryPhotos = [];
+  var photoRow = document.getElementById('diaryPhotoRow');
+  if (photoRow) photoRow.innerHTML = '';
   hearingOrders = [];
+  try { saveProfileToSupabase(); } catch(e) {}
   go('sDiary');
 }
 
@@ -6617,7 +6792,7 @@ function showLearningPrompt(facts) {
   el.innerHTML = '<div style="font-size:12px;color:var(--blue);font-family:DM Sans,sans-serif;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">🧠 GUARDIAN NOTICED</div>' +
     '<div style="font-size:13px;color:var(--white);margin-bottom:12px;line-height:1.5;">' + fact.question + '</div>' +
     '<div style="display:flex;gap:8px;">' +
-      '<button onclick="acceptFact()" style="flex:1;padding:9px;background:var(--blue-dim);border:1px solid rgba(59,127,255,0.3);border-radius:8px;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">Yes, update it</button>' +
+      '<button onclick="acceptFact()" style="flex:1;padding:9px;background:var(--blue-dim);border:1px solid rgba(59,127,255,0.3);border-radius:8px;color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">Confirm this fact</button>' +
       '<button onclick="dismissFact()" style="padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;cursor:pointer;">Not now</button>' +
     '</div>';
   el.style.display = 'block';
@@ -6642,6 +6817,19 @@ function acceptFact() {
     save();
     toast('✅ Profile updated — Guardian knows more now');
   }
+  brainLog.push({
+    id:Date.now() + Math.random(),
+    type:'confirmed_fact',
+    text:fact.value || '',
+    source:fact.source || 'case information',
+    sourceId:fact.sourceId || '',
+    factKind:fact.factKind || 'other',
+    confidence:fact.confidence || 'medium',
+    userConfirmed:true,
+    confirmedAt:new Date().toISOString()
+  });
+  localStorage.setItem('gBrainLog', JSON.stringify(brainLog));
+  try { saveProfileToSupabase(); } catch(e) {}
   // Show next fact if any
   if (pendingFacts.length > 0) {
     showLearningPrompt(pendingFacts);
@@ -6851,7 +7039,7 @@ function getSwGuidance() {
   return null;
 }
 
-function swUploadTheirDocs(event) {
+function legacySwUploadTheirDocs(event) {
   var files = Array.from(event.target.files||[]); event.target.value = '';
   var file = files[0]; if (!file) return;
   load('Reading their document...', 'Guardian is finding every allegation');
@@ -6900,7 +7088,9 @@ function swUploadTheirDocs(event) {
 
 function swContinueToStatement() {
   // Get the ask from StepA and copy to StepB if needed
-  var askA = document.getElementById('swCourtAsk');
+  var askA = document.getElementById('swCourtAskInitial');
+  var askB = document.getElementById('swCourtAsk');
+  if (askA && askB && !askB.value.trim()) askB.value = askA.value;
   document.getElementById('swStepA').style.display = 'none';
   document.getElementById('swStepB').style.display = 'block';
   // Rebuild case check
@@ -6945,6 +7135,8 @@ function loadStatementWriter() {
   if (fullGuide) { fullGuide.style.display='none'; fullGuide.innerHTML=''; }
   var courtAsk = document.getElementById('swCourtAsk');
   if (courtAsk) courtAsk.value = '';
+  var courtAskInitial = document.getElementById('swCourtAskInitial');
+  if (courtAskInitial) courtAskInitial.value = '';
 
   // Load case check for StepB
   var caseCheck = document.getElementById('swCaseCheck');
@@ -7346,6 +7538,10 @@ function calDayTap(dateStr) {
 async function processBundleUpload(event) {
   var files = Array.from(event.target.files||[]); event.target.value = '';
   var file = files[0]; if (!file) return;
+  if (file.size > 12 * 1024 * 1024) {
+    toast('Bundle is over 12 MB. Split or compress the PDF, then try again.');
+    return;
+  }
 
   document.getElementById('bundleStatus').textContent = '⏳';
   document.getElementById('bundleProcessing').style.display = 'block';
@@ -7380,7 +7576,7 @@ async function processBundleUpload(event) {
     reader.onload = async function(e) {
       var b64 = e.target.result.split(',')[1];
       // Truncate if too large
-      if (b64.length > 900000) { b64 = b64.substring(0, 900000); }
+      if (!b64) throw new Error('Could not read PDF');
       var ctx = getCTX();
 
       var res = await fetch(API, {
@@ -7657,7 +7853,7 @@ function renderTimeline() {
   container.innerHTML = listHtml + timelineHtml;
 }
 
-async function addDoc(event, docType) {
+async function legacyAddDoc(event, docType) {
   var files = Array.from(event.target.files);
   event.target.value = '';
   if (!files.length) return;
@@ -7728,6 +7924,427 @@ async function addDoc(event, docType) {
       showDocContactPrompt(doc);
     }
   });
+}
+
+// Reliable Case File importer. This later declaration replaces the legacy importer above.
+function readCaseFile(file, mode) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function(e) { resolve(e.target.result); };
+    reader.onerror = function() { reject(new Error('Could not open file')); };
+    if (mode === 'text') reader.readAsText(file);
+    else if (mode === 'buffer') reader.readAsArrayBuffer(file);
+    else reader.readAsDataURL(file);
+  });
+}
+
+function caseFileExtension(file) {
+  var name = (file.name || '').toLowerCase();
+  var dot = name.lastIndexOf('.');
+  return dot >= 0 ? name.substring(dot) : '';
+}
+
+async function prepareCaseFile(file) {
+  var ext = caseFileExtension(file);
+  var mime = (file.type || '').toLowerCase();
+  var isImage = mime.indexOf('image/') === 0 || ['.jpg','.jpeg','.png','.gif','.webp','.heic','.heif'].indexOf(ext) >= 0;
+  var isPDF = mime === 'application/pdf' || ext === '.pdf';
+  var isDocx = ext === '.docx' || mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  var isLegacyDoc = ext === '.doc' || mime === 'application/msword';
+  var isText = ['.txt','.rtf','.csv','.eml'].indexOf(ext) >= 0 || mime.indexOf('text/') === 0;
+
+  if (isLegacyDoc) throw new Error('Old .doc files cannot be read safely. Open it in Word and save as .docx or PDF.');
+
+  if (isDocx) {
+    if (typeof mammoth === 'undefined') throw new Error('Word support is still loading. Try again in a moment.');
+    var buffer = await readCaseFile(file, 'buffer');
+    var wordResult = await mammoth.extractRawText({ arrayBuffer:buffer });
+    var wordText = (wordResult.value || '').trim();
+    if (!wordText) throw new Error('No readable text was found. Save this Word document as PDF and try again.');
+    return { kind:'text', text:wordText.substring(0, 60000), mime:mime };
+  }
+
+  if (isText) {
+    var text = await readCaseFile(file, 'text');
+    if (!text.trim()) throw new Error('This text file is empty.');
+    return { kind:'text', text:text.substring(0, 60000), mime:mime || 'text/plain' };
+  }
+
+  if (isPDF) {
+    if (file.size > 12 * 1024 * 1024) throw new Error('This PDF is over 12 MB. Split or compress it, then upload the smaller PDFs.');
+    var pdfUrl = await readCaseFile(file, 'data');
+    return { kind:'pdf', b64:pdfUrl.split(',')[1], mime:'application/pdf' };
+  }
+
+  if (isImage) {
+    if (ext === '.heic' || ext === '.heif' || mime.indexOf('heic') >= 0 || mime.indexOf('heif') >= 0) {
+      throw new Error('HEIC is not reliably readable in browsers. Export the image as JPEG, then upload it.');
+    }
+    var imageUrl = await readCaseFile(file, 'data');
+    var normalized = await new Promise(function(resolve, reject) {
+      var img = new Image();
+      img.onload = function() {
+        try {
+          var maxSide = 1800;
+          var scale = Math.min(maxSide / img.width, maxSide / img.height, 1);
+          var canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.82).split(',')[1]);
+        } catch(e) { reject(e); }
+      };
+      img.onerror = function() { reject(new Error('This image could not be opened. Convert it to JPEG or PNG.')); };
+      img.src = imageUrl;
+    });
+    return { kind:'image', b64:normalized, mime:'image/jpeg' };
+  }
+
+  throw new Error('Unsupported file. Use PDF, DOCX, TXT, RTF, CSV, EML, JPEG, PNG or WebP.');
+}
+
+function parseCaseFileResponse(data) {
+  var raw = ((data.content || []).map(function(block) { return block.text || ''; }).join('').trim()).replace(/```json|```/g, '').trim();
+  try { return JSON.parse(raw); } catch(e) {
+    var match = raw.match(/\{[\s\S]*\}/);
+    if (match) try { return JSON.parse(match[0]); } catch(e2) {}
+  }
+  return null;
+}
+
+function buildPreparedContent(prepared, instruction) {
+  if (prepared.kind === 'image') {
+    return [
+      { type:'image', source:{ type:'base64', media_type:prepared.mime, data:prepared.b64 } },
+      { type:'text', text:instruction }
+    ];
+  }
+  if (prepared.kind === 'pdf') {
+    return [
+      { type:'document', source:{ type:'base64', media_type:'application/pdf', data:prepared.b64 } },
+      { type:'text', text:instruction }
+    ];
+  }
+  return [{ type:'text', text:instruction + '\n\nDOCUMENT TEXT:\n' + prepared.text }];
+}
+
+function evidenceFactField(kind) {
+  var map = {
+    allegation:'allegations',
+    contact:'contact',
+    child:'childName',
+    case_type:'caseType',
+    communication:'commStyle',
+    conflict:'conflict',
+    dismissed:'dismissed'
+  };
+  return map[(kind || '').toLowerCase()] || '';
+}
+
+function queueEvidenceFacts(entry, facts) {
+  if (!facts || !facts.length) return;
+  var suggestions = facts.filter(function(f) {
+    return f && f.text && f.text.trim().length > 3;
+  }).map(function(f) {
+    return {
+      field:f.field || evidenceFactField(f.kind),
+      value:f.text.trim(),
+      question:'Guardian found this in ' + entry.originalName + ': "' + f.text.trim() + '". Add it to your case memory?',
+      source:entry.originalName,
+      sourceId:entry.id,
+      factKind:f.kind || 'other',
+      confidence:f.confidence || 'medium'
+    };
+  });
+  entry.suggestedFacts = suggestions;
+  entry.reviewStatus = suggestions.length ? 'needs_review' : 'reviewed';
+  if (suggestions.length) showLearningPrompt((pendingFacts || []).concat(suggestions));
+}
+
+function storePreparedEvidence(file, docType, parsed, source) {
+  var entry = {
+    id:Date.now() + Math.random(),
+    type:docType || 'other',
+    name:parsed.title || parsed.documentType || parsed.docType || file.name,
+    originalName:file.name,
+    fileType:file.type || '',
+    fileSize:file.size,
+    date:parsed.date && parsed.date !== 'unknown' ? parsed.date : new Date().toLocaleDateString('en-GB'),
+    extract:parsed.extract || parsed.summary || parsed.verdict || '',
+    uploadedAt:new Date().toISOString(),
+    sourceSurface:source || 'case_file',
+    processingStatus:'read',
+    originalStored:false,
+    analysisVersion:'evidence-v2',
+    reviewStatus:'reviewed'
+  };
+  caseDocuments.push(entry);
+  docs[(docType || 'other') + entry.id] = entry.extract;
+  queueEvidenceFacts(entry, parsed.facts || []);
+  localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+  localStorage.setItem('gDocs', JSON.stringify(docs));
+  return entry;
+}
+
+async function analysePreparedCaseFile(prepared) {
+  var instruction = 'Extract the document type, document date in DD/MM/YYYY where available, a short title, and a concise case-history summary. Then list only explicit case facts that the parent should review. Distinguish allegations from findings and orders. Do not treat a party claim as proven and do not invent missing details. Return ONLY JSON: {"docType":"<type>","date":"<date or unknown>","title":"<short title>","extract":"<concise factual summary with attribution>","facts":[{"text":"<one explicit fact or attributed claim>","kind":"allegation|finding|order|deadline|contact|person|child|case_type|communication|conflict|dismissed|other","field":"<profile field or blank>","confidence":"high|medium|low"}]}';
+  var content = buildPreparedContent(prepared, instruction);
+  var response = await fetch(API, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:800,
+      system:'You are Guardian, building a source-traceable case history for a parent in family proceedings in England and Wales. Preserve attribution. Separate allegations, user reports, findings, orders and your own inference. Never upgrade a claim into a fact.',
+      messages:[{ role:'user', content:content }]
+    })
+  });
+  if (!response.ok) throw new Error('Guardian could not analyse this file right now.');
+  var parsed = parseCaseFileResponse(await response.json());
+  if (!parsed) throw new Error('The file was read but its summary could not be saved.');
+  return parsed;
+}
+
+async function addDoc(event, docType) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  if (!files.length) return;
+  var processing = document.getElementById('docsProcessing');
+  if (processing) processing.style.display = 'block';
+  var added = [];
+  var failed = [];
+
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    try {
+      var prepared = await prepareCaseFile(file);
+      var parsed = await analysePreparedCaseFile(prepared);
+      var entry = storePreparedEvidence(file, docType, parsed, 'case_file');
+      if (!entry.fileType) entry.fileType = prepared.mime;
+      added.push(entry);
+    } catch(e) {
+      failed.push(file.name + ': ' + (e.message || 'Could not read file'));
+    }
+  }
+
+  localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+  localStorage.setItem('gDocs', JSON.stringify(docs));
+  if (processing) processing.style.display = 'none';
+  renderTimeline();
+  parseContactDaysFromProfile();
+  try { await saveProfileToSupabase(); } catch(e) {}
+
+  if (added.length) {
+    toast('Added ' + added.length + ' file' + (added.length === 1 ? '' : 's') + ' to your case history');
+    checkUpsellTriggers('document');
+    setTimeout(function(){ extractIntelFromNewDocs(); }, 500);
+    added.forEach(function(doc) {
+      var lower = (doc.extract || '').toLowerCase();
+      if (lower.indexOf('contact') !== -1 || lower.indexOf('order') !== -1 || lower.indexOf('saturday') !== -1 || lower.indexOf('sunday') !== -1) showDocContactPrompt(doc);
+    });
+  }
+  if (failed.length) alert('Some files were not added:\n\n' + failed.join('\n\n'));
+}
+
+async function analysePreparedForPurpose(prepared, purpose) {
+  var instructions = {
+    explain:'Explain this document in plain English for a worried parent. Identify what it is, what it means, actions, any exact deadline, and urgency. Preserve attribution and do not invent details. Return ONLY JSON: {"documentType":"<type>","date":"<DD/MM/YYYY or unknown>","title":"<short title>","summary":"<3-4 clear sentences>","actions":"<practical next actions>","deadline":"<exact deadline or blank>","urgency":"high|medium|low","facts":[{"text":"<explicit fact or attributed claim>","kind":"allegation|finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}',
+    mine:'Review this parent\'s own family court statement. Be specific and constructive. Return ONLY JSON: {"date":"<DD/MM/YYYY or unknown>","title":"My statement review","score":<0-10>,"verdict":"<plain English assessment>","weaknesses":["<specific weakness>"],"strengths":["<specific strength>"],"response":"<what to improve next>","facts":[{"text":"<explicit case fact>","kind":"finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}',
+    theirs:'Review the other party\'s statement. Attribute every allegation to its author and never present it as proven. Return ONLY JSON: {"date":"<DD/MM/YYYY or unknown>","title":"Other party statement review","score":null,"verdict":"<plain English assessment>","weaknesses":["<attributed allegation>"],"strengths":["<weakness or gap in their case>"],"response":"<evidence-led response approach>","facts":[{"text":"<attributed allegation or explicit case fact>","kind":"allegation|finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}'
+  };
+  var instruction = instructions[purpose] || instructions.explain;
+  var response = await fetch(API, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:1000,
+      system:'You are Guardian, a careful family-court case companion for a parent in England and Wales. Use plain English, preserve source attribution, separate allegations from findings, and never claim certainty that the document does not support.',
+      messages:[{role:'user', content:buildPreparedContent(prepared, getCTX() + '\n\n' + instruction)}]
+    })
+  });
+  if (!response.ok) throw new Error('Guardian could not analyse this file right now.');
+  var parsed = parseCaseFileResponse(await response.json());
+  if (!parsed) throw new Error('The file was read but the analysis could not be understood.');
+  parsed.extract = parsed.summary || parsed.verdict || parsed.extract || '';
+  return parsed;
+}
+
+function guardianEscapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+async function handleQAAttach(event) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  var file = files[0];
+  if (!file) return;
+  var nameEl = document.getElementById('qaAttachName');
+  var previewEl = document.getElementById('qaAttachPreview');
+  if (nameEl) nameEl.textContent = 'Reading ' + file.name + '...';
+  if (previewEl) previewEl.style.display = 'flex';
+  try {
+    var prepared = await prepareCaseFile(file);
+    qaAttachment = { name:file.name, prepared:prepared };
+    if (nameEl) nameEl.textContent = file.name;
+  } catch(e) {
+    qaAttachment = null;
+    if (previewEl) previewEl.style.display = 'none';
+    toast(e.message || 'Could not read this attachment');
+  }
+}
+
+async function addBrainEvidence(event) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  if (!files.length) return;
+  var status = document.getElementById('brainEvidenceStatus');
+  if (status) status.textContent = 'Reading ' + files.length + ' file' + (files.length === 1 ? '' : 's') + '...';
+  var added = 0;
+  var failed = [];
+  for (var i = 0; i < files.length; i++) {
+    try {
+      var prepared = await prepareCaseFile(files[i]);
+      var parsed = await analysePreparedCaseFile(prepared);
+      storePreparedEvidence(files[i], 'other', parsed, 'guardian_brain');
+      added++;
+    } catch(e) {
+      failed.push(files[i].name + ': ' + (e.message || 'Could not read file'));
+    }
+  }
+  try { await saveProfileToSupabase(); } catch(e) {}
+  renderIntelBar();
+  loadBrainScreen();
+  if (status) status.textContent = added ? added + ' added to Case File - review the facts Guardian found' : 'No files added';
+  if (added) toast('Evidence read and added to your Case File');
+  if (failed.length) alert('Some files were not added:\n\n' + failed.join('\n\n'));
+}
+
+async function explainDoc(event, docType) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  var file = files[0];
+  if (!file) return;
+  load('Reading your document...', 'Guardian is translating it into plain English');
+  try {
+    var prepared = await prepareCaseFile(file);
+    var parsed = await analysePreparedForPurpose(prepared, 'explain');
+    storePreparedEvidence(file, docType || 'other', parsed, 'document_explainer');
+    lastExplainedDoc = parsed;
+    var typeEl = document.getElementById('explainerType');
+    var summaryEl = document.getElementById('explainerSummary');
+    var actionsEl = document.getElementById('explainerActions');
+    if (typeEl) typeEl.textContent = parsed.documentType || parsed.title || 'Document';
+    if (summaryEl) summaryEl.textContent = parsed.summary || '';
+    if (actionsEl) actionsEl.textContent = parsed.actions || '';
+    var deadlineBox = document.getElementById('explainerDeadlineBox');
+    var deadlineEl = document.getElementById('explainerDeadline');
+    if (parsed.deadline) {
+      if (deadlineEl) deadlineEl.textContent = parsed.deadline;
+      if (deadlineBox) deadlineBox.style.display = 'block';
+    } else if (deadlineBox) {
+      deadlineBox.style.display = 'none';
+    }
+    var result = document.getElementById('explainerResult');
+    if (result) result.style.display = 'block';
+    try { await saveProfileToSupabase(); } catch(e) {}
+    toast('Document explained and saved to your Case File');
+  } catch(e) {
+    toast(e.message || 'Could not read this document');
+  } finally {
+    unload();
+  }
+}
+
+async function scanStatement(event, forcedType) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  if (!files.length) return;
+  var type = forcedType || scanType || 'mine';
+  var statusEl = document.getElementById(type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus');
+  if (statusEl) statusEl.textContent = 'Reading...';
+  load('Reading statement...', 'Guardian is checking every page and preserving attribution');
+  var results = [];
+  var failed = [];
+  try {
+    for (var i = 0; i < files.length; i++) {
+      try {
+        var prepared = await prepareCaseFile(files[i]);
+        var parsed = await analysePreparedForPurpose(prepared, type === 'theirs' ? 'theirs' : 'mine');
+        storePreparedEvidence(files[i], type === 'theirs' ? 'other' : 'court', parsed, type === 'theirs' ? 'statement_scanner_theirs' : 'statement_scanner_mine');
+        results.push(parsed);
+      } catch(e) {
+        failed.push(files[i].name + ': ' + (e.message || 'Could not read file'));
+      }
+    }
+    if (!results.length) throw new Error(failed[0] || 'No statement could be read');
+    var parsed = results[0];
+    if (type === 'theirs') {
+      var tv = document.getElementById('theirsVerdict');
+      var ta = document.getElementById('theirsAllegations');
+      var tr = document.getElementById('theirsResponse');
+      var tw = document.getElementById('theirsWeaknesses');
+      if (tv) tv.textContent = parsed.verdict || '';
+      if (ta) ta.innerHTML = (parsed.weaknesses || []).map(function(w, n){ return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong>Allegation ' + (n + 1) + ':</strong> ' + guardianEscapeHtml(w) + '</div>'; }).join('');
+      if (tr) tr.textContent = parsed.response || '';
+      if (tw) tw.innerHTML = (parsed.strengths || []).map(function(s){ return '<div style="padding:4px 0;">' + guardianEscapeHtml(s) + '</div>'; }).join('');
+      var theirsResult = document.getElementById('theirsResult');
+      if (theirsResult) theirsResult.style.display = 'block';
+    } else {
+      var scoreEl = document.getElementById('mineScanScore');
+      if (scoreEl) scoreEl.textContent = parsed.score === null || parsed.score === undefined ? '-' : parsed.score + '/10';
+      var mv = document.getElementById('mineScanVerdict');
+      var mw = document.getElementById('mineScanWeaknesses');
+      var ms = document.getElementById('mineScanStrengths');
+      if (mv) mv.textContent = parsed.verdict || '';
+      if (mw) mw.innerHTML = (parsed.weaknesses || []).map(function(w, n){ return '<div style="padding:6px 0;border-bottom:1px solid var(--border);">' + (n + 1) + '. ' + guardianEscapeHtml(w) + '</div>'; }).join('');
+      if (ms) ms.innerHTML = (parsed.strengths || []).map(function(s){ return '<div style="padding:4px 0;">' + guardianEscapeHtml(s) + '</div>'; }).join('');
+      var mineResult = document.getElementById('mineResult');
+      if (mineResult) mineResult.style.display = 'block';
+    }
+    try { await saveProfileToSupabase(); } catch(e) {}
+    if (statusEl) statusEl.textContent = results.length + ' statement' + (results.length === 1 ? '' : 's') + ' reviewed';
+    if (failed.length) alert('Some files were not analysed:\n\n' + failed.join('\n\n'));
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Try again';
+    toast(e.message || 'Could not analyse this statement');
+  } finally {
+    unload();
+  }
+}
+
+async function swUploadTheirDocs(event) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  if (!files.length) return;
+  load('Reading their document...', 'Guardian is separating allegations from established facts');
+  var added = 0;
+  var failed = [];
+  try {
+    for (var i = 0; i < files.length; i++) {
+      try {
+        var prepared = await prepareCaseFile(files[i]);
+        var parsed = await analysePreparedForPurpose(prepared, 'theirs');
+        storePreparedEvidence(files[i], 'other', parsed, 'statement_builder');
+        added++;
+      } catch(e) {
+        failed.push(files[i].name + ': ' + (e.message || 'Could not read file'));
+      }
+    }
+    try { await saveProfileToSupabase(); } catch(e) {}
+    if (added) {
+      toast('Document read - confirm the allegations Guardian found before they enter case memory');
+      swPickApplying(document.querySelector('#swApplyingOpts .opt.sel'), swApplying);
+    }
+    if (failed.length) alert('Some files were not added:\n\n' + failed.join('\n\n'));
+  } finally {
+    unload();
+  }
 }
 
 // EDIT PROFILE
@@ -9628,7 +10245,7 @@ function initTalkGuardian() {
   agAddMsg('guardian', 'Hi Richard — I know your case inside out.\n\nAsk me anything about a message, hearing, document, or reply. Tap Rate my reply to get honest feedback on something you have written.');
 }
 
-function agAddMsg(role, text) {
+function legacyAgAddMsg(role, text) {
   var msgs = document.getElementById('agMessages');
   if (!msgs) return;
   var div = document.createElement('div');
@@ -9647,7 +10264,7 @@ function agAddMsg(role, text) {
   div.scrollIntoView({behavior:'smooth', block:'end'});
 }
 
-async function agCallAPI(prompt) {
+async function legacyAgCallAPI(prompt) {
   var msgs = document.getElementById('agMessages');
   var loadDiv = document.createElement('div');
   loadDiv.id = 'agLoader';
@@ -9677,7 +10294,7 @@ async function agCallAPI(prompt) {
   }
 }
 
-function agSend() {
+function legacyAgSend() {
   var inp = document.getElementById('agInput');
   if (!inp) return;
   var v = (inp.value || '').trim();
@@ -9689,7 +10306,7 @@ function agSend() {
   agCallAPI(v);
 }
 
-function agChip(type) {
+function legacyAgChip(type) {
   var prompts = {
     rate: null,
     write: 'Help me write a reply to a message from the other parent. I will paste it now.',
@@ -9709,7 +10326,7 @@ function agChip(type) {
   }
 }
 
-function agSubmitRating() {
+function legacyAgSubmitRating() {
   var their = document.getElementById('agTheirMsg');
   var mine = document.getElementById('agMyReply');
   if (!their || !mine) return;
@@ -9837,15 +10454,3 @@ function agSubmitRating() {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
