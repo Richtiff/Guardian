@@ -869,7 +869,10 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sHome">
   <div style="display:flex;align-items:center;justify-content:space-between;">
     <div class="home-name" id="homeName">Guardian</div>
-    <button onclick="showVideoModal('sHome',false)" style="font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;">&#9654; How it works</button>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button onclick="goToEditProfile()" style="font-size:11px;color:var(--muted-hi);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 9px;cursor:pointer;">Account</button>
+      <button onclick="showVideoModal('sHome',false)" style="font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:10px;padding:5px 10px;cursor:pointer;">&#9654; How it works</button>
+    </div>
   </div>
   <div class="home-status" id="homeStatus">Guardian is ready</div>
   <div class="conflict-bar-row" id="conflictRow">
@@ -947,6 +950,15 @@ p, .body-text { font-size: 16px !important; }
       <span id="gnChevron" style="color:var(--muted);font-size:16px;transition:transform 0.2s;">›</span>
     </div>
     <div id="gnItems" style="display:none;padding:0 14px 14px;"></div>
+  </div>
+
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px;margin:16px 0 8px;">
+    <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:800;color:var(--white);margin-bottom:4px;">Account</div>
+    <div id="homeAccountEmail" style="font-size:11px;color:var(--muted);margin-bottom:11px;">Your Guardian account</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button type="button" onclick="goToEditProfile()" style="padding:11px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted-hi);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Edit my details</button>
+      <button type="button" onclick="doLogout()" style="padding:11px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.35);border-radius:10px;color:var(--red);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Sign out</button>
+    </div>
   </div>
 </div>
 
@@ -4358,6 +4370,8 @@ function showHome() {
   var g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
   var n=profile&&profile.myName?', '+profile.myName:'';
   document.getElementById('homeName').textContent=g+n;
+  var accountEmail = document.getElementById('homeAccountEmail');
+  if (accountEmail) accountEmail.textContent = currentUser && currentUser.email ? currentUser.email : 'Your Guardian account';
   var childDisplay = profile && profile.childName ? profile.childName.split(',')[0].trim() : '';
   document.getElementById('homeStatus').textContent = childDisplay ? 'Protecting ' + childDisplay : 'Your case is loaded';
   if(profile&&profile.conflict){
