@@ -519,10 +519,7 @@ p, .body-text { font-size: 16px !important; }
     <input class="auth-input" type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
   </div>
   <div class="auth-error" id="loginError"></div>
-  <div style="display:flex;align-items:center;gap:8px;margin:8px 0;">
-<input type="checkbox" id="rememberMe" checked style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer;">
-    <label for="rememberMe" style="font-size:13px;color:var(--muted-hi);cursor:pointer;">Keep me signed in for 30 days</label>
-  </div>
+  <div style="font-size:12px;color:var(--muted-hi);margin:10px 0 4px;">Guardian uses a secure Supabase session. Your password is never stored by Guardian.</div>
   <button type="button" class="btn-gold" onclick="doLogin()" style="margin-top:4px;">Sign in →</button>
   <div class="auth-divider"><span>or</span></div>
   <button type="button" class="btn-ghost" onclick="go('sSignup')">Create an account</button>
@@ -1280,6 +1277,18 @@ p, .body-text { font-size: 16px !important; }
       <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
       <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
       <div id="replyScoreDisplay" style="display:none;"></div>
+      <div id="replyDiaryPrompt" style="display:none;margin:12px 16px;padding:14px;background:rgba(26,158,114,0.08);border:1.5px solid rgba(26,158,114,0.3);border-radius:14px;">
+        <div style="font-size:14px;font-weight:800;color:var(--white);margin-bottom:5px;">Keep a record of this exchange</div>
+        <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;margin-bottom:10px;">When you are happy with the reply, add a screenshot of the original message and save both sides to your Diary. Keep the complete original conversation in your phone as well.</div>
+        <div id="replyEvidencePreview" style="display:none;margin-bottom:9px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <label style="padding:10px;background:var(--card);border:1px dashed var(--green);border-radius:10px;color:var(--green);font-size:12px;font-weight:700;text-align:center;cursor:pointer;">
+            Add screenshot
+            <input type="file" accept="image/*" multiple style="display:none;" onchange="captureReplyScreenshots(event)">
+          </label>
+          <button type="button" onclick="saveExchangeToDiary()" style="padding:10px;background:var(--green);border:none;border-radius:10px;color:white;font-size:12px;font-weight:800;cursor:pointer;">Save to Diary</button>
+        </div>
+      </div>
       <div style="padding:0 16px 12px;">
         <button type="button" onclick="scoreCurrentReply()" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Score before I send &#8594;</button>
       </div>
@@ -2832,6 +2841,11 @@ function getCTX() {
 }
 
 async function startGuardianApp() {
+  // Clean up insecure credentials and homemade sessions from older builds.
+  // Supabase's refresh-token session is now the only trusted sign-in state.
+  localStorage.removeItem('gUserPass');
+  localStorage.removeItem('gUserEmail');
+  localStorage.removeItem('gSession');
   var lastLoginEmail = localStorage.getItem('gLastLoginEmail');
   var loginEmailInput = document.getElementById('loginEmail');
   if (lastLoginEmail && loginEmailInput && !loginEmailInput.value) loginEmailInput.value = lastLoginEmail;
@@ -2873,83 +2887,10 @@ async function startGuardianApp() {
     } catch(e) {
       console.warn('Session check failed:', e);
     }
-    // Check localStorage session before sending to login
-    var stored = localStorage.getItem('gSession');
-    if (stored) {
-      try {
-        var sess = JSON.parse(stored);
-        if (sess.expiry && Date.now() < sess.expiry) {
-          currentUser = { id: sess.userId || sess.email, email: sess.email };
-          var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
-          if (isComplete) { profile.complete = true; go('sHome'); return; }
-          // setupStep navigation removed
-          go('sWelcome'); return;
-        } else { localStorage.removeItem('gSession'); }
-      } catch(e) {}
-    }
-
-  // ── PRIMARY FALLBACK: localStorage session ──
-  var stored = localStorage.getItem('gSession');
-  if (stored) {
-    try {
-      var sess = JSON.parse(stored);
-      if (sess.expiry && Date.now() < sess.expiry) {
-        currentUser = { id: sess.userId || sess.email, email: sess.email };
-        console.log("Session valid:", sess.email, "userId:", currentUser.id);
-        // Try to get real Supabase UUID
-        if (supabase) {
-          try {
-            var userCheck = await supabase.auth.getUser();
-            if (userCheck.data && userCheck.data.user) {
-              currentUser = userCheck.data.user;
-              console.log("Got Supabase UUID:", currentUser.id);
-            }
-          } catch(e) { console.warn("Could not get Supabase user:", e); }
-        }
-        var isComplete = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
-        if (isComplete) {
-          profile.complete = true;
-          if (supabase && currentUser) saveProfileToSupabase().catch(function(){});
-          go('sHome');
-        } else {
-          go("sWelcome");
-        }
-        return;
-      } else {
-        localStorage.removeItem('gSession');
-      }
-    } catch(e) { console.warn('Session error:', e); }
-  }
-
-  // ── LAST RESORT: Profile exists without session ──
-  if (profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1))) {
-    console.log('Profile in localStorage — attempting silent Supabase re-auth');
-    profile.complete = true;
-    // Try to silently re-authenticate with stored credentials
-    var storedEmail = localStorage.getItem('gUserEmail');
-    var storedPass = localStorage.getItem('gUserPass');
-    if (supabase && storedEmail && storedPass) {
-      try {
-        var reauth = await supabase.auth.signInWithPassword({ email: storedEmail, password: storedPass });
-        if (reauth.data && reauth.data.user) {
-          currentUser = reauth.data.user;
-          console.log('Silent re-auth successful:', currentUser.id);
-              console.log('Silent re-auth successful:', currentUser.id);
-              // Load full profile from Supabase — restores all saved data
-              await loadProfileFromSupabase();
-              return;
-          console.warn('Silent re-auth failed — continuing without Supabase');
-        }
-      } catch(e) {
-        console.warn('Silent re-auth error:', e.message);
-      }
-    }
-    go('sHome');
+    go('sLogin');
     return;
   }
-
   go('sLogin');
-  }
 }
 
 if (document.readyState === 'loading') {
@@ -5367,6 +5308,11 @@ function confirmType() {
   // Disable immediately to prevent multiple fires
   if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.style.background = 'rgba(196,154,60,0.15)'; btn.style.color = 'var(--gold)'; btn.textContent = '⏳ Reading your message...'; }
   currentMsg = v; st.msg = v;
+  replyEvidenceScreenshots = [];
+  var evidencePreview = document.getElementById('replyEvidencePreview');
+  if (evidencePreview) { evidencePreview.style.display = 'none'; evidencePreview.textContent = ''; }
+  var diaryPrompt = document.getElementById('replyDiaryPrompt');
+  if (diaryPrompt) diaryPrompt.style.display = 'none';
   load('Reading your message...', 'Checking tone and context');
   setTimeout(function() { askQ(); }, 50);
 }
@@ -5444,7 +5390,7 @@ async function askQ() {
   try {
     var prompt = isOut
       ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
-      : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nAnalyse. Return ONLY JSON:\n{"question":"<ONE plain question — what actually happened from the parent\'s side? Simple, not legal>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<one line e.g. Welfare allegation>","cooldown":true|false}\n\nFlag red=welfare/accusations, amber=tense/loaded, green=routine. Cooldown true only if highly aggressive.';
+      : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nClassify the practical issue before drafting. Separate a genuine welfare question from accusation, exaggeration, control, or an attempt to change arrangements. Do not assume words such as "always", "never", "tired", or "hungry" are proven facts. Ask for context only when the answer changes whether the parent should acknowledge a real concern, correct the record, or maintain a boundary.\n\nReturn ONLY JSON:\n{"category":"information|request|welfare_concern|complaint|accusation|logistics|financial_request","concernType":"genuine_welfare|practical_request|mixed_concern_and_allegation|possible_overreach|unclear","actualQuestion":"<the practical question underneath the emotional wording>","needsContext":true|false,"reason":"<one calm sentence explaining what Guardian noticed>","question":"<ONE short factual question needed before drafting, or empty if none>","options":["<specific factual option1>","<specific factual option2>","<Not sure / something else>"],"flag":"red|amber|green","flagText":"<one plain line>","cooldown":true|false}\n\nneedsContext must be true for mixed, unclear, disputed welfare claims, always/never accusations, or when a proposed concession could create a new expectation. It may be false for clear routine logistics or simple information. Flag red=serious welfare/accusation, amber=loaded or unclear, green=routine. Cooldown true only if highly aggressive.';
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
@@ -5452,7 +5398,13 @@ async function askQ() {
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
     // Don't unload — keep overlay showing, update text for next stage
     load('Building your reply...', 'Almost ready');
-    if(p){st.flag=p.flag||'';st.flagText=p.flagText||'';st.question=p.question||'';if(p.cooldown){startCool();return;}doQuestion(p);}
+    if(p){
+      st.flag=p.flag||''; st.flagText=p.flagText||''; st.question=p.question||'';
+      st.category=p.category||''; st.concernType=p.concernType||'unclear';
+      st.actualQuestion=p.actualQuestion||''; st.needsContext=p.needsContext===true;
+      st.classificationReason=p.reason||'';
+      if(p.cooldown){startCool();return;} doQuestion(p);
+    }
     else{ unload(); toast('Could not read — please try again'); }
   } catch(e){ unload(); toast('Something went wrong — please try again'); }
 }
@@ -5472,7 +5424,22 @@ function doQuestion(p) {
     fb.innerHTML='<div class="flag-card '+cls+'"><span class="flag-icon">'+fl.icon+'</span><div class="flag-body"><div class="flag-title">'+fl.lbl+'</div><div class="flag-desc">'+st.flagText+'</div></div></div>';
   } else { fb.innerHTML=''; }
   if(p&&p.question){
-    document.getElementById('qText').textContent=p.question;
+    var reason = st.classificationReason || '';
+    var actual = st.actualQuestion || '';
+    if (reason || actual) {
+      var classification = [];
+      if (reason) classification.push(reason);
+      if (actual) classification.push('The practical question is: ' + actual);
+      document.getElementById('qText').textContent = classification.join(' ');
+      if (p.question) {
+        var follow = document.createElement('div');
+        follow.style.cssText = 'font-size:14px;font-weight:700;color:var(--white);margin-top:10px;';
+        follow.textContent = p.question;
+        document.getElementById('qText').appendChild(follow);
+      }
+    } else {
+      document.getElementById('qText').textContent=p.question;
+    }
     var opts=document.getElementById('qOpts'); opts.innerHTML='';
     (p.options||['Yes','No','Partly']).forEach(function(opt){
       var btn=document.createElement('button'); btn.className='q-opt'; btn.textContent=opt;
@@ -5502,16 +5469,21 @@ function doQuestion(p) {
     go('sQuestion'); // outgoing still needs mode selection
     return;
   }
-  // Incoming messages — skip question screen, go straight to reply
-  // Auto-select mode based on flag
+  // Clear routine messages stay fast. Ambiguous or disputed messages need facts first.
   var autoMode = 'natural';
-  if (st.flag === 'red') autoMode = 'protective';
-  else if (st.flag === 'amber') autoMode = 'welfare';
+  if (st.concernType === 'genuine_welfare') autoMode = 'welfare';
+  else if (st.flag === 'red' || st.concernType === 'mixed_concern_and_allegation' || st.concernType === 'possible_overreach') autoMode = 'protective';
+  else if (st.flag === 'amber') autoMode = 'natural';
   st.replyMode = autoMode;
   document.querySelectorAll('.mode-opt').forEach(function(el){ el.classList.remove('active'); });
   var modeMap = { natural:'modeNatural', welfare:'modeWelfare', protective:'modeProtective' };
   var modeEl = document.getElementById(modeMap[autoMode]);
   if (modeEl) modeEl.classList.add('active');
+  if (st.needsContext || st.concernType === 'mixed_concern_and_allegation' || st.concernType === 'unclear') {
+    unload();
+    go('sQuestion');
+    return;
+  }
   load('Generating your reply...', 'Reading the message carefully');
   genReplyDirect();
 }
@@ -5556,14 +5528,14 @@ async function _gen(ctx) {
   load('Writing your reply...','Keeping it safe and human');
   var caseCtx=getCTX();
   var modeInstructions = {
-    natural: "REPLY MODE: Natural everyday co-parenting. Sound exactly like this parent would naturally text. Casual opener like Hey [name] if appropriate. Use the child's own words where possible. End with a practical question not a statement. No legal language. No guardedness. Just a real parent texting. IMPORTANT: Even in natural mode you must always acknowledge any concern raised, confirm any information received, and state any action you are taking. Low conflict messages can be traps — a parent who later claims their concern was ignored. Close every loop naturally without sounding defensive.",
-    welfare: "REPLY MODE: Welfare focused. Show genuine care for the child's needs. Use the child's name. Acknowledge the concern directly. Confirm what you will do. Ask what else you can do if needed. Creates a clear timestamped record of engagement without sounding like you are creating a record. Still warm and natural. Never leave a welfare concern unacknowledged even if it seems minor.",
+    natural: "REPLY MODE: Natural everyday co-parenting. Sound exactly like this parent would naturally text. Casual opener if appropriate. No legal language. No guardedness. Answer the practical issue and close the loop, but do not manufacture an action, promise, apology, or change of arrangements.",
+    welfare: "REPLY MODE: Welfare focused. Show genuine care for the child's needs. Acknowledge a confirmed concern, state only what the parent observed or knows, and remain open to relevant updates. Do not accept an allegation as fact merely because it is framed as welfare. Do not promise to follow the other parent's preferred routine unless the parent has chosen that action.",
     protective: "REPLY MODE: Protective reply. This does NOT mean cold or formal — a warm, child-focused reply is MORE protective than a defensive one because it shows an engaged, reasonable parent. Lead with the child by name — ask how they are or reference their wellbeing. Show genuine interest in staying informed about the child's day-to-day life. Gently reference existing arrangements as the baseline without being confrontational. Keep communication open without over-engaging on allegations. Sound like a caring parent who is completely on top of things — not a solicitor. No admission. No aggression. Every word earns its place. Always close the loop. Ask to be kept updated about the child if appropriate. The court wants to see a parent who puts the child first — show them that."
   };
 
-  var universalRules = "UNIVERSAL RULES THAT APPLY IN ALL MODES: 1) Always acknowledge any concern raised — never leave it unaddressed even if the message seems routine. 2) Always confirm receipt of any health, welfare or practical information. 3) Always state what action you are taking or will take. 4) Friendly messages can be traps — a co-parent building a paper trail of ignored concerns. Close every loop. 5) The reply must create a clear record that the parent engaged, noticed, and acted — without ever sounding like that is what it is doing.";
+  var universalRules = "UNIVERSAL RULES: 1) Answer the practical issue, not the emotional wrapping. 2) Use only what the parent saw, did, knows, or confirmed in context. 3) Genuine welfare: acknowledge it, state observations, remain open. 4) Mixed concern and allegation: acknowledge the child's wellbeing without accepting words like always, never, tired, hungry, unsafe, or late as proven. 5) Possible overreach: acknowledge useful information while preserving parenting autonomy. 6) Never offer an earlier return, changed routine, extra reporting, meal promise, apology, or other concession unless the parent confirmed a genuine concern and chose that change. 7) Do not counter-accuse. 8) One to four short sentences.";
 
-  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
+  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nGuardian classification: '+(st.category||'unclear')+' / '+(st.concernType||'unclear')+'.\nPractical question: '+(st.actualQuestion||'Not identified')+'.\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name only when natural.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- Explain in "why" whether this is a genuine welfare response, a mixed allegation, or a boundary-preserving reply.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
     var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
     var data=await res.json();
@@ -5737,50 +5709,31 @@ async function doLogin() {
   if (!email || !password) { showAuthError('loginError', 'Please enter your email and password'); return; }
   load('Signing in...', '');
 
-  // Try Supabase first
-  if (supabase) {
-    try {
-      var result = await supabase.auth.signInWithPassword({ email:email, password:password });
-      unload();
-      if (result.error) { showAuthError('loginError', result.error.message); return; }
-      currentUser = result.data.user;
-      localStorage.setItem('gLastLoginEmail', result.data.user.email || email);
-      var rememberEl = document.getElementById('rememberMe');
-      var days = (rememberEl && rememberEl.checked) ? 90 : 30;
-      var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
-      localStorage.setItem('gSession', JSON.stringify({ email:result.data.user.email, userId:result.data.user.id, expiry:expiry, supabase:true }));
-      await loadProfileFromSupabase();
-      var completeAfterLogin = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
-      if (completeAfterLogin) {
-        profile.complete = true;
-        localStorage.setItem('gProfile', JSON.stringify(profile));
-        go('sHome');
-      } else {
-        go('sWelcome');
-      }
-      return;
-    } catch(e) {
-      console.warn('Supabase login failed:', e);
-      unload();
-    }
+  if (!supabase) {
+    unload();
+    showAuthError('loginError', 'Secure sign-in is temporarily unavailable. Check your connection and try again.');
+    return;
   }
-
-  // Fallback — use localStorage with email as identifier
-  unload();
-  var storedEmail = localStorage.getItem('gUserEmail');
-  var storedPass = localStorage.getItem('gUserPass');
-  if (storedEmail && storedEmail === email && storedPass === password) {
-    currentUser = { id: email, email: email };
-    // Store session with expiry
-    var remember = document.getElementById('rememberMe');
-    var days = (remember && remember.checked) ? 90 : 30;
-    var expiry = Date.now() + (days * 24 * 60 * 60 * 1000);
-    localStorage.setItem('gSession', JSON.stringify({ email:email, expiry:expiry }));
-    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
-  } else if (!storedEmail) {
-    showAuthError('loginError', 'No account found. Please create an account first.');
-  } else {
-    showAuthError('loginError', 'Incorrect email or password.');
+  try {
+    var result = await supabase.auth.signInWithPassword({ email:email, password:password });
+    unload();
+    if (result.error) { showAuthError('loginError', result.error.message); return; }
+    currentUser = result.data.user;
+    localStorage.setItem('gLastLoginEmail', result.data.user.email || email);
+    document.getElementById('loginPassword').value = '';
+    await loadProfileFromSupabase();
+    var completeAfterLogin = profile && (profile.complete || (profile.myName && profile.myName.length > 1 && profile.childName && profile.childName.length > 1));
+    if (completeAfterLogin) {
+      profile.complete = true;
+      localStorage.setItem('gProfile', JSON.stringify(profile));
+      go('sHome');
+    } else {
+      go('sWelcome');
+    }
+  } catch(e) {
+    console.warn('Supabase login failed:', e);
+    unload();
+    showAuthError('loginError', 'Secure sign-in failed. Please check your connection and try again.');
   }
 }
 
@@ -5795,26 +5748,23 @@ async function doSignup() {
   if (password.length < 6) { showAuthError('signupError', 'Password must be at least 6 characters'); return; }
   load('Creating your account...', '');
 
-  // Try Supabase first
-  if (supabase) {
-    try {
-      var result = await supabase.auth.signUp({ email:email, password:password });
-      unload();
-      if (result.error) { showAuthError('signupError', result.error.message); return; }
-      go('sVerify');
-      return;
-    } catch(e) {
-      console.warn('Supabase signup failed:', e);
-    }
+  if (!supabase) {
+    unload();
+    showAuthError('signupError', 'Secure account creation is temporarily unavailable. Check your connection and try again.');
+    return;
   }
-
-  // Fallback — store locally
-  unload();
-  localStorage.setItem('gUserEmail', email);
-  localStorage.setItem('gUserPass', password);
-  currentUser = { id: email, email: email };
-  toast('Account created — Supabase sync will activate when connected');
-  go('sWelcome');
+  try {
+    var result = await supabase.auth.signUp({ email:email, password:password });
+    unload();
+    if (result.error) { showAuthError('signupError', result.error.message); return; }
+    document.getElementById('signupPassword').value = '';
+    document.getElementById('signupConfirm').value = '';
+    go('sVerify');
+  } catch(e) {
+    console.warn('Supabase signup failed:', e);
+    unload();
+    showAuthError('signupError', 'Secure account creation failed. Please check your connection and try again.');
+  }
 }
 
 async function resendVerification() {
@@ -5863,7 +5813,11 @@ async function doLogout() {
   currentUser = null;
   profile = null;
   localStorage.removeItem('gSession');
+  localStorage.removeItem('gUserPass');
+  localStorage.removeItem('gUserEmail');
   localStorage.removeItem('gProfile');
+  var passwordInput = document.getElementById('loginPassword');
+  if (passwordInput) passwordInput.value = '';
   go('sLogin');
 }
 
@@ -6537,14 +6491,19 @@ function loadDiaryEntry(prefill) {
   document.getElementById('diaryDate').value = new Date().toISOString().split('T')[0];
   // Reset form
   document.getElementById('diaryText').value = prefill && prefill.text ? prefill.text : '';
+  diaryPhotos = prefill && Array.isArray(prefill.attachments) ? prefill.attachments.slice() : [];
+  renderDiaryPhotoRow();
   document.getElementById('diaryContactIssue').value = '';
   document.getElementById('diaryContactIssueBox').style.display = 'none';
   document.querySelectorAll('#diaryTypeOpts .opt, #diaryMoodOpts .opt').forEach(function(b){b.classList.remove('sel');});
   diaryType = ''; diaryMood = ''; diaryContact = '';
   // If prefilled from message check — auto select contact type
   if (prefill && prefill.type) {
-    var btn = document.querySelector('#diaryTypeOpts .opt[data-type="'+prefill.type+'"]');
-    if (btn) { btn.classList.add('sel'); diaryType = prefill.type; }
+    var btn = Array.from(document.querySelectorAll('#diaryTypeOpts .opt')).find(function(item) {
+      return (item.getAttribute('onclick') || '').indexOf("'" + prefill.type + "'") !== -1;
+    });
+    if (btn) btn.classList.add('sel');
+    diaryType = prefill.type;
   }
 }
 
@@ -6648,6 +6607,31 @@ var diaryPhotos = [];
 var lastSavedEntryId = null;
 var lastSavedEntryText = '';
 
+function renderDiaryPhotoRow() {
+  var row = document.getElementById('diaryPhotoRow');
+  if (!row) return;
+  row.innerHTML = '';
+  diaryPhotos.forEach(function(attachment) {
+    var thumb = document.createElement('div');
+    thumb.style.cssText = 'width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;';
+    var preview = document.createElement('img');
+    preview.src = attachment.data;
+    preview.alt = attachment.name || 'Screenshot';
+    preview.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    var remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+    remove.onclick = function() {
+      diaryPhotos = diaryPhotos.filter(function(item){ return item !== attachment; });
+      thumb.remove();
+    };
+    thumb.appendChild(preview);
+    thumb.appendChild(remove);
+    row.appendChild(thumb);
+  });
+}
+
 // Stable image-only diary attachment handler. Document attachments join the shared
 // upload engine in the next release stage.
 function addDiaryPhotos(event) {
@@ -6673,24 +6657,7 @@ function addDiaryPhotos(event) {
         var dataUrl = canvas.toDataURL('image/jpeg', 0.72);
         var attachment = { data:dataUrl, name:file.name, type:'image/jpeg' };
         diaryPhotos.push(attachment);
-
-        var thumb = document.createElement('div');
-        thumb.style.cssText = 'width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;';
-        var preview = document.createElement('img');
-        preview.src = dataUrl;
-        preview.alt = file.name;
-        preview.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-        var remove = document.createElement('button');
-        remove.type = 'button';
-        remove.textContent = '×';
-        remove.style.cssText = 'position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.75);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;';
-        remove.onclick = function() {
-          diaryPhotos = diaryPhotos.filter(function(item){ return item !== attachment; });
-          thumb.remove();
-        };
-        thumb.appendChild(preview);
-        thumb.appendChild(remove);
-        row.appendChild(thumb);
+        renderDiaryPhotoRow();
       };
       img.onerror = function() { toast('Could not open ' + file.name); };
       img.src = e.target.result;
@@ -10408,6 +10375,42 @@ function toggleChatVoice() {
   }
 }
 
+var replyEvidenceScreenshots = [];
+
+function captureReplyScreenshots(event) {
+  var files = Array.from(event.target.files || []);
+  event.target.value = '';
+  files.forEach(function(file) {
+    if (!file.type || !file.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var maxSide = 1400;
+        var scale = Math.min(maxSide / img.width, maxSide / img.height, 1);
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        replyEvidenceScreenshots.push({data:canvas.toDataURL('image/jpeg',0.75),name:file.name,type:'image/jpeg'});
+        var preview = document.getElementById('replyEvidencePreview');
+        if (preview) {
+          preview.style.display = 'block';
+          preview.textContent = replyEvidenceScreenshots.length + ' screenshot' + (replyEvidenceScreenshots.length === 1 ? '' : 's') + ' ready to add';
+        }
+        toast('Screenshot ready for the Diary');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function showReplyDiaryPrompt() {
+  var prompt = document.getElementById('replyDiaryPrompt');
+  if (prompt) prompt.style.display = 'block';
+}
+
 function saveExchangeToDiary() {
   var theirMsg = document.getElementById('rTheirText') ? document.getElementById('rTheirText').textContent.trim() : (st.msg || currentMsg || '');
   var ourReply = document.getElementById('suggestedReply') ? document.getElementById('suggestedReply').value.trim() : '';
@@ -10439,32 +10442,9 @@ function saveExchangeToDiary() {
   diaryText += 'SCREENSHOTS: Upload screenshots of the full conversation below.\n'
     + '\n⚠️ Always save the complete thread — never partial messages.';
 
-  // Store pre-fill in sessionStorage for diary to pick up
-  try {
-    sessionStorage.setItem('diaryPrefill', JSON.stringify({
-      date: now.toISOString(),
-      title: 'Message — ' + dateStr,
-      content: diaryText
-    }));
-  } catch(e) {}
-
-  // Navigate to diary immediately
-  go('sDiary');
-  toast('📓 Exchange saved — add your notes below');
-  // Pre-fill after screen loads
-  setTimeout(function() {
-    try {
-      var prefill = sessionStorage.getItem('diaryPrefill');
-      if (prefill) {
-        var pdata = JSON.parse(prefill);
-        sessionStorage.removeItem('diaryPrefill');
-        var tEl = document.getElementById('diaryEntryTitle');
-        var cEl = document.getElementById('diaryEntryContent');
-        if (tEl) tEl.value = pdata.title || '';
-        if (cEl) { cEl.value = pdata.content || ''; autoGrow(cEl); }
-      }
-    } catch(e) {}
-  }, 400);
+  loadDiaryEntry({type:'message', text:diaryText, attachments:replyEvidenceScreenshots});
+  go('sDiaryEntry');
+  toast(replyEvidenceScreenshots.length ? 'Exchange and screenshot added — review and save' : 'Exchange added — attach the original screenshot, then save');
 }
 
 // ── UPDATE REPLY FROM CHAT ──
@@ -10822,6 +10802,7 @@ async function scoreReply(msgText, displayElId) {
     if (s.fix) h += '<div style="font-size:12px;color:var(--muted-hi);background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;margin-top:6px;"><strong style="color:var(--white);">Suggestion:</strong> ' + s.fix + '</div>';
     h += '</div>';
     el.innerHTML = h;
+    showReplyDiaryPrompt();
   } catch(e) { if(el) el.innerHTML = '<div style="font-size:12px;color:var(--red);padding:8px 0;">Could not score — try again</div>'; }
 }
 
