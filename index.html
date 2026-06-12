@@ -1011,8 +1011,8 @@ p, .body-text { font-size: 16px !important; }
     <button type="button" class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Reply Ready</div><div class="section-sub">You don't have to figure out what to say alone</div></div>
   </div>
-  <!-- TYPE SELECTOR — shown first -->
-  <div id="coachTypePanel">
+  <!-- Manual type selector retained only as an internal fallback. -->
+  <div id="coachTypePanel" style="display:none;">
     <div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:12px;">WHO IS THIS WITH?</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
       <button type="button" class="opt" onclick="setCoachType('coparent','Co-parent','&#128172;')" style="padding:12px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
@@ -1042,11 +1042,10 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
 
-  <!-- ACTION PANEL — shown after type selected -->
-  <div id="coachActionPanel" style="display:none;">
+  <!-- Guardian identifies the correspondent from the uploaded content. -->
+  <div id="coachActionPanel">
     <div id="coachTypeBadge" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:14px;">
-      <div style="font-size:14px;font-weight:700;color:var(--white);" id="coachTypeBadgeText"></div>
-      <button onclick="resetCoachType()" style="font-size:12px;color:var(--gold);background:transparent;border:none;cursor:pointer;padding:0;">Change</button>
+      <div><div style="font-size:14px;font-weight:700;color:var(--white);" id="coachTypeBadgeText">Guardian will identify who this is from</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Paste text or upload a screenshot. Guardian asks only if it is unclear.</div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
       <button type="button" id="btnIn" class="home-btn home-btn-gold" onclick="showIn()"><span style="font-size:24px;">&#128233;</span><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;">They sent me something</div></button>
@@ -2383,6 +2382,8 @@ p, .body-text { font-size: 16px !important; }
       <button onclick="agChip('judge')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Judge view</button>
       <button onclick="agChip('pattern')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Pattern check</button>
       <button onclick="agChip('log')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">What to log</button>
+      <button onclick="agChip('document')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Explain a document</button>
+      <button onclick="agChip('hearing')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Prepare for a hearing</button>
     </div>
     <div id="agRatePanel" style="display:none;background:#1a1f2e;border:1.5px solid #2a3040;border-radius:14px;padding:16px;margin-bottom:16px;">
       <div style="font-size:11px;font-weight:700;color:#d4a843;margin-bottom:8px;">THEIR MESSAGE</div>
@@ -2395,6 +2396,9 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:#0a0f1a;border-top:1.5px solid rgba(212,168,67,0.2);padding:10px 16px 24px;z-index:9502;box-sizing:border-box;">
     <div style="display:flex;gap:8px;align-items:flex-end;">
+      <label title="Attach a document or screenshot" style="width:44px;height:44px;background:#1a1f2e;border:1.5px solid #2a3040;border-radius:12px;color:#d4a843;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        &#128206;<input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" onchange="agHandleAttach(event)" style="display:none;">
+      </label>
       <textarea id="agInput" rows="1" placeholder="Ask Guardian anything about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:#e8edf5;font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
       <button onclick="agSend()" style="width:44px;height:44px;background:#d4a843;border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">&#9658;</button>
     </div>
@@ -2773,6 +2777,36 @@ function setCoachType(type, label, icon) {
   if (btnOut) btnOut.className = 'home-btn home-btn-card';
 }
 
+function applyCoachType(type) {
+  var types = {
+    coparent:['Co-parent','&#128172;'],
+    solicitor:['Solicitor','&#9878;&#65039;'],
+    cafcass:['Cafcass','&#128203;'],
+    childservices:["Children's Services",'&#127963;'],
+    school:['School','&#127979;'],
+    gp:['GP / Medical','&#127973;'],
+    court:['Court / HMCTS','&#127963;'],
+    other:['Other correspondence','&#128240;']
+  };
+  var selected = types[type] || types.other;
+  coachType = type || 'other';
+  coachTypeLabel = selected[0];
+  coachTypeIcon = selected[1];
+  var badge = document.getElementById('coachTypeBadgeText');
+  if (badge) badge.innerHTML = selected[1] + ' &nbsp;Guardian identified: ' + selected[0];
+}
+
+function inferCorrespondentType(text) {
+  var value = (text || '').toLowerCase();
+  if (/\bcafcass\b|children and family court advisory/.test(value)) return 'cafcass';
+  if (/\bhmcts\b|family court|case number|notice of hearing|court order|district judge|magistrates/.test(value)) return 'court';
+  if (/solicitor|legal representative|our client|dear sir|dear madam|law firm|chambers/.test(value)) return 'solicitor';
+  if (/social worker|children'?s services|local authority|section 17|section 47|child protection/.test(value)) return 'childservices';
+  if (/school|headteacher|teacher|attendance|pupil|classroom/.test(value)) return 'school';
+  if (/\bgp\b|doctor|hospital|clinic|appointment|medical|prescription|health visitor/.test(value)) return 'gp';
+  return 'coparent';
+}
+
 function resetCoachType() {
   coachType = 'coparent';
   coachTypeLabel = 'Co-parent';
@@ -2780,12 +2814,14 @@ function resetCoachType() {
   var ti = document.getElementById('typeIn'); if (ti) ti.value = '';
   uploadedImage = null; uploadedImageType = null;
   st = { msg:'', flag:'', flagText:'', tip:'', why:'', answer:'', outgoing:false, outMsg:'' };
-  document.getElementById('coachActionPanel').style.display = 'none';
+  document.getElementById('coachActionPanel').style.display = 'block';
   document.getElementById('inPanel').style.display = 'none';
   document.getElementById('outPanel').style.display = 'none';
   document.getElementById('threadPanel').style.display = 'none';
   document.getElementById('threadResult').style.display = 'none';
-  document.getElementById('coachTypePanel').style.display = 'block';
+  document.getElementById('coachTypePanel').style.display = 'none';
+  var badge = document.getElementById('coachTypeBadgeText');
+  if (badge) badge.textContent = 'Guardian will identify who this is from';
 }
 
 function getCoachSysPrompt() {
@@ -3141,6 +3177,17 @@ function unload() {
   el.style.display = 'none';
   var btn = document.querySelector('.type-confirm');
   if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.background = ''; btn.style.color = ''; btn.textContent = 'Check this message →'; }
+}
+
+async function fetchWithTimeout(url, options, timeoutMs) {
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, timeoutMs || 45000);
+  var requestOptions = Object.assign({}, options || {}, { signal:controller.signal });
+  try {
+    return await fetch(url, requestOptions);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 function toast(msg) {
   var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
@@ -5255,7 +5302,7 @@ async function handleUpload(event) {
         body: JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:500,
           messages:[{role:'user', content:[
             {type:'image', source:{type:'base64', media_type: mediaType || 'image/jpeg', data:b64}},
-            {type:'text', text:'Read all the text in this message screenshot. Return ONLY JSON: {"theirMessages":"the incoming message text","myMessages":"any sent messages visible","unclear":false}. If you cannot read text clearly set unclear to true.'}
+            {type:'text', text:'Read all text in this screenshot and identify who the correspondence is most likely from. Return ONLY JSON: {"theirMessages":"the incoming message text","myMessages":"any sent messages visible","correspondentType":"coparent|solicitor|cafcass|childservices|school|gp|court|other","unclear":false}. If you cannot read text clearly set unclear to true.'}
           ]}]
         })
       });
@@ -5269,6 +5316,7 @@ async function handleUpload(event) {
       if (p && p.theirMessages && p.theirMessages.length > 3) {
         currentMsg = p.theirMessages.trim();
         st.msg = p.theirMessages.trim();
+        applyCoachType(p.correspondentType || inferCorrespondentType(p.theirMessages));
         var typeInEl = document.getElementById('typeIn');
         if (typeInEl) { typeInEl.value = p.theirMessages.trim(); autoGrow(typeInEl); toggleScreenshotSection(p.theirMessages); }
         toast('📸 Screenshot read — loading reply...');
@@ -5322,6 +5370,7 @@ function confirmType() {
   // Disable immediately to prevent multiple fires
   if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.style.background = 'rgba(196,154,60,0.15)'; btn.style.color = 'var(--gold)'; btn.textContent = '⏳ Reading your message...'; }
   currentMsg = v; st.msg = v;
+  applyCoachType(inferCorrespondentType(v));
   replyEvidenceScreenshots = [];
   var evidencePreview = document.getElementById('replyEvidencePreview');
   if (evidencePreview) { evidencePreview.style.display = 'none'; evidencePreview.textContent = ''; }
@@ -5333,6 +5382,7 @@ function confirmType() {
 function checkOut() {
   var v=document.getElementById('outIn').value.trim();
   if(!v){toast('Type what you want to send first');return;}
+  applyCoachType(inferCorrespondentType(v));
   st.outMsg=v; st.outgoing=true;
   st.msg='[OUTGOING] Parent wants to send: '+v;
   askQ(); // Go straight to analysis — skip the need-to-send question
@@ -5403,9 +5453,9 @@ async function askQ() {
   var ctx = getCTX();
   try {
     var prompt = isOut
-      ? 'A parent wants to send this to their ' + coachTypeLabel + ': "' + st.outMsg + '"\n\nScore this outgoing message. Return ONLY JSON:\n{"question":"<ONE question to understand the context before sending>","options":["<option1>","<option2>","<option3>"],"flag":"red|amber|green","flagText":"<e.g. Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nflag green=safe to send, amber=edit recommended, red=do not send as written.'
-      : 'A parent received this from their ' + coachTypeLabel + ': "' + st.msg + '"\n\nClassify the practical issue before drafting. Separate a genuine welfare question from accusation, exaggeration, control, or an attempt to change arrangements. Do not assume words such as "always", "never", "tired", or "hungry" are proven facts. Ask for context only when the answer changes whether the parent should acknowledge a real concern, correct the record, or maintain a boundary.\n\nReturn ONLY JSON:\n{"category":"information|request|welfare_concern|complaint|accusation|logistics|financial_request","concernType":"genuine_welfare|practical_request|mixed_concern_and_allegation|possible_overreach|unclear","actualQuestion":"<the practical question underneath the emotional wording>","needsContext":true|false,"reason":"<one calm sentence explaining what Guardian noticed>","question":"<ONE short factual question needed before drafting, or empty if none>","options":["<specific factual option1>","<specific factual option2>","<Not sure / something else>"],"flag":"red|amber|green","flagText":"<one plain line>","cooldown":true|false}\n\nneedsContext must be true for mixed, unclear, disputed welfare claims, always/never accusations, or when a proposed concession could create a new expectation. It may be false for clear routine logistics or simple information. Flag red=serious welfare/accusation, amber=loaded or unclear, green=routine. Cooldown true only if highly aggressive.';
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})});
+      ? 'A parent wants to send this message: "' + st.outMsg + '"\n\nIdentify the likely recipient and assess whether missing context could materially change the safety of the message. Return ONLY JSON:\n{"correspondentType":"coparent|solicitor|cafcass|childservices|school|gp|court|other","category":"information|request|welfare_concern|complaint|accusation|logistics|financial_request","concernType":"genuine_welfare|practical_request|mixed_concern_and_allegation|possible_overreach|unclear","actualQuestion":"<what the parent is trying to achieve>","needsContext":true|false,"reason":"<one calm sentence>","question":"<ONE essential factual question, or empty>","options":["<option1>","<option2>","<Not sure / something else>"],"flag":"red|amber|green","flagText":"<Safe to send / Needs editing / Could escalate>","score":<1-10>,"cooldown":false}\n\nneedsContext is true only when the missing answer could change an admission, allegation, welfare response, deadline, recipient, or requested outcome. Do not add friction for a clear message.'
+      : 'A parent received this correspondence: "' + st.msg + '"\n\nFirst identify who it is most likely from using headings, names, terminology and writing style. Then classify the practical issue before drafting. Separate a genuine welfare question from accusation, exaggeration, control, or an attempt to change arrangements. Do not assume words such as "always", "never", "tired", or "hungry" are proven facts.\n\nReturn ONLY JSON:\n{"correspondentType":"coparent|solicitor|cafcass|childservices|school|gp|court|other","category":"information|request|welfare_concern|complaint|accusation|logistics|financial_request","concernType":"genuine_welfare|practical_request|mixed_concern_and_allegation|possible_overreach|unclear","actualQuestion":"<the practical question underneath the wording>","needsContext":true|false,"reason":"<one calm sentence explaining what Guardian noticed>","question":"<ONE short factual question needed before drafting, or empty if none>","options":["<specific factual option1>","<specific factual option2>","<Not sure / something else>"],"flag":"red|amber|green","flagText":"<one plain line>","cooldown":true|false}\n\nIf the correspondent cannot be identified and the answer changes the correct tone, set needsContext true and ask who sent it. Otherwise do not ask. needsContext must also be true for mixed, unclear, disputed welfare claims or when a concession could create a new expectation. Flag red=serious welfare/accusation, amber=loaded or unclear, green=routine.';
+    var res=await fetchWithTimeout(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,system:getCoachSysPrompt(),messages:[{role:'user',content:prompt}]})},45000);
     if(!res.ok){unload();if(res.status===504||res.status===408){toast('Request timed out — buy Vercel Pro to fix, or try a shorter message');}else{toast('Error '+res.status+' — please try again');}return;}
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
@@ -5417,10 +5467,11 @@ async function askQ() {
       st.category=p.category||''; st.concernType=p.concernType||'unclear';
       st.actualQuestion=p.actualQuestion||''; st.needsContext=p.needsContext===true;
       st.classificationReason=p.reason||'';
+      if (p.correspondentType) applyCoachType(p.correspondentType);
       if(p.cooldown){startCool();return;} doQuestion(p);
     }
     else{ unload(); toast('Could not read — please try again'); }
-  } catch(e){ unload(); toast('Something went wrong — please try again'); }
+  } catch(e){ unload(); toast(e && e.name === 'AbortError' ? 'This is taking too long — check your signal and try again' : 'Something went wrong — please try again'); }
 }
 
 function doQuestion(p) {
@@ -5480,7 +5531,14 @@ function doQuestion(p) {
   if (bubble) bubble.style.background = st.outgoing ? 'rgba(52,120,212,0.12)' : '';
   if (st.outgoing) {
     document.getElementById('rTheirText').textContent = st.outMsg || '';
-    go('sQuestion'); // outgoing still needs mode selection
+    st.replyMode = st.flag === 'red' ? 'protective' : (st.concernType === 'genuine_welfare' ? 'welfare' : 'natural');
+    if (st.needsContext && p.question) {
+      unload();
+      go('sQuestion');
+      return;
+    }
+    load('Checking your message...', 'Preparing the safer version and score');
+    genReplyDirect();
     return;
   }
   // Clear routine messages stay fast. Ambiguous or disputed messages need facts first.
@@ -5549,9 +5607,10 @@ async function _gen(ctx) {
 
   var universalRules = "UNIVERSAL RULES: 1) Answer the practical issue, not the emotional wrapping. 2) Use only what the parent saw, did, knows, or confirmed in context. 3) Genuine welfare: acknowledge it, state observations, remain open. 4) Mixed concern and allegation: acknowledge the child's wellbeing without accepting words like always, never, tired, hungry, unsafe, or late as proven. 5) Possible overreach: acknowledge useful information while preserving parenting autonomy. 6) Never offer an earlier return, changed routine, extra reporting, meal promise, apology, or other concession unless the parent confirmed a genuine concern and chose that change. 7) Do not counter-accuse. 8) One to four short sentences.";
 
-  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nGuardian classification: '+(st.category||'unclear')+' / '+(st.concernType||'unclear')+'.\nPractical question: '+(st.actualQuestion||'Not identified')+'.\nTheir message: "'+st.msg+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name only when natural.\n- Only use facts parent confirmed.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- Explain in "why" whether this is a genuine welfare response, a mixed allegation, or a boundary-preserving reply.\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
+  var messageLabel = st.outgoing ? 'Parent draft to improve' : 'Their message';
+  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nCorrespondent: '+coachTypeLabel+'.\nGuardian classification: '+(st.category||'unclear')+' / '+(st.concernType||'unclear')+'.\nPractical question: '+(st.actualQuestion||'Not identified')+'.\n'+messageLabel+': "'+(st.outgoing ? st.outMsg : st.msg)+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name only when natural.\n- Only use facts parent confirmed.\n- If this is an outgoing draft, return the strongest safer version without changing its factual meaning.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- Explain the reasoning briefly in "why".\n- For tips: give 2 specific actions RIGHT NOW.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","score":<0-10>,"timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
-    var res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})});
+    var res=await fetchWithTimeout(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})},45000);
     var data=await res.json();
     var raw=((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
     var p=null; try{p=JSON.parse(raw);}catch(e){var m=raw.match(/\{[\s\S]*\}/);if(m)try{p=JSON.parse(m[0]);}catch(e2){}}
@@ -5629,9 +5688,10 @@ async function _gen(ctx) {
         document.getElementById('nuclearWarn').style.display='none';
         document.getElementById('replyContent').style.display='block';
       }
+      unload();
       go('sReply');
     } else { toast('Could not generate a reply — please try again'); }
-  } catch(e){ unload(); toast('Something went wrong — please try again'); }
+  } catch(e){ unload(); toast(e && e.name === 'AbortError' ? 'This is taking too long — check your signal and try again' : 'Something went wrong — please try again'); }
 }
 
 function fixReply(){st.answer=(st.answer||'')+' [Please generate a safer calmer version]';genReply();}
@@ -10925,6 +10985,17 @@ function useCourtGuruSuggestion(btn){var q=btn.getAttribute('data-q');document.g
 
 // ── ASK GUARDIAN ──────────────────────────────────────────────────────────────
 
+var ASK_GUARDIAN_SYS = [
+  'You are Ask Guardian, the universal case assistant for a parent involved in family proceedings in England and Wales.',
+  'Help across the whole Guardian product: messages and replies, case documents, Cafcass, solicitors, court correspondence, hearings, preparation, Diary records, evidence organisation, timelines, patterns, practical next steps and plain-English explanations.',
+  'Use all supplied case context. State clearly when information is missing and ask one focused question rather than guessing.',
+  'Distinguish original evidence, user-confirmed facts and Guardian interpretation.',
+  'Never invent facts, deadlines, legal outcomes or document contents.',
+  'Give legal information and preparation support, not personalised legal representation or guarantees.',
+  'For immediate danger or child-safety emergencies, direct the user to the appropriate emergency or professional service.',
+  'Be calm, practical, concise and specific. Do not force every question into message-writing.'
+].join('\n');
+
 function openTalkGuardian() { go('sTalkGuardian'); }
 
 function initTalkGuardian() {
@@ -11040,7 +11111,7 @@ function agOpen() {
   window.scrollTo(0,0);
   var msgs = document.getElementById('agMessages');
   if (msgs && msgs.children.length === 0) {
-    agAddMsg('g', 'Hi Richard. I know your case inside out.\n\nAsk me anything about a message, hearing, reply, or document. Tap Rate my reply to get feedback on something you have written.');
+    agAddMsg('g', 'Hi Richard. I know your case inside out.\n\nAsk me about anything: messages, documents, hearings, Cafcass, your Diary, evidence, timelines, preparation or what to do next. You can also attach a file for me to read.');
   }
 }
 function agClose() {
@@ -11072,7 +11143,7 @@ async function agCallAPI(prompt) {
   if (msgs) msgs.appendChild(ld);
   try {
     var ctx = typeof getCTX === 'function' ? getCTX() : '';
-    var sys = typeof SYS !== 'undefined' ? SYS : 'You are Guardian, a co-parenting communication coach.';
+    var sys = ASK_GUARDIAN_SYS;
     var api = typeof API !== 'undefined' ? API : '/api/anthropic';
     var res = await fetch(api, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,system:sys,messages:[{role:'user',content:ctx+' '+prompt}]})});
     var d = await res.json();
@@ -11082,6 +11153,32 @@ async function agCallAPI(prompt) {
   } catch(e) {
     if (ld.parentNode) ld.parentNode.removeChild(ld);
     agAddMsg('g', 'Connection error. Please try again.');
+  }
+}
+
+async function agHandleAttach(event) {
+  var file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  agAddMsg('u', 'Attached: ' + file.name);
+  var msgs = document.getElementById('agMessages');
+  var ld = document.createElement('div');
+  ld.style.cssText = 'color:#7a8aaa;font-size:14px;padding:8px 4px;';
+  ld.textContent = 'Guardian is reading ' + file.name + '...';
+  if (msgs) msgs.appendChild(ld);
+  try {
+    var prepared = await prepareCaseFile(file);
+    var instruction = getCTX() + '\n\nRead this attachment and help with whatever is most useful: identify what it is, explain it in plain English, flag dates or actions, connect it to the case, and ask one focused question if the user\'s aim is unclear. Do not invent missing text.';
+    var content = buildPreparedContent(prepared, instruction);
+    var res = await fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:ASK_GUARDIAN_SYS,messages:[{role:'user',content:content}]})});
+    if (!res.ok) throw new Error('Upload failed. Please try again.');
+    var data = await res.json();
+    var reply = (data.content||[]).map(function(b){return b.text||'';}).join('').trim();
+    if (ld.parentNode) ld.parentNode.removeChild(ld);
+    agAddMsg('g', reply || 'I could not read that attachment. Try another format.');
+  } catch(e) {
+    if (ld.parentNode) ld.parentNode.removeChild(ld);
+    agAddMsg('g', e && e.message ? e.message : 'I could not read that attachment. Try PDF, DOCX, TXT, JPEG or PNG.');
   }
 }
 function agSend() {
@@ -11101,7 +11198,14 @@ function agChip(type) {
     if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
     return;
   }
-  var prompts = {write:'Help me write a reply to a message from the other parent.',judge:'What would a judge think of this exchange? I will paste the messages.',pattern:'Is the other parent building a pattern? What should I document?',log:'What should I log tonight based on recent events?'};
+  var prompts = {
+    write:'Help me write a reply. Ask me only for the facts you need.',
+    judge:'What would a neutral family-court professional notice about this exchange? I will paste it.',
+    pattern:'Looking across my case, is there a pattern I should document? Separate confirmed facts from interpretation.',
+    log:'What should I log in my Diary based on recent events, and what evidence should I preserve?',
+    document:'I want you to explain a document. I will attach it using the paperclip.',
+    hearing:'Help me prepare for my next hearing using everything you know about my case.'
+  };
   var inp = document.getElementById('agInput');
   if (inp && prompts[type]) { inp.value = prompts[type]; inp.focus(); }
 }
