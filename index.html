@@ -1068,7 +1068,7 @@ p, .body-text { font-size: 16px !important; }
     <div class="type-panel" style="margin-bottom:12px;min-height:160px;">
       <div class="type-header">PASTE OR TYPE THEIR MESSAGE</div>
       <textarea class="type-textarea" id="typeIn" rows="3" placeholder="Paste their last message here..." oninput="autoGrow(this);toggleScreenshotSection(this.value)" style="min-height:80px;overflow:hidden;resize:none;"></textarea>
-      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste just their last message — not the whole thread — for the best reply.</div>
+      <div style="font-size:12px;color:var(--muted);margin:-6px 0 10px;padding:0 2px;">Paste the message you need to answer. After sending, save the whole thread to the Diary.</div>
       <button class="type-confirm" onclick="confirmType()" style="touch-action:manipulation;" style="width:100%;padding:16px;font-size:16px;font-weight:800;border-radius:14px;margin-top:6px;min-height:52px;">Check this message →</button>
     </div>
     <!-- SCREENSHOT SECOND — hides when text is pasted -->
@@ -1215,7 +1215,7 @@ p, .body-text { font-size: 16px !important; }
       <textarea class="detail-input" id="detailIn" rows="4" placeholder="Tell me what actually happened — time, what you did, how the kids were. Tap mic or type. Tap stop when done."></textarea>
     </div>
     <button type="button" class="continue-btn" id="continueBtn" onclick="genReply()">Help me reply →</button>
-    <button type="button" class="skip-btn" onclick="genReplyDirect()">Skip — just give me something safe to say</button>
+    <button type="button" class="skip-btn" onclick="genReplyDirect()">Build a minimal reply from what I have told you</button>
   </div>
 </div>
 
@@ -1296,7 +1296,7 @@ p, .body-text { font-size: 16px !important; }
       
       
       <div id="replyRedLines" style="display:none;background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"></div>
-      <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian writes a starting point — always edit before sending.</div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px;">Guardian builds from your answers — edit until it sounds like you.</div>
       <div id="replyContextPanel" style="display:none;margin:0 16px 10px;background:rgba(52,120,212,0.07);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;padding:12px;">
         <button type="button" onclick="toggleReplyContextPanel()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:transparent;border:none;color:var(--white);font-family:DM Sans,sans-serif;font-size:13px;font-weight:800;cursor:pointer;padding:0;text-align:left;">
           <span>Context Guardian used</span><span id="replyContextChevron" style="color:var(--blue);">Show</span>
@@ -1315,12 +1315,12 @@ p, .body-text { font-size: 16px !important; }
         <button type="button" onclick="openAskFromReply()" style="width:100%;padding:13px;background:rgba(52,120,212,0.12);border:1.5px solid rgba(52,120,212,0.35);border-radius:12px;color:var(--blue);font-family:DM Sans,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Ask Guardian about this &#8594;</button>
       </div>
       <div id="replyDiaryPrompt" style="display:none;margin:12px 16px;padding:14px;background:rgba(26,158,114,0.08);border:1.5px solid rgba(26,158,114,0.3);border-radius:14px;">
-        <div style="font-size:14px;font-weight:800;color:var(--white);margin-bottom:5px;">Keep a record of this exchange</div>
-        <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;margin-bottom:10px;">When you are happy with the reply, add a screenshot of the original message and save both sides to your Diary. Keep the complete original conversation in your phone as well.</div>
+        <div id="replyDiaryPromptTitle" style="font-size:14px;font-weight:800;color:var(--white);margin-bottom:5px;">Now preserve the whole thread</div>
+        <div id="replyDiaryPromptText" style="font-size:12px;color:var(--muted-hi);line-height:1.6;margin-bottom:10px;">After sending, add the whole message thread to your Diary: what came before, their message, your reply, and what came after. Guardian learns the sequence, not just one isolated message.</div>
         <div id="replyEvidencePreview" style="display:none;margin-bottom:9px;"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <label style="padding:10px;background:var(--card);border:1px dashed var(--green);border-radius:10px;color:var(--green);font-size:12px;font-weight:700;text-align:center;cursor:pointer;">
-            Add screenshot
+            Add full thread
             <input type="file" accept="image/*" multiple style="display:none;" onchange="captureReplyScreenshots(event)">
           </label>
           <button type="button" onclick="saveExchangeToDiary()" style="padding:10px;background:var(--green);border:none;border-radius:10px;color:white;font-size:12px;font-weight:800;cursor:pointer;">Save to Diary</button>
@@ -5545,7 +5545,7 @@ function renderThreadResult(parsed) {
     var _rh = checkRedLines(parsed.reply||'');
     if (_rh.length) { h += '<div style="background:var(--red-dim);border:2px solid rgba(184,68,68,0.5);border-radius:10px;padding:10px 12px;margin-bottom:8px;"><div style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;color:var(--red);margin-bottom:6px;">⚠ GUARDIAN WARNING — EDIT BEFORE SENDING</div>' + _rh.map(function(r){return '<div style="font-size:12px;color:var(--muted-hi);margin-bottom:3px;">• '+r+'</div>';}).join('') + '</div>'; }
     if (parsed.reply_why) { h += '<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;gap:8px;"><span style="font-size:14px;flex-shrink:0;">💡</span><div style="font-size:12px;color:var(--muted-hi);line-height:1.5;"><strong style="color:var(--white);">Why this wording:</strong> ' + parsed.reply_why + '</div></div>'; }
-    h += '<div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;">Guardian writes a starting point — always edit before sending.</div>';
+    h += '<div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;">Guardian builds from your answers — edit until it sounds like you.</div>';
     h += '<div id="threadScoreDisplay" style="display:none;"></div>';
     h += '<button onclick="scoreReply(document.getElementById(\'threadReplyText\').value,\'threadScoreDisplay\')" style="width:100%;padding:13px;background:rgba(212,168,67,0.1);border:1.5px solid var(--gold);border-radius:12px;color:var(--gold);font-family:DM Sans,sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Score before I send &#8594;</button>';
     h += '<div style="display:flex;gap:8px;margin-bottom:16px;">';
@@ -5939,7 +5939,7 @@ function doQuestion(p) {
     genReplyDirect();
     return;
   }
-  // Clear routine messages stay fast. Ambiguous or disputed messages need facts first.
+  // Clear routine messages stay fast. Ambiguous, loaded or disputed messages need parent facts first.
   var autoMode = 'natural';
   if (st.concernType === 'genuine_welfare') autoMode = 'welfare';
   else if (st.flag === 'red' || st.concernType === 'mixed_concern_and_allegation' || st.concernType === 'possible_overreach') autoMode = 'protective';
@@ -5949,8 +5949,17 @@ function doQuestion(p) {
   var modeMap = { natural:'modeNatural', welfare:'modeWelfare', protective:'modeProtective' };
   var modeEl = document.getElementById(modeMap[autoMode]);
   if (modeEl) modeEl.classList.add('active');
-  if (st.needsContext || st.concernType === 'mixed_concern_and_allegation' || st.concernType === 'unclear') {
+  if (shouldGuideReplyConstruction()) {
     unload();
+    if (!st.question) {
+      st.question = 'Before I help build this reply, what actually happened and what do you want the reply to achieve?';
+      st.answer = '';
+      document.getElementById('qText').textContent = st.question;
+      document.getElementById('qOpts').innerHTML = '';
+      document.getElementById('voiceRow').style.display = 'flex';
+      document.getElementById('honestNote').style.display = 'block';
+      document.getElementById('continueBtn').style.display = 'block';
+    }
     go('sQuestion');
     return;
   }
@@ -5994,6 +6003,20 @@ async function genReply(){
 }
 async function genReplyDirect(){ await _gen('No context — suggest the safest minimal reply.'); }
 
+function shouldGuideReplyConstruction() {
+  if (st.outgoing) return !!st.needsContext;
+  return !!(
+    st.needsContext ||
+    st.concernType === 'mixed_concern_and_allegation' ||
+    st.concernType === 'possible_overreach' ||
+    st.concernType === 'genuine_welfare' ||
+    st.concernType === 'unclear' ||
+    st.category === 'accusation' ||
+    st.category === 'welfare_concern' ||
+    st.flag === 'red'
+  );
+}
+
 async function _gen(ctx) {
   if (!beginGuardianAction('reply_generate')) { toast('Guardian is already generating this reply'); return; }
   load('Writing your reply...','Keeping it safe and human', function(){ _gen(ctx); });
@@ -6007,10 +6030,10 @@ async function _gen(ctx) {
     protective: "REPLY MODE: Protective reply. This does NOT mean cold or formal — a warm, child-focused reply is MORE protective than a defensive one because it shows an engaged, reasonable parent. Lead with the child by name — ask how they are or reference their wellbeing. Show genuine interest in staying informed about the child's day-to-day life. Gently reference existing arrangements as the baseline without being confrontational. Keep communication open without over-engaging on allegations. Sound like a caring parent who is completely on top of things — not a solicitor. No admission. No aggression. Every word earns its place. Always close the loop. Ask to be kept updated about the child if appropriate. The court wants to see a parent who puts the child first — show them that."
   };
 
-  var universalRules = "UNIVERSAL RULES: 1) Answer the practical issue, not the emotional wrapping. 2) Use only what the parent saw, did, knows, or confirmed in context. 3) Genuine welfare: acknowledge it, state observations, remain open. 4) Mixed concern and allegation: acknowledge the child's wellbeing without accepting words like always, never, tired, hungry, unsafe, or late as proven. 5) Possible overreach: acknowledge useful information while preserving parenting autonomy. 6) Never offer an earlier return, changed routine, extra reporting, meal promise, apology, or other concession unless the parent confirmed a genuine concern and chose that change. 7) Do not counter-accuse. 8) One to four short sentences.";
+  var universalRules = "UNIVERSAL RULES: 1) This is guided reply construction: build from the parent's confirmed answers so the message remains theirs. 2) Answer the practical issue, not the emotional wrapping. 3) Use only what the parent saw, did, knows, or confirmed in context. 4) Genuine welfare: acknowledge it, state observations, remain open. 5) Mixed concern and allegation: acknowledge the child's wellbeing without accepting words like always, never, tired, hungry, unsafe, or late as proven. 6) Possible overreach: acknowledge useful information while preserving parenting autonomy. 7) Never offer an earlier return, changed routine, extra reporting, meal promise, apology, or other concession unless the parent confirmed a genuine concern and chose that change. 8) Do not counter-accuse. 9) One to four short sentences.";
 
   var messageLabel = st.outgoing ? 'Parent draft to improve' : 'Their message';
-  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nCorrespondent: '+coachTypeLabel+'.\nGuardian classification: '+(st.category||'unclear')+' / '+(st.concernType||'unclear')+'.\nPractical question: '+(st.actualQuestion||'Not identified')+'.\n'+messageLabel+': "'+(st.outgoing ? st.outMsg : st.msg)+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name only when natural.\n- Only use facts parent confirmed.\n- If this is an outgoing draft, return the strongest safer version without changing its factual meaning.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- Explain the reasoning briefly in "why".\n- For tips: give 2 specific actions RIGHT NOW.\n- Do not score your own draft. A separate Guardian check will score it.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
+  var prompt=caseCtx+'\n\n'+(modeInstructions[st.replyMode]||modeInstructions.natural)+'\n\n'+universalRules+'\n\nCorrespondent: '+coachTypeLabel+'.\nGuardian classification: '+(st.category||'unclear')+' / '+(st.concernType||'unclear')+'.\nPractical question: '+(st.actualQuestion||'Not identified')+'.\n'+messageLabel+': "'+(st.outgoing ? st.outMsg : st.msg)+'"\nContext: '+ctx+'\n\nRULES:\n- Use case context. Reference child by name only when natural.\n- Only use facts parent confirmed.\n- Preserve the parent voice. Do not create a reply that depends on facts the parent has not supplied.\n- If this is an outgoing draft, return the strongest safer version without changing its factual meaning.\n- 1 to 4 short sentences. One is usually enough.\n- UK English.\n- Match the reply mode above exactly.\n- Explain the reasoning briefly in "why".\n- For tips: give 2 specific actions RIGHT NOW.\n- Do not score your own draft. A separate Guardian check will score it.\n\nReturn ONLY JSON:\n{"reply":"<reply or empty>","why":"<one line>","timing":"now|morning|can_wait","timingNote":"<one line>","dangerous":false,"dangerReasons":"<blank or reasons>","tips":["<action1>","<action2>"]}';
   try {
     var replyReadyTimeout = typeof REPLY_READY_TIMEOUT_MS !== 'undefined' ? REPLY_READY_TIMEOUT_MS : 25000;
     var res=await fetchWithTimeout(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:SYS,messages:[{role:'user',content:prompt}]})},replyReadyTimeout);
@@ -8426,8 +8449,12 @@ async function processBundleUpload(event) {
 }
 
 function logSent(choice){
-  var msgs={yes:'✅ Logged — well done.',no:'📝 Noted — send when ready.',different:'📝 Logged — try the coached version next time.'};
-  document.getElementById('sentCard').innerHTML='<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">'+msgs[choice]+'</div>';
+  var msgs={yes:'Logged — now save the whole thread for later.',no:'Noted — when you send it, save the whole thread.',different:'Logged — save what was actually sent with the whole thread.'};
+  var follow = choice === 'no'
+    ? '<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px;">Guardian will use the full sequence later: what came before, their message, your reply, and anything after.</div>'
+    : '<button type="button" onclick="saveExchangeToDiary()" style="width:100%;margin-top:10px;padding:12px;background:var(--green);border:none;border-radius:10px;color:white;font-size:13px;font-weight:800;cursor:pointer;">Add whole thread to Diary</button>';
+  document.getElementById('sentCard').innerHTML='<div style="font-size:13px;color:var(--muted-hi);padding:4px 0;">'+msgs[choice]+'</div>'+follow;
+  if (typeof showReplyDiaryPrompt === 'function') showReplyDiaryPrompt();
   toast(choice==='yes'?'✅ Sent and logged':'📝 Logged');
 }
 
@@ -11566,6 +11593,10 @@ function captureReplyScreenshots(event) {
 function showReplyDiaryPrompt() {
   var prompt = document.getElementById('replyDiaryPrompt');
   if (prompt) prompt.style.display = 'block';
+  var promptTitle = document.getElementById('replyDiaryPromptTitle');
+  if (promptTitle) promptTitle.textContent = 'Now preserve the whole thread';
+  var promptText = document.getElementById('replyDiaryPromptText');
+  if (promptText) promptText.textContent = 'After sending, add the whole message thread to your Diary: what came before, their message, your reply, and what came after. Guardian learns the sequence, not just one isolated message.';
 }
 
 function saveExchangeToDiary() {
@@ -11596,8 +11627,10 @@ function saveExchangeToDiary() {
     diaryText += analysis + '\n\n';
   }
 
-  diaryText += 'SCREENSHOTS: Upload screenshots of the full conversation below.\n'
-    + '\n⚠️ Always save the complete thread — never partial messages.';
+  diaryText += 'FULL THREAD TO ADD:\n'
+    + 'Upload screenshots or an export showing the conversation before and after this reply. Guardian needs the sequence, timing and both sides for future reference.\n\n'
+    + 'SCREENSHOTS: Upload screenshots of the full conversation below.\n'
+    + '\nAlways save the complete thread — never partial messages.';
 
   loadDiaryEntry({type:'message', text:diaryText, attachments:replyEvidenceScreenshots});
   go('sDiaryEntry');
