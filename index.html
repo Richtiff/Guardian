@@ -5724,6 +5724,8 @@ function outNotSure(){go('sSilence');}
 function outProceed(){st.msg='[OUTGOING] Parent wants to send: '+st.outMsg;askQ();}
 
 function startCool() {
+  unload();
+  if(coolInt) clearInterval(coolInt);
   go('sCooldown');
   document.getElementById('coolText').textContent=st.msg;
   var secs=120;
@@ -5734,7 +5736,13 @@ function startCool() {
     if(secs<=0){clearInterval(coolInt);skipCool();}
   },1000);
 }
-function skipCool(){if(coolInt)clearInterval(coolInt);doQuestion();}
+function skipCool(){
+  if(coolInt) clearInterval(coolInt);
+  doQuestion(st.pendingClassification || {
+    question: st.question || 'Before I help build this reply, what actually happened and what do you want the reply to achieve?',
+    options: ['I can explain what happened','I need help keeping this brief','Not sure / something else']
+  });
+}
 
 function checkTrial(){
   if(localStorage.getItem('gPaid')==='true') return true;
@@ -5857,8 +5865,6 @@ async function askQ() {
       if (!draftValidation.valid) throw new Error(draftValidation.reason);
       p.reply = draftValidation.reply;
     }
-    // Don't unload — keep overlay showing, update text for next stage
-    load('Building your reply...', 'Almost ready');
     if(p){
       p = normaliseReplyClassification(isOut ? st.outMsg : st.msg, p, isOut);
       st.flag=p.flag||''; st.flagText=p.flagText||''; st.question=p.question||'';
@@ -5866,7 +5872,8 @@ async function askQ() {
       st.actualQuestion=p.actualQuestion||''; st.needsContext=p.needsContext===true;
       st.classificationReason=p.reason||'';
       if (p.correspondentType) applyCoachType(p.correspondentType);
-      if(p.cooldown){startCool();return;} doQuestion(p);
+      st.pendingClassification = p;
+      if(p.cooldown){unload();startCool();return;} doQuestion(p);
     }
     else{ unload(); toast('Could not read — please try again'); }
   } catch(e){ unload(); toast(e && e.name === 'AbortError' ? 'This is taking too long — check your signal and try again' : (e && e.message ? e.message + ' Please try again.' : 'Something went wrong — please try again')); }
