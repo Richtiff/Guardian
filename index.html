@@ -950,6 +950,21 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
   <div class="home-status" id="homeStatus">Guardian is ready</div>
+  <div id="coreProtectionCard" style="background:linear-gradient(135deg,rgba(52,120,212,0.11),rgba(26,158,114,0.07));border:1.5px solid rgba(52,120,212,0.25);border-radius:14px;padding:14px;margin:12px 0 14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:900;color:var(--blue);letter-spacing:.4px;">CORE PROTECTION</div>
+        <div id="coreProtectionSummary" style="font-size:13px;color:var(--white);font-weight:850;margin-top:3px;">Checking your case record...</div>
+      </div>
+      <div id="coreProtectionScore" style="font-size:20px;font-weight:950;color:var(--gold);white-space:nowrap;">0/4</div>
+    </div>
+    <div id="coreProtectionItems" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;"></div>
+    <div id="coreProtectionNext" style="font-size:12px;color:var(--muted-hi);line-height:1.55;margin-bottom:10px;">Guardian works best when Diary, Talk, Evidence and Backup are all being used.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button type="button" onclick="exportGuardianDeviceData()" style="padding:10px;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.3);border-radius:10px;color:var(--blue);font-size:12px;font-weight:850;cursor:pointer;">Backup now</button>
+      <button type="button" onclick="openEvidenceUpload()" style="padding:10px;background:rgba(26,158,114,0.1);border:1px solid rgba(26,158,114,0.3);border-radius:10px;color:var(--green);font-size:12px;font-weight:850;cursor:pointer;">Add evidence</button>
+    </div>
+  </div>
   <div id="homeTrustStrip" style="background:rgba(26,158,114,0.07);border:1.5px solid rgba(26,158,114,0.22);border-radius:14px;padding:12px 14px;margin:12px 0 14px;">
     <div style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:850;color:var(--green);margin-bottom:4px;">Beta safety note</div>
     <div style="font-size:12px;color:var(--muted-hi);line-height:1.55;">Keep your own backup of anything important. Guardian helps organise evidence and wording, but it is not a solicitor and should not be your only record.</div>
@@ -1507,7 +1522,13 @@ p, .body-text { font-size: 16px !important; }
   </div>
 
   <div style="padding:14px 16px;background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.28);border-radius:14px;margin-bottom:14px;">
-    <div style="font-size:13px;color:var(--white);line-height:1.6;">Add the original file where possible. Guardian keeps the file, its source, the event date and its analysis separate.</div>
+    <div style="font-size:13px;color:var(--white);line-height:1.6;margin-bottom:8px;">Add the original file where possible. Guardian keeps the file, its source, the event date and its analysis separate.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px;font-size:11px;color:var(--muted-hi);line-height:1.45;"><strong style="color:var(--green);">1. Identify</strong><br>Message, photo, court paper, nursery or AI notes.</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px;font-size:11px;color:var(--muted-hi);line-height:1.45;"><strong style="color:var(--green);">2. Separate</strong><br>Original evidence stays separate from Guardian analysis.</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px;font-size:11px;color:var(--muted-hi);line-height:1.45;"><strong style="color:var(--green);">3. Link</strong><br>Connect it to a diary entry if you have a D-reference.</div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px;font-size:11px;color:var(--muted-hi);line-height:1.45;"><strong style="color:var(--green);">4. Review</strong><br>Check the analysis before relying on it.</div>
+    </div>
   </div>
 
   <div class="field-group">
@@ -1546,6 +1567,7 @@ p, .body-text { font-size: 16px !important; }
   <div class="field-group">
     <label class="field-label">RELATED DIARY REFERENCE</label>
     <input class="field-input" id="evidenceDiaryReference" type="text" placeholder="Optional, for example D-003">
+    <div style="font-size:11px;color:var(--muted);margin-top:6px;">If this supports a diary entry, use the D-reference shown on the diary card. Leave blank if unsure.</div>
   </div>
 
   <label style="display:block;text-align:center;padding:15px;background:var(--blue);border-radius:10px;color:white;font-family:DM Sans,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">
@@ -3459,6 +3481,7 @@ function go(id) {
     homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
   }
   // Load screen data
+  if (id==='sHome') { setTimeout(function(){ renderCoreProtectionCard(); }, 50); }
   if (id==='sBrain') { setTimeout(function(){ loadBrainScreen(); }, 50); }
   if (id==='sDocs') { setTimeout(function(){ renderTimeline(); }, 50); }
   if (id==='sEditProfile') { setTimeout(function(){ loadEditProfile(); }, 50); }
@@ -3473,6 +3496,55 @@ function go(id) {
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
   if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
+}
+
+function renderCoreProtectionCard() {
+  var card = document.getElementById('coreProtectionCard');
+  if (!card) return;
+  var diaryCount = (typeof diaryEntries !== 'undefined' && diaryEntries) ? diaryEntries.length : 0;
+  var evidenceCount = (typeof caseDocuments !== 'undefined' && caseDocuments) ? caseDocuments.length : 0;
+  var talkCount = 0;
+  try {
+    var sessions = (typeof getGuardianAskSessions === 'function') ? getGuardianAskSessions() : {};
+    talkCount = ((sessions.standalone && sessions.standalone.messages) || []).length;
+    if (sessions.askByKey) Object.keys(sessions.askByKey).forEach(function(key) {
+      talkCount += ((sessions.askByKey[key] && sessions.askByKey[key].messages) || []).length;
+    });
+  } catch(e) {}
+  var canBackup = typeof exportGuardianDeviceData === 'function' || typeof exportGuardianAccountData === 'function';
+  var covered = 0;
+  if (diaryCount > 0) covered++;
+  if (talkCount > 0) covered++;
+  if (evidenceCount > 0) covered++;
+  if (canBackup) covered++;
+  var items = [
+    {label:'Diary', ok:diaryCount > 0, value:diaryCount ? diaryCount + ' saved' : 'Start today'},
+    {label:'Talk', ok:talkCount > 0, value:talkCount ? talkCount + ' messages' : 'No thread yet'},
+    {label:'Evidence', ok:evidenceCount > 0, value:evidenceCount ? evidenceCount + ' item' + (evidenceCount === 1 ? '' : 's') : 'Add originals'},
+    {label:'Backup', ok:canBackup, value:canBackup ? 'Ready' : 'Not ready'}
+  ];
+  var summary = document.getElementById('coreProtectionSummary');
+  var score = document.getElementById('coreProtectionScore');
+  var list = document.getElementById('coreProtectionItems');
+  var next = document.getElementById('coreProtectionNext');
+  if (summary) summary.textContent = covered >= 4 ? 'Core record is in good shape' : 'Core record needs one more protection step';
+  if (score) {
+    score.textContent = covered + '/4';
+    score.style.color = covered >= 4 ? 'var(--green)' : covered >= 2 ? 'var(--gold)' : 'var(--red)';
+  }
+  if (list) list.innerHTML = items.map(function(item) {
+    return '<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:9px;">' +
+      '<div style="font-size:10px;font-weight:900;color:' + (item.ok ? 'var(--green)' : 'var(--gold)') + ';letter-spacing:.35px;">' + (item.ok ? 'READY' : 'NEXT') + '</div>' +
+      '<div style="font-size:13px;color:var(--white);font-weight:850;margin-top:2px;">' + item.label + '</div>' +
+      '<div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">' + item.value + '</div>' +
+    '</div>';
+  }).join('');
+  if (next) {
+    if (!diaryCount) next.textContent = 'Start with one diary entry. Same-day notes are the strongest foundation.';
+    else if (!evidenceCount) next.textContent = 'Add the original message, photo, nursery record or court document behind the diary entry.';
+    else if (!talkCount) next.textContent = 'Use Talk to Me for the next message so the advice and Diary handoff are captured.';
+    else next.textContent = 'Good base. Download a backup regularly and keep original files outside Guardian too.';
+  }
 }
 
 // Intercept browser back button
@@ -4954,6 +5026,7 @@ function showHome() {
     }
   }
   setTimeout(function(){ renderDeadlineBanner(); }, 50);
+  setTimeout(function(){ if (typeof renderCoreProtectionCard === 'function') renderCoreProtectionCard(); }, 60);
   checkSevenDayUpsell();
   setTimeout(function(){ renderGuardianNoticed(); }, 100);
   setTimeout(function(){ renderIntelBar(); }, 150);
@@ -6576,14 +6649,11 @@ function clearGuardianDeviceCache() {
   setTimeout(function(){ window.location.reload(); }, 400);
 }
 
-function exportGuardianAccountData() {
-  if (!currentUser) {
-    toast('Sign in before exporting your account data');
-    return;
-  }
+function buildGuardianDataExport(includeAccount) {
   var evidence = (caseDocuments || []).map(function(doc) {
     return {
       id:doc.id,
+      evidenceReference:doc.evidenceReference || '',
       type:doc.type,
       name:doc.name,
       originalName:doc.originalName,
@@ -6605,18 +6675,40 @@ function exportGuardianAccountData() {
       reviewStatus:doc.reviewStatus || ''
     };
   });
-  var report = {
-    exportVersion:'guardian-account-v1',
+  return {
+    exportVersion: includeAccount ? 'guardian-account-v1' : 'guardian-device-v1',
     exportedAt:new Date().toISOString(),
-    account:{id:currentUser.id, email:currentUser.email || ''},
+    account: includeAccount && currentUser ? {id:currentUser.id, email:currentUser.email || ''} : null,
     originalsDownloadedSeparately:true,
     profile:profile || {},
     diary:diaryEntries || [],
     evidence:evidence,
     confirmedFacts:brainLog || [],
     messageHistory:msgLog || [],
+    askSessions:(profile && profile.askSessions) || {},
+    backupChecklist:[
+      'Keep this JSON somewhere outside Guardian.',
+      'Download secured originals individually from Case File where available.',
+      'Keep untouched WhatsApp exports, photos, nursery records and court documents separately.',
+      'Use diary PDF exports when you need a readable bundle.'
+    ],
     notice:'Original evidence files are not embedded in this JSON export. Download each secured original separately from Case File and keep its SHA-256 hash with it.'
   };
+}
+
+function exportGuardianDeviceData() {
+  var report = buildGuardianDataExport(false);
+  guardianDownloadJSON('guardian-device-backup-' + new Date().toISOString().slice(0,10) + '.json', report);
+  guardianSafeTelemetry('device_export', {area:'privacy'});
+  toast('Guardian device backup downloaded');
+}
+
+function exportGuardianAccountData() {
+  if (!currentUser) {
+    exportGuardianDeviceData();
+    return;
+  }
+  var report = buildGuardianDataExport(true);
   guardianDownloadJSON('guardian-account-export-' + new Date().toISOString().slice(0,10) + '.json', report);
   guardianSafeTelemetry('account_export', {area:'privacy'});
   toast('Guardian account data exported');
@@ -10250,6 +10342,23 @@ function openEvidenceUpload() {
   go('sEvidenceUpload');
 }
 
+function renderEvidenceUploadStatus(added, failed, vaultWarnings) {
+  var status = document.getElementById('evidenceUploadStatus');
+  if (!status) return;
+  added = added || [];
+  failed = failed || [];
+  vaultWarnings = vaultWarnings || [];
+  var colour = failed.length ? 'var(--gold)' : 'var(--green)';
+  status.innerHTML =
+    '<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:left;">' +
+      '<div style="font-size:13px;font-weight:900;color:' + colour + ';margin-bottom:6px;">Evidence upload summary</div>' +
+      '<div style="font-size:12px;color:var(--muted-hi);line-height:1.55;">Saved: ' + added.length + ' · Failed: ' + failed.length + ' · Original storage warnings: ' + vaultWarnings.length + '</div>' +
+      (added.length ? '<div style="font-size:11px;color:var(--muted);line-height:1.45;margin-top:6px;">Next: review these in My Case and link important items to Diary entries.</div>' : '') +
+      (vaultWarnings.length ? '<div style="font-size:11px;color:var(--amber);line-height:1.45;margin-top:6px;">Some analysis was saved without securing the full original. Keep your own untouched copy.</div>' : '') +
+      (failed.length ? '<div style="font-size:11px;color:var(--red);line-height:1.45;margin-top:6px;">Some files were not added. Try them one at a time or use a clearer file type.</div>' : '') +
+    '</div>';
+}
+
 async function addEvidence(event) {
   var files = Array.from(event.target.files || []);
   event.target.value = '';
@@ -10302,9 +10411,7 @@ async function addEvidence(event) {
   }
   localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
   try { await saveProfileToSupabase(); } catch(e) {}
-  if (status) status.textContent = added.length
-    ? added.length + ' evidence item' + (added.length === 1 ? '' : 's') + ' added safely.'
-    : 'No evidence was added.';
+  renderEvidenceUploadStatus(added, failed, vaultWarnings);
   if (added.length) {
     toast('Evidence added to My Case');
     renderTimeline();
@@ -13449,11 +13556,15 @@ function detectAskEventType(text) {
   if (/cafcass|family court advisory|section 7|safeguarding letter/.test(value)) return 'cafcass';
   if (/notice of hearing|hearing date|fhdra|dispute resolution|final hearing|listed for hearing/.test(value)) return 'hearing';
   if (/court order|child arrangements order|prohibited steps|specific issue order/.test(value)) return 'court_order';
+  if (/nursery bag|coat is by the door/.test(value)) return 'message';
+  if (/school|teacher|headteacher|attendance|nursery/.test(value)) return 'school';
+  if (/handover|collect|collection|drop[ -]?off|pick[ -]?up|contact time|normal contact|8 to 10|9 instead of 10/.test(value)) return 'message';
+  if (/without prejudice/.test(value) && /negotiate|negotiation|settlement|proposal|offer|agreement/.test(value)) return 'negotiation';
+  if (/solicitor|our client|legal representative|law firm/.test(value)) return 'solicitor';
   if (/negotiate|negotiation|settlement|proposal|offer|agreement before court/.test(value)) return 'negotiation';
   if (/barrister|counsel|legal conference|legal meeting|conference with|meeting (a |my |the )?solicitor/.test(value)) return 'legal_meeting';
-  if (/solicitor|our client|legal representative|law firm|without prejudice/.test(value)) return 'solicitor';
+  if (/without prejudice/.test(value)) return 'solicitor';
   if (/social worker|children'?s services|section 17|section 47|child protection/.test(value)) return 'social_services';
-  if (/school|teacher|headteacher|attendance|nursery/.test(value)) return 'school';
   if (/doctor|hospital|\bgp\b|medical|appointment|fracture|injury/.test(value)) return 'medical';
   if (value.length > 80 || /message|whatsapp|appclose|texted|replied/.test(value)) return 'message';
   return 'other';
@@ -13576,6 +13687,8 @@ function renderAskEventActions(type) {
     ['Prepare me', function(){ startUniversalCoach(type, agCoachContext); }],
     ['Practise likely questions', function(){ agCoachMode=type+'_questions'; agCoachTranscript=[]; agCallAPI('Build likely questions for this event privately. Ask the first question only, then coach each answer before moving on.'); }],
     ['What should I preserve?', function(){ agRunPrompt('List the original evidence, dates and records I should preserve for this event. Separate essentials from optional items.'); }],
+    ['Log this in Diary', function(){ startDiaryVoiceCapture(); }],
+    ['Add original evidence', function(){ if (typeof openEvidenceUpload === 'function') openEvidenceUpload(); }],
     ['Build preparation sheet', function(){ buildAskPreparationSheet(); }]
   ].forEach(function(action) {
     var btn = document.createElement('button');
@@ -13629,7 +13742,9 @@ function openAskFromReply() {
     : [
         ['Explain what this means',"agRunPrompt('Explain this item in plain English and tell me the next practical step.')"],
         ['Prepare me',"agRunPrompt('Coach me through what happens next. Ask one question at a time.')"],
-        ['What should I preserve?',"agRunPrompt('What original evidence and dates should I preserve from this item?')"]
+        ['What should I preserve?',"agRunPrompt('What original evidence and dates should I preserve from this item?')"],
+        ['Log in Diary',"startDiaryVoiceCapture()"],
+        ['Add evidence',"openEvidenceUpload()"]
       ];
   prompts.forEach(function(item) {
     var btn = document.createElement('button');
