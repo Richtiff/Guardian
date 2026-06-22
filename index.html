@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9,8 +9,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Guardian">
+<meta name="application-name" content="Guardian">
 <meta name="theme-color" content="#080d14">
 <title>GuardianCC — Case Companion</title>
+<link rel="manifest" href="./guardian.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="./guardian-apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./guardian-favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
@@ -990,6 +995,11 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
   <div class="home-status" id="homeStatus">Guardian is ready</div>
+  <div id="guardianInstallCard" style="display:none;align-items:center;gap:11px;background:linear-gradient(135deg,rgba(202,162,75,0.15),rgba(79,130,209,0.08));border:1.5px solid rgba(202,162,75,0.35);border-radius:14px;padding:11px 12px;margin:0 0 12px;">
+    <img src="./guardian-icon-192.png" alt="" width="48" height="48" style="border-radius:11px;flex:0 0 auto;">
+    <div style="flex:1;min-width:0;"><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:900;color:var(--white);">Put Guardian on your phone</div><div id="guardianInstallText" style="font-size:11px;color:var(--muted-hi);line-height:1.4;margin-top:2px;">Open it like an app from your home screen.</div><div id="guardianIosInstallSteps" style="display:none;font-size:11px;color:var(--gold);line-height:1.45;margin-top:5px;">In Safari, tap Share, then Add to Home Screen.</div></div>
+    <button type="button" id="guardianInstallButton" onclick="installGuardianApp()" style="padding:9px 11px;background:var(--gold);border:none;border-radius:9px;color:#181208;font-size:11px;font-weight:950;cursor:pointer;white-space:nowrap;">Install Guardian</button>
+  </div>
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">START HERE</div>
   <div id="continueBar" style="display:none;margin:0 0 12px;background:rgba(196,154,60,0.1);border:1.5px solid rgba(196,154,60,0.3);border-radius:14px;padding:14px 16px;cursor:pointer;" onclick="continueLast()">
     <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:4px;">CONTINUE WHERE YOU LEFT OFF</div>
@@ -3067,6 +3077,66 @@ const SUPA_URL = 'https://khgfladykvpfarkllwmd.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoZ2ZsYWR5a3ZwZmFya2xsd21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MzA1MDcsImV4cCI6MjA5NDUwNjUwN30.-BOoXZQNlMnpg1R5Djc6pjJy4ckHF_xOVerPvS7nmyU';
 var supabase = null;
 var currentUser = null;
+var guardianInstallPrompt = null;
+
+function guardianIsInstalled() {
+  return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function guardianIsIos() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
+}
+
+function updateGuardianInstallCard() {
+  var card = document.getElementById('guardianInstallCard');
+  var button = document.getElementById('guardianInstallButton');
+  var text = document.getElementById('guardianInstallText');
+  var iosSteps = document.getElementById('guardianIosInstallSteps');
+  if (!card) return;
+  if (guardianIsInstalled()) { card.style.display = 'none'; return; }
+  var ios = guardianIsIos();
+  var canPrompt = !!guardianInstallPrompt;
+  card.style.display = ios || canPrompt ? 'flex' : 'none';
+  if (ios) {
+    if (button) button.textContent = 'How to install';
+    if (text) text.textContent = 'Add the gold Guardian shield to your home screen.';
+  } else if (canPrompt) {
+    if (button) button.textContent = 'Install Guardian';
+    if (text) text.textContent = 'Install the secure Guardian shortcut with its own icon and colours.';
+    if (iosSteps) iosSteps.style.display = 'none';
+  }
+}
+
+async function installGuardianApp() {
+  var iosSteps = document.getElementById('guardianIosInstallSteps');
+  if (guardianIsIos()) {
+    if (iosSteps) iosSteps.style.display = iosSteps.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  if (!guardianInstallPrompt) { toast('Use your browser menu and choose Install app or Add to Home screen'); return; }
+  guardianInstallPrompt.prompt();
+  var choice = await guardianInstallPrompt.userChoice;
+  guardianInstallPrompt = null;
+  if (choice && choice.outcome === 'accepted') toast('Guardian added to your phone');
+  updateGuardianInstallCard();
+}
+
+window.addEventListener('beforeinstallprompt', function(event) {
+  event.preventDefault();
+  guardianInstallPrompt = event;
+  updateGuardianInstallCard();
+});
+window.addEventListener('appinstalled', function() {
+  guardianInstallPrompt = null;
+  updateGuardianInstallCard();
+});
+
+function registerGuardianServiceWorker() {
+  if (!('serviceWorker' in navigator) || window.location.protocol !== 'https:') return;
+  navigator.serviceWorker.register('./guardian-sw.js').catch(function(error) {
+    console.warn('Guardian offline shell could not register:', error);
+  });
+}
 
 function initSupabase() {
   try {
@@ -3516,6 +3586,8 @@ function getCTX() {
 }
 
 async function startGuardianApp() {
+  registerGuardianServiceWorker();
+  updateGuardianInstallCard();
   // Clean up insecure credentials and homemade sessions from older builds.
   // Supabase's refresh-token session is now the only trusted sign-in state.
   localStorage.removeItem('gUserPass');
