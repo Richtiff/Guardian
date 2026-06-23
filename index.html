@@ -711,7 +711,7 @@ p, .body-text { font-size: 16px !important; }
     </div>
   </div>
   <button type="button" class="btn-gold" onclick="startSetupOrHome()">Set up my case →</button>
-  <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">50 free message checks — no card needed</div>
+  <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">Tester build — message checks are counted, not capped</div>
 </div>
 
 <!-- PROFILE 1 -->
@@ -1058,8 +1058,8 @@ p, .body-text { font-size: 16px !important; }
     <div class="cb-val" id="cbVal"></div>
   </div>
   <div class="trial-banner" id="trialBanner" style="display:none;">
-    <div class="trial-text">Free message checks remaining</div>
-    <div class="trial-count" id="trialCount">50</div>
+    <div class="trial-text">Message checks used</div>
+    <div class="trial-count" id="trialCount">0</div>
   </div>
 
   <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:4px 0 8px;">WHEN YOU NEED TO GO FURTHER</div>
@@ -1141,10 +1141,10 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sPaywall">
   <div class="paywall-card">
     <div class="paywall-icon">🛡️</div>
-    <div class="paywall-title">Guardian has been with you</div>
-    <div class="paywall-sub">You've used your 5 free message checks. Keep your case protected — Guardian knows your history and never forgets.</div>
-    <div class="paywall-price">£9.99</div>
-    <div class="paywall-price-sub">per month — cancel anytime</div>
+    <div class="paywall-title">Tester build is open</div>
+    <div class="paywall-sub">Message checks are being counted for product testing, but access is not capped in this build.</div>
+    <div class="paywall-price">No cap</div>
+    <div class="paywall-price-sub">use the app normally and report anything confusing</div>
     <div class="paywall-feats">
       <div class="paywall-feat">Unlimited Chat message coaching</div>
       <div class="paywall-feat">Guardian remembers your full case</div>
@@ -1152,7 +1152,7 @@ p, .body-text { font-size: 16px !important; }
       <div class="paywall-feat">Carefully reviewed, evidence-aware replies</div>
       <div class="paywall-feat">Ask about documents, hearings and evidence</div>
     </div>
-    <button type="button" class="btn-gold">Keep Guardian protecting me</button>
+    <button type="button" class="btn-gold" onclick="go('sHome')">Back to Guardian</button>
   </div>
   <button type="button" class="btn-ghost" onclick="goBack()">Back to home</button>
 </div>
@@ -5451,12 +5451,12 @@ function showHome() {
     document.getElementById('cbVal').textContent=lv+'/10';
     document.getElementById('cbVal').style.color=col;
   }
-  var paid=localStorage.getItem('gPaid')==='true';
-  if(!paid){
-    var rem=Math.max(0,50-checks);
-    document.getElementById('trialCount').textContent=rem;
-    document.getElementById('trialBanner').style.display=rem>=0?'flex':'none';
-  }
+  var trialText = document.querySelector('#trialBanner .trial-text');
+  if (trialText) trialText.textContent = 'Message checks used';
+  var trialCount = document.getElementById('trialCount');
+  if (trialCount) trialCount.textContent = checks;
+  var trialBanner = document.getElementById('trialBanner');
+  if (trialBanner) trialBanner.style.display = 'flex';
   if(msgLog.length>0){
     var strip=document.getElementById('memoryStrip');
     var items=document.getElementById('memoryItems');
@@ -5732,6 +5732,7 @@ async function sendQA() {
 }
 
 function checkUpsell(question, answer) {
+  return;
   // Don't show if already on paid or profile complete with docs
   if (localStorage.getItem('gPaid') === 'true') return;
   var combined = (question + ' ' + answer).toLowerCase();
@@ -5782,11 +5783,8 @@ function checkUpsell(question, answer) {
 }
 
 function triggerUpsell() {
-  if (profile && profile.complete) {
-    go('sPaywall');
-  } else {
-    go('sProfile1');
-  }
+  go(profile && profile.complete ? 'sHome' : 'sProfile1');
+  if (profile && profile.complete) toast('Tester build: usage is being counted but not restricted.');
 }
 
 async function addFollowUps(question, answer) {
@@ -6416,11 +6414,6 @@ function skipCool(){
 }
 
 function checkTrial(){
-  if(localStorage.getItem('gPaid')==='true') return true;
-  var paid = false;
-  try { paid = localStorage.getItem('gPaid')==='true'; } catch(e){}
-  if(paid) return true;
-  if(checks >= 9999){ go('sPaywall'); return false; }
   return true;
 }
 
@@ -6429,6 +6422,9 @@ function resetTrial(){
   localStorage.setItem('gChecks','0');
   localStorage.removeItem('gUpsellDismissed');
   upsellShownThisSession=false;
+  toast('Checks reset');
+  showHome();
+  return;
   toast('✅ Checks reset to 50');
   showHome();
 }
@@ -6724,11 +6720,13 @@ async function _gen(ctx) {
       st.reply=p.reply; st.score=null; st.timing=p.timing||'morning'; st.timingNote=p.timingNote||'';
       checks++; localStorage.setItem('gChecks',checks);
       // Upsell triggers
-      if (checks === 6) checkUpsellTriggers('check3');
-      if (checks === 10) checkUpsellTriggers('check5');
+      if (localStorage.getItem('gPaid') === 'true') {
+        if (checks === 6) checkUpsellTriggers('check3');
+        if (checks === 10) checkUpsellTriggers('check5');
+      }
       // Pattern upsell - if 3+ red flags in last 10 messages
       var recentRed = msgLog.slice(-10).filter(function(m){return m.flag==='red';}).length;
-      if (recentRed >= 3) checkUpsellTriggers('pattern');
+      if (localStorage.getItem('gPaid') === 'true' && recentRed >= 3) checkUpsellTriggers('pattern');
       var badge=document.getElementById('scoreBadge');
       if (badge) { badge.textContent='Checking draft...'; badge.className='score-badge sc-caution'; }
       var replyText = p.reply||'';
@@ -7373,10 +7371,12 @@ function dismissUpsell() {
 
 function goUpsell() {
   dismissUpsell();
-  go('sPaywall');
+  go('sHome');
+  toast('Tester build: usage is being counted but not restricted.');
 }
 
 function checkUpsellTriggers(context) {
+  return;
   if (localStorage.getItem('gPaid') === 'true') return;
   document.getElementById('upsellToast').dataset = document.getElementById('upsellToast').dataset || {};
   document.getElementById('upsellToast').setAttribute('data-context', context);
