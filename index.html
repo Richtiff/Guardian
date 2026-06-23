@@ -712,33 +712,94 @@ p, .body-text { font-size: 16px !important; }
   <button type="button" class="btn-ghost" onclick="resendVerification()">Resend confirmation email</button>
 </div>
 
+<!-- TESTING CONSENT -->
+<div class="step active" id="sTestingConsent">
+  <div style="text-align:left;padding:22px 0 18px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:54px;height:54px;background:rgba(245,158,11,0.14);border:2px solid rgba(245,158,11,0.28);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:25px;color:var(--amber);font-weight:900;">!</div>
+      <div>
+        <div style="font-size:12px;font-weight:900;color:var(--amber);letter-spacing:.8px;text-transform:uppercase;">Private testing</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:900;line-height:1.1;">Before you use real case details</div>
+      </div>
+    </div>
+    <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:14px;">Guardian is still being tested. It can help you organise, prepare and understand your material, but you must keep control of your own records and decisions.</div>
+    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:14px;padding:13px;color:#fca5a5;font-size:13px;line-height:1.6;font-weight:750;margin-bottom:14px;">Do not rely on Guardian as your only evidence store. Keep your original files, orders, messages and photos somewhere safe outside the app.</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
+    <div style="padding:12px 13px;background:rgba(255,255,255,0.035);border:1px solid var(--border);border-radius:12px;font-size:13px;color:var(--muted-hi);line-height:1.55;"><strong style="color:var(--white);">This is not legal advice.</strong> Guardian cannot predict what a judge or magistrates will decide.</div>
+    <div style="padding:12px 13px;background:rgba(255,255,255,0.035);border:1px solid var(--border);border-radius:12px;font-size:13px;color:var(--muted-hi);line-height:1.55;"><strong style="color:var(--white);">Check everything before using it.</strong> AI output, dates, statements and exports may be incomplete or wrong.</div>
+    <div style="padding:12px 13px;background:rgba(255,255,255,0.035);border:1px solid var(--border);border-radius:12px;font-size:13px;color:var(--muted-hi);line-height:1.55;"><strong style="color:var(--white);">Testing may reveal faults.</strong> Sync, backups, uploads and recovery must still be checked on real devices.</div>
+  </div>
+  <label style="display:flex;gap:10px;align-items:flex-start;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.25);border-radius:14px;padding:13px;margin:4px 0 14px;cursor:pointer;">
+    <input type="checkbox" id="testingConsentCheck" onchange="updateTestingConsentButton()" style="margin-top:3px;accent-color:#d4a843;">
+    <span style="font-size:13px;color:var(--blue);line-height:1.55;font-weight:800;">I understand Guardian is a private test version. I will keep my own copies, check all outputs, and not treat Guardian as a solicitor or my only evidence store.</span>
+  </label>
+  <button type="button" class="btn-gold" id="testingConsentButton" onclick="acceptTestingConsent()" disabled style="opacity:.45;">I understand — continue →</button>
+  <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5;">You will only see this once on this device unless app data is cleared.</div>
+</div>
+
 <!-- WELCOME -->
-<div class="step active" id="sWelcome">
-  <div style="text-align:center;padding:30px 0 24px;">
-    <div style="width:80px;height:80px;background:var(--gold-dim);border:2px solid rgba(245,200,66,0.3);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;">🛡️</div>
-    <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px;">Guardian has your back</div>
-    <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;max-width:300px;margin:0 auto 28px;">Built for parents in family court who need to stay calm, stay safe, and stay one step ahead.</div>
+<div class="step" id="sWelcome">
+  <div style="text-align:left;padding:22px 0 18px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+      <div style="width:54px;height:54px;background:var(--gold-dim);border:2px solid rgba(245,200,66,0.3);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;">G</div>
+      <div>
+        <div style="font-size:12px;font-weight:900;color:var(--gold);letter-spacing:.8px;text-transform:uppercase;">Guardian setup</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:900;line-height:1.1;">What brought you here today?</div>
+      </div>
+    </div>
+    <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Start with the thing that is stressing you now. Guardian will help with that first, then build the case structure around you.</div>
+    <div style="background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.25);border-radius:14px;padding:12px;color:var(--blue);font-size:13px;line-height:1.55;font-weight:750;">No long legal form first. Pick one door, add the basic names, and get a useful first step.</div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
-      <span style="font-size:20px;">💬</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Chat</div><div style="font-size:12px;color:var(--muted-hi);">Messages, replies, patterns and what to save — all in one place</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
-      <span style="font-size:20px;">⚖️</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Ask about anything else</div><div style="font-size:12px;color:var(--muted-hi);">Documents, hearings, Cafcass and evidence explained in plain English.</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
-      <span style="font-size:20px;">📁</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Your Case. Your Evidence.</div><div style="font-size:12px;color:var(--muted-hi);">Documents, diary, statements. Safe and ready when you need it.</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
-      <span style="font-size:20px;">🧠</span>
-      <div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">You're Not Alone</div><div style="font-size:12px;color:var(--muted-hi);">Thousands of parents. One Guardian. Getting stronger together.</div></div>
-    </div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+    <button type="button" onclick="selectOnboardingIntent('message')" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:14px;background:rgba(52,120,212,0.1);border:1.5px solid rgba(52,120,212,0.3);border-radius:14px;color:var(--white);cursor:pointer;">
+      <span style="width:34px;height:34px;border-radius:12px;background:rgba(52,120,212,0.18);display:flex;align-items:center;justify-content:center;color:var(--blue);font-weight:900;">1</span>
+      <span><span style="display:block;font-size:15px;font-weight:900;margin-bottom:3px;">I received a message</span><span style="display:block;font-size:12px;color:var(--muted-hi);line-height:1.45;">Open Chat, understand what matters, and shape a calm reply.</span></span>
+    </button>
+    <button type="button" onclick="selectOnboardingIntent('event')" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.035);border:1.5px solid var(--border);border-radius:14px;color:var(--white);cursor:pointer;">
+      <span style="width:34px;height:34px;border-radius:12px;background:rgba(212,168,67,0.16);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:900;">2</span>
+      <span><span style="display:block;font-size:15px;font-weight:900;margin-bottom:3px;">I need to log what happened</span><span style="display:block;font-size:12px;color:var(--muted-hi);line-height:1.45;">Start a Diary record for contact, nursery, incidents, positives or everyday details.</span></span>
+    </button>
+    <button type="button" onclick="selectOnboardingIntent('papers')" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.035);border:1.5px solid var(--border);border-radius:14px;color:var(--white);cursor:pointer;">
+      <span style="width:34px;height:34px;border-radius:12px;background:rgba(26,158,114,0.14);display:flex;align-items:center;justify-content:center;color:var(--green);font-weight:900;">3</span>
+      <span><span style="display:block;font-size:15px;font-weight:900;margin-bottom:3px;">I received court papers</span><span style="display:block;font-size:12px;color:var(--muted-hi);line-height:1.45;">Upload or read a document in plain English before you act.</span></span>
+    </button>
+    <button type="button" onclick="selectOnboardingIntent('hearing')" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.035);border:1.5px solid var(--border);border-radius:14px;color:var(--white);cursor:pointer;">
+      <span style="width:34px;height:34px;border-radius:12px;background:rgba(245,158,11,0.14);display:flex;align-items:center;justify-content:center;color:var(--amber);font-weight:900;">4</span>
+      <span><span style="display:block;font-size:15px;font-weight:900;margin-bottom:3px;">I need to prepare for a hearing</span><span style="display:block;font-size:12px;color:var(--muted-hi);line-height:1.45;">Go to Prepare for court, statements, key dates and what to check.</span></span>
+    </button>
+    <button type="button" onclick="selectOnboardingIntent('evidence')" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,0.035);border:1.5px solid var(--border);border-radius:14px;color:var(--white);cursor:pointer;">
+      <span style="width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:var(--muted-hi);font-weight:900;">5</span>
+      <span><span style="display:block;font-size:15px;font-weight:900;margin-bottom:3px;">I want to organise evidence</span><span style="display:block;font-size:12px;color:var(--muted-hi);line-height:1.45;">Add files, dates and references into one tidy Evidence Library.</span></span>
+    </button>
   </div>
-  <button type="button" class="btn-gold" onclick="startSetupOrHome()">Set up my case →</button>
+  <button type="button" class="btn-ghost" onclick="selectOnboardingIntent('setup')">I'm just setting up calmly</button>
   <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:12px;">Tester build — message checks are counted, not capped</div>
+</div>
+
+<!-- TINY PROFILE -->
+<div class="step" id="sTinyProfile">
+  <div class="setup-progress"><div class="setup-dot done"></div><div class="setup-dot active"></div></div>
+  <div class="setup-title">Just enough to start</div>
+  <div class="setup-sub">We only need the basics now. Guardian will ask for more detail later, exactly when it becomes useful.</div>
+  <div id="onboardingIntentSummary" style="background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.25);border-radius:14px;padding:12px;color:var(--gold);font-size:13px;line-height:1.55;margin-bottom:14px;">You chose a quick start.</div>
+  <div class="field-group"><label class="field-label">YOUR FIRST NAME</label><input class="field-input" id="onbMyName" type="text" placeholder="Your name" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
+  <div class="field-group"><label class="field-label">CHILD'S NAME</label><input class="field-input" id="onbChildName" type="text" placeholder="Child's name or names" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
+  <div class="field-group"><label class="field-label">OTHER PARENT'S FIRST NAME</label><input class="field-input" id="onbTheirName" type="text" placeholder="Other parent's name" onkeydown="if(event.key==='Enter')event.preventDefault()"></div>
+  <div class="field-group">
+    <label class="field-label">ARE YOU ALREADY IN COURT?</label>
+    <div class="opts" id="onbCourtOpts">
+      <button type="button" class="opt" onclick="pickOnboardingCourt(this,'yes')">Yes</button>
+      <button type="button" class="opt" onclick="pickOnboardingCourt(this,'no')">No</button>
+      <button type="button" class="opt" onclick="pickOnboardingCourt(this,'not_sure')">Not sure</button>
+    </div>
+  </div>
+  <div class="field-group">
+    <label class="field-label">NEXT IMPORTANT DATE <span style="font-size:13px;color:var(--muted-hi);font-weight:400;"> — optional</span></label>
+    <input class="field-input" id="onbNextDate" type="date" style="color-scheme:dark;">
+  </div>
+  <button type="button" class="btn-gold" onclick="saveTinyProfileAndStart()" style="margin-top:8px;">Start with this →</button>
+  <button type="button" class="btn-ghost" onclick="startFullSetup()" style="margin-top:10px;">I want the full setup instead</button>
 </div>
 
 <!-- PROFILE 1 -->
@@ -1985,6 +2046,15 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--amber);letter-spacing:0.5px;margin-bottom:6px;">⏰ DEADLINE</div>
       <div id="explainerDeadline" style="font-size:14px;font-weight:700;color:var(--white);"></div>
     </div>
+    <div id="orderDeadlinePlanBox" style="display:none;background:rgba(245,158,11,0.07);border:1.5px solid rgba(245,158,11,0.24);border-radius:16px;padding:16px;margin-bottom:14px;">
+      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:950;color:var(--amber);margin-bottom:5px;">Check possible dates and tasks</div>
+      <div style="font-size:12px;color:var(--muted-hi);line-height:1.55;margin-bottom:12px;">Guardian has pulled these from the document. Check every item against the court order before saving. If the order says something different, follow the order.</div>
+      <div id="orderDeadlinePlanItems"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+        <button type="button" onclick="saveConfirmedOrderDeadlinePlan()" style="padding:10px;background:var(--gold);border:none;border-radius:10px;color:#181208;font-size:12px;font-weight:950;cursor:pointer;">Save confirmed dates</button>
+        <button type="button" onclick="go('sKeyDates')" style="padding:10px;background:rgba(52,120,212,.1);border:1px solid rgba(52,120,212,.3);border-radius:10px;color:var(--blue);font-size:12px;font-weight:900;cursor:pointer;">Open Key Dates</button>
+      </div>
+    </div>
     <button type="button" class="btn-blue" onclick="goQAWithDoc()" style="margin-bottom:10px;">Ask Guardian about this document →</button>
     <button type="button" class="btn-ghost" onclick="document.getElementById('explainerResult').style.display='none'">Explain another document</button>
   </div>
@@ -2711,6 +2781,11 @@ p, .body-text { font-size: 16px !important; }
       </div>
       <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:11px 12px;margin-bottom:14px;font-size:11px;color:var(--muted-hi);line-height:1.55;"><strong style="color:var(--amber);">Before drafting:</strong> if an important fact is not in Diary, Evidence or your case profile, Guardian will mark it for verification instead of making it up. A polished draft still needs your own checking.</div>
       <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;" id="swCaseCheck"></div>
+      <div id="swLinkedPrepBoard" style="margin-bottom:14px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <button type="button" onclick="refreshStatementPrepBoard()" style="padding:10px;background:rgba(52,120,212,.1);border:1px solid rgba(52,120,212,.3);border-radius:10px;color:var(--blue);font-size:12px;font-weight:900;cursor:pointer;">Refresh links</button>
+        <button type="button" onclick="openStatementPrepChat()" style="padding:10px;background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.3);border-radius:10px;color:var(--gold);font-size:12px;font-weight:900;cursor:pointer;">Talk prep through</button>
+      </div>
       <div class="field-group">
         <label class="field-label">WHAT ARE YOU ASKING THE COURT FOR?</label>
         <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Be specific. Guardian will make sure every section of your statement builds towards this.</div>
@@ -2811,6 +2886,7 @@ p, .body-text { font-size: 16px !important; }
       <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:6px;">⚠️ GUARDIAN NOTICED</div>
       <div id="swAuditText" style="font-size:13px;color:var(--muted-hi);line-height:1.6;"></div>
     </div>
+    <div id="swDraftLinkMap" style="margin-bottom:14px;"></div>
 
     <!-- Editable statement -->
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
@@ -2823,6 +2899,14 @@ p, .body-text { font-size: 16px !important; }
 
     <!-- Re-score button -->
     <button type="button" onclick="rescoreStatement()" style="width:100%;padding:12px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Review my edits again →</button>
+    <div id="swCourtDayPrep" style="background:rgba(26,158,114,.06);border:1.5px solid rgba(26,158,114,.22);border-radius:16px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:950;color:var(--green);margin-bottom:6px;">Court-day preparation</div>
+      <div style="font-size:12px;color:var(--muted-hi);line-height:1.55;margin-bottom:10px;">The statement only gets you part of the way. You still need to know your key dates, what you are asking for, what evidence supports each point and how to answer briefly if questioned.</div>
+      <div class="confidence-row"><div class="confidence-mark">1</div><div class="confidence-copy"><strong>Practise the short answer</strong><span>One or two sentences first. Add detail only if asked.</span></div></div>
+      <div class="confidence-row"><div class="confidence-mark">2</div><div class="confidence-copy"><strong>Know your references</strong><span>Be able to find the diary entry, order or evidence item you rely on.</span></div></div>
+      <div class="confidence-row"><div class="confidence-mark">3</div><div class="confidence-copy"><strong>Do not overstate</strong><span>If something is uncertain, say what you know and what source it comes from.</span></div></div>
+      <button type="button" onclick="openCourtDayPrepChat()" style="width:100%;margin-top:8px;padding:10px;background:rgba(26,158,114,.12);border:1px solid rgba(26,158,114,.32);border-radius:10px;color:var(--green);font-size:12px;font-weight:900;cursor:pointer;">Practise court questions in Chat</button>
+    </div>
     <div class="talk-card">
       <div class="talk-card-title">Need help editing this draft?</div>
       <div class="talk-card-body">Chat can talk you through one paragraph at a time and explain what to verify, shorten or remove.</div>
@@ -3346,6 +3430,9 @@ var qaTyping = false;
 var qaHistory = [];
 var qaAttachment = null;
 var selCaseType = '', selCommStyle = '';
+var onboardingIntent = localStorage.getItem('gOnboardingIntent') || '';
+var onboardingCourtStatus = localStorage.getItem('gOnboardingCourtStatus') || '';
+var testingConsentAccepted = localStorage.getItem('gTestingConsentAccepted') === 'true';
 function safeJSONParse(str, fallback) {
   if (!str || !str.trim()) return fallback;
   try { return JSON.parse(str); } catch(e) { return fallback; }
@@ -3832,18 +3919,22 @@ function attachAuthListener() {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sEvidenceUpload','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sEvidenceUpload','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
 
 var stepHistory = [];
 var navLock = false;
 
-var SETUP_SCREENS = ['sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary'];
+var SETUP_SCREENS = ['sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary'];
+
+function getFirstSetupScreen() {
+  return testingConsentAccepted ? 'sWelcome' : 'sTestingConsent';
+}
 
 function goHome() {
   if (profile && profile.complete) {
     go('sHome');
   } else {
-    go('sWelcome');
+    go(getFirstSetupScreen());
   }
 }
 
@@ -3941,7 +4032,7 @@ function navigateToSection(screen) {
 function goBack() {
   stepHistory.pop();
   var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
-  var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
+  var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : getFirstSetupScreen());
   ALL_STEPS.forEach(function(s){
     var e=document.getElementById(s);
     if(e) {
@@ -3962,11 +4053,11 @@ function goBack() {
   if (landing === 'sEditProfile') setTimeout(loadEditProfile, 50);
   var homeBtn = document.getElementById('homeBtn');
   if (homeBtn) {
-    var hideOn = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
+    var hideOn = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
     homeBtn.style.display = hideOn.indexOf(landing) === -1 ? 'block' : 'none';
   }
   var floatBack = document.getElementById('floatingBack');
-  if (floatBack) floatBack.classList.toggle('show', ['sHome','sWelcome'].indexOf(landing) === -1);
+  if (floatBack) floatBack.classList.toggle('show', ['sHome','sTestingConsent','sWelcome'].indexOf(landing) === -1);
 }
 
 function go(id) {
@@ -3982,7 +4073,7 @@ function go(id) {
   // Show home button on all screens except setup and home itself
   var homeBtn = document.getElementById('homeBtn');
   if (homeBtn) {
-    var hideOn = ['sLogin','sSignup','sVerify','sWelcome','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
+    var hideOn = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sHome'];
     homeBtn.style.display = hideOn.indexOf(id) === -1 ? 'block' : 'none';
   }
   // Load screen data
@@ -4082,7 +4173,7 @@ window.addEventListener('popstate', function(e) {
   stepHistory.pop();
   var prev = stepHistory.length > 0 ? stepHistory[stepHistory.length-1] : null;
   ALL_STEPS.forEach(function(s){ var e=document.getElementById(s); if(e) e.classList.remove('active'); });
-  var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : 'sWelcome');
+  var landing = prev ? prev : ((profile && profile.complete) ? 'sHome' : getFirstSetupScreen());
   var t = document.getElementById(landing);
   if (t) t.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -4327,7 +4418,138 @@ function startSetupOrHome() {
     showHome();
     return;
   }
+  go(getFirstSetupScreen());
+}
+
+function updateTestingConsentButton() {
+  var checked = !!(document.getElementById('testingConsentCheck') && document.getElementById('testingConsentCheck').checked);
+  var btn = document.getElementById('testingConsentButton');
+  if (!btn) return;
+  btn.disabled = !checked;
+  btn.style.opacity = checked ? '1' : '.45';
+}
+
+function acceptTestingConsent() {
+  var checked = !!(document.getElementById('testingConsentCheck') && document.getElementById('testingConsentCheck').checked);
+  if (!checked) { toast('Please tick the testing agreement to continue'); return; }
+  testingConsentAccepted = true;
+  try {
+    localStorage.setItem('gTestingConsentAccepted', 'true');
+    localStorage.setItem('gTestingConsentAcceptedAt', new Date().toISOString());
+  } catch(e) {}
+  go('sWelcome');
+}
+
+function getOnboardingIntentLabel(intent) {
+  var map = {
+    message: 'You received a message. Guardian will open Chat first.',
+    event: 'You need to log what happened. Guardian will open the Diary first.',
+    papers: 'You received court papers. Guardian will open Understand Documents first.',
+    hearing: 'You need to prepare for a hearing. Guardian will open Prepare for court first.',
+    evidence: 'You want to organise evidence. Guardian will open the Evidence Library first.',
+    setup: 'You are setting up calmly. Guardian will take you to your home screen first.'
+  };
+  return map[intent] || 'Guardian will start with the most useful next step.';
+}
+
+function selectOnboardingIntent(intent) {
+  onboardingIntent = intent || 'setup';
+  try { localStorage.setItem('gOnboardingIntent', onboardingIntent); } catch(e) {}
+  var summary = document.getElementById('onboardingIntentSummary');
+  if (summary) summary.textContent = getOnboardingIntentLabel(onboardingIntent);
+  var n = document.getElementById('onbMyName');
+  var c = document.getElementById('onbChildName');
+  var t = document.getElementById('onbTheirName');
+  if (profile) {
+    if (n && profile.myName) n.value = profile.myName;
+    if (c && profile.childName) c.value = profile.childName;
+    if (t && profile.theirName) t.value = profile.theirName;
+  }
+  go('sTinyProfile');
+}
+
+function pickOnboardingCourt(btn, status) {
+  onboardingCourtStatus = status || '';
+  try { localStorage.setItem('gOnboardingCourtStatus', onboardingCourtStatus); } catch(e) {}
+  document.querySelectorAll('#onbCourtOpts .opt').forEach(function(b){ b.classList.remove('sel'); });
+  if (btn) btn.classList.add('sel');
+}
+
+function startFullSetup() {
+  var n = document.getElementById('onbMyName');
+  var c = document.getElementById('onbChildName');
+  var t = document.getElementById('onbTheirName');
+  if (n && n.value.trim()) { var n2 = document.getElementById('iMyName'); if (n2) n2.value = n.value.trim(); }
+  if (c && c.value.trim()) { var c2 = document.getElementById('iChildName'); if (c2) c2.value = c.value.trim(); }
+  if (t && t.value.trim()) { var t2 = document.getElementById('iTheirName'); if (t2) t2.value = t.value.trim(); }
   go('sProfile1');
+}
+
+function saveTinyProfileAndStart() {
+  var n = (document.getElementById('onbMyName') || {}).value || '';
+  var c = (document.getElementById('onbChildName') || {}).value || '';
+  var t = (document.getElementById('onbTheirName') || {}).value || '';
+  var nextDate = (document.getElementById('onbNextDate') || {}).value || '';
+  n = n.trim(); c = c.trim(); t = t.trim();
+  if (!n || !c) { toast('Please add your name and child name to start'); return; }
+  if (!profile) profile = {};
+  profile.myName = n;
+  profile.childName = c;
+  profile.theirName = t;
+  profile.onboardingIntent = onboardingIntent || 'setup';
+  profile.onboardingVersion = 'tiny-v1';
+  profile.courtStatus = onboardingCourtStatus || 'not_sure';
+  if (onboardingCourtStatus === 'yes') profile.caseType = 'Active family court case';
+  else if (onboardingCourtStatus === 'no') profile.caseType = 'No court proceedings yet';
+  else profile.caseType = 'Not sure yet';
+  if (!profile.conflict) profile.conflict = 5;
+  if (nextDate) {
+    if (!Array.isArray(profile.hearingDeadlines)) profile.hearingDeadlines = [];
+    profile.hearingDeadlines.push({
+      label: 'Next important date',
+      date: nextDate,
+      urgency: 'gold',
+      source: 'onboarding_user_entered',
+      addedAt: new Date().toISOString()
+    });
+  }
+  profile.complete = true;
+  save();
+  go('sHome');
+  try { showHome(); } catch(e) {}
+  setTimeout(function(){ routeOnboardingFirstWin(profile.onboardingIntent); }, 250);
+}
+
+function routeOnboardingFirstWin(intent) {
+  var label = getOnboardingIntentLabel(intent || 'setup');
+  if (intent === 'message') {
+    if (typeof openAskHome === 'function') { openAskHome(); toast('Chat is open. Paste the message and Guardian will help you slow it down.'); return; }
+    go('sCoach'); toast('Open Chat and paste the message.');
+    return;
+  }
+  if (intent === 'event') {
+    if (typeof loadDiaryEntry === 'function') loadDiaryEntry({ text:'' });
+    go('sDiaryEntry');
+    toast('Diary is ready. Write what happened in your own words.');
+    return;
+  }
+  if (intent === 'papers') {
+    go('sExplainer');
+    toast('Upload the paper or paste the text. Guardian will explain it plainly.');
+    return;
+  }
+  if (intent === 'hearing') {
+    go('sStatements');
+    toast('Prepare for court is open. Start with dates, documents and what needs checking.');
+    return;
+  }
+  if (intent === 'evidence') {
+    go('sDocs');
+    setTimeout(function(){ if (typeof openEvidenceUpload === 'function') openEvidenceUpload(); }, 300);
+    toast('Evidence Library is open. Add files and set the date they were received.');
+    return;
+  }
+  toast(label);
 }
 
 function skipSetupToHome() {
@@ -7050,7 +7272,7 @@ async function doLogin() {
       localStorage.setItem('gProfile', JSON.stringify(profile));
       go('sHome');
     } else {
-      go('sWelcome');
+      go(typeof getFirstSetupScreen === 'function' ? getFirstSetupScreen() : 'sTestingConsent');
     }
   } catch(e) {
     console.warn('Supabase login failed:', e);
@@ -7314,7 +7536,7 @@ function showAuthError(id, msg) {
 async function loadProfileFromSupabase() {
   vaultAvailable = null;
   if (!supabase || !currentUser) {
-    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+    if (profile && profile.complete) { showHome(); } else { go(typeof getFirstSetupScreen === 'function' ? getFirstSetupScreen() : 'sTestingConsent'); }
     return;
   }
   try {
@@ -7371,16 +7593,16 @@ async function loadProfileFromSupabase() {
         showHome();
         return;
       } else {
-        go('sWelcome');
+        go(typeof getFirstSetupScreen === 'function' ? getFirstSetupScreen() : 'sTestingConsent');
         return;
       }
     } else {
       // New user — no profile yet
-      go('sWelcome');
+      go(typeof getFirstSetupScreen === 'function' ? getFirstSetupScreen() : 'sTestingConsent');
     }
   } catch(e) {
     // Fallback to localStorage
-    if (profile && profile.complete) { showHome(); } else { go('sWelcome'); }
+    if (profile && profile.complete) { showHome(); } else { go(typeof getFirstSetupScreen === 'function' ? getFirstSetupScreen() : 'sTestingConsent'); }
   }
 }
 
@@ -7550,6 +7772,7 @@ async function generateBrainSummary() {
       button.textContent = 'Refresh explanation';
     }
   }
+  renderStatementPrepBoard();
 }
 
 function caseOverviewEscape(value) {
@@ -10491,6 +10714,137 @@ function renderStatementReadinessBoard() {
     }).join('');
 }
 
+function statementDateLabel(value) {
+  if (!value) return 'Date not set';
+  try {
+    var date = new Date(String(value).length === 10 ? value + 'T12:00:00' : value);
+    return isNaN(date.getTime()) ? String(value) : date.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+  } catch(e) { return String(value); }
+}
+
+function statementDiarySummary(entry) {
+  var text = String(entry && (entry.courtSafeText || entry.structuredSummary || entry.text || entry.originalText) || '').replace(/\s+/g, ' ').trim();
+  return text ? text.substring(0, 190) + (text.length > 190 ? '...' : '') : 'No summary yet';
+}
+
+function statementEvidenceSummary(doc) {
+  var name = doc.originalName || doc.name || doc.fileName || doc.evidenceReference || 'Evidence item';
+  var desc = doc.extract || doc.description || doc.verifiedTranscript || '';
+  return (name + (desc ? ' - ' + desc : '')).replace(/\s+/g, ' ').substring(0, 210);
+}
+
+function statementPrepData() {
+  var diary = Array.isArray(diaryEntries) ? diaryEntries.slice() : [];
+  var docs = Array.isArray(caseDocuments) ? caseDocuments.slice() : [];
+  var deadlines = profile && Array.isArray(profile.hearingDeadlines) ? profile.hearingDeadlines.slice() : [];
+  var linkedDocs = docs.filter(function(doc){ return !!(doc.linkedDiaryReference || doc.diaryReference); });
+  var unlinkedDocs = docs.filter(function(doc){ return !(doc.linkedDiaryReference || doc.diaryReference); });
+  var orderDocs = docs.filter(function(doc) {
+    var hay = [doc.type, doc.name, doc.originalName, doc.extract, doc.documentType].join(' ').toLowerCase();
+    return /order|directions|hearing notice|notice of hearing|c100|c79|cafcass|position statement|statement|report/.test(hay);
+  });
+  var allegations = profile && profile.allegations ? String(profile.allegations).split(/[;\n]+/).map(function(item){ return item.trim(); }).filter(Boolean) : [];
+  var recentDiary = diary.sort(function(a,b){
+    return new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0);
+  }).slice(0, 8);
+  return {
+    diary: diary,
+    docs: docs,
+    linkedDocs: linkedDocs,
+    unlinkedDocs: unlinkedDocs,
+    orderDocs: orderDocs,
+    deadlines: deadlines,
+    allegations: allegations,
+    recentDiary: recentDiary
+  };
+}
+
+function statementPrepText(data) {
+  data = data || statementPrepData();
+  var diaryLines = data.recentDiary.map(function(entry){
+    return (entry.reference || 'Diary') + ' | ' + statementDateLabel(entry.date || entry.createdAt) + ' | ' + (entry.typeLabel || entry.type || 'Diary entry') + ' | ' + statementDiarySummary(entry);
+  }).join('\n');
+  var evidenceLines = data.docs.slice(0, 18).map(function(doc) {
+    return (doc.evidenceReference || 'Evidence') + ' | ' + statementDateLabel(doc.receivedDate || doc.eventDate || doc.date || doc.uploadedAt) + ' | linked diary: ' + (doc.linkedDiaryReference || doc.diaryReference || 'not linked') + ' | ' + statementEvidenceSummary(doc);
+  }).join('\n');
+  var deadlineLines = data.deadlines.slice(0, 8).map(function(item) {
+    return statementDateLabel(item.date) + ' | ' + (item.label || item.type || 'Important date') + (item.fromDiaryId ? ' | from diary' : '');
+  }).join('\n');
+  var allegationLines = data.allegations.slice(0, 12).map(function(item, index){ return 'A' + String(index + 1).padStart(2, '0') + ' | ' + item; }).join('\n');
+  return 'STATEMENT SOURCE MAP - USER MUST VERIFY\n' +
+    '\nRECENT DIARY REFERENCES:\n' + (diaryLines || 'No diary entries saved') +
+    '\n\nEVIDENCE REFERENCES:\n' + (evidenceLines || 'No evidence uploaded') +
+    '\n\nORDER / REPORT / FILED DOCUMENT CLUES:\n' + (data.orderDocs.map(function(doc){ return (doc.evidenceReference || '') + ' | ' + statementEvidenceSummary(doc); }).join('\n') || 'No order/report document identified') +
+    '\n\nIMPORTANT DATES / DEADLINES:\n' + (deadlineLines || 'No confirmed deadlines saved') +
+    '\n\nATTRIBUTED CLAIMS TO ANSWER:\n' + (allegationLines || 'No attributed claims saved in profile');
+}
+
+function renderStatementPrepBoard() {
+  var board = document.getElementById('swLinkedPrepBoard');
+  if (!board) return;
+  var data = statementPrepData();
+  var linkedDiaryRefs = {};
+  data.linkedDocs.forEach(function(doc){ linkedDiaryRefs[String(doc.linkedDiaryReference || doc.diaryReference || '').toUpperCase()] = true; });
+  var linkedDiaryCount = data.diary.filter(function(entry){ return linkedDiaryRefs[String(entry.reference || '').toUpperCase()]; }).length;
+  var rows = [
+    {title:'Diary to statement', ok:data.diary.length > 0, body:data.diary.length ? data.diary.length + ' Diary record' + (data.diary.length === 1 ? '' : 's') + ' available. ' + linkedDiaryCount + ' already have linked evidence.' : 'No Diary records yet. Add key dated events before relying on them.'},
+    {title:'Evidence references', ok:data.linkedDocs.length > 0, body:data.docs.length ? data.linkedDocs.length + ' of ' + data.docs.length + ' evidence item' + (data.docs.length === 1 ? '' : 's') + ' linked to Diary. Unlinked items can still be referenced, but should be checked.' : 'No evidence uploaded yet.'},
+    {title:'Orders and deadlines', ok:data.orderDocs.length > 0 || data.deadlines.length > 0, body:(data.orderDocs.length || data.deadlines.length) ? data.orderDocs.length + ' likely order/report document' + (data.orderDocs.length === 1 ? '' : 's') + ' and ' + data.deadlines.length + ' saved date' + (data.deadlines.length === 1 ? '' : 's') + '.' : 'Upload the latest order/hearing notice or add dates so Guardian does not guess deadlines.'},
+    {title:'Points to answer', ok:data.allegations.length > 0, body:data.allegations.length ? data.allegations.length + ' attributed claim' + (data.allegations.length === 1 ? '' : 's') + ' saved as points to check, not proven facts.' : 'Use Read Their Statement to pull out claims before answering.'}
+  ];
+  var recent = data.recentDiary.slice(0, 4).map(function(entry) {
+    var linked = data.linkedDocs.filter(function(doc){ return String(doc.linkedDiaryReference || doc.diaryReference || '').toUpperCase() === String(entry.reference || '').toUpperCase(); });
+    return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.06);"><div style="font-size:12px;color:var(--white);font-weight:900;">' + statementEscape(entry.reference || 'Diary') + ' · ' + statementEscape(statementDateLabel(entry.date || entry.createdAt)) + '</div><div style="font-size:11px;color:var(--muted-hi);line-height:1.45;margin-top:2px;">' + statementEscape(statementDiarySummary(entry)) + '</div><div style="font-size:10px;color:' + (linked.length ? 'var(--green)' : 'var(--amber)') + ';margin-top:3px;">' + (linked.length ? 'Linked evidence: ' + statementEscape(linked.map(function(doc){ return doc.evidenceReference || doc.name || 'Evidence'; }).join(', ')) : 'No linked original evidence yet') + '</div></div>';
+  }).join('');
+  board.innerHTML = '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;">' +
+    '<div style="font-size:13px;color:var(--white);font-weight:950;margin-bottom:4px;">Linked statement preparation</div>' +
+    '<div style="font-size:11px;color:var(--muted-hi);line-height:1.5;margin-bottom:9px;">Guardian will use references, not loose claims: statement paragraph -> Diary reference -> Evidence reference. Check every link before export.</div>' +
+    rows.map(function(row) {
+      return '<div class="confidence-row"><div class="confidence-mark" style="background:' + (row.ok ? 'rgba(44,155,120,.13)' : 'rgba(245,158,11,.13)') + ';color:' + (row.ok ? 'var(--green)' : 'var(--amber)') + ';">' + (row.ok ? '✓' : '!') + '</div><div class="confidence-copy"><strong>' + statementEscape(row.title) + '</strong><span>' + statementEscape(row.body) + '</span></div></div>';
+    }).join('') +
+    (recent ? '<div style="margin-top:8px;">' + recent + '</div>' : '') +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px;"><button type="button" onclick="go(&quot;sDiary&quot;)" style="padding:9px;background:rgba(52,120,212,.1);border:1px solid rgba(52,120,212,.3);border-radius:9px;color:var(--blue);font-size:11px;font-weight:900;cursor:pointer;">Open Diary</button><button type="button" onclick="go(&quot;sDocs&quot;)" style="padding:9px;background:rgba(26,158,114,.1);border:1px solid rgba(26,158,114,.3);border-radius:9px;color:var(--green);font-size:11px;font-weight:900;cursor:pointer;">Evidence Library</button></div>' +
+  '</div>';
+}
+
+function refreshStatementPrepBoard() {
+  renderStatementPrepBoard();
+  toast('Statement links refreshed');
+}
+
+function renderStatementDraftLinkMap(statement) {
+  var board = document.getElementById('swDraftLinkMap');
+  if (!board) return;
+  var data = statementPrepData();
+  var text = String(statement || '');
+  var diaryRefs = Array.from(new Set((text.match(/D-\d{3,}/gi) || []).map(function(ref){ return ref.toUpperCase(); })));
+  var evidenceRefs = Array.from(new Set((text.match(/E-\d{3,}/gi) || []).map(function(ref){ return ref.toUpperCase(); })));
+  var missingDiary = diaryRefs.filter(function(ref){ return !data.diary.some(function(entry){ return String(entry.reference || '').toUpperCase() === ref; }); });
+  var missingEvidence = evidenceRefs.filter(function(ref){ return !data.docs.some(function(doc){ return String(doc.evidenceReference || '').toUpperCase() === ref; }); });
+  var status = missingDiary.length || missingEvidence.length ? 'Needs reference check' : (diaryRefs.length || evidenceRefs.length ? 'References found' : 'No references in draft yet');
+  board.innerHTML = '<div style="background:rgba(52,120,212,.07);border:1.5px solid rgba(52,120,212,.22);border-radius:16px;padding:14px;">' +
+    '<div style="font-size:13px;color:var(--blue);font-weight:950;margin-bottom:5px;">Statement link map</div>' +
+    '<div style="font-size:12px;color:var(--muted-hi);line-height:1.55;margin-bottom:10px;">' + statementEscape(status) + '. A strong draft should reference Diary and Evidence only where the source really exists.</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;"><div style="background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:10px;padding:9px;"><div style="font-size:10px;color:var(--muted);font-weight:900;">DIARY REFS IN DRAFT</div><div style="font-size:13px;color:var(--white);font-weight:900;margin-top:3px;">' + statementEscape(diaryRefs.join(', ') || 'None') + '</div></div><div style="background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:10px;padding:9px;"><div style="font-size:10px;color:var(--muted);font-weight:900;">EVIDENCE REFS IN DRAFT</div><div style="font-size:13px;color:var(--white);font-weight:900;margin-top:3px;">' + statementEscape(evidenceRefs.join(', ') || 'None') + '</div></div></div>' +
+    ((missingDiary.length || missingEvidence.length) ? '<div style="font-size:11px;color:var(--amber);line-height:1.5;">Check missing references: ' + statementEscape(missingDiary.concat(missingEvidence).join(', ')) + '</div>' : '<div style="font-size:11px;color:var(--green);line-height:1.5;">No missing saved references detected. Still check the underlying files and dates.</div>') +
+  '</div>';
+}
+
+function openStatementPrepChat() {
+  var context = statementPrepText(statementPrepData());
+  if (typeof openContextualChat === 'function') {
+    openContextualChat('Statement preparation map', 'Talk me through this statement preparation map. Help me decide what to link, what to verify, what deadlines to check, and what should not go into the statement. Do not predict the court or give legal advice.\n\n' + context.substring(0, 4500));
+  }
+}
+
+function openCourtDayPrepChat() {
+  var text = document.getElementById('swStatementText');
+  var context = statementPrepText(statementPrepData());
+  if (typeof openContextualChat === 'function') {
+    openContextualChat('Court day preparation', 'Prepare me for the court day using this draft and source map. Practise likely factual questions, help me answer briefly, flag where I might over-explain, and remind me what references to have ready. Do not predict the decision.\n\nSOURCE MAP:\n' + context.substring(0, 3200) + '\n\nDRAFT:\n' + (text ? text.value.substring(0, 3500) : 'No draft open'));
+  }
+}
+
 function getSwGuidance() {
   // No court yet
   if (swCourtYet === 'no') {
@@ -10694,6 +11048,7 @@ function loadStatementWriter() {
       '</div></div>';
   }).join('');
   caseCheck.innerHTML = checkHtml;
+  renderStatementPrepBoard();
 }
 
 var swCourtLevel = 'Family Court';
@@ -10728,7 +11083,7 @@ function goStatementWriter() {
 
   document.getElementById('swCaseCheck').innerHTML = checkHtml;
   go('sStatementWriter');
-  setTimeout(renderStatementReadinessBoard, 0);
+  setTimeout(function(){ renderStatementReadinessBoard(); renderStatementPrepBoard(); }, 0);
 }
 
 function startStatementBuild() {
@@ -10774,6 +11129,8 @@ async function buildStatement(courtAsk) {
 
   try {
     var ctx = getCTX();
+    var prepData = statementPrepData();
+    var prepMap = statementPrepText(prepData);
     var diaryText = diaryEntries.slice(-20).map(function(e){
       return e.date + ': ' + e.typeLabel + ' — ' + e.text.substring(0,200);
     }).join('\n');
@@ -10791,10 +11148,11 @@ async function buildStatement(courtAsk) {
       '\nDIARY ENTRIES:\n' + (diaryText || 'None logged yet') +
       '\n\nDOCUMENTS:\n' + (docText || 'None uploaded yet') +
       '\n\nMESSAGE HISTORY:\n' + (msgText || 'None yet') +
+      '\n\n' + prepMap +
       '\n\nPARENT\'S OWN WORDING SAMPLES - STYLE ONLY, NOT ADDITIONAL EVIDENCE:\n' + (voiceText || 'No wording samples available. Use simple natural English and avoid legalistic or formulaic language.') +
       '\n\nWHAT THE PARENT SAYS THEY WANT TO ASK FOR:\n' + courtAsk +
       '\n\nHEARING TYPE AS ENTERED BY USER: ' + hearingType +
-      '\n\nCreate a clear, source-led editable position-statement draft in the parent\'s natural first-person voice. It must be concise and easy for a judge or magistrate to navigate without pretending the parent is a lawyer. This is not filing-ready and is not legal advice.\n\nSTRUCTURE AND DISCIPLINE: Identify the hearing and purpose first. Use short numbered paragraphs. Confine the draft to the issues for this hearing. Keep relevant background brief and chronological. Preserve attribution: allegations remain allegations, reports remain reports, and Guardian inferences never appear as facts. State the child-focused practical position using only supplied material. End with a precise numbered list of the orders or directions the parent says they seek. Cross-reference a document, Diary reference or bundle page only when that reference is actually supplied. Keep the main draft suitable for no more than about three A4 pages unless the user records a different court direction. Make it self-contained. Do not use extensive quotations, introduce new evidence or add exhibits.\n\nBOUNDARIES: Do not invent findings, dates, evidence, legal tests, legal bases, deadlines, sending instructions or likely outcomes. Do not append a statement of truth because this workspace builds a position statement, not witness evidence. Where a fact, request, source, page number, court requirement or wording needs the user\'s decision, insert [USER TO VERIFY: ...]. Finish with a separate REVIEW BEFORE USE checklist listing every unresolved verification. Quality comes from precision, attribution, evidence links and practical child-focused reasoning, not fake legal language.';
+      '\n\nCreate a clear, source-led editable position-statement draft in the parent\'s natural first-person voice. It must be concise and easy for a judge or magistrate to navigate without pretending the parent is a lawyer. This is not filing-ready and is not legal advice.\n\nSTRUCTURE AND DISCIPLINE: Identify the hearing and purpose first. Use short numbered paragraphs. Include a brief background section only where it helps the court understand the current hearing. Include previous court hearings, orders or outcomes only if supplied in the source map, and keep them neutral. Confine the draft to the issues for this hearing. Preserve attribution: allegations remain allegations, reports remain reports, and Guardian inferences never appear as facts. State the child-focused practical position using only supplied material. End with a precise numbered list of the orders or directions the parent says they seek. Cross-reference Diary references like D-001 and Evidence references like E-001 only when they appear in the source map. If a relevant point has no source, mark it [USER TO VERIFY: source needed for ...] instead of dressing it up. Keep the main draft suitable for no more than about three A4 pages unless the user records a different court direction. Make it self-contained. Do not embed photos or exhibits in the statement body; refer to evidence items and leave originals for the evidence bundle.\n\nREAD THEIR STATEMENT FLOW: If attributed claims are supplied, include only the relevant points that need answering for this hearing. For each important claim, separate what is directly alleged, what source is mentioned, what the parent says in answer, and what source supports the answer. Do not call an allegation strong or weak in a legal-outcome sense.\n\nDEADLINES: If deadlines or hearing dates are supplied, mention them only as context where useful. Do not calculate new deadlines, filing dates or service steps unless they are explicitly supplied by a court order or saved date; otherwise add [USER TO VERIFY: check court order for filing deadline].\n\nBOUNDARIES: Do not invent findings, dates, evidence, legal tests, legal bases, deadlines, sending instructions or likely outcomes. Do not append a statement of truth because this workspace builds a position statement, not witness evidence. Where a fact, request, source, page number, court requirement or wording needs the user\'s decision, insert [USER TO VERIFY: ...]. Finish with a separate REVIEW BEFORE USE checklist listing every unresolved verification. Quality comes from precision, attribution, evidence links and practical child-focused reasoning, not fake legal language.';
 
     var res = await guardianFetch(API, {
       method: 'POST',
@@ -10840,6 +11198,7 @@ async function buildStatement(courtAsk) {
     document.getElementById('swStage2').style.display = 'none';
     document.getElementById('swStage3').style.display = 'block';
     document.getElementById('swStatementText').value = statement;
+    renderStatementDraftLinkMap(statement);
     if (privateReview) {
       document.getElementById('swAuditText').textContent = 'Private final checks: ' + privateReview.replace(/\n+/g, ' · ');
       document.getElementById('swAuditBox').style.display = 'block';
@@ -12736,7 +13095,7 @@ async function addDoc(event, docType) {
 
 async function analysePreparedForPurpose(prepared, purpose) {
   var instructions = {
-    explain:'Explain this document in plain English for a worried parent. Identify what it is, what it means, actions, any exact deadline, and urgency. Preserve attribution and do not invent details. Return ONLY JSON: {"documentType":"<type>","date":"<DD/MM/YYYY or unknown>","title":"<short title>","summary":"<3-4 clear sentences>","actions":"<practical next actions>","deadline":"<exact deadline or blank>","urgency":"high|medium|low","facts":[{"text":"<explicit fact or attributed claim>","kind":"allegation|finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}',
+    explain:'Explain this document in plain English for a worried parent. Identify what it is, what it means, actions, any exact deadline, and urgency. Preserve attribution and do not invent details. Also extract every explicit date, task, filing/service requirement, hearing date, statement deadline, bundle deadline, Cafcass/report date or action deadline stated in the document. Do not calculate deadlines unless the document itself gives the date or the exact calculation wording. Return ONLY JSON: {"documentType":"<type>","date":"<DD/MM/YYYY or unknown>","title":"<short title>","summary":"<3-4 clear sentences>","actions":"<practical next actions>","deadline":"<single most urgent exact deadline or blank>","urgency":"high|medium|low","deadlinePlan":[{"label":"<plain task label, e.g. Position statement due>","date":"<YYYY-MM-DD if explicit, otherwise blank>","sourceText":"<short wording from the document that supports it>","who":"user|other party|both parties|court|unknown","confidence":"high|medium|low","needsCheck":"<what the user must check against the order>"}],"facts":[{"text":"<explicit fact or attributed claim>","kind":"allegation|finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}',
     mine:'Create an expert preparation checklist for this parent\'s own position-statement draft. Do not score legal strength, approve it for filing, predict a court response or supply legal advice. Check whether it is hearing-specific, concise, self-contained, in numbered paragraphs, clear about the issues and orders sought, properly attributed, and cross-referenced only where sources are actually known. Flag new evidence, exhibits, extensive quotations, unclear wording, unsupported certainty, missing dates/sources and anything the user must verify. Return ONLY JSON: {"date":"<DD/MM/YYYY or unknown>","title":"My draft preparation review","score":null,"verdict":"<plain English summary with limits>","weaknesses":["<item requiring user verification or clearer support>"],"strengths":["<clear, concise or well-attributed feature>"],"response":"<questions for the user to consider before independent review>","facts":[{"text":"<explicit case fact, preserving attribution>","kind":"finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}',
     theirs:'Create a careful, supportive reading guide for the other party\'s filed document. Identify every distinct allegation or material claim, but do not duplicate repeated wording. Attribute each point to the document or its named author and never present it as proven. For each point explain its meaning in plain English, where it appears if a paragraph/page is visible, whether the wording is specific, partly specific or broad, what supporting source the author actually mentions, and factual matters the user may need to check. If a point appears to rely on a court order, report, message, witness account, exhibit or dated document, say that clearly in supportMentioned and make the questions focus on checking the original source, context and accuracy. If the wording is rhetorical, vague or loaded, explain that as a wording issue only, not as a prediction that the court will ignore it. Detail level describes only this document; it is not a legal-strength rating. Do not minimise serious allegations. Do not decide credibility, assess who has the stronger case, predict a court outcome or tell the user what legal response to make. Also identify orders requested, important dates and deadlines. Return ONLY JSON: {"date":"<DD/MM/YYYY or unknown>","title":"Other party document reading guide","score":null,"verdict":"<calm plain-English overview of what the document is asking the court to understand or do>","allegations":[{"claim":"<attributed allegation or material claim>","plainEnglish":"<what it means in ordinary language>","location":"<page or paragraph if visible, otherwise not identified>","detailLevel":"specific|partly specific|broad","detailReason":"<brief reason based only on wording in the document>","supportMentioned":"<document, witness, date or other source expressly mentioned, or none identified>","questionsToCheck":["<neutral factual question that helps the user verify, contextualise or correct the point>"]}],"ordersRequested":["<order or direction expressly requested>"],"importantDates":["<date and stated significance>"],"weaknesses":["<fallback attributed allegation text>"],"strengths":["<source, date or clarification to locate>"],"response":"<overall factual questions the user may wish to answer or verify>","facts":[{"text":"<attributed allegation or explicit case fact>","kind":"allegation|finding|order|deadline|contact|person|other","confidence":"high|medium|low"}]}'
   };
@@ -12765,6 +13124,102 @@ function guardianEscapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+var lastOrderDeadlinePlan = [];
+
+function normaliseOrderDeadlineDate(value) {
+  var raw = String(value || '').trim();
+  if (!raw) return '';
+  var iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) return raw;
+  var uk = raw.match(/\b(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\b/);
+  if (uk) {
+    var day = uk[1].padStart(2, '0');
+    var month = uk[2].padStart(2, '0');
+    var year = uk[3].length === 2 ? '20' + uk[3] : uk[3];
+    return year + '-' + month + '-' + day;
+  }
+  var parsed = new Date(raw);
+  if (!isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+  return '';
+}
+
+function normaliseOrderDeadlinePlan(parsed) {
+  var plan = [];
+  if (parsed && Array.isArray(parsed.deadlinePlan)) {
+    plan = parsed.deadlinePlan;
+  } else if (parsed && parsed.deadline) {
+    plan = [{label:'Deadline from document', date:parsed.deadline, sourceText:parsed.deadline, who:'unknown', confidence:'medium', needsCheck:'Check this date against the order before relying on it.'}];
+  }
+  return plan.map(function(item, index) {
+    item = item || {};
+    var label = String(item.label || item.task || item.title || 'Court task').trim().substring(0, 120);
+    var date = normaliseOrderDeadlineDate(item.date || item.deadline || item.when || item.sourceText || '');
+    return {
+      id:'odp-' + Date.now() + '-' + index,
+      label:label || 'Court task',
+      date:date,
+      sourceText:String(item.sourceText || item.source || item.text || '').trim().substring(0, 260),
+      who:String(item.who || item.responsible || 'unknown').trim().substring(0, 80),
+      confidence:/^(high|medium|low)$/i.test(item.confidence || '') ? String(item.confidence).toLowerCase() : (date ? 'medium' : 'low'),
+      needsCheck:String(item.needsCheck || item.check || 'Check this against the court order before saving.').trim().substring(0, 220)
+    };
+  }).filter(function(item) {
+    return item.label || item.date || item.sourceText;
+  }).slice(0, 12);
+}
+
+function renderOrderDeadlinePlan(parsed) {
+  var box = document.getElementById('orderDeadlinePlanBox');
+  var items = document.getElementById('orderDeadlinePlanItems');
+  if (!box || !items) return;
+  lastOrderDeadlinePlan = normaliseOrderDeadlinePlan(parsed);
+  if (!lastOrderDeadlinePlan.length) {
+    box.style.display = 'none';
+    items.innerHTML = '';
+    return;
+  }
+  box.style.display = 'block';
+  items.innerHTML = lastOrderDeadlinePlan.map(function(item, index) {
+    var dateInput = item.date ? '<input class="field-input order-plan-date" type="date" value="' + guardianEscapeHtml(item.date) + '" style="margin-top:7px;padding:8px;color-scheme:dark;">' : '<input class="field-input order-plan-date" type="date" value="" style="margin-top:7px;padding:8px;color-scheme:dark;">';
+    var confidenceColor = item.confidence === 'high' ? 'var(--green)' : item.confidence === 'low' ? 'var(--red)' : 'var(--amber)';
+    return '<label class="order-plan-item" data-index="' + index + '" style="display:block;background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:12px;padding:11px;margin-bottom:8px;">' +
+      '<div style="display:flex;align-items:flex-start;gap:9px;"><input class="order-plan-check" type="checkbox" style="margin-top:3px;"><div style="flex:1;min-width:0;">' +
+      '<input class="field-input order-plan-label" type="text" value="' + guardianEscapeHtml(item.label) + '" style="padding:8px;font-size:12px;font-weight:850;">' +
+      dateInput +
+      '<div style="font-size:10px;color:' + confidenceColor + ';font-weight:900;margin-top:6px;text-transform:uppercase;">' + guardianEscapeHtml(item.confidence) + ' confidence · responsible: ' + guardianEscapeHtml(item.who || 'unknown') + '</div>' +
+      (item.sourceText ? '<div style="font-size:11px;color:var(--muted-hi);line-height:1.45;margin-top:5px;"><strong style="color:var(--white);">Document wording:</strong> ' + guardianEscapeHtml(item.sourceText) + '</div>' : '') +
+      '<div style="font-size:11px;color:var(--amber);line-height:1.45;margin-top:5px;">Check: ' + guardianEscapeHtml(item.needsCheck) + '</div>' +
+      '</div></div></label>';
+  }).join('');
+}
+
+function saveConfirmedOrderDeadlinePlan() {
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.order-plan-item'));
+  var saved = [];
+  rows.forEach(function(row) {
+    var checked = row.querySelector('.order-plan-check');
+    if (!checked || !checked.checked) return;
+    var labelEl = row.querySelector('.order-plan-label');
+    var dateEl = row.querySelector('.order-plan-date');
+    var label = labelEl ? labelEl.value.trim() : '';
+    var date = dateEl ? dateEl.value : '';
+    if (!label || !date) return;
+    saved.push({label:label, date:date, urgency:/statement|file|serve|bundle/i.test(label) ? 'red' : 'gold', source:'confirmed_from_uploaded_order', confirmedAt:new Date().toISOString(), hearingType:lastExplainedDoc && (lastExplainedDoc.documentType || lastExplainedDoc.title) || 'Uploaded order/document'});
+  });
+  if (!saved.length) { toast('Tick at least one item and add a date before saving'); return; }
+  if (!profile.hearingDeadlines) profile.hearingDeadlines = [];
+  var existing = {};
+  profile.hearingDeadlines.forEach(function(item){ existing[(item.label || '') + '|' + (item.date || '')] = true; });
+  var added = saved.filter(function(item){ var key = item.label + '|' + item.date; if (existing[key]) return false; existing[key] = true; return true; });
+  profile.hearingDeadlines = profile.hearingDeadlines.concat(added);
+  save();
+  try { saveProfileToSupabase(); } catch(e) {}
+  renderDeadlineBanner();
+  if (typeof renderKeyDates === 'function') renderKeyDates();
+  if (typeof renderStatementPrepBoard === 'function') renderStatementPrepBoard();
+  toast(added.length ? added.length + ' confirmed date' + (added.length === 1 ? '' : 's') + ' saved to Key Dates' : 'Those dates were already saved');
 }
 
 function toggleCaseImportGuide() {
@@ -13432,6 +13887,7 @@ async function explainDoc(event, docType) {
     } else if (deadlineBox) {
       deadlineBox.style.display = 'none';
     }
+    renderOrderDeadlinePlan(parsed);
     var result = document.getElementById('explainerResult');
     if (result) result.style.display = 'block';
     try { await saveProfileToSupabase(); } catch(e) {}
