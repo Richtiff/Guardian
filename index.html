@@ -2081,6 +2081,12 @@ p, .body-text { font-size: 16px !important; }
     <div class="confidence-row"><div class="confidence-mark">3</div><div class="confidence-copy"><strong>Export only after review</strong><span>Guardian blocks unresolved verification markers and statement-of-truth wording.</span></div></div>
   </div>
   <div class="task-board">
+    <button type="button" class="task-card gold" onclick="go('sCourtPlan')">
+      <div class="task-eyebrow">New centrepiece</div>
+      <div class="task-title">Build my court plan</div>
+      <div class="task-body">Turn your goal into a child-focused plan: proposed order, staged arrangements, safeguards, likely objections and hearing notes.</div>
+      <div class="task-meta"><span class="task-pill">Statement + order plan</span><span class="task-pill">Child-focused</span><span class="task-pill">Harder to twist later</span></div>
+    </button>
     <button type="button" class="task-card blue" onclick="go('sReadTheirs')">
       <div class="task-eyebrow">Start here if they filed something</div>
       <div class="task-title">Read their statement or report</div>
@@ -2100,6 +2106,68 @@ p, .body-text { font-size: 16px !important; }
       <div class="task-meta"><span class="task-pill">£79 one-time</span><span class="task-pill">Heading gates</span><span class="task-pill">Final review required</span></div>
     </button>
   </div>
+</div>
+
+<!-- COURT PLAN BUILDER -->
+<div class="step" id="sCourtPlan">
+  <div class="section-header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div><div class="section-title">Court Plan Builder</div><div class="section-sub">Statement, proposed order and hearing plan</div></div>
+  </div>
+  <div style="background:rgba(212,168,67,0.08);border:1.5px solid rgba(212,168,67,0.24);border-radius:14px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:13px;color:var(--white);font-weight:950;margin-bottom:5px;">Do not just argue. Give the court a workable plan.</div>
+    <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;">Guardian helps you organise what you are asking for, what objections may come up, and what practical terms could reduce future conflict. This is preparation support, not legal advice or a prediction.</div>
+  </div>
+
+  <div id="courtPlanSavedSummary" style="display:none;margin-bottom:14px;"></div>
+
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:13px;font-weight:950;color:var(--white);margin-bottom:9px;">1. What are you asking the court to do?</div>
+    <div class="opts" id="courtPlanGoalOpts">
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'increase_time')">Increase my time with the child</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'protect_time')">Protect the time I already have</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'restart_contact')">Restart contact after a gap</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'safer_contact')">Make contact safer or more structured</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'answer_allegations')">Respond to allegations</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'handover_communication')">Fix handovers or communication</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'holidays_travel')">Sort holidays, passports or travel</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'specific_issue')">School, nursery, medical or information-sharing</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'enforce_order')">Enforce an existing order</button>
+      <button type="button" class="opt" onclick="pickCourtPlanGoal(this,'not_sure')">I am not sure yet</button>
+    </div>
+  </div>
+
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:13px;font-weight:950;color:var(--white);margin-bottom:8px;">2. Your proposal in plain English</div>
+    <textarea id="courtPlanProposal" rows="5" placeholder="Example: I want a staged plan that starts with short daytime contact, builds to overnights, gives clear handover times, and includes missed-time and medical clauses..." style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:inherit;font-size:14px;line-height:1.6;padding:10px;resize:vertical;"></textarea>
+  </div>
+
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:13px;font-weight:950;color:var(--white);margin-bottom:8px;">3. Likely objections to answer calmly</div>
+    <div id="courtPlanObjections" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="routine"> Routine / naps</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="medical"> Medical or safety concern</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="handover"> Handover conflict</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="communication"> Communication</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="unsettled"> Child unsettled after time</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="travel"> Travel distance</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="holidays"> Holidays / passport</label>
+      <label class="opt" style="display:flex;align-items:center;gap:8px;text-align:left;"><input type="checkbox" value="missed_time"> Missed time</label>
+    </div>
+  </div>
+
+  <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;">
+    <div style="font-size:13px;font-weight:950;color:var(--white);margin-bottom:8px;">4. Staged plan or order terms</div>
+    <textarea id="courtPlanStages" rows="7" placeholder="Stage 1: dates/times now&#10;Stage 2: build-up&#10;Stage 3: overnight or long-term pattern&#10;Handover: location and adults&#10;If missed: rearranged within X days where possible" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:inherit;font-size:14px;line-height:1.6;padding:10px;resize:vertical;"></textarea>
+    <button type="button" onclick="prefillCourtPlanFromSchedule()" style="width:100%;margin-top:8px;padding:10px;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.3);border-radius:10px;color:var(--blue);font-size:12px;font-weight:900;cursor:pointer;">Use saved family-time schedule</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+    <button type="button" onclick="buildCourtPlan()" style="padding:12px;background:var(--gold);border:none;border-radius:12px;color:#181208;font-size:13px;font-weight:950;cursor:pointer;">Build court plan</button>
+    <button type="button" onclick="openCourtPlanChat()" style="padding:12px;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.3);border-radius:12px;color:var(--blue);font-size:13px;font-weight:900;cursor:pointer;">Talk it through</button>
+  </div>
+
+  <div id="courtPlanOutput" style="display:none;"></div>
 </div>
 
 <!-- READ THEIR STATEMENT -->
@@ -3919,7 +3987,7 @@ function attachAuthListener() {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sEvidenceUpload','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sEvidenceUpload','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sCourtPlan','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
 
 var stepHistory = [];
 var navLock = false;
@@ -4089,6 +4157,7 @@ function go(id) {
     showVideoForScreen(id);
   }, 300);
   if (id==='sStatements') {}
+  if (id==='sCourtPlan') { setTimeout(function(){ if (typeof loadCourtPlanBuilder === 'function') loadCourtPlanBuilder(); }, 50); }
   if (id==='sReadTheirs') { var r1=document.getElementById('theirsResult'); if(r1) r1.style.display='none'; if (typeof populateTheirStatementReviewMeta === 'function') setTimeout(populateTheirStatementReviewMeta, 50); }
   if (id==='sCheckMine') { var r2=document.getElementById('mineResult'); if(r2) r2.style.display='none'; }
   if (id==='sStatementWriter') { setTimeout(function(){ loadStatementWriter(); }, 50); }
@@ -10761,6 +10830,7 @@ function statementPrepData() {
 
 function statementPrepText(data) {
   data = data || statementPrepData();
+  var courtPlanText = courtPlanPlainText ? courtPlanPlainText() : '';
   var diaryLines = data.recentDiary.map(function(entry){
     return (entry.reference || 'Diary') + ' | ' + statementDateLabel(entry.date || entry.createdAt) + ' | ' + (entry.typeLabel || entry.type || 'Diary entry') + ' | ' + statementDiarySummary(entry);
   }).join('\n');
@@ -10776,6 +10846,7 @@ function statementPrepText(data) {
     '\n\nEVIDENCE REFERENCES:\n' + (evidenceLines || 'No evidence uploaded') +
     '\n\nORDER / REPORT / FILED DOCUMENT CLUES:\n' + (data.orderDocs.map(function(doc){ return (doc.evidenceReference || '') + ' | ' + statementEvidenceSummary(doc); }).join('\n') || 'No order/report document identified') +
     '\n\nIMPORTANT DATES / DEADLINES:\n' + (deadlineLines || 'No confirmed deadlines saved') +
+    '\n\nSAVED COURT PLAN / PROPOSED ORDER IDEAS:\n' + (courtPlanText || 'No court plan saved yet') +
     '\n\nATTRIBUTED CLAIMS TO ANSWER:\n' + (allegationLines || 'No attributed claims saved in profile');
 }
 
@@ -10843,6 +10914,311 @@ function openCourtDayPrepChat() {
   if (typeof openContextualChat === 'function') {
     openContextualChat('Court day preparation', 'Prepare me for the court day using this draft and source map. Practise likely factual questions, help me answer briefly, flag where I might over-explain, and remind me what references to have ready. Do not predict the decision.\n\nSOURCE MAP:\n' + context.substring(0, 3200) + '\n\nDRAFT:\n' + (text ? text.value.substring(0, 3500) : 'No draft open'));
   }
+}
+
+var courtPlanGoal = '';
+
+var courtPlanGoalLabels = {
+  increase_time: 'Increase my time with the child',
+  protect_time: 'Protect the time I already have',
+  restart_contact: 'Restart contact after a gap',
+  safer_contact: 'Make contact safer or more structured',
+  answer_allegations: 'Respond to allegations',
+  handover_communication: 'Fix handovers or communication',
+  holidays_travel: 'Sort holidays, passports or travel',
+  specific_issue: 'School, nursery, medical or information-sharing',
+  enforce_order: 'Enforce an existing order',
+  not_sure: 'I am not sure yet'
+};
+
+var courtPlanSafeguards = {
+  routine: {
+    title: 'Routine / naps',
+    term: 'Both parents should try to keep to the child\'s routine where possible, and should update each other if that routine changes.',
+    hearing: 'If routine is raised, explain the practical routine you can follow and what information you need in advance.'
+  },
+  medical: {
+    title: 'Medical or safety concern',
+    term: 'If a medical issue arises, the parent caring for the child should seek appropriate advice, including 111 or emergency services where needed, and notify the other parent as soon as possible.',
+    hearing: 'If medical concerns are raised, stay factual: what you saw, what you did, what you would do differently, and the practical safety clause you propose.'
+  },
+  handover: {
+    title: 'Handover conflict',
+    term: 'Handovers should take place at a clear public or neutral location, with named adults able to assist if a parent is unavailable.',
+    hearing: 'If handovers are raised, offer a practical fix rather than arguing about blame.'
+  },
+  communication: {
+    title: 'Communication',
+    term: 'Communication should be child-focused, respectful, and through the agreed parenting app or agreed written channel.',
+    hearing: 'If communication is raised, ask for a simple channel and response expectation.'
+  },
+  unsettled: {
+    title: 'Child unsettled after time',
+    term: 'Progression should be child-focused. If there are genuine welfare concerns, the parents may agree to temporarily slow progression while the issue is clarified.',
+    hearing: 'If unsettled behaviour is raised, answer with a staged plan and review point, not a denial alone.'
+  },
+  travel: {
+    title: 'Travel distance',
+    term: 'Contact times and handovers should allow for realistic travel and the child\'s routine.',
+    hearing: 'If travel is raised, show the journey time and how your proposed times still work.'
+  },
+  holidays: {
+    title: 'Holidays / passport',
+    term: 'Holiday requests should include dates, destination and accommodation details in advance. Passport handover and return dates should be written down clearly.',
+    hearing: 'If holiday concerns are raised, propose notice, details, consent timing and passport dates.'
+  },
+  missed_time: {
+    title: 'Missed time',
+    term: 'If time cannot take place due to illness or unavoidable reason, replacement time should be arranged within a reasonable timeframe where possible.',
+    hearing: 'If missed time is raised, ask for a clear replacement-time rule.'
+  }
+};
+
+function loadCourtPlanBuilder() {
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('gCourtPlan') || 'null'); } catch(e) {}
+  if (saved) {
+    courtPlanGoal = saved.goal || '';
+    var proposal = document.getElementById('courtPlanProposal');
+    var stages = document.getElementById('courtPlanStages');
+    if (proposal) proposal.value = saved.proposal || '';
+    if (stages) stages.value = saved.stages || '';
+    document.querySelectorAll('#courtPlanGoalOpts .opt').forEach(function(btn) {
+      btn.classList.toggle('sel', (btn.getAttribute('onclick') || '').indexOf("'" + courtPlanGoal + "'") !== -1);
+    });
+    document.querySelectorAll('#courtPlanObjections input[type="checkbox"]').forEach(function(input) {
+      input.checked = (saved.objections || []).indexOf(input.value) !== -1;
+    });
+    renderCourtPlanSavedSummary(saved);
+    renderCourtPlanOutput(saved);
+  } else {
+    renderCourtPlanSavedSummary(null);
+  }
+}
+
+function getSavedCourtPlan() {
+  try { return JSON.parse(localStorage.getItem('gCourtPlan') || 'null'); } catch(e) { return null; }
+}
+
+function pickCourtPlanGoal(btn, goal) {
+  courtPlanGoal = goal || '';
+  document.querySelectorAll('#courtPlanGoalOpts .opt').forEach(function(item){ item.classList.remove('sel'); });
+  if (btn) btn.classList.add('sel');
+}
+
+function selectedCourtPlanObjections() {
+  return Array.from(document.querySelectorAll('#courtPlanObjections input[type="checkbox"]:checked')).map(function(input){ return input.value; });
+}
+
+function courtPlanCaseSignals() {
+  var data = statementPrepData();
+  var schedule = profile && profile.contactSchedule ? contactScheduleText(profile.contactSchedule) : '';
+  return {
+    diaryCount: data.diary.length,
+    evidenceCount: data.docs.length,
+    orderCount: data.orderDocs.length,
+    deadlineCount: data.deadlines.length,
+    allegationCount: data.allegations.length,
+    schedule: schedule,
+    recentDiary: data.recentDiary.slice(0, 4).map(function(entry){ return (entry.reference || 'Diary') + ' - ' + statementDateLabel(entry.date || entry.createdAt) + ' - ' + statementDiarySummary(entry); }),
+    evidence: data.docs.slice(0, 6).map(function(doc){ return (doc.evidenceReference || 'Evidence') + ' - ' + statementEvidenceSummary(doc); })
+  };
+}
+
+function buildCourtPlan() {
+  var proposalEl = document.getElementById('courtPlanProposal');
+  var stagesEl = document.getElementById('courtPlanStages');
+  var proposal = proposalEl ? proposalEl.value.trim() : '';
+  var stages = stagesEl ? stagesEl.value.trim() : '';
+  var objections = selectedCourtPlanObjections();
+  if (!courtPlanGoal) { toast('Choose what you are asking the court to do'); return; }
+  if (!proposal) { toast('Write the proposal in plain English first'); return; }
+  var plan = {
+    goal: courtPlanGoal,
+    goalLabel: courtPlanGoalLabels[courtPlanGoal] || 'Court plan',
+    proposal: proposal,
+    stages: stages,
+    objections: objections,
+    signals: courtPlanCaseSignals(),
+    createdAt: new Date().toISOString()
+  };
+  try { localStorage.setItem('gCourtPlan', JSON.stringify(plan)); } catch(e) {}
+  renderCourtPlanSavedSummary(plan);
+  renderCourtPlanOutput(plan);
+  toast('Court plan built. Check every term before using it.');
+}
+
+function renderCourtPlanSavedSummary(plan) {
+  var el = document.getElementById('courtPlanSavedSummary');
+  if (!el) return;
+  if (!plan) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = 'block';
+  el.innerHTML = '<div style="background:rgba(26,158,114,0.08);border:1.5px solid rgba(26,158,114,0.25);border-radius:14px;padding:12px;">' +
+    '<div style="font-size:13px;color:var(--green);font-weight:950;margin-bottom:4px;">Saved court plan</div>' +
+    '<div style="font-size:12px;color:var(--muted-hi);line-height:1.55;">' + statementEscape(plan.goalLabel || 'Court plan') + ' · ' + (plan.objections || []).length + ' objection area' + ((plan.objections || []).length === 1 ? '' : 's') + ' covered · ' + statementEscape(new Date(plan.createdAt || Date.now()).toLocaleString('en-GB', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})) + '</div>' +
+  '</div>';
+}
+
+function courtPlanLineItems(text) {
+  return String(text || '').split(/\n+/).map(function(line){ return line.trim(); }).filter(Boolean);
+}
+
+function courtPlanSuggestedTerms(plan) {
+  var terms = [];
+  if (/increase_time|restart_contact|protect_time|enforce_order/.test(plan.goal || '')) {
+    terms.push('The child shall spend time with the parent in accordance with the staged schedule below.');
+  }
+  if (plan.goal === 'safer_contact') terms.push('The child shall spend time with the parent in a structured way with the safeguards listed below.');
+  if (plan.goal === 'handover_communication') terms.push('The parties shall use the handover and communication arrangements listed below to reduce conflict.');
+  if (plan.goal === 'holidays_travel') terms.push('Holiday, travel and passport arrangements shall be recorded clearly with notice dates and response times.');
+  if (plan.goal === 'specific_issue') terms.push('Both parents shall share and consult about the child\'s important welfare information, including school, nursery, medical and other relevant details.');
+  courtPlanLineItems(plan.stages).forEach(function(line){ terms.push(line); });
+  (plan.objections || []).forEach(function(key){ if (courtPlanSafeguards[key]) terms.push(courtPlanSafeguards[key].term); });
+  if (!terms.length) terms.push(plan.proposal);
+  return terms;
+}
+
+function renderCourtPlanOutput(plan) {
+  var el = document.getElementById('courtPlanOutput');
+  if (!el || !plan) return;
+  var terms = courtPlanSuggestedTerms(plan);
+  var safeguards = (plan.objections || []).map(function(key){ return courtPlanSafeguards[key]; }).filter(Boolean);
+  var signals = plan.signals || courtPlanCaseSignals();
+  var evidenceHtml = []
+    .concat(signals.recentDiary || [])
+    .concat(signals.evidence || [])
+    .slice(0, 8)
+    .map(function(item){ return '<li>' + statementEscape(item) + '</li>'; }).join('');
+  var termsHtml = terms.map(function(term, index){ return '<div class="confidence-row"><div class="confidence-mark">' + (index + 1) + '</div><div class="confidence-copy"><strong>Proposed term</strong><span>' + statementEscape(term) + '</span></div></div>'; }).join('');
+  var objectionHtml = safeguards.length ? safeguards.map(function(item) {
+    return '<div style="background:rgba(255,255,255,0.035);border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;"><div style="font-size:12px;color:var(--white);font-weight:950;margin-bottom:3px;">' + statementEscape(item.title) + '</div><div style="font-size:12px;color:var(--muted-hi);line-height:1.5;">' + statementEscape(item.hearing) + '</div></div>';
+  }).join('') : '<div style="font-size:12px;color:var(--muted-hi);line-height:1.5;">No objection areas selected yet. Add the likely arguments you need to neutralise calmly.</div>';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="background:var(--card);border:1.5px solid rgba(212,168,67,0.32);border-radius:16px;padding:14px;margin-bottom:14px;">' +
+    '<div style="font-size:14px;color:var(--gold);font-weight:950;margin-bottom:5px;">Court plan summary</div>' +
+    '<div style="font-size:13px;color:var(--white);font-weight:900;margin-bottom:6px;">' + statementEscape(plan.goalLabel) + '</div>' +
+    '<div style="font-size:12px;color:var(--muted-hi);line-height:1.6;white-space:pre-wrap;">' + statementEscape(plan.proposal) + '</div>' +
+  '</div>' +
+  '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;"><div style="font-size:14px;color:var(--white);font-weight:950;margin-bottom:8px;">Proposed order wording to review</div><div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px;">This is structured wording for review and amendment, not legal advice and not filing-ready.</div>' + termsHtml + '</div>' +
+  '<div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;"><div style="font-size:14px;color:var(--white);font-weight:950;margin-bottom:8px;">Likely objections and calm answers</div>' + objectionHtml + '</div>' +
+  '<div style="background:rgba(52,120,212,0.07);border:1.5px solid rgba(52,120,212,0.24);border-radius:16px;padding:14px;margin-bottom:14px;"><div style="font-size:14px;color:var(--blue);font-weight:950;margin-bottom:8px;">Evidence and diary map</div><ul style="margin:0 0 0 18px;padding:0;font-size:12px;color:var(--muted-hi);line-height:1.65;">' + (evidenceHtml || '<li>No Diary/Evidence references found yet. Add sources before relying on the plan.</li>') + '</ul></div>' +
+  '<div style="background:rgba(26,158,114,0.06);border:1.5px solid rgba(26,158,114,0.22);border-radius:16px;padding:14px;margin-bottom:14px;"><div style="font-size:14px;color:var(--green);font-weight:950;margin-bottom:7px;">Turn this into court preparation</div><div style="font-size:12px;color:var(--muted-hi);line-height:1.55;margin-bottom:10px;">Use this plan to shape the statement, create a proposed-order note and practise the hearing. The wording still needs your final check against the latest order.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button type="button" onclick="useCourtPlanInStatementWriter()" style="padding:11px;background:rgba(26,158,114,0.12);border:1px solid rgba(26,158,114,0.32);border-radius:10px;color:var(--green);font-size:12px;font-weight:950;cursor:pointer;">Use in Statement Writer</button><button type="button" onclick="exportCourtPlanPdf()" style="padding:11px;background:rgba(212,168,67,0.14);border:1px solid rgba(212,168,67,0.34);border-radius:10px;color:var(--gold);font-size:12px;font-weight:950;cursor:pointer;">Print court plan</button></div></div>' +
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;"><button type="button" onclick="copyCourtPlanText()" style="padding:11px;background:rgba(212,168,67,0.14);border:1px solid rgba(212,168,67,0.34);border-radius:10px;color:var(--gold);font-size:12px;font-weight:950;cursor:pointer;">Copy plan text</button><button type="button" onclick="openCourtPlanChat()" style="padding:11px;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.3);border-radius:10px;color:var(--blue);font-size:12px;font-weight:900;cursor:pointer;">Prepare in Chat</button></div>';
+}
+
+function courtPlanPlainText() {
+  var plan = getSavedCourtPlan();
+  if (!plan) return '';
+  var lines = ['COURT PLAN - FOR REVIEW', '', 'Goal: ' + (plan.goalLabel || ''), '', 'Plain English proposal:', plan.proposal || '', '', 'Proposed order / staged terms:'];
+  courtPlanSuggestedTerms(plan).forEach(function(term, index){ lines.push((index + 1) + '. ' + term); });
+  lines.push('', 'Likely objections / hearing notes:');
+  (plan.objections || []).forEach(function(key){ if (courtPlanSafeguards[key]) lines.push('- ' + courtPlanSafeguards[key].title + ': ' + courtPlanSafeguards[key].hearing); });
+  lines.push('', 'Review before use: check every date, time, handover location, name, school/holiday term and evidence reference against the latest order and documents.');
+  return lines.join('\n');
+}
+
+function courtPlanStatementAsk() {
+  var plan = getSavedCourtPlan();
+  if (!plan) return '';
+  var terms = courtPlanSuggestedTerms(plan);
+  var lines = [];
+  lines.push(plan.proposal || plan.goalLabel || '');
+  if (terms.length) {
+    lines.push('');
+    lines.push('The practical terms I want the court to consider are:');
+    terms.slice(0, 10).forEach(function(term, index){ lines.push((index + 1) + '. ' + term); });
+  }
+  if ((plan.objections || []).length) {
+    lines.push('');
+    lines.push('Likely objections I want to answer calmly:');
+    (plan.objections || []).forEach(function(key){
+      if (courtPlanSafeguards[key]) lines.push('- ' + courtPlanSafeguards[key].title + ': ' + courtPlanSafeguards[key].hearing);
+    });
+  }
+  lines.push('');
+  lines.push('Guardian should keep this child-focused, practical and source-led, and mark anything that needs checking.');
+  return lines.join('\n');
+}
+
+function prefillStatementWriterFromCourtPlan() {
+  var ask = courtPlanStatementAsk();
+  if (!ask) return false;
+  var askA = document.getElementById('swCourtAskInitial');
+  var askB = document.getElementById('swCourtAsk');
+  if (askA && !askA.value.trim()) askA.value = ask;
+  if (askB && !askB.value.trim()) askB.value = ask;
+  return true;
+}
+
+function useCourtPlanInStatementWriter() {
+  if (!getSavedCourtPlan()) { toast('Build the court plan first'); return; }
+  goStatementWriter();
+  setTimeout(function(){
+    prefillStatementWriterFromCourtPlan();
+    toast('Court plan added to Statement Writer. Check and edit before drafting.');
+  }, 160);
+}
+
+function courtPlanDocumentHtml() {
+  var plan = getSavedCourtPlan();
+  var meta = statementExportMetadata ? statementExportMetadata() : {};
+  var title = plan && plan.goalLabel ? plan.goalLabel : 'Court plan';
+  var terms = plan ? courtPlanSuggestedTerms(plan) : [];
+  var safeguards = plan ? (plan.objections || []).map(function(key){ return courtPlanSafeguards[key]; }).filter(Boolean) : [];
+  var signals = plan && plan.signals ? plan.signals : courtPlanCaseSignals();
+  var evidence = []
+    .concat((signals && signals.recentDiary) || [])
+    .concat((signals && signals.evidence) || []);
+  var heading = [
+    meta.courtName ? 'IN THE ' + meta.courtName.toUpperCase() : 'COURT PLAN FOR REVIEW',
+    meta.caseNumber ? 'Case No: ' + meta.caseNumber : '',
+    meta.hearingDate ? 'Hearing: ' + statementDateLabel(meta.hearingDate) : ''
+  ].filter(Boolean).join('<br>');
+  return '<!doctype html><html><head><meta charset="utf-8"><title>Court Plan</title><style>' +
+    '@page{size:A4;margin:22mm 20mm;}body{font-family:Arial,sans-serif;color:#000;font-size:11.5pt;line-height:1.45;margin:0;}h1{font-size:15pt;text-align:center;margin:18pt 0 10pt;text-decoration:underline;}h2{font-size:12pt;margin:16pt 0 7pt;border-bottom:1px solid #999;padding-bottom:3pt}.meta{text-align:center;font-weight:700;margin-bottom:12pt}.note{border:1px solid #999;padding:8pt;margin:10pt 0;font-size:10pt}.term{display:grid;grid-template-columns:24pt 1fr;gap:6pt;margin:0 0 7pt}.small{font-size:10pt;color:#333}ul{margin-top:4pt}@media screen{body{max-width:210mm;margin:18px auto;padding:22mm 20mm;box-shadow:0 0 18px #bbb}}' +
+    '</style></head><body><div class="meta">' + statementEscape(heading) + '</div><h1>COURT PLAN AND PROPOSED TERMS</h1>' +
+    '<div class="note"><strong>Review note:</strong> This is a preparation document. Check every date, time, handover place, name and source against the latest sealed order or hearing notice before using it.</div>' +
+    '<h2>1. What I am asking the court to consider</h2><p><strong>' + statementEscape(title) + '</strong></p><p>' + statementEscape(plan && plan.proposal ? plan.proposal : 'No proposal entered.') + '</p>' +
+    '<h2>2. Proposed order wording to review</h2>' + (terms.length ? terms.map(function(term,index){ return '<div class="term"><strong>' + (index + 1) + '.</strong><div>' + statementEscape(term) + '</div></div>'; }).join('') : '<p>No proposed terms entered.</p>') +
+    '<h2>3. Likely objections and calm answers</h2>' + (safeguards.length ? safeguards.map(function(item){ return '<p><strong>' + statementEscape(item.title) + ':</strong> ' + statementEscape(item.hearing) + '</p>'; }).join('') : '<p>No objection areas selected yet.</p>') +
+    '<h2>4. Diary and evidence to have ready</h2>' + (evidence.length ? '<ul>' + evidence.slice(0, 12).map(function(item){ return '<li>' + statementEscape(item) + '</li>'; }).join('') + '</ul>' : '<p>No Diary or Evidence references found yet.</p>') +
+    '<h2>5. Final checks before the hearing</h2><ul><li>Can I explain each term in one or two clear sentences?</li><li>Can I find the order, diary record or evidence item I rely on?</li><li>Have I removed guesses, exaggeration and unsupported certainty?</li><li>Have I prepared a calm answer for each likely objection?</li></ul>' +
+    '<p class="small">Created by Guardian as an editable preparation aid. Guardian is not a solicitor and this is not legal advice.</p></body></html>';
+}
+
+function exportCourtPlanPdf() {
+  if (!getSavedCourtPlan()) { toast('Build the court plan first'); return; }
+  var win = window.open('', '_blank');
+  if (!win) { toast('Allow pop-ups to print the court plan'); return; }
+  win.document.write(courtPlanDocumentHtml());
+  win.document.close();
+  setTimeout(function(){ win.focus(); win.print(); }, 250);
+  toast('Court plan print view opened - choose Save as PDF');
+}
+
+function copyCourtPlanText() {
+  var text = courtPlanPlainText();
+  if (!text) { toast('Build the court plan first'); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function(){ toast('Court plan copied'); }, function(){ toast('Could not copy - select the text manually'); });
+  } else {
+    toast('Copy not available in this browser');
+  }
+}
+
+function openCourtPlanChat() {
+  var text = courtPlanPlainText();
+  if (!text) text = 'No court plan has been built yet.';
+  if (typeof openContextualChat === 'function') {
+    openContextualChat('Court Plan Builder', 'Talk me through this court plan. Help me keep it child-focused, practical and realistic. Identify missing dates, handover terms, safeguards, evidence links and likely objections. Do not tell me what the court will decide and do not give legal advice.\n\n' + text.substring(0, 4500));
+  }
+}
+
+function prefillCourtPlanFromSchedule() {
+  var schedule = profile && profile.contactSchedule ? contactScheduleText(profile.contactSchedule) : '';
+  if (!schedule) { toast('No saved family-time schedule yet'); return; }
+  var stages = document.getElementById('courtPlanStages');
+  if (stages) stages.value = (stages.value.trim() ? stages.value.trim() + '\n' : '') + 'Current saved family-time pattern: ' + schedule;
 }
 
 function getSwGuidance() {
@@ -10977,6 +11353,7 @@ function swContinueToStatement() {
   var askA = document.getElementById('swCourtAskInitial');
   var askB = document.getElementById('swCourtAsk');
   if (askA && askB && !askB.value.trim()) askB.value = askA.value;
+  if (askB && !askB.value.trim()) prefillStatementWriterFromCourtPlan();
   document.getElementById('swStepA').style.display = 'none';
   document.getElementById('swStepB').style.display = 'block';
   // Rebuild case check
@@ -10987,9 +11364,11 @@ function swContinueToStatement() {
     var hasMsgs = msgLog && msgLog.length > 0;
     var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
     var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
+    var hasCourtPlan = !!getSavedCourtPlan();
     caseCheck.innerHTML = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>' +
       [{ label:diary+' diary entries',ok:diary>0,tip:'Log family time in My Diary' },
        { label:docs+' documents',ok:docs>0,tip:'Upload to Case File' },
+       { label:'Court plan',ok:hasCourtPlan,tip:'Build a court plan first if you want proposed terms included' },
        { label:'Message history',ok:hasMsgs,tip:'Check messages through Reply Ready' },
        { label:'Allegations',ok:hasAllegations,tip:'Update in My Case' },
        { label:'Dismissed findings',ok:hasDismissed,tip:'Update in My Case' }]
@@ -11023,6 +11402,7 @@ function loadStatementWriter() {
   if (courtAsk) courtAsk.value = '';
   var courtAskInitial = document.getElementById('swCourtAskInitial');
   if (courtAskInitial) courtAskInitial.value = '';
+  prefillStatementWriterFromCourtPlan();
   renderStatementReadinessBoard();
 
   // Load case check for StepB
@@ -11033,10 +11413,12 @@ function loadStatementWriter() {
   var hasMsgs = msgLog && msgLog.length > 0;
   var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
   var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
+  var hasCourtPlan = !!getSavedCourtPlan();
   var checkHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>';
   checkHtml += [
     { label: diary + ' diary entries', ok: diary > 0, tip: 'Log family time in My Diary' },
     { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
+    { label: 'Court plan saved', ok: hasCourtPlan, tip: 'Build Court Plan first for staged proposed terms' },
     { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Reply Ready' },
     { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
     { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
@@ -11065,11 +11447,13 @@ function goStatementWriter() {
   var hasMsgs = msgLog.length > 0;
   var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
   var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
+  var hasCourtPlan = !!getSavedCourtPlan();
 
   var checkHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>';
   checkHtml += [
     { label: diary + ' diary entries', ok: diary > 0, tip: 'Log family time in My Diary' },
     { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
+    { label: 'Court plan saved', ok: hasCourtPlan, tip: 'Build Court Plan first for staged proposed terms' },
     { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Reply Ready' },
     { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
     { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
@@ -11152,7 +11536,7 @@ async function buildStatement(courtAsk) {
       '\n\nPARENT\'S OWN WORDING SAMPLES - STYLE ONLY, NOT ADDITIONAL EVIDENCE:\n' + (voiceText || 'No wording samples available. Use simple natural English and avoid legalistic or formulaic language.') +
       '\n\nWHAT THE PARENT SAYS THEY WANT TO ASK FOR:\n' + courtAsk +
       '\n\nHEARING TYPE AS ENTERED BY USER: ' + hearingType +
-      '\n\nCreate a clear, source-led editable position-statement draft in the parent\'s natural first-person voice. It must be concise and easy for a judge or magistrate to navigate without pretending the parent is a lawyer. This is not filing-ready and is not legal advice.\n\nSTRUCTURE AND DISCIPLINE: Identify the hearing and purpose first. Use short numbered paragraphs. Include a brief background section only where it helps the court understand the current hearing. Include previous court hearings, orders or outcomes only if supplied in the source map, and keep them neutral. Confine the draft to the issues for this hearing. Preserve attribution: allegations remain allegations, reports remain reports, and Guardian inferences never appear as facts. State the child-focused practical position using only supplied material. End with a precise numbered list of the orders or directions the parent says they seek. Cross-reference Diary references like D-001 and Evidence references like E-001 only when they appear in the source map. If a relevant point has no source, mark it [USER TO VERIFY: source needed for ...] instead of dressing it up. Keep the main draft suitable for no more than about three A4 pages unless the user records a different court direction. Make it self-contained. Do not embed photos or exhibits in the statement body; refer to evidence items and leave originals for the evidence bundle.\n\nREAD THEIR STATEMENT FLOW: If attributed claims are supplied, include only the relevant points that need answering for this hearing. For each important claim, separate what is directly alleged, what source is mentioned, what the parent says in answer, and what source supports the answer. Do not call an allegation strong or weak in a legal-outcome sense.\n\nDEADLINES: If deadlines or hearing dates are supplied, mention them only as context where useful. Do not calculate new deadlines, filing dates or service steps unless they are explicitly supplied by a court order or saved date; otherwise add [USER TO VERIFY: check court order for filing deadline].\n\nBOUNDARIES: Do not invent findings, dates, evidence, legal tests, legal bases, deadlines, sending instructions or likely outcomes. Do not append a statement of truth because this workspace builds a position statement, not witness evidence. Where a fact, request, source, page number, court requirement or wording needs the user\'s decision, insert [USER TO VERIFY: ...]. Finish with a separate REVIEW BEFORE USE checklist listing every unresolved verification. Quality comes from precision, attribution, evidence links and practical child-focused reasoning, not fake legal language.';
+      '\n\nCreate a clear, source-led editable position-statement draft in the parent\'s natural first-person voice. It must be concise and easy for a judge or magistrate to navigate without pretending the parent is a lawyer. This is not filing-ready and is not legal advice.\n\nSTRUCTURE AND DISCIPLINE: Identify the hearing and purpose first. Use short numbered paragraphs. Include a brief background section only where it helps the court understand the current hearing. Include previous court hearings, orders or outcomes only if supplied in the source map, and keep them neutral. Confine the draft to the issues for this hearing. Preserve attribution: allegations remain allegations, reports remain reports, and Guardian inferences never appear as facts. State the child-focused practical position using only supplied material. End with a precise numbered list of the orders or directions the parent says they seek. Cross-reference Diary references like D-001 and Evidence references like E-001 only when they appear in the source map. If a relevant point has no source, mark it [USER TO VERIFY: source needed for ...] instead of dressing it up. Keep the main draft suitable for no more than about three A4 pages unless the user records a different court direction. Make it self-contained. Do not embed photos or exhibits in the statement body; refer to evidence items and leave originals for the evidence bundle.\n\nCOURT PLAN FLOW: If a saved court plan or proposed-order idea is supplied, use it as the practical destination of the statement. The statement should briefly explain why the proposal is workable, child-focused and realistic using sourced facts only. Put staged contact, handover, communication, holiday, passport, medical, missed-time or information-sharing terms in the final orders/directions sought section. Do not present proposed terms as already ordered unless the source map shows an existing order. Mark unclear dates, times, handover locations, adults or review points as [USER TO VERIFY: ...].\n\nREAD THEIR STATEMENT FLOW: If attributed claims are supplied, include only the relevant points that need answering for this hearing. For each important claim, separate what is directly alleged, what source is mentioned, what the parent says in answer, and what source supports the answer. Do not call an allegation strong or weak in a legal-outcome sense.\n\nDEADLINES: If deadlines or hearing dates are supplied, mention them only as context where useful. Do not calculate new deadlines, filing dates or service steps unless they are explicitly supplied by a court order or saved date; otherwise add [USER TO VERIFY: check court order for filing deadline].\n\nBOUNDARIES: Do not invent findings, dates, evidence, legal tests, legal bases, deadlines, sending instructions or likely outcomes. Do not append a statement of truth because this workspace builds a position statement, not witness evidence. Where a fact, request, source, page number, court requirement or wording needs the user\'s decision, insert [USER TO VERIFY: ...]. Finish with a separate REVIEW BEFORE USE checklist listing every unresolved verification. Quality comes from precision, attribution, evidence links and practical child-focused reasoning, not fake legal language.';
 
     var res = await guardianFetch(API, {
       method: 'POST',
@@ -18016,7 +18400,7 @@ async function agHandleAttach(event) {
   if (!file) return;
   if (!beginGuardianAction('ask_attachment')) {
     toast('Guardian is already reading an attachment');
-    return;
+    return;ean 
   }
   agAddMsg('u', 'Attached: ' + file.name);
   var msgs = document.getElementById('agMessages');
