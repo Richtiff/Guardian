@@ -225,6 +225,16 @@ html,body { background:var(--bg); color:var(--white); font-family:'Manrope','Int
 .qa-suggestions { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:12px; }
 .qa-sug { padding:8px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:20px; color:var(--muted-hi); font-size:13px; cursor:pointer; transition:all 0.15s; }
 .qa-sug:hover { color:var(--blue); border-color:rgba(59,127,255,0.3); }
+.case-toggle { display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(255,255,255,.035); border:1px solid var(--border); border-radius:12px; padding:10px 11px; margin-bottom:12px; }
+.case-toggle-copy { min-width:0; }
+.case-toggle-title { font-size:12px; font-weight:900; color:var(--white); margin-bottom:2px; }
+.case-toggle-sub { font-size:11px; color:var(--muted-hi); line-height:1.35; }
+.case-toggle-btn { flex-shrink:0; padding:8px 10px; border-radius:999px; background:rgba(52,120,212,.12); border:1px solid rgba(52,120,212,.3); color:var(--blue); font-size:11px; font-weight:900; cursor:pointer; }
+.case-toggle-btn.off { background:rgba(255,255,255,.04); border-color:var(--border); color:var(--muted-hi); }
+.talk-card { background:linear-gradient(135deg,rgba(52,120,212,.12),rgba(52,120,212,.04)); border:1.5px solid rgba(52,120,212,.25); border-radius:14px; padding:12px; margin-bottom:12px; }
+.talk-card-title { font-size:13px; color:var(--white); font-weight:950; margin-bottom:4px; }
+.talk-card-body { font-size:11px; color:var(--muted-hi); line-height:1.45; margin-bottom:9px; }
+.talk-card button { width:100%; padding:10px; background:var(--blue-dim); border:1px solid rgba(52,120,212,.3); border-radius:10px; color:var(--blue); font-size:12px; font-weight:900; cursor:pointer; }
 .qa-typing { align-self:flex-start; background:var(--card); border:1.5px solid var(--border); border-radius:4px 14px 14px 14px; padding:12px 16px; display:flex; gap:5px; }
 .qa-typing span { width:7px; height:7px; border-radius:50%; background:var(--muted-hi); display:inline-block; animation:pulse 1s infinite; }
 .qa-typing span:nth-child(2) { animation-delay:0.2s; }
@@ -1180,6 +1190,13 @@ p, .body-text { font-size: 16px !important; }
     <button type="button" class="back-btn" onclick="goBack()">←</button>
     <div><div class="section-title">Ask about anything else</div><div class="section-sub">Documents, hearings, Cafcass and evidence</div></div>
   </div>
+  <div class="case-toggle">
+    <div class="case-toggle-copy">
+      <div class="case-toggle-title" id="qaContextTitle">Using saved case context</div>
+      <div class="case-toggle-sub" id="qaContextSub">Guardian can reference saved Diary, Evidence and profile material when relevant.</div>
+    </div>
+    <button type="button" class="case-toggle-btn" id="qaContextToggle" onclick="toggleQAContext()">Case on</button>
+  </div>
   <div class="qa-suggestions" id="qaSugs"></div>
   <div class="qa-msgs" id="qaMsgs" style="padding-bottom:8px;"></div>
   <div class="qa-attach-preview" id="qaAttachPreview">
@@ -1703,6 +1720,11 @@ p, .body-text { font-size: 16px !important; }
   </label>
   <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px;text-align:center;">Audio and video are preserved as originals with a hash. Guardian does not transcribe or interpret recordings automatically.</div>
   <div id="evidenceUploadStatus" style="font-size:12px;color:var(--muted-hi);line-height:1.5;margin-top:10px;text-align:center;"></div>
+  <div class="talk-card" style="margin-top:12px;">
+    <div class="talk-card-title">Not sure what this counts as?</div>
+    <div class="talk-card-body">Ask Chat whether something is evidence, diary material, a source link, or just context to keep separate.</div>
+    <button type="button" onclick="openContextualChat('Evidence upload help','I am adding evidence and need help deciding how to classify it. Explain the difference between original evidence, a source link, diary context, verified transcript and AI reference notes. Ask me one question at a time and do not treat anything as proven.')">Talk it through</button>
+  </div>
 
   <button type="button" class="btn-ghost" onclick="loadDiaryEntry();go('sDiaryEntry')" style="margin-top:12px;">Record an observation in the Diary instead</button>
   <button type="button" class="btn-ghost" onclick="go('sDocs')" style="margin-top:8px;">View all evidence in My Case</button>
@@ -1743,6 +1765,11 @@ p, .body-text { font-size: 16px !important; }
   <div id="docsProcessing" style="display:none;text-align:center;padding:16px;">
     <div class="spinner" style="margin:0 auto 10px;"></div>
     <div style="font-size:13px;color:var(--muted-hi);">Reading document...</div>
+  </div>
+  <div class="talk-card">
+    <div class="talk-card-title">Need help organising evidence?</div>
+    <div class="talk-card-body">Chat can help you work out what needs a date, what needs the original file, and what should be linked to a Diary entry.</div>
+    <button type="button" onclick="openContextualChat('Evidence Library help','Help me tidy my Evidence Library. Explain what I should fix first: missing received dates, originals not stored, source links, unlinked Diary records, and items that are only analysis. Use my saved case context only where relevant.')">Talk evidence through</button>
   </div>
   <div class="upload-section">
     <div class="upload-section-title">YOUR EVIDENCE CHRONOLOGY</div>
@@ -2085,6 +2112,11 @@ p, .body-text { font-size: 16px !important; }
     <div><div class="section-title">Review my draft</div><div class="section-sub">Check clarity, attribution and missing support</div></div>
   </div>
   <div style="font-size:14px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Upload your draft for a preparation checklist. Guardian can flag unclear wording, unattributed claims, missing dates or sources and language needing review. It cannot grade legal strength or approve a document for filing.</div>
+  <div class="talk-card">
+    <div class="talk-card-title">Want to talk through your draft first?</div>
+    <div class="talk-card-body">Use Chat if you are unsure what the statement should do, what belongs in it, or why a section feels risky.</div>
+    <button type="button" onclick="openContextualChat('Review my draft help','I am reviewing my own statement draft. Talk me through what a good LIP position statement should do, what to avoid, and how to keep it factual, attributed and human. Do not approve it for filing or predict the court.')">Talk before uploading</button>
+  </div>
   <label class="upload-item" style="margin-bottom:14px;">
 <input type="file" accept=".pdf,.docx,.txt,.rtf,image/jpeg,image/png,image/webp" multiple onchange="scanStatement(event,'mine')">
     <div class="upload-item-icon">🔍</div>
@@ -2102,6 +2134,11 @@ p, .body-text { font-size: 16px !important; }
       <div id="mineScanWeaknesses" style="font-size:14px;color:var(--muted-hi);line-height:1.8;margin-bottom:14px;"></div>
       <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px;">WHAT IS WORKING</div>
       <div id="mineScanStrengths" style="font-size:14px;color:var(--muted-hi);line-height:1.8;"></div>
+    </div>
+    <div class="talk-card">
+      <div class="talk-card-title">Talk through this review</div>
+      <div class="talk-card-body">Chat can explain the checklist, help you edit unclear parts and practise how to answer questions without over-explaining.</div>
+      <button type="button" onclick="openMineDraftReviewChat()">Open draft Chat</button>
     </div>
     <div style="background:var(--gold-dim);border:1.5px solid rgba(212,168,67,0.2);border-radius:16px;padding:16px;margin-bottom:14px;text-align:center;">
       <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;">Build an editable starting draft</div>
@@ -2590,6 +2627,11 @@ p, .body-text { font-size: 16px !important; }
         <button type="button" onclick="showStatementSectionGuide('overview')" style="margin-top:9px;width:100%;padding:9px;background:transparent;border:1px solid rgba(26,158,114,.3);border-radius:9px;color:var(--green);font-size:11px;font-weight:900;cursor:pointer;">Why each section matters</button>
       </div>
       <div id="swReadinessBoard" class="confidence-strip"></div>
+      <div class="talk-card">
+        <div class="talk-card-title">Unsure what route to choose?</div>
+        <div class="talk-card-body">Chat can help you decide which statement route fits the hearing without guessing legal strategy.</div>
+        <button type="button" onclick="openContextualChat('Statement route help','I am choosing what kind of position statement workspace I need. Help me identify the hearing purpose from my notice or order, what information is missing, and which route in Guardian fits best. Do not tell me what legal application to make.')">Talk route through</button>
+      </div>
 
       <!-- What do you need -->
       <div class="field-group">
@@ -2781,6 +2823,11 @@ p, .body-text { font-size: 16px !important; }
 
     <!-- Re-score button -->
     <button type="button" onclick="rescoreStatement()" style="width:100%;padding:12px;background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.25);border-radius:12px;color:var(--blue);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Review my edits again →</button>
+    <div class="talk-card">
+      <div class="talk-card-title">Need help editing this draft?</div>
+      <div class="talk-card-body">Chat can talk you through one paragraph at a time and explain what to verify, shorten or remove.</div>
+      <button type="button" onclick="openStatementDraftChat()">Talk draft through</button>
+    </div>
 
     <!-- Sending instructions -->
     <div id="swSendingInstructions" style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;display:none;">
@@ -2905,6 +2952,7 @@ p, .body-text { font-size: 16px !important; }
     <button onclick="agChip('rate')" style="padding:8px 14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:20px;color:var(--gold);font-size:13px;cursor:pointer;touch-action:manipulation;">&#11088; Rate my reply</button>
     <button onclick="agChip('write')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#9999;&#65039; Help me write one</button>
     <button onclick="agChip('judge')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#9878;&#65039; Judge view</button>
+    <button onclick="agChip('prep_review')" style="padding:8px 14px;background:rgba(26,158,114,0.1);border:1.5px solid rgba(26,158,114,0.3);border-radius:20px;color:var(--green);font-size:13px;cursor:pointer;touch-action:manipulation;">Prep check</button>
     <button onclick="agChip('pattern')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#128269; Pattern check</button>
     <button onclick="agChip('log')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#128211; What to log</button>
   </div>
@@ -2927,10 +2975,17 @@ p, .body-text { font-size: 16px !important; }
 <div id="agModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;background:#0a0f1a;overflow-y:auto;padding:0 0 116px;box-sizing:border-box;">
   <div style="max-width:720px;margin:0 auto;">
     <div style="position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(10,15,26,0.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.08);">
-      <button onclick="agClose()" style="background:transparent;border:1px solid #2a3040;border-radius:999px;color:#9aa7bd;font-size:14px;padding:8px 12px;cursor:pointer;touch-action:manipulation;">&#8592;</button>
+      <button onclick="agClose()" style="background:transparent;border:1px solid #2a3040;border-radius:999px;color:#9aa7bd;font-size:13px;font-weight:800;padding:8px 12px;cursor:pointer;touch-action:manipulation;">Close</button>
       <div style="font-size:17px;font-weight:800;color:#e8edf5;flex:1;">Chat</div>
       <button onclick="buildDiaryDraftFromTalk()" style="background:rgba(26,158,114,0.12);border:1px solid rgba(26,158,114,0.32);border-radius:999px;color:#81c784;font-size:12px;padding:8px 11px;cursor:pointer;touch-action:manipulation;">Save to Diary</button>
       <button onclick="toggleChatTools()" style="background:transparent;border:1px solid #2a3040;border-radius:999px;color:#d4a843;font-size:12px;padding:8px 11px;cursor:pointer;touch-action:manipulation;">Tools</button>
+    </div>
+    <div class="case-toggle" style="margin:10px 14px 8px;">
+      <div class="case-toggle-copy">
+        <div class="case-toggle-title" id="agContextTitle">Using saved case context</div>
+        <div class="case-toggle-sub" id="agContextSub">Guardian can reference saved Diary, Evidence, documents and profile material when relevant.</div>
+      </div>
+      <button type="button" class="case-toggle-btn" id="agContextToggle" onclick="toggleAskCaseContext()">Case on</button>
     </div>
     <div id="agToolPanel" style="display:none;padding:10px 14px 8px;border-bottom:1px solid rgba(255,255,255,0.06);">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -2938,6 +2993,7 @@ p, .body-text { font-size: 16px !important; }
         <button onclick="startNewAskTopic()" style="padding:10px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">New topic</button>
         <button onclick="agChip('rate')" style="padding:10px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:12px;color:#d4a843;font-size:13px;cursor:pointer;touch-action:manipulation;">Rate my reply</button>
         <button onclick="agChip('write')" style="padding:10px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Help me write</button>
+        <button onclick="agChip('prep_review')" style="padding:10px;background:rgba(26,158,114,0.1);border:1.5px solid rgba(26,158,114,0.3);border-radius:12px;color:#81c784;font-size:13px;cursor:pointer;touch-action:manipulation;">Prep check</button>
         <button onclick="agChip('pattern')" style="padding:10px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">Pattern check</button>
         <button onclick="agChip('log')" style="padding:10px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;color:#e8edf5;font-size:13px;cursor:pointer;touch-action:manipulation;">What to log</button>
       </div>
@@ -5525,6 +5581,7 @@ function showHome() {
 }
 
 function goQA() {
+  updateQAContextUI();
   var lastQA=null; try{lastQA=JSON.parse(localStorage.getItem('gLastQA')||'null');}catch(e){}
   document.getElementById('qaMsgs').innerHTML='';
   openTalkGuardian();
@@ -5536,6 +5593,33 @@ function goQA() {
       msgs.insertBefore(d,msgs.firstChild);
     },150);
   } else { qaHistory=[]; setTimeout(function(){qaGreeting();},300); }
+}
+
+var qaUseCaseContext = true;
+try {
+  var savedQAContextMode = localStorage.getItem('gQAUseCaseContext');
+  if (savedQAContextMode === '0') qaUseCaseContext = false;
+} catch(e) {}
+
+function updateQAContextUI() {
+  var title = document.getElementById('qaContextTitle');
+  var sub = document.getElementById('qaContextSub');
+  var btn = document.getElementById('qaContextToggle');
+  if (title) title.textContent = qaUseCaseContext ? 'Using saved case context' : 'General answer mode';
+  if (sub) sub.textContent = qaUseCaseContext
+    ? 'Guardian can reference saved Diary, Evidence and profile material when relevant.'
+    : 'Guardian will answer generally unless you paste or attach details here.';
+  if (btn) {
+    btn.textContent = qaUseCaseContext ? 'Case on' : 'General';
+    btn.classList.toggle('off', !qaUseCaseContext);
+  }
+}
+
+function toggleQAContext() {
+  qaUseCaseContext = !qaUseCaseContext;
+  try { localStorage.setItem('gQAUseCaseContext', qaUseCaseContext ? '1' : '0'); } catch(e) {}
+  updateQAContextUI();
+  toast(qaUseCaseContext ? 'Ask will use saved case context when relevant' : 'Ask is now general unless you paste details');
 }
 
 function restoreQASession(){
@@ -5600,7 +5684,7 @@ async function sendQA() {
   document.getElementById('qaMsgs').appendChild(td);
   scrollQA();
 
-  var sys='You are Guardian, a knowledgeable companion for parents navigating family court in England and Wales.\n\nYou can explain family-court information, forms, Cafcass process, statement preparation, hearings, documents, Diary records and evidence organisation in plain English. Stay practical and source-led.\n\nBe warm, honest and direct. Never talk down to the parent. If a question needs regulated legal advice, say so clearly and help them organise what to ask.\n\nFormat your answers well — use short paragraphs. For lists use dashes. Make it easy to read on a phone. Never write walls of text.\n\nFor anything that may have changed recently — court fees, specific forms, practice directions — tell the user to check gov.uk, justice.gov.uk or judiciary.uk for the latest.\n\nYou are not a lawyer and do not give formal legal advice. Do not predict outcomes, decide whether an allegation is true, or tell the user what legal step to take. You can explain documents, separate fact from claim, and help them prepare questions and factual material.\n\nIMPORTANT: If the parent mentions any new facts about their case — a new allegation, a hearing date, a name, an order — note them as possible context, not proven fact.\n\nAt the end of EVERY response, on a new line, add exactly this format:\nCONFIDENCE:[high|mid|low]|[one plain English reason under 12 words]\nHigh = established public information or standard process. Mid = likely but should be checked. Low = depends on the specific case details.\n\n'+getCTX();
+  var sys='You are Guardian, a knowledgeable companion for parents navigating family court in England and Wales.\n\nYou can explain family-court information, forms, Cafcass process, statement preparation, hearings, documents, Diary records and evidence organisation in plain English. Stay practical and source-led.\n\nBe warm, honest and direct. Never talk down to the parent. If a question needs regulated legal advice, say so clearly and help them organise what to ask.\n\nFormat your answers well — use short paragraphs. For lists use dashes. Make it easy to read on a phone. Never write walls of text.\n\nFor anything that may have changed recently — court fees, specific forms, practice directions — tell the user to check gov.uk, justice.gov.uk or judiciary.uk for the latest.\n\nYou are not a lawyer and do not give formal legal advice. Do not predict outcomes, decide whether an allegation is true, or tell the user what legal step to take. You can explain documents, separate fact from claim, and help them prepare questions and factual material.\n\nIf the user asks you to rate their chances, predict the decision, say whether they will win, or assess legal strength, do not give odds, a percentage, a prediction or a legal-strength score. Say: "I cannot predict the decision, but I can prepare you properly." Then give a preparation review: completed fields, missing dates, missing sources, unanswered claims, hearing questions to practise, and how to answer clearly on the day.\n\nYou may give honest encouragement when the record is genuinely organised: "You have prepared properly in several important areas. Most litigants in person never get this far. Keep going, and prepare for questions on the weaker points." Do not turn that into a promise of success.\n\nIMPORTANT: If the parent mentions any new facts about their case — a new allegation, a hearing date, a name, an order — note them as possible context, not proven fact.\n\nCHAT MODE: '+(qaUseCaseContext?'Case-aware. Use saved case material only where relevant and say when you are relying on saved Diary, Evidence, documents or profile material.':'General. Do not rely on saved case material unless the user pastes or attaches it in this chat.')+'\n\nAt the end of EVERY response, on a new line, add exactly this format:\nCONFIDENCE:[high|mid|low]|[one plain English reason under 12 words]\nHigh = established public information or standard process. Mid = likely but should be checked. Low = depends on the specific case details.\n\n'+(qaUseCaseContext && typeof getCTX === 'function' ? getCTX() : '');
 
   // Build message content - include attachment if present
   var msgContent;
@@ -16392,6 +16476,10 @@ var ASK_GUARDIAN_SYS = [
   'Pattern safety: identify repeated observable behaviour only when there is evidence. Never diagnose, label personality, claim motives, or tell the parent a delay or tone proves bad intent.',
   'When discussing patterns, separate FACT, POSSIBLE PATTERN, and WHAT TO LOG NEXT. Use cautious wording such as "may suggest" and "worth documenting".',
   'Give legal information and preparation support, not personalised legal representation or guarantees.',
+  'If the user asks you to rate their chances, predict the decision, say whether they will win, or assess legal strength: do not answer with odds, a percentage, a prediction or a legal-strength score.',
+  'For chance/outcome questions, say: "I cannot predict the decision, but I can prepare you properly." Then give a preparation review: completed fields, missing dates, missing sources, unanswered claims, hearing questions to practise, and behaviour on the day.',
+  'You may give honest encouragement when the record is genuinely organised, for example: "You have prepared properly in several important areas. Most litigants in person never get this far. Keep going, and prepare for questions on the weaker points." Do not convert that encouragement into a promise of success.',
+  'Hearing behaviour coaching is allowed: answer clearly, do not over-explain, do not guess, keep answers child-focused, stay calm, and ask for a question to be repeated if needed.',
   'For immediate danger or child-safety emergencies, direct the user to the appropriate emergency or professional service.',
   'Be calm, practical, concise and specific. Sound like a careful evidence-aware case assistant, not a generic chatbot.',
   'Default answer shape: what is confirmed, what is not confirmed, what to do next, and what should be saved to Diary. Keep it human and direct.',
@@ -16416,6 +16504,33 @@ var agVoiceFinal = '';
 var agVoiceReplies = false;
 var agSpeechUtterance = null;
 var askCloudSaveTimer = null;
+var agUseCaseContext = true;
+
+function updateAskCaseContextUI() {
+  var title = document.getElementById('agContextTitle');
+  var sub = document.getElementById('agContextSub');
+  var btn = document.getElementById('agContextToggle');
+  if (title) title.textContent = agUseCaseContext ? 'Using saved case context' : 'General chat mode';
+  if (sub) sub.textContent = agUseCaseContext
+    ? 'Guardian can reference saved Diary, Evidence, documents and profile material when relevant.'
+    : 'Guardian will answer generally unless you paste or upload details in this chat.';
+  if (btn) {
+    btn.textContent = agUseCaseContext ? 'Case on' : 'General';
+    btn.classList.toggle('off', !agUseCaseContext);
+  }
+}
+
+function toggleAskCaseContext() {
+  agUseCaseContext = !agUseCaseContext;
+  try { localStorage.setItem('gAskUseCaseContext', agUseCaseContext ? '1' : '0'); } catch(e) {}
+  updateAskCaseContextUI();
+  toast(agUseCaseContext ? 'Chat will use saved case context when relevant' : 'Chat is now general unless you paste details');
+}
+
+try {
+  var savedAskContextMode = localStorage.getItem('gAskUseCaseContext');
+  if (savedAskContextMode === '0') agUseCaseContext = false;
+} catch(e) {}
 
 function getGuardianAskSessions() {
   var local = {};
@@ -17028,6 +17143,50 @@ function openDeepDiveChat() {
 }
 window.openDeepDiveChat = openDeepDiveChat;
 
+function openContextualChat(title, prompt) {
+  agActiveSessionKey = 'standalone';
+  agCoachMode = '';
+  agCoachContext = 'CONTEXTUAL HELP: ' + (title || 'Guardian help') + '. The user opened Chat from inside the app because they need something explained without losing their place.';
+  agCoachTranscript = [];
+  agCoachAnswerCount = 0;
+  agPreparationSheet = null;
+  agDetectedEventType = 'other';
+  var messages = document.getElementById('agMessages');
+  if (messages) messages.innerHTML = '';
+  agOpen();
+  agAddMsg('g', 'We can talk this through here. I will keep it practical, separate facts from assumptions, and help you decide the next safe step.');
+  var input = document.getElementById('agInput');
+  if (input) {
+    input.value = prompt || '';
+    input.placeholder = 'Ask Guardian what you need to understand...';
+    try { input.focus(); } catch(e) {}
+  }
+  saveStandaloneAskSession();
+}
+window.openContextualChat = openContextualChat;
+
+function openMineDraftReviewChat() {
+  var verdict = document.getElementById('mineScanVerdict');
+  var weak = document.getElementById('mineScanWeaknesses');
+  var strong = document.getElementById('mineScanStrengths');
+  var context = [
+    verdict ? verdict.textContent.trim() : '',
+    weak ? 'Needs review: ' + weak.textContent.trim() : '',
+    strong ? 'Working: ' + strong.textContent.trim() : ''
+  ].filter(Boolean).join('\n');
+  openContextualChat('My draft review', 'Talk me through this statement preparation review in plain English. Help me decide what to edit first, what facts or sources to check, and how to make the draft shorter, clearer and more human. Do not approve it for filing, do not predict the court, and do not give a legal-strength score.\n\nCURRENT REVIEW:\n' + context.substring(0, 3500));
+}
+window.openMineDraftReviewChat = openMineDraftReviewChat;
+
+function openStatementDraftChat() {
+  var text = document.getElementById('swStatementText');
+  var audit = document.getElementById('swAuditText');
+  var draft = text ? text.value.trim() : '';
+  var auditText = audit ? audit.textContent.trim() : '';
+  openContextualChat('Statement draft editing', 'Help me edit this position-statement draft one step at a time. Start by identifying the first 3 practical edits: facts to verify, wording to shorten, attribution to improve, or anything that sounds too certain. Do not add new facts, do not approve it for filing, and do not predict the court.\n\nGUARDIAN REVIEW NOTES:\n' + auditText.substring(0, 1200) + '\n\nDRAFT EXCERPT:\n' + draft.substring(0, 3500));
+}
+window.openStatementDraftChat = openStatementDraftChat;
+
 function initTalkGuardian() {
   var msgs = document.getElementById('agMessages');
   if (!msgs || msgs.children.length > 0) return;
@@ -17144,12 +17303,13 @@ function agOpen() {
   if (msgs && msgs.children.length === 0) {
     if (!restoreStandaloneAskSession()) {
       if (agActiveSessionKey === 'standalone') {
-        agAddMsg('g', 'Ask me anything about your case: messages, documents, hearings, Cafcass, Diary, evidence, timelines, preparation or what to do next.\n\nIf we find something important, tap Save to Diary and I will turn it into a draft for you to check.');
+        agAddMsg('g', 'Ask me anything: messages, documents, hearings, Cafcass, Diary, evidence, timelines, preparation or what to do next.\n\nUse the toggle above if you want me to answer generally or use your saved case material. If we find something important, tap Save to Diary and I will turn it into a draft for you to check.');
       } else {
         agAddMsg('g', 'I have this specific message or document in context. Ask me what it means, how to prepare, what to preserve, or what to do next.');
       }
     }
   }
+  updateAskCaseContextUI();
 }
 function agClose() {
   stopAskVoice(false);
@@ -17335,7 +17495,7 @@ async function agCallAPI(prompt) {
   ld.textContent = 'Guardian is thinking...';
   if (msgs) msgs.appendChild(ld);
   try {
-    var ctx = typeof getCTX === 'function' ? getCTX() : '';
+    var ctx = (agUseCaseContext || agActiveSessionKey !== 'standalone') && typeof getCTX === 'function' ? getCTX() : '';
     var coachRules = agCoachMode ? [
       '',
       'ACTIVE COACH MODE: ' + agCoachMode + '.',
@@ -17365,6 +17525,9 @@ async function agCallAPI(prompt) {
     } else if (prompt.length > last.content.length) {
       last.content = String(prompt || '').substring(0, 5000);
     }
+    sys += agUseCaseContext
+      ? '\n\nCHAT MODE: Case-aware. Use saved case material only where relevant. Say when you are relying on saved Diary, Evidence, documents or profile material. Keep allegations attributed and unverified material separate.'
+      : '\n\nCHAT MODE: General. Do not rely on saved case material unless the current chat or active item context provides it. Answer generally and ask the user to paste details if they want case-specific preparation.';
     if (ctx) sys += '\n\nCURRENT CONFIRMED CASE CONTEXT:\n' + ctx;
     var res = await guardianFetch(api, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:800,system:sys,messages:history})});
     if (!res.ok) throw new Error('Guardian could not answer (' + res.status + ')');
@@ -17487,6 +17650,7 @@ function agChip(type) {
     log:'What should I log in my Diary based on recent events, and what evidence should I preserve?',
     document:'I want you to explain a document. I will attach it using the paperclip.',
     hearing:'Help me prepare for my next hearing using everything you know about my case.',
+    prep_review:'Review how prepared I am without predicting the decision. Tell me what is already well prepared, what still needs dates, sources or evidence, what questions I should practise for the hearing, and how to answer clearly on the day without over-explaining. If I have prepared properly, say that plainly, but do not promise an outcome.',
     meeting:'Prepare me for a meeting with a solicitor or barrister. First ask whether they represent me, the other party, or neither. Then coach me one question at a time and build my meeting brief.',
     negotiate:'Prepare me for a negotiation or settlement discussion. Help me define the child-focused outcome, acceptable options, points I must clarify, evidence to use and how to record every proposal. Ask one question at a time.',
     prep:'Build a concise preparation sheet from my confirmed answers in this conversation. Separate confirmed facts from anything still uncertain.'
