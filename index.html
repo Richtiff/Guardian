@@ -209,10 +209,10 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
 .guardian-welcome { font-family:'DM Sans',sans-serif; font-size:50px; line-height:1.04; color:var(--white); font-weight:950; margin-bottom:11px; letter-spacing:0; }
 .guardian-welcome span { color:var(--gold); }
 .guardian-home-subtitle { color:var(--muted-hi); font-size:15px; line-height:1.6; margin:0 auto 26px; max-width:590px; }
-.guardian-home-case { max-width:760px; margin:0 auto 26px; text-align:left; }
-.guardian-home-case-line { color:#9fb0c7; font-size:17px; line-height:1.35; margin-bottom:28px; }
+.guardian-home-case { max-width:760px; margin:8px auto 32px; text-align:center; }
+.guardian-home-case-line { display:inline-flex; align-items:center; justify-content:center; gap:4px; color:#9fb0c7; font-size:15px; line-height:1.35; margin:0 auto 22px; padding:7px 12px; border:1px solid rgba(212,168,67,0.18); border-radius:999px; background:rgba(212,168,67,0.045); }
 .guardian-home-case-line strong { color:var(--white); font-weight:950; }
-.guardian-install-card { display:flex; align-items:center; gap:16px; background:linear-gradient(135deg,rgba(202,162,75,0.14),rgba(244,241,234,0.026)); border:1.5px solid rgba(202,162,75,0.38); border-radius:22px; padding:18px; box-shadow:0 24px 70px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.04); }
+.guardian-install-card { position:relative; display:flex; align-items:center; gap:16px; background:linear-gradient(135deg,rgba(202,162,75,0.14),rgba(244,241,234,0.026)); border:1.5px solid rgba(202,162,75,0.38); border-radius:22px; padding:18px; box-shadow:0 24px 70px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.04); }
 .guardian-install-card > img { width:72px !important; height:72px !important; border-radius:17px !important; flex:0 0 auto; object-fit:cover; background:rgba(8,13,20,0.56); }
 .guardian-install-icon { width:72px; height:72px; border-radius:17px; flex:0 0 auto; background:rgba(8,13,20,0.56); object-fit:cover; }
 .guardian-install-copy { flex:1; min-width:0; }
@@ -221,6 +221,8 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
 .guardian-install-steps { display:none; color:var(--gold); font-size:13px; line-height:1.5; margin-top:8px; }
 .guardian-install-button { padding:14px 20px; background:linear-gradient(135deg,#eed98c,#d3a23d); border:none; border-radius:14px; color:#181208; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:950; cursor:pointer; white-space:nowrap; box-shadow:0 14px 32px rgba(202,162,75,0.17); }
 .guardian-install-button:hover { transform:translateY(-1px); box-shadow:0 18px 38px rgba(202,162,75,0.23); }
+.guardian-install-close { position:absolute; top:9px; right:9px; width:28px; height:28px; border-radius:999px; border:1px solid rgba(244,241,234,0.12); background:rgba(8,13,20,0.52); color:var(--muted-hi); font-size:16px; font-weight:950; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.guardian-install-close:hover { color:var(--white); border-color:rgba(212,168,67,0.34); }
 .guardian-home-composer { background:linear-gradient(180deg,rgba(244,241,234,0.078),rgba(244,241,234,0.032)); border:1px solid rgba(244,241,234,0.16); border-radius:28px; padding:20px; box-shadow:0 28px 92px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.04); text-align:left; }
 .guardian-home-composer:focus-within { border-color:rgba(210,174,99,0.52); box-shadow:0 30px 96px rgba(0,0,0,0.42),0 0 0 4px rgba(210,174,99,0.07), inset 0 1px 0 rgba(255,255,255,0.05); }
 .guardian-home-composer textarea { width:100%; min-height:112px; max-height:220px; background:transparent; border:0; outline:none; resize:none; color:var(--white); font-family:'Manrope',sans-serif; font-size:17px; line-height:1.58; }
@@ -247,6 +249,10 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
 .guardian-saved-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin:22px auto 0; max-width:560px; }
 .guardian-saved-tile { display:flex; align-items:center; gap:9px; justify-content:center; min-height:48px; padding:9px 10px; background:rgba(244,241,234,0.022); border:1px solid rgba(244,241,234,0.085); border-radius:16px; color:var(--muted-hi); font-size:13px; font-weight:900; cursor:pointer; }
 .guardian-saved-tile:hover { color:var(--white); border-color:rgba(212,168,67,0.28); background:rgba(255,255,255,0.04); }
+.guardian-referral-card { margin-top:10px; padding:12px; border:1px solid rgba(212,168,67,0.14); border-radius:16px; background:rgba(212,168,67,0.045); color:var(--muted-hi); font-size:12px; line-height:1.45; }
+.guardian-referral-card strong { display:block; color:var(--white); font-size:13px; margin-bottom:3px; }
+.guardian-referral-card button { margin-top:9px; width:100%; min-height:36px; border-radius:11px; border:1px solid rgba(212,168,67,0.26); background:rgba(212,168,67,0.09); color:var(--gold-soft); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:950; cursor:pointer; }
+.guardian-referral-card button:hover { border-color:rgba(212,168,67,0.45); color:var(--white); }
 .guardian-bottom-note { position:fixed; bottom:0; left:0; right:0; z-index:50; background:linear-gradient(180deg,rgba(8,13,20,0.76),rgba(8,13,20,0.96)); border-top:1px solid rgba(255,255,255,0.05); padding:5px 16px max(5px,env(safe-area-inset-bottom)); text-align:center; pointer-events:none; }
 .guardian-bottom-note p { font-size:10.5px; color:rgba(237,242,248,0.42); margin:0; pointer-events:auto; line-height:1.45; }
 .guardian-bottom-note button { background:transparent; border:0; padding:0; color:rgba(202,162,75,0.86); font:inherit; font-weight:850; text-decoration:none; cursor:pointer; }
@@ -280,7 +286,7 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
   .guardian-desktop-shell.sidebar-closed { display:block; }
   .guardian-side { min-height:0; padding:14px; margin-bottom:14px; }
   .guardian-desktop-shell.sidebar-closed .guardian-side { display:none; }
-  .guardian-sidebar-open { top:82px; left:14px; }
+  .guardian-sidebar-open { top:126px; left:18px; }
   .guardian-nav { grid-template-columns:1fr 1fr; }
   .guardian-main { min-height:0; padding:24px 0 10px; }
   .guardian-home-kicker { margin-top:12px; }
@@ -575,7 +581,7 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
 .ttype-other { background:rgba(255,255,255,0.05); color:var(--muted-hi); }
 .doc-location { font-size:11px; color:var(--muted); margin-bottom:6px; padding:5px 8px; background:rgba(255,255,255,0.03); border-radius:6px; border-left:2px solid var(--border); }
 .doc-disclaimer { font-size:10px; color:var(--muted); margin-bottom:8px; font-style:italic; }
-.doc-actions { display:flex; gap:7px; }
+.doc-actions { display:flex; gap:7px; flex-wrap:wrap; }
 .doc-export-btn { padding:6px 12px; background:var(--blue-dim); border:1px solid rgba(59,127,255,0.25); border-radius:8px; color:var(--blue); font-size:11px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; }
 .doc-export-btn:hover { background:rgba(59,127,255,0.2); }
 .section-header { display:flex; align-items:center; gap:12px; margin-bottom:22px; padding:4px 0 2px; }
@@ -1051,8 +1057,8 @@ p, .body-text { font-size: 16px !important; }
 <div class="step" id="sWelcome">
   <div style="text-align:left;padding:22px 0 18px;">
     <div style="font-size:12px;font-weight:950;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Welcome to Guardian</div>
-    <div style="font-family:'DM Sans',sans-serif;font-size:31px;font-weight:950;line-height:1.05;margin-bottom:12px;">Start with anything.</div>
-    <div style="font-size:15px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Paste a message, upload a photo, or tell Guardian what happened. The chat stays simple. Diary, Vault and Statements are there when you choose to save something.</div>
+    <div style="font-family:'DM Sans',sans-serif;font-size:31px;font-weight:950;line-height:1.05;margin-bottom:12px;">Use the chat box.</div>
+    <div style="font-size:15px;color:var(--muted-hi);line-height:1.7;margin-bottom:16px;">Paste a message, upload a photo, write a diary note, or ask what to do next. Guardian will keep it simple and ask before anything is saved.</div>
     <div style="background:linear-gradient(180deg,rgba(244,241,234,0.055),rgba(244,241,234,0.025));border:1px solid rgba(244,241,234,0.12);border-radius:18px;padding:15px 16px;margin-bottom:16px;">
       <div style="font-size:15px;color:var(--white);font-weight:900;margin-bottom:6px;">Talk first. Save after.</div>
       <div style="font-size:13px;color:var(--muted-hi);line-height:1.55;">Guardian can help you understand, reply, log, upload and prepare. Nothing becomes part of your record until you approve it.</div>
@@ -1369,8 +1375,9 @@ p, .body-text { font-size: 16px !important; }
   </div>
   <div class="home-status" id="homeStatus" style="display:none;">Guardian is ready</div>
   <div class="guardian-home-case">
-    <div class="guardian-home-case-line">Protecting <strong>William 3</strong></div>
-    <div id="guardianInstallCard" class="guardian-install-card" style="display:flex;">
+    <div class="guardian-home-case-line" id="guardianHomeCaseLine">Play the long game. Keep the record clear.</div>
+    <div id="guardianInstallCard" class="guardian-install-card" style="display:none;">
+    <button type="button" class="guardian-install-close" onclick="dismissGuardianInstallCard()" title="Do not show this again">×</button>
     <img src="data:image/png;base64,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" alt="" width="48" height="48" style="border-radius:11px;flex:0 0 auto;">
     <div class="guardian-install-copy"><div class="guardian-install-title">Put Guardian on your phone</div><div id="guardianInstallText" class="guardian-install-text">Install the secure Guardian shortcut with its own icon and colours.</div><div id="guardianIosInstallSteps" class="guardian-install-steps">In Safari, tap Share, then Add to Home Screen.</div></div>
     <button type="button" id="guardianInstallButton" class="guardian-install-button" onclick="installGuardianApp()">Install Guardian</button>
@@ -1399,6 +1406,11 @@ p, .body-text { font-size: 16px !important; }
           Start with New chat. Guardian keeps the conversation here, then offers Diary, Vault or Statements only when useful.
         </div>
       </div>
+      <div class="guardian-referral-card">
+        <strong>Know another parent?</strong>
+        Share Guardian with someone who needs a calmer way to keep records.
+        <button type="button" onclick="shareGuardianReferral()">Share Guardian</button>
+      </div>
       <div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 8px 2px;">
         <button type="button" onclick="goToEditProfile()" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:999px;background:rgba(212,168,67,0.16);border:1px solid rgba(212,168,67,0.28);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:950;cursor:pointer;">R</button>
         <button type="button" onclick="openTrustModal()" style="background:transparent;border:0;color:var(--muted-hi);font-size:12px;font-weight:850;cursor:pointer;">Privacy and limits</button>
@@ -1407,10 +1419,13 @@ p, .body-text { font-size: 16px !important; }
     <main class="guardian-main">
       <div class="guardian-main-inner">
         <div class="guardian-home-kicker">Guardian</div>
-        <div class="guardian-welcome">Start with anything.</div>
-        <div class="guardian-home-subtitle">Paste a message, upload a file, or tell Guardian what happened. The record stays underneath until you choose to save it.</div>
+        <div class="guardian-welcome">How can Guardian help?</div>
+        <div class="guardian-home-subtitle">Use the box below. Paste a message, log what happened, upload a file, or ask a question. Guardian will talk it through first and only save when you approve.</div>
         <div class="guardian-home-composer">
-          <textarea id="guardianHomeComposer" rows="3" placeholder="Paste a message, write what happened, upload a screenshot, or ask anything..." oninput="autoGrow(this)" onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)){sendGuardianHomeComposer();}"></textarea>
+          <textarea id="guardianHomeComposer" rows="3" placeholder="Examples:
+They sent me this...
+Diary: picked William up at 1pm...
+Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)){sendGuardianHomeComposer();}"></textarea>
           <div class="guardian-composer-row">
             <div class="guardian-composer-tools">
               <button type="button" class="guardian-round-btn" onclick="triggerGuardianQuickUpload()" title="Add files"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></button><input id="guardianQuickUploadInput" type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" multiple onchange="handleGuardianQuickUpload(event)" style="display:none;">
@@ -3795,38 +3810,38 @@ p, .body-text { font-size: 16px !important; }
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;">
       <div>
         <div style="font-size:11px;font-weight:950;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;">Add files</div>
-        <div id="guardianQuickUploadTitle" style="font-family:'DM Sans',sans-serif;font-size:23px;font-weight:950;color:var(--white);line-height:1.08;">Save to Vault?</div>
+        <div id="guardianQuickUploadTitle" style="font-family:'DM Sans',sans-serif;font-size:23px;font-weight:950;color:var(--white);line-height:1.08;">Add to Guardian?</div>
       </div>
       <button type="button" onclick="cancelGuardianQuickUpload()" style="width:34px;height:34px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:var(--muted-hi);font-size:18px;cursor:pointer;">x</button>
     </div>
-    <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Guardian will keep the original file and label it in the background. You can link it to Diary or Statements later.</div>
+    <div style="font-size:13px;color:var(--muted-hi);line-height:1.6;margin-bottom:12px;">Guardian keeps the original file. You can link it to a diary day, message or statement later.</div>
     <div id="guardianQuickUploadList" style="max-height:180px;overflow:auto;display:grid;gap:7px;margin-bottom:14px;"></div>
-    <button type="button" class="btn-gold" onclick="confirmGuardianQuickUpload()">Save to Vault</button>
+    <button type="button" class="btn-gold" onclick="confirmGuardianQuickUpload()">Add file</button>
     <button type="button" onclick="cancelGuardianQuickUpload()" style="width:100%;padding:10px;margin-top:8px;background:transparent;border:none;color:var(--muted-hi);font-size:13px;font-weight:850;cursor:pointer;">Cancel</button>
   </div>
 </div>
-<div id="guardianFirstUseGuide" style="display:none;position:fixed;inset:0;background:rgba(7,9,13,0.82);z-index:9650;padding:18px;box-sizing:border-box;align-items:center;justify-content:center;">
-  <div style="width:min(520px,100%);background:linear-gradient(180deg,#111822,#0d131c);border:1px solid rgba(244,241,234,0.14);border-radius:22px;padding:20px;box-shadow:0 30px 100px rgba(0,0,0,0.52);">
+<div id="guardianFirstUseGuide" style="display:none;position:fixed;inset:0;background:rgba(7,9,13,0.96);backdrop-filter:blur(8px);z-index:9650;padding:clamp(14px,3vw,24px);box-sizing:border-box;align-items:center;justify-content:center;overflow:auto;">
+  <div style="width:min(560px,100%);max-height:calc(100vh - 36px);overflow:auto;background:linear-gradient(180deg,#111822,#0d131c);border:1px solid rgba(244,241,234,0.14);border-radius:22px;padding:clamp(17px,3vw,24px);box-shadow:0 30px 100px rgba(0,0,0,0.58);">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;">
       <div>
         <div style="font-size:11px;font-weight:950;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;">Quick start</div>
-        <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:950;color:var(--white);line-height:1.08;">Start with anything.</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:950;color:var(--white);line-height:1.08;">Use the chat box.</div>
       </div>
       <button type="button" onclick="dismissGuardianFirstUseGuide()" style="width:34px;height:34px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:var(--muted-hi);font-size:18px;cursor:pointer;">x</button>
     </div>
-    <div style="font-size:14px;color:var(--muted-hi);line-height:1.65;margin-bottom:15px;">Paste a message, upload photos, or tell Guardian what happened. You do not need to choose the right tool first.</div>
+    <div style="font-size:14px;color:var(--muted-hi);line-height:1.65;margin-bottom:15px;">Type, paste, speak or upload. Guardian will help you understand it, reply, log it, or find what matters.</div>
     <div style="display:grid;gap:10px;margin-bottom:16px;">
       <div style="display:flex;gap:11px;align-items:flex-start;background:rgba(244,241,234,0.035);border:1px solid rgba(244,241,234,0.09);border-radius:15px;padding:12px;">
         <span style="width:9px;height:9px;border-radius:999px;background:var(--gold);margin-top:6px;flex:0 0 auto;"></span>
-        <div><div style="font-size:14px;font-weight:900;color:var(--white);margin-bottom:3px;">Talk normally</div><div style="font-size:12.5px;color:var(--muted-hi);line-height:1.5;">Ask, paste, speak, or think out loud. Guardian works out what help is useful.</div></div>
+        <div><div style="font-size:14px;font-weight:900;color:var(--white);margin-bottom:3px;">Paste what they sent</div><div style="font-size:12.5px;color:var(--muted-hi);line-height:1.5;">Guardian explains it plainly, then helps you decide whether to reply, save it, or just understand it.</div></div>
       </div>
       <div style="display:flex;gap:11px;align-items:flex-start;background:rgba(244,241,234,0.035);border:1px solid rgba(244,241,234,0.09);border-radius:15px;padding:12px;">
         <span style="width:9px;height:9px;border-radius:999px;background:var(--blue);margin-top:6px;flex:0 0 auto;"></span>
-        <div><div style="font-size:14px;font-weight:900;color:var(--white);margin-bottom:3px;">Guardian keeps things separate</div><div style="font-size:12.5px;color:var(--muted-hi);line-height:1.5;">Original wording, your words, files and Guardian notes stay labelled so the record is clear.</div></div>
+        <div><div style="font-size:14px;font-weight:900;color:var(--white);margin-bottom:3px;">Say what happened</div><div style="font-size:12.5px;color:var(--muted-hi);line-height:1.5;">A quick note is enough. Guardian can turn messy fragments into a diary entry for you to check.</div></div>
       </div>
       <div style="display:flex;gap:11px;align-items:flex-start;background:rgba(244,241,234,0.035);border:1px solid rgba(244,241,234,0.09);border-radius:15px;padding:12px;">
         <span style="width:9px;height:9px;border-radius:999px;background:var(--green);margin-top:6px;flex:0 0 auto;"></span>
-        <div><div style="font-size:14px;font-weight:900;color:var(--white);margin-bottom:3px;">You choose what becomes record</div><div style="font-size:12.5px;color:var(--muted-hi);line-height:1.5;">Diary entries, Vault files and statement material are saved only after you approve them.</div></div>
+        <div><div style="font-size:14px;font-weight:900;color:var(--white);margin-bottom:3px;">Add photos or files</div><div style="font-size:12.5px;color:var(--muted-hi);line-height:1.5;">Original files stay labelled. Diary entries, Vault files and statement material are saved only after you approve them.</div></div>
       </div>
     </div>
     <button type="button" class="btn-gold" onclick="startGuardianFirstUseChat()">Start a chat</button>
@@ -3968,7 +3983,13 @@ var currentUser = null;
 var guardianInstallPrompt = null;
 
 function guardianIsInstalled() {
-  return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  var remembered = false;
+  try { remembered = localStorage.getItem('gGuardianInstalled') === '1'; } catch(e) {}
+  return remembered || window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function guardianInstallDismissed() {
+  try { return localStorage.getItem('gGuardianInstallDismissed') === '1'; } catch(e) { return false; }
 }
 
 function guardianIsIos() {
@@ -3983,13 +4004,12 @@ function updateGuardianInstallCard() {
   if (!card) return;
   var ios = guardianIsIos();
   var canPrompt = !!guardianInstallPrompt;
-  card.style.display = 'flex';
-  if (guardianIsInstalled()) {
-    if (button) button.textContent = 'Installed';
-    if (text) text.textContent = 'Guardian is ready from this device.';
+  if (guardianIsInstalled() || guardianInstallDismissed()) {
+    card.style.display = 'none';
     if (iosSteps) iosSteps.style.display = 'none';
     return;
   }
+  card.style.display = 'flex';
   if (ios) {
     if (button) button.textContent = 'How to install';
     if (text) text.textContent = 'Add the gold Guardian shield to your home screen.';
@@ -4004,6 +4024,31 @@ function updateGuardianInstallCard() {
   }
 }
 
+function dismissGuardianInstallCard() {
+  try { localStorage.setItem('gGuardianInstallDismissed', '1'); } catch(e) {}
+  var card = document.getElementById('guardianInstallCard');
+  if (card) card.style.display = 'none';
+  toast('Install reminder hidden');
+}
+
+async function shareGuardianReferral() {
+  var url = 'https://guardian-xgzl.vercel.app/';
+  var title = 'GuardianCC';
+  var text = 'Guardian helps parents talk things through, keep a clear diary, store files, and prepare from records they approve.';
+  try {
+    if (navigator.share) {
+      await navigator.share({ title:title, text:text, url:url });
+      return;
+    }
+  } catch(e) {}
+  try {
+    await navigator.clipboard.writeText(url);
+    toast('Guardian link copied');
+  } catch(e) {
+    toast(url);
+  }
+}
+
 async function installGuardianApp() {
   var iosSteps = document.getElementById('guardianIosInstallSteps');
   if (guardianIsIos()) {
@@ -4014,7 +4059,10 @@ async function installGuardianApp() {
   guardianInstallPrompt.prompt();
   var choice = await guardianInstallPrompt.userChoice;
   guardianInstallPrompt = null;
-  if (choice && choice.outcome === 'accepted') toast('Guardian added to your phone');
+  if (choice && choice.outcome === 'accepted') {
+    try { localStorage.setItem('gGuardianInstalled', '1'); } catch(e) {}
+    toast('Guardian added to your phone');
+  }
   updateGuardianInstallCard();
 }
 
@@ -4025,6 +4073,7 @@ window.addEventListener('beforeinstallprompt', function(event) {
 });
 window.addEventListener('appinstalled', function() {
   guardianInstallPrompt = null;
+  try { localStorage.setItem('gGuardianInstalled', '1'); } catch(e) {}
   updateGuardianInstallCard();
 });
 
@@ -4771,6 +4820,7 @@ function showGuardianFirstUseGuide(force) {
     if (!force && localStorage.getItem('gFirstUseGuideSeen') === 'true') return;
     var modal = document.getElementById('guardianFirstUseGuide');
     if (!modal) return;
+    if (typeof setGuardianSidebar === 'function') setGuardianSidebar(true);
     modal.style.display = 'flex';
   } catch(e) {}
 }
@@ -7024,7 +7074,13 @@ function showHome() {
   var accountEmail = document.getElementById('homeAccountEmail');
   if (accountEmail) accountEmail.textContent = currentUser && currentUser.email ? currentUser.email : 'Your Guardian account';
   var childDisplay = profile && profile.childName ? profile.childName.split(',')[0].trim() : '';
-  document.getElementById('homeStatus').innerHTML = childDisplay ? 'Protecting <strong>' + guardianEscapeHtml(childDisplay) + '</strong>' : 'Your case is loaded';
+  document.getElementById('homeStatus').innerHTML = childDisplay ? 'For <strong>' + guardianEscapeHtml(childDisplay) + '</strong>. Play the long game.' : 'Play the long game. Keep the record clear.';
+  var guardianCaseLine = document.getElementById('guardianHomeCaseLine');
+  if (guardianCaseLine) {
+    guardianCaseLine.innerHTML = childDisplay
+      ? 'For <strong>' + guardianEscapeHtml(childDisplay) + '</strong>. Play the long game.'
+      : 'Play the long game. Keep the record clear.';
+  }
   if(profile&&profile.conflict){
     var lv=parseInt(profile.conflict);
     var pct=(lv/10)*100;
@@ -16083,7 +16139,7 @@ async function processEvidenceFile(file, docType, source, analyser) {
 
 function guardianOwnsEvidenceRecord(doc) {
   if (!currentUser || !doc) return false;
-  if (doc.ownerId && doc.ownerId !== currentUser.id) return false;
+  if (doc.ownerId && doc.ownerId !== currentUser.id && doc.ownerId !== 'local-unverified') return false;
   if (doc.vaultPath && doc.vaultPath.indexOf(currentUser.id + '/') !== 0) return false;
   return true;
 }
@@ -16157,6 +16213,58 @@ async function downloadOriginalDoc(docId) {
     toast('Downloading secure original');
   } catch(e) {
     toast(e.message || 'Could not download secure original');
+  }
+}
+
+function addOriginalToVaultItem(docId) {
+  var doc = caseDocuments.find(function(item){ return String(item.id) === String(docId); });
+  if (!doc) { toast('Vault item not found'); return; }
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.mp3,.m4a,.wav,.mp4,.mov';
+  input.style.display = 'none';
+  input.onchange = function(event) {
+    var file = event.target.files && event.target.files[0];
+    document.body.removeChild(input);
+    if (file) repairVaultOriginal(docId, file);
+  };
+  document.body.appendChild(input);
+  input.click();
+}
+
+async function repairVaultOriginal(docId, file) {
+  var doc = caseDocuments.find(function(item){ return String(item.id) === String(docId); });
+  if (!doc || !file) { toast('Vault item not found'); return; }
+  if (!guardianOwnsEvidenceRecord(doc)) {
+    toast('This evidence record does not belong to the signed-in account');
+    return;
+  }
+  toast('Securing original file...');
+  try {
+    var vaultMetadata = await prepareVaultMetadata(file);
+    if (!vaultMetadata.originalStored) {
+      toast(vaultMetadata.vaultError || 'Could not secure the original. Check sign-in and storage.');
+      return;
+    }
+    doc.originalName = file.name;
+    doc.fileType = file.type || '';
+    doc.fileSize = file.size || 0;
+    doc.originalStored = true;
+    doc.originalHash = vaultMetadata.originalHash || '';
+    doc.vaultPath = vaultMetadata.vaultPath || '';
+    doc.vaultStoredAt = vaultMetadata.vaultStoredAt || new Date().toISOString();
+    doc.vaultStatus = vaultMetadata.vaultStatus || 'secured';
+    doc.vaultError = '';
+    doc.ownerId = currentUser && currentUser.id ? currentUser.id : doc.ownerId;
+    doc.sourceClass = 'secured_original';
+    doc.verificationStatus = 'hash_secured';
+    doc.repairedOriginalAt = new Date().toISOString();
+    localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+    try { await saveProfileToSupabase(); } catch(e) {}
+    if (typeof renderTimeline === 'function') renderTimeline();
+    toast('Original secured. You can now view, download and verify it.');
+  } catch(e) {
+    toast(e.message || 'Could not secure the original');
   }
 }
 
@@ -16686,11 +16794,12 @@ function handleGuardianQuickUpload(event) {
   var modal = document.getElementById('guardianQuickUploadModal');
   var title = document.getElementById('guardianQuickUploadTitle');
   var list = document.getElementById('guardianQuickUploadList');
-  if (title) title.textContent = guardianQuickUploadFiles.length === 1 ? 'Save this file to Vault?' : 'Save these files to Vault?';
+  if (title) title.textContent = guardianQuickUploadFiles.length === 1 ? 'Add this file?' : 'Add ' + guardianQuickUploadFiles.length + ' files?';
   if (list) {
     list.innerHTML = guardianQuickUploadFiles.map(function(file) {
       var size = file && file.size ? Math.max(1, Math.round(file.size / 1024)) + ' KB' : 'File';
-      return '<div style="padding:9px 10px;background:rgba(244,241,234,0.04);border:1px solid rgba(244,241,234,0.10);border-radius:12px;color:var(--white);font-size:12px;font-weight:850;overflow-wrap:anywhere;">' + guardianEscapeHtml(file.name || 'Untitled file') + '<span style="display:block;color:var(--muted-hi);font-size:11px;font-weight:750;margin-top:3px;">' + guardianEscapeHtml(size) + '</span></div>';
+      var kind = file && file.type && file.type.indexOf('image/') === 0 ? 'Photo or screenshot' : 'File';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;background:rgba(244,241,234,0.04);border:1px solid rgba(244,241,234,0.10);border-radius:12px;color:var(--white);font-size:12px;font-weight:850;"><span>' + guardianEscapeHtml(kind) + '</span><span style="color:var(--muted-hi);font-size:11px;font-weight:750;">' + guardianEscapeHtml(size) + '</span></div>';
     }).join('');
   }
   if (modal) modal.style.display = 'flex';
@@ -16706,7 +16815,7 @@ async function confirmGuardianQuickUpload() {
   if (!files.length) return;
   try {
     await addEvidence({ target:{ files:files, value:'' } });
-    toast(files.length === 1 ? 'Saved to Vault' : files.length + ' files saved to Vault');
+    toast(files.length === 1 ? 'File added' : files.length + ' files added');
   } catch(e) {
     toast('Guardian could not save those files. Try again.');
   }
@@ -17117,8 +17226,8 @@ function renderTimeline() {
       return fact.userConfirmed && fact.sourceId === doc.id;
     }).length;
     var originalStatus = doc.originalStored
-      ? '<div class="doc-location" style="color:var(--green);">Original Vault file secured privately · SHA-256 ' + guardianEscapeHtml((doc.originalHash || '').substring(0, 12)) + '...</div>'
-      : '<div class="doc-location" style="color:var(--amber);">Analysis saved; complete original not stored in the Vault</div>';
+      ? '<div class="doc-location" style="color:var(--green);">Original secured in Vault · SHA-256 ' + guardianEscapeHtml((doc.originalHash || '').substring(0, 12)) + '...</div>'
+      : '<div class="doc-location" style="color:var(--amber);">Analysis saved only. Add the original file to make this Vault item complete.</div>';
     var actions = '<button class="doc-export-btn" onclick="exportDoc(' + JSON.stringify(doc.id) + ')">Share analysis</button>';
     if (doc.externalUrl) actions += '<a class="doc-export-btn" style="margin-left:6px;display:inline-block;text-decoration:none;" href="' + guardianEscapeHtml(doc.externalUrl) + '" target="_blank" rel="noopener noreferrer">Open source link</a>';
     if (doc.mediaKind === 'audio') actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="openVerifiedTranscript(' + JSON.stringify(doc.id) + ')">' + (doc.verifiedTranscript ? 'Review transcript' : 'Add verified transcript') + '</button>';
@@ -17126,6 +17235,8 @@ function renderTimeline() {
       actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="viewOriginalDoc(' + JSON.stringify(doc.id) + ')">View original</button>';
       actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="downloadOriginalDoc(' + JSON.stringify(doc.id) + ')">Download</button>';
       actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="verifyEvidenceIntegrity(' + JSON.stringify(doc.id) + ')">Verify integrity</button>';
+    } else if (!doc.externalUrl) {
+      actions += '<button class="doc-export-btn" style="margin-left:6px;color:var(--gold);border-color:rgba(212,168,67,0.32);background:rgba(212,168,67,0.08);" onclick="addOriginalToVaultItem(' + JSON.stringify(doc.id) + ')">Add original</button>';
     }
     actions += '<button class="doc-export-btn" style="margin-left:6px;color:var(--red);border-color:rgba(184,68,68,0.3);" onclick="deleteDoc(' + JSON.stringify(doc.id) + ')">Delete</button>';
     var evidenceMeta = '<div style="font-size:11px;color:var(--muted);margin-top:5px;">' +
@@ -20392,6 +20503,7 @@ var agPreparationSheet = null;
 var agVoiceRecognition = null;
 var agVoiceActive = false;
 var agVoiceFinal = '';
+var agVoiceFinalChunks = [];
 var agVoiceReplies = false;
 var agSpokenRepliesEnabled = false;
 var agSpeechUtterance = null;
@@ -20401,6 +20513,43 @@ var agSkipDefaultOpenMessage = false;
 var agSimpleMessageChat = false;
 var agAttachedVaultIds = [];
 var agPendingDiaryReviewDraft = null;
+
+function normaliseGuardianVoiceText(text) {
+  text = String(text || '').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  var words = text.split(' ');
+  var cleaned = [];
+  for (var i = 0; i < words.length; i++) {
+    cleaned.push(words[i]);
+    for (var size = Math.min(12, Math.floor(cleaned.length / 2)); size >= 2; size--) {
+      var a = cleaned.slice(cleaned.length - size).join(' ').toLowerCase();
+      var b = cleaned.slice(cleaned.length - (size * 2), cleaned.length - size).join(' ').toLowerCase();
+      if (a && a === b) {
+        cleaned.splice(cleaned.length - size, size);
+        break;
+      }
+    }
+  }
+  var sentence = cleaned.join(' ').replace(/\b(\w+)(\s+\1\b)+/gi, '$1').trim();
+  var parts = sentence.split(/\s+/);
+  var out = [];
+  for (var j = 0; j < parts.length; j++) {
+    var window4 = parts.slice(Math.max(0, out.length - 4), out.length).join(' ').toLowerCase();
+    var next4 = parts.slice(j, j + 4).join(' ').toLowerCase();
+    if (next4 && next4 === window4) { j += 3; continue; }
+    out.push(parts[j]);
+  }
+  return out.join(' ').trim();
+}
+
+function shouldKeepGuardianVoiceChunk(chunk) {
+  chunk = normaliseGuardianVoiceText(chunk).toLowerCase();
+  if (!chunk) return false;
+  return !agVoiceFinalChunks.some(function(existing) {
+    existing = normaliseGuardianVoiceText(existing).toLowerCase();
+    return existing === chunk || existing.indexOf(chunk) >= 0 || chunk.indexOf(existing) >= 0;
+  });
+}
 
 function guardianChatKey() {
   return 'chat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
@@ -21513,6 +21662,7 @@ function toggleAskVoice() {
   stopAskSpeech();
   var input = document.getElementById('agInput');
   agVoiceFinal = input ? input.value.trim() : '';
+  agVoiceFinalChunks = agVoiceFinal ? [agVoiceFinal] : [];
   agVoiceRecognition = new Recognition();
   agVoiceRecognition.continuous = true;
   agVoiceRecognition.interimResults = true;
@@ -21520,10 +21670,15 @@ function toggleAskVoice() {
   agVoiceRecognition.onresult = function(event) {
     var interim = '';
     for (var index = event.resultIndex; index < event.results.length; index++) {
-      if (event.results[index].isFinal) agVoiceFinal = (agVoiceFinal + ' ' + event.results[index][0].transcript).trim();
-      else interim += event.results[index][0].transcript;
+      var transcriptPart = event.results[index][0].transcript || '';
+      if (event.results[index].isFinal) {
+        if (shouldKeepGuardianVoiceChunk(transcriptPart)) agVoiceFinalChunks.push(transcriptPart);
+        agVoiceFinal = normaliseGuardianVoiceText(agVoiceFinalChunks.join(' '));
+      } else {
+        interim += transcriptPart;
+      }
     }
-    if (input) input.value = (agVoiceFinal + (interim ? ' ' + interim : '')).trim();
+    if (input) input.value = normaliseGuardianVoiceText(agVoiceFinal + (interim ? ' ' + interim : ''));
   };
   agVoiceRecognition.onend = function() {
     if (agVoiceActive && agVoiceRecognition) {
@@ -21685,7 +21840,7 @@ function agAddMsg(role, text, skipSave) {
   if (!msgs) return;
   var div = document.createElement('div');
   div.style.cssText = role === 'u'
-    ? 'align-self:flex-end;max-width:min(86%,620px);background:linear-gradient(135deg,rgba(210,174,99,0.20),rgba(210,174,99,0.10));border:1px solid rgba(210,174,99,0.28);border-radius:20px 20px 6px 20px;padding:12px 15px;color:#f4f1ea;font-size:16px;line-height:1.56;white-space:pre-wrap;word-break:break-word;margin:2px 0;box-shadow:0 10px 28px rgba(0,0,0,0.12);'
+    ? 'align-self:flex-end;max-width:min(86%,620px);max-height:42vh;overflow:auto;background:linear-gradient(135deg,rgba(210,174,99,0.20),rgba(210,174,99,0.10));border:1px solid rgba(210,174,99,0.28);border-radius:20px 20px 6px 20px;padding:12px 15px;color:#f4f1ea;font-size:16px;line-height:1.56;white-space:pre-wrap;word-break:break-word;margin:2px 0;box-shadow:0 10px 28px rgba(0,0,0,0.12);'
     : 'align-self:stretch;background:linear-gradient(180deg,rgba(244,241,234,0.030),rgba(244,241,234,0.012));border:1px solid rgba(244,241,234,0.075);border-left:3px solid #d2ae63;border-radius:18px;padding:13px 15px;color:#f4f1ea;font-size:16px;line-height:1.66;white-space:pre-wrap;word-break:break-word;margin:4px 0 8px;';
   if (role === 'g') {
     var lbl = document.createElement('div');
@@ -21792,16 +21947,16 @@ async function agHandleAttach(event) {
     toast('Guardian is already reading an attachment');
     return;
   }
-  agAddMsg('u', files.length === 1 ? 'Attached: ' + files[0].name : 'Attached ' + files.length + ' files/photos');
+  agAddMsg('u', files.length === 1 ? 'Photo or file added' : files.length + ' photos/files added');
   var msgs = document.getElementById('agMessages');
   var ld = document.createElement('div');
   ld.style.cssText = 'color:#7a8aaa;font-size:14px;padding:8px 4px;';
-  ld.textContent = files.length === 1 ? 'Guardian is reading ' + files[0].name + '...' : 'Guardian is reading ' + files.length + ' files. This may take a moment...';
+  ld.textContent = files.length === 1 ? 'Guardian is saving the original...' : 'Guardian is saving ' + files.length + ' originals...';
   if (msgs) msgs.appendChild(ld);
   try {
     var analysed = [];
     for (var i = 0; i < files.length; i++) {
-      if (ld) ld.textContent = files.length === 1 ? 'Guardian is reading ' + files[i].name + '...' : 'Guardian is reading file ' + (i + 1) + ' of ' + files.length + ': ' + files[i].name;
+      if (ld) ld.textContent = files.length === 1 ? 'Guardian is saving the original...' : 'Guardian is saving file ' + (i + 1) + ' of ' + files.length + '...';
       var analysedItem = await analyseAskAttachmentFile(files[i]);
       try {
         analysedItem.vaultEntry = await saveAskAttachmentToVault(analysedItem);
@@ -21840,14 +21995,25 @@ async function agHandleAttach(event) {
     });
     agCoachContext = contextParts.join('\n\n---\n\n');
     saveStandaloneAskSession();
-    var response = files.length === 1
-      ? (parsed.summary || 'Guardian identified the attachment.') +
-        ((parsed.deadlines||[]).length ? '\n\nDates or deadlines stated: ' + parsed.deadlines.join('; ') : '') +
-        ((parsed.requiredActions||[]).length ? '\n\nWhat it asks you to do: ' + parsed.requiredActions.join('; ') : '') +
-        '\n\n' + (analysed[0].vaultEntry ? 'Saved to Vault as ' + (analysed[0].vaultEntry.evidenceReference || 'a file') + '. I can link it to today’s Diary if you approve.' : 'I read it, but the Vault receipt needs checking.')
-      : 'I have read ' + analysed.length + ' files/photos.\n\n' + analysed.map(function(item, index){
-          return (index + 1) + '. ' + item.file.name + ' — ' + (item.vaultEntry ? 'Vault ' + item.vaultEntry.evidenceReference : 'read, Vault receipt needs checking') + ' — ' + (item.parsed.summary || item.parsed.purpose || 'added to this chat');
-        }).join('\n') + '\n\nIf these belong to a contact day or event, I can link them to the Diary entry when you approve it.';
+    var allImageAttachments = analysed.every(function(item){ return item && item.prepared && item.prepared.kind === 'image'; });
+    var guardianFirstName = profile && profile.myName ? String(profile.myName).trim().split(/\s+/)[0] : '';
+    var heyName = guardianFirstName ? 'Hey ' + guardianFirstName + ', ' : 'Hey, ';
+    var diaryDateLabel = typeof guardianFormatDiarySelectedDate === 'function' && typeof guardianDiarySelectedDate === 'function'
+      ? guardianFormatDiarySelectedDate(guardianDiarySelectedDate())
+      : 'today';
+    var response = allImageAttachments
+      ? (analysed.length === 1
+          ? heyName + 'I have added the photo.'
+          : heyName + 'I have added the photos.') +
+        '\n\nShall we add ' + (analysed.length === 1 ? 'this' : 'these') + ' to your diary for ' + diaryDateLabel + '?\n\nTell me what ' + (analysed.length === 1 ? 'it shows' : 'they show') + ' in your own words, or say “review today” and I will pull it together before anything is saved.'
+      : (files.length === 1
+          ? (parsed.summary || 'Guardian added the attachment.') +
+            ((parsed.deadlines||[]).length ? '\n\nDates or deadlines stated: ' + parsed.deadlines.join('; ') : '') +
+            ((parsed.requiredActions||[]).length ? '\n\nWhat it asks you to do: ' + parsed.requiredActions.join('; ') : '') +
+            '\n\n' + (analysed[0].vaultEntry ? 'Saved to Vault as ' + (analysed[0].vaultEntry.evidenceReference || 'a file') + '. I can link it to today’s Diary if you approve.' : 'Saved in this chat. The Vault receipt needs checking.')
+          : analysed.length + ' files/photos saved.\n\n' + analysed.map(function(item, index){
+              return (index + 1) + '. ' + (item.vaultEntry ? 'Vault ' + item.vaultEntry.evidenceReference : 'Saved in chat') + ' — ' + (item.parsed.summary || item.parsed.purpose || 'added');
+            }).join('\n') + '\n\nIf these belong to a contact day or event, I can link them to the Diary entry when you approve it.');
     agAddMsg('g', response);
     var detected = type;
     renderAskEventActions(detected);
@@ -21892,6 +22058,28 @@ async function saveAskAttachmentToVault(item) {
 
 async function analyseAskAttachmentFile(file) {
   var prepared = await prepareCaseFile(file);
+  if (prepared && prepared.kind === 'image') {
+    var imageDate = '';
+    try {
+      if (prepared.metadata && prepared.metadata.dateTimeOriginal) imageDate = prepared.metadata.dateTimeOriginal;
+      else if (file && file.lastModified) imageDate = new Date(file.lastModified).toISOString().slice(0, 10);
+    } catch(e) {}
+    return {
+      file: file,
+      prepared: prepared,
+      parsed: {
+        itemType: 'other',
+        apparentDate: imageDate || 'unknown',
+        purpose: 'Photo or screenshot added by the user.',
+        summary: 'Photo or screenshot attached. Guardian has saved the original and will only describe what it shows if you ask.',
+        deadlines: [],
+        requiredActions: [],
+        uncertainties: ['What this photo supports has not been confirmed by the user yet.'],
+        clauses: []
+      },
+      type: 'other'
+    };
+  }
   var instruction = getCTX() + '\n\nAnalyse this newly received attachment. Return ONLY JSON:\n{"itemType":"cafcass|hearing|court_order|solicitor|social_services|school|medical|message|other","apparentDate":"<date or unknown>","purpose":"<one sentence>","summary":"<plain English, maximum 4 sentences>","deadlines":["<explicit deadline only>"],"requiredActions":["<action clearly requested in the document>"],"uncertainties":["<important missing or unclear point>"],"clauses":[{"clauseId":"<clause/paragraph/section id>","label":"<short label>","text":"<exact wording>","tags":["<topic>"]}]}\n\nRules: Use only this attachment. Do not merge later case events into what the sender knew at this date. Never invent a deadline or requirement. For court orders, Cafcass reports, social services reports, CNF/case narrative forms, solicitor letters, school/medical reports, statements and hearing documents, extract the most important exact clauses, sections, requests, allegations, recommendations, deadlines or directions as clauses. Preserve exact wording where possible.';
   var content = buildPreparedContent(prepared, instruction);
   var res = await fetchWithTimeout(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:ASK_GUARDIAN_SYS,messages:[{role:'user',content:content}]})},45000);
@@ -21910,7 +22098,7 @@ async function analyseAskAttachmentFile(file) {
 async function agSend() {
   var inp = document.getElementById('agInput');
   if (!inp) return;
-  var v = (inp.value||'').trim();
+  var v = normaliseGuardianVoiceText(inp.value || '');
   if (!v) return;
   if (!beginGuardianAction('ask_guardian')) {
     toast('Guardian is already answering');
@@ -22034,7 +22222,9 @@ function startDiaryVoiceCapture() {
   agSessionMessages = [];
   agOpen();
   if (typeof closeChatTools === 'function') closeChatTools();
-  agAddMsg('g', (diaryDateForChat ? 'Diary date: ' + (typeof guardianFormatDiarySelectedDate === 'function' ? guardianFormatDiarySelectedDate(diaryDateForChat) : diaryDateForChat) + '\n\n' : '') + 'Tell me what happened in your own words.\n\nFragments are fine: pickup, handover, food, mood, anything good, anything missing, photos or messages. I will hold it as raw notes until you say review today or add to diary.');
+  var firstName = profile && profile.myName ? String(profile.myName).trim().split(/\s+/)[0] : '';
+  var diaryHello = firstName ? 'Hey ' + firstName + ', ' : '';
+  agAddMsg('g', (diaryDateForChat ? 'Diary date: ' + (typeof guardianFormatDiarySelectedDate === 'function' ? guardianFormatDiarySelectedDate(diaryDateForChat) : diaryDateForChat) + '\n\n' : '') + diaryHello + 'what happened today?\n\nYou can say it roughly: pickup, handover, food, mood, anything good, anything missing, photos or messages. I will keep it as notes until you say “review today” or “add to diary”.');
   renderAskDiaryCaptureActions();
 }
 
