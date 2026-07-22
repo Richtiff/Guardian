@@ -314,17 +314,6 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
 .mem-item { display:flex; align-items:flex-start; gap:6px; font-size:12px; color:var(--muted-hi); margin-bottom:4px; }
 .mem-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:4px; }
 
-/* PAYWALL */
-.paywall-card { background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(59,127,255,0.04)); border:2px solid rgba(245,200,66,0.2); border-radius:20px; padding:24px; text-align:center; margin-bottom:14px; }
-.paywall-icon { font-size:40px; margin-bottom:14px; }
-.paywall-title { font-family:'DM Sans',sans-serif; font-size:20px; font-weight:800; margin-bottom:8px; }
-.paywall-sub { font-size:13px; color:var(--muted-hi); line-height:1.7; margin-bottom:20px; }
-.paywall-price { font-family:'DM Sans',sans-serif; font-size:32px; font-weight:800; color:var(--gold); }
-.paywall-price-sub { font-size:12px; color:var(--muted-hi); margin-bottom:20px; }
-.paywall-feats { text-align:left; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
-.paywall-feat { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted-hi); }
-.paywall-feat::before { content:"✓"; color:var(--green); font-weight:700; }
-
 /* QA */
 .qa-wrap { display:flex; flex-direction:column; height:calc(100vh - 140px); }
 .qa-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding-bottom:12px; scroll-behavior:smooth; }
@@ -510,10 +499,6 @@ html,body { background:linear-gradient(180deg,#07090d 0%,#0a0d13 42%,#07090d 100
 .sent-btn { padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:rgba(255,255,255,0.03); color:var(--muted-hi); text-align:left; }
 .sent-yes { border-color:rgba(34,201,122,0.3) !important; color:var(--green) !important; }
 .sent-no { border-color:rgba(245,158,11,0.3) !important; color:var(--amber) !important; }
-.need-to-send { background:linear-gradient(180deg,rgba(244,241,234,0.043),rgba(244,241,234,0.02)); border:1px solid var(--border); border-radius:18px; padding:16px; margin-bottom:12px; }
-.need-lbl { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px; }
-.need-opts { display:flex; flex-direction:column; gap:8px; }
-.need-opt { padding:12px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); border-radius:10px; color:var(--muted-hi); font-size:13px; cursor:pointer; text-align:left; }
 .silence-card { background:var(--amber-dim); border:1.5px solid rgba(245,158,11,0.25); border-radius:14px; padding:18px; margin-bottom:14px; text-align:center; }
 .silence-title { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:800; color:var(--amber); margin-bottom:8px; }
 .silence-text { font-size:13px; color:var(--muted-hi); line-height:1.6; margin-bottom:14px; }
@@ -709,7 +694,6 @@ button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-
 .opt,
 .q-opt,
 .sent-btn,
-.need-opt,
 .chat-suggestion-btn,
 button {
   max-width:100%;
@@ -740,7 +724,6 @@ button {
 .opt,
 .q-opt,
 .sent-btn,
-.need-opt,
 .chat-suggestion-btn {
   white-space:normal;
 }
@@ -835,8 +818,7 @@ p, .body-text { font-size: 16px !important; }
 .guardian-desktop-shell.sidebar-closed .guardian-main-inner {
   margin-top:0 !important;
 }
-.app:has(#sDiary.active),
-.app:has(#sTalkGuardian.active) {
+.app:has(#sDiary.active) {
   max-width:960px;
 }
 #sDiary .contact-calendar,
@@ -1428,7 +1410,7 @@ Diary: picked William up at 1pm...
 Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)){sendGuardianHomeComposer();}"></textarea>
           <div class="guardian-composer-row">
             <div class="guardian-composer-tools">
-              <button type="button" class="guardian-round-btn" onclick="triggerGuardianQuickUpload()" title="Add files"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></button><input id="guardianQuickUploadInput" type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" multiple onchange="handleGuardianQuickUpload(event)" style="display:none;">
+              <button type="button" class="guardian-round-btn" onclick="triggerGuardianQuickUpload()" title="Add files"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg></button><input id="guardianQuickUploadInput" type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.csv,.eml,.msg,.zip,.ics,.xlsx,.xls,image/*,.mp3,.m4a,.wav,.ogg,.oga,.opus,.aac,.amr,.mp4,.mov,.m4v,.webm,.3gp,audio/*,video/*" multiple onchange="handleGuardianQuickUpload(event)" style="display:none;">
               <button type="button" class="guardian-round-btn" onclick="startDiaryVoiceCapture()" title="Speak a diary note"><svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path></svg></button>
               <div class="guardian-tool-hint">Add photos or files</div>
             </div>
@@ -1623,25 +1605,6 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
 </div>
 
 <!-- PAYWALL -->
-<div class="step" id="sPaywall">
-  <div class="paywall-card">
-    <div class="paywall-icon">🛡️</div>
-    <div class="paywall-title">Tester build is open</div>
-    <div class="paywall-sub">Message checks are being counted for product testing, but access is not capped in this build.</div>
-    <div class="paywall-price">No cap</div>
-    <div class="paywall-price-sub">use the app normally and report anything confusing</div>
-    <div class="paywall-feats">
-      <div class="paywall-feat">Unlimited Chat message coaching</div>
-      <div class="paywall-feat">Guardian remembers your full case</div>
-      <div class="paywall-feat">Pattern detection across messages</div>
-      <div class="paywall-feat">Carefully reviewed, evidence-aware replies</div>
-      <div class="paywall-feat">Ask about documents, hearings and evidence</div>
-    </div>
-    <button type="button" class="btn-gold" onclick="go('sHome')">Back to Guardian</button>
-  </div>
-  <button type="button" class="btn-ghost" onclick="goBack()">Back to home</button>
-</div>
-
 <!-- QA -->
 <div class="step" id="sQA">
   <div class="section-header">
@@ -1853,10 +1816,6 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
 </div>
 
 <!-- READING -->
-<div class="step" id="sReading">
-  <div class="reading"><div class="spinner"></div><div class="reading-title">Reading message...</div><div class="reading-sub">Give me a second</div></div>
-</div>
-
 <!-- COOLDOWN -->
 <div class="step" id="sCooldown">
   <div class="their-bubble"><div class="their-label">Their message</div><div class="their-text" id="coolText"></div></div>
@@ -1931,17 +1890,6 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
 </div>
 
 <!-- NEED CHECK -->
-<div class="step" id="sNeedCheck">
-  <div class="need-to-send">
-    <div class="need-lbl">Do you need to send this?</div>
-    <div class="need-opts">
-      <button type="button" class="need-opt" onclick="outYes()">Yes — there is a specific reason I need to send this</button>
-      <button type="button" class="need-opt" onclick="outCheckin()">I just want to check in</button>
-      <button type="button" class="need-opt" onclick="outNotSure()">Not sure</button>
-    </div>
-  </div>
-</div>
-
 <!-- SILENCE -->
 <div class="step" id="sSilence">
   <div class="silence-card">
@@ -2225,11 +2173,11 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
     <div style="font-size:11px;color:var(--muted-hi);line-height:1.55;margin:8px 0 10px;">Use this when you have several files at once. Guardian treats conversations from another AI as reference notes, not original evidence.</div>
     <label style="display:block;text-align:center;padding:10px;background:rgba(52,120,212,0.14);border:1px solid rgba(52,120,212,0.28);border-radius:9px;color:var(--blue);font-size:12px;font-weight:900;cursor:pointer;margin-bottom:7px;">
       Bulk case import
-      <input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" multiple onchange="bulkCaseImport(event)" style="display:none;">
+      <input type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.csv,.eml,.msg,.zip,.ics,.xlsx,.xls,image/*,.mp3,.m4a,.wav,.ogg,.oga,.opus,.aac,.amr,.mp4,.mov,.m4v,.webm,.3gp,audio/*,video/*" multiple onchange="bulkCaseImport(event)" style="display:none;">
     </label>
     <label style="display:block;text-align:center;padding:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:9px;color:var(--white);font-size:12px;font-weight:850;cursor:pointer;margin-bottom:8px;">
       Import conversations from another AI
-      <input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,image/jpeg,image/png,image/webp" multiple onchange="bulkCaseImport(event,true)" style="display:none;">
+      <input type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.csv,.eml,image/*" multiple onchange="bulkCaseImport(event,true)" style="display:none;">
     </label>
     <div style="font-size:11px;color:var(--muted-hi);line-height:1.55;">
       <strong style="color:var(--white);">How to export WhatsApp:</strong> open the conversation, choose Export chat, select Without media, then upload the TXT file. Upload important screenshots, photos or voice-note transcripts separately.
@@ -2268,6 +2216,7 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
     <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px;">
       <button type="button" onclick="downloadDiaryEvidenceManifest()" style="padding:10px;background:rgba(52,120,212,0.10);border:1px solid rgba(52,120,212,0.26);border-radius:10px;color:var(--blue);font-size:12px;font-weight:900;cursor:pointer;">Export Vault index</button>
       <button type="button" onclick="downloadDiaryEvidenceOriginals()" style="padding:10px;background:rgba(26,158,114,0.10);border:1px solid rgba(26,158,114,0.26);border-radius:10px;color:var(--green);font-size:12px;font-weight:900;cursor:pointer;">Download originals</button>
+      <button type="button" onclick="toggleVaultRecoveryPanel()" style="padding:10px;background:rgba(184,68,68,0.08);border:1px solid rgba(184,68,68,0.24);border-radius:10px;color:var(--red);font-size:12px;font-weight:900;cursor:pointer;">Deleted Vault items</button>
     </div>
     <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px;">
       <button type="button" class="guardian-home-chip" onclick="guardianVaultFolder('')">All</button>
@@ -2313,6 +2262,7 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
   <div style="font-size:11px;color:var(--muted);line-height:1.45;margin:-2px 0 10px;text-align:center;">Ordered by received/document date. Upload date stays as audit detail.</div><div id="docsTimeline">
     <div style="font-size:13px;color:var(--muted);text-align:center;padding:24px 0;">No Vault items yet. Upload photos, screenshots, messages, orders, reports, letters, audio, video or links.</div>
   </div>
+  <div id="vaultRecoveryPanel" style="display:none;margin-top:12px;"></div>
 </div>
 
 <!-- EDIT PROFILE -->
@@ -2983,26 +2933,6 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
     </div>
   </div>
 
-  <!-- Legacy hearing-order draft retained but disconnected -->
-  <div id="legacyDiaryHearingOrders" style="display:none;">
-    <div class="field-group">
-      <label class="field-label">WHAT WAS ORDERED?</label>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Select all that apply</div>
-      <div style="display:flex;flex-direction:column;gap:8px;" id="legacyHearingOrderOpts">
-        <button type="button" class="opt" onclick="toggleHearingOrder(this,'section7')">Section 7 / welfare report ordered</button>
-        <button type="button" class="opt" onclick="toggleHearingOrder(this,'next_hearing')">Next hearing date given</button>
-        <button type="button" class="opt" onclick="toggleHearingOrder(this,'positions')">Position statements required</button>
-        <button type="button" class="opt" onclick="toggleHearingOrder(this,'contact_order')">Contact order made</button>
-        <button type="button" class="opt" onclick="toggleHearingOrder(this,'adjourned')">Adjourned - no date yet</button>
-        <button type="button" class="opt" onclick="toggleHearingOrder(this,'concluded')">Case concluded</button>
-      </div>
-    </div>
-    <div id="legacyNextHearingDateBox" class="field-group" style="display:none;">
-      <label class="field-label">NEXT HEARING DATE</label>
-      <input class="field-input" type="date" id="legacyNextHearingDate" style="color-scheme:dark;">
-    </div>
-  </div>
-
   <details id="diaryPromptDetails" style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;display:none;">
     <summary style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:850;color:var(--muted-hi);cursor:pointer;list-style:none;">Optional family-time prompts</summary>
     <div style="font-size:12px;color:var(--muted);line-height:1.45;margin:8px 0 10px;">Use these to pack the diary out quickly. They build the entry summary and suggest useful evidence. You can still ignore them and just write or speak below.</div>
@@ -3481,55 +3411,6 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
 
 
 <!-- BUNDLE UPLOAD -->
-<div class="step" id="sBundleUpload">
-  <div class="section-header">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Court Bundle</div><div class="section-sub">Upload once. Guardian files everything.</div></div>
-  </div>
-
-  <div style="background:var(--blue-dim);border:1.5px solid rgba(52,120,212,0.2);border-radius:16px;padding:16px;margin-bottom:16px;">
-    <div style="font-size:14px;color:var(--white);line-height:1.7;margin-bottom:8px;">Upload your full court bundle and Guardian will read every document inside it, identify each one separately, and file them all to your Case File automatically.</div>
-    <div style="font-size:12px;color:var(--muted-hi);line-height:1.6;">Guardian will identify who filed each document — the court, Cafcass, their solicitor, or you. Best results with digital PDFs from HMCTS. Scanned documents may take longer.</div>
-  </div>
-
-  <label class="upload-item" style="margin-bottom:8px;" id="bundleUploadLabel">
-    <input type="file" accept=".pdf,.doc,.docx,image/*" id="bundleFile" onchange="processBundleUpload(event)">
-    <div class="upload-item-icon">📦</div>
-    <div class="upload-item-body">
-      <div class="upload-item-name">Upload court bundle</div>
-      <div class="upload-item-hint">PDF — Guardian reads and separates every document inside</div>
-    </div>
-    <div class="upload-status" id="bundleStatus">+</div>
-  </label>
-  <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:16px;">Best results with digital PDFs. Scanned documents may take longer to read.</div>
-
-  <!-- Processing -->
-  <div id="bundleProcessing" style="display:none;">
-    <div class="bundle-progress">
-      <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">Reading your bundle</div>
-      <div style="font-size:12px;color:var(--muted-hi);" id="bundleStatusText">Identifying documents...</div>
-      <div class="bundle-progress-bar">
-        <div class="bundle-progress-fill" id="bundleProgressFill" style="width:0%"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Results -->
-  <div id="bundleResults" style="display:none;">
-    <div style="background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:20px;">✅</span>
-      <div>
-        <div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--green);" id="bundleResultTitle">Bundle processed</div>
-        <div style="font-size:12px;color:var(--muted-hi);" id="bundleResultSub"></div>
-      </div>
-    </div>
-    <div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">DOCUMENTS FOUND</div>
-    <div id="bundleDocList"></div>
-    <button type="button" class="btn-gold" onclick="go('sDocs')" style="margin-top:14px;">View in Case File →</button>
-  </div>
-</div>
-
-
 <!-- CASE ASSESSMENT -->
 <div class="step" id="sCaseAssessment">
   <div class="section-header">
@@ -3547,36 +3428,6 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
 
 <!-- KEY DATES -->
 
-
-<div class="step" id="sTalkGuardian">
-  <div style="margin-bottom:16px;padding:16px;background:rgba(212,168,67,0.15);border:2px solid #d4a843;border-radius:12px;color:#e8edf5;font-size:15px;font-weight:700;">Chat is ready</div>
-  <div class="section-header">
-    <button type="button" class="back-btn" onclick="goBack()">←</button>
-    <div><div class="section-title">Chat</div><div class="section-sub">Your case. Your questions. Answered.</div></div>
-  </div>
-  <div style="display:none;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-    <button onclick="agChip('rate')" style="padding:8px 14px;background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.3);border-radius:20px;color:var(--gold);font-size:13px;cursor:pointer;touch-action:manipulation;">&#11088; Rate my reply</button>
-    <button onclick="agChip('write')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#9999;&#65039; Help me write one</button>
-    <button onclick="agChip('judge')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#9878;&#65039; Judge view</button>
-    <button onclick="agChip('prep_review')" style="padding:8px 14px;background:rgba(26,158,114,0.1);border:1.5px solid rgba(26,158,114,0.3);border-radius:20px;color:var(--green);font-size:13px;cursor:pointer;touch-action:manipulation;">Prep check</button>
-    <button onclick="agChip('pattern')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#128269; Pattern check</button>
-    <button onclick="agChip('log')" style="padding:8px 14px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:20px;color:var(--white);font-size:13px;cursor:pointer;touch-action:manipulation;">&#128211; What to log</button>
-  </div>
-  <div id="legacyAgRatePanel" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:8px;">THEIR MESSAGE</div>
-    <textarea id="legacyAgTheirMsg" rows="3" placeholder="Paste their message..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:inherit;min-height:60px;resize:none;outline:none;box-sizing:border-box;"></textarea>
-    <div style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:10px 0 8px;">YOUR REPLY</div>
-    <textarea id="legacyAgMyReply" rows="3" placeholder="Paste your reply..." style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:var(--white);font-size:14px;font-family:inherit;min-height:60px;resize:none;outline:none;box-sizing:border-box;"></textarea>
-    <button onclick="agSubmitRating()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:15px;font-weight:800;cursor:pointer;margin-top:10px;touch-action:manipulation;">Rate this reply</button>
-  </div>
-  <div id="legacyAgMessages" style="display:flex;flex-direction:column;gap:14px;padding-bottom:140px;min-height:50px;"></div>
-  <div style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--bg);border-top:1.5px solid rgba(212,168,67,0.2);padding:10px 16px 24px;z-index:50;box-sizing:border-box;">
-    <div style="display:flex;gap:8px;align-items:flex-end;">
-      <textarea id="legacyAgInput" rows="1" placeholder="Talk to Guardian about your case..." style="flex:1;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;color:var(--white);font-size:15px;font-family:inherit;resize:none;outline:none;min-height:44px;max-height:120px;overflow-y:auto;box-sizing:border-box;"></textarea>
-      <button onclick="agSend()" style="width:44px;height:44px;background:var(--gold);border:none;border-radius:12px;color:#0a0600;font-size:20px;cursor:pointer;flex-shrink:0;touch-action:manipulation;">&#9658;</button>
-    </div>
-  </div>
-</div>
 
 <div id="agModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;background:#0a0f1a;overflow-y:auto;padding:0 0 116px;box-sizing:border-box;">
   <div class="ag-shell">
@@ -3626,7 +3477,7 @@ Help me check this reply before I send it..." oninput="autoGrow(this)" onkeydown
   <div class="ag-composer-wrap">
     <div class="ag-composer">
       <label class="ag-icon-btn" title="Add photos or files">
-        <svg viewBox="0 0 24 24"><path d="m21 8.5-9.7 9.7a5 5 0 0 1-7.1-7.1l9.4-9.4a3.3 3.3 0 0 1 4.7 4.7l-9.4 9.4a1.7 1.7 0 0 1-2.4-2.4l8.7-8.7"></path></svg><input type="file" accept=".pdf,.docx,.txt,.rtf,.csv,.eml,image/jpeg,image/png,image/webp" multiple onchange="agHandleAttach(event)" style="display:none;">
+        <svg viewBox="0 0 24 24"><path d="m21 8.5-9.7 9.7a5 5 0 0 1-7.1-7.1l9.4-9.4a3.3 3.3 0 0 1 4.7 4.7l-9.4 9.4a1.7 1.7 0 0 1-2.4-2.4l8.7-8.7"></path></svg><input type="file" accept=".pdf,.doc,.docx,.txt,.rtf,.csv,.eml,.msg,.zip,.ics,.xlsx,.xls,image/*,.mp3,.m4a,.wav,.ogg,.oga,.opus,.aac,.amr,.mp4,.mov,.m4v,.webm,.3gp,audio/*,video/*" multiple onchange="agHandleAttach(event)" style="display:none;">
       </label>
       <button type="button" id="agVoiceBtn" class="ag-icon-btn" onclick="toggleAskVoice()" aria-label="Talk to Guardian" title="Talk to Guardian. Tap again to stop and send."><svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path></svg></button>
       <textarea id="agInput" rows="2" placeholder="Message Guardian..." style="flex:1;min-width:0;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.14);border-radius:18px;padding:12px 14px;color:#e8edf5;font-size:16px;font-family:inherit;resize:none;outline:none;line-height:1.42;min-height:58px;max-height:150px;overflow-y:auto;box-sizing:border-box;"></textarea>
@@ -4637,7 +4488,7 @@ function attachAuthListener() {
   });
 }
 
-var ALL_STEPS = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sPaywall','sQA','sCoach','sReading','sCooldown','sMessageChoice','sQuestion','sNeedCheck','sSilence','sReply','sConfirmed','sEvidenceUpload','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sCourtPlan','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sBundleUpload','sCaseAssessment','sKeyDates','sTalkGuardian'];
+var ALL_STEPS = ['sLogin','sSignup','sVerify','sTestingConsent','sWelcome','sTinyProfile','sProfile1','sProfile2','sProfile3','sProfile4','sProcessing','sSummary','sProfile5','sProfile6','sHome','sQA','sCoach','sCooldown','sMessageChoice','sQuestion','sSilence','sReply','sConfirmed','sEvidenceUpload','sDocs','sEditProfile','sBrain','sExplainer','sStatements','sCourtPlan','sReadTheirs','sCheckMine','sDiary','sDiaryEntry','sStatementWriter','sCaseAssessment','sKeyDates'];
 
 var stepHistory = [];
 var navLock = false;
@@ -6018,11 +5869,12 @@ async function showScreenshotCount(event) {
   toast(count + ' screenshot' + (count>1?'s':'') + ' ready to upload');
 }
 
-function handleBundleInSetup(event) {
-  var files = Array.from(event.target.files||[]); event.target.value = '';
-  var file = files[0]; if (!file) return;
-  if (file.size > 12 * 1024 * 1024) {
-    toast('Bundle is over 12 MB. Split or compress the PDF, then try again.');
+async function handleBundleInSetup(event) {
+  var uploadPlan = guardianSelectFilesForUpload(event, 'setup_bundle', { firstOnly:true });
+  var file = uploadPlan.files[0];
+  if (!file) return;
+  if (!beginGuardianAction('setup_bundle_import')) {
+    toast('Guardian is already importing a bundle');
     return;
   }
   var status = document.getElementById('stBundle');
@@ -6030,118 +5882,32 @@ function handleBundleInSetup(event) {
   if (status) { status.textContent = ''; status.innerHTML = '<span style="font-size:11px;color:var(--gold);">Reading...</span>'; }
   load('Reading your bundle...', 'Guardian is identifying every document inside');
 
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var b64 = e.target.result.split(',')[1];
-    // Truncate large PDFs — API has size limits
-    var maxSize = 700000; // ~700KB base64 — stays within API limits
-    var truncated = false;
-    if (false && b64.length > maxSize) {
-      b64 = b64.substring(0, maxSize);
-      truncated = true;
-      console.log('Bundle truncated to', maxSize, 'chars');
+  try {
+    var processed = await processEvidenceFile(file, 'court', 'setup_bundle_upload', analysePreparedCaseFile);
+    unload();
+    if (status) status.textContent = 'Saved';
+    if (result) {
+      result.style.display = 'block';
+      result.style.color = 'var(--green)';
+      result.innerHTML = 'Saved to Vault as ' + guardianEscapeHtml(processed.entry.evidenceReference || 'a Vault item') + '. Guardian will use the readable text it can verify; check important wording against the original.';
     }
-    try {
-      var res = await guardianFetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 1500,
-          messages: [{ role: 'user', content: [
-            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
-            { type: 'text', text: 'This is a family court bundle' + (truncated ? ' (first section only due to size)' : '') + '. Identify every separate document inside it. For each one: what it is, who filed it, the date, and the 2-3 most important facts. Return ONLY JSON: {"documents":[{"name":"<doc name>","author":"<who filed>","date":"<date or unknown>","facts":"<key facts>","type":"court|cafcass|theirs|mine|other"}]}' }
-          ]}]
-        })
-      });
-      var data = await res.json();
-      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
-      var parsed = null;
-      try{parsed=JSON.parse(raw);}catch(err){var m=raw.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
-      unload();
-
-      if (parsed && parsed.documents && parsed.documents.length > 0) {
-        // Add each document to uploadedDocs
-        parsed.documents.forEach(function(doc, i) {
-          uploadedDocs['bundle' + i] = {
-            name: doc.name,
-            type: 'application/pdf',
-            data: b64,
-            extract: doc.facts + (doc.author ? ' Filed by: ' + doc.author : ''),
-            fromBundle: true
-          };
-        });
-        if (status) status.textContent = '✅';
-        if (result) {
-          result.style.display = 'block';
-          result.innerHTML = '✅ ' + parsed.documents.length + ' documents found in bundle: ' +
-            parsed.documents.map(function(d){ return d.name; }).join(', ');
-        }
-        toast('✅ Bundle read — ' + parsed.documents.length + ' documents found');
-      } else {
-        if (status) status.innerHTML = '<span style="font-size:11px;color:var(--amber);">⚠️ Failed</span>';
-        if (result) {
-          result.style.display = 'block';
-          result.style.color = 'var(--amber)';
-          result.innerHTML = '⚠️ Could not read this bundle. Check it is a digital PDF (not scanned). You can upload documents individually from Vault after setup.';
-        }
-        unload();
-      }
-    } catch(err) {
-      unload();
-      if (status) status.innerHTML = '<span style="font-size:10px;color:var(--red);">Error</span>';
-      if (result) { result.style.display='block'; result.style.color='var(--red)'; result.innerHTML='❌ Something went wrong. The file may be too large. Try uploading individual documents from Vault after setup.'; }
-    }
-  };
-  reader.readAsDataURL(file);
+    toast('Bundle saved to Vault');
+  } catch(err) {
+    unload();
+    if (status) status.innerHTML = '<span style="font-size:10px;color:var(--red);">Error</span>';
+    if (result) { result.style.display='block'; result.style.color='var(--red)'; result.innerHTML='This bundle was not saved. Try a clearer digital PDF, or upload the documents inside separately.'; }
+  } finally {
+    endGuardianAction('setup_bundle_import');
+  }
 }
 
 function handleDocMultiple(event, docType) {
-  // Alias — routes to addDoc for backwards compatibility
+  // Backwards-compatible UI entry point. Files still use the modern Vault intake.
   addDoc(event, docType);
 }
 
 function handleDoc(event, docType) {
-  var files=Array.from(event.target.files||[]); event.target.value=''; if(!files.length) return;
-  var stId='st'+docType.charAt(0).toUpperCase()+docType.slice(1);
-  var stEl=document.getElementById(stId);
-  if(stEl) stEl.textContent='⏳';
-  for(var i=0;i<files.length;i++){
-    var f=files[i];
-    (function(file,dt,idx){
-      var r=new FileReader();
-      r.onload=function(e){
-        uploadedDocs[dt+idx]={name:file.name,type:file.type,data:e.target.result.split(',')[1]};
-        var uEl=document.getElementById('u'+dt.charAt(0).toUpperCase()+dt.slice(1));
-        if(uEl) uEl.classList.add('uploaded');
-        if(stEl) stEl.textContent='✅';
-        // Show confirmation below the upload box
-        var confirmId = 'docConfirm_' + dt;
-        var existing = document.getElementById(confirmId);
-        if (!existing) {
-          existing = document.createElement('div');
-          existing.id = confirmId;
-          existing.style.cssText = 'margin-top:6px;padding:8px 10px;background:rgba(26,158,114,0.1);border:1px solid rgba(26,158,114,0.25);border-radius:8px;font-size:13px;color:var(--green);font-weight:600;';
-          if (uEl && uEl.parentNode) uEl.parentNode.insertBefore(existing, uEl.nextSibling);
-        }
-        var count = Object.keys(uploadedDocs).filter(function(k){ return k.startsWith(dt); }).length;
-        var totalAll = Object.keys(uploadedDocs).length;
-        existing.style.cssText = 'margin-top:6px;padding:8px 10px;background:var(--green-dim);border:1.5px solid rgba(26,158,114,0.25);border-radius:8px;font-size:13px;color:var(--green);font-weight:600;';
-        existing.innerHTML = '✅ ' + count + ' file' + (count>1?'s':'') + ' ready';
-        // Update overall counter prominently
-        var totalEl = document.getElementById('setupDocTotal');
-        if (!totalEl) {
-          totalEl = document.createElement('div');
-          totalEl.id = 'setupDocTotal';
-          totalEl.style.cssText = 'margin:12px 0 4px;padding:14px 16px;background:var(--gold-dim);border:2px solid rgba(212,168,67,0.4);border-radius:12px;font-size:15px;color:var(--gold);font-weight:800;text-align:center;';
-          var nextBtn = document.querySelector('#sProfile4 .btn-gold');
-          if (nextBtn) nextBtn.parentNode.insertBefore(totalEl, nextBtn);
-        }
-        totalEl.innerHTML = '📎 ' + totalAll + ' document' + (totalAll>1?'s':'') + ' queued — Guardian will read ' + (totalAll>1?'these':'this') + ' when you continue';
-      };
-      r.readAsDataURL(file);
-    })(f,docType,i);
-  }
+  addDoc(event, docType);
 }
 
 async function processDocs() {
@@ -6370,40 +6136,6 @@ function scheduleContactDayReminder() {
       icon: '/favicon.ico'
     });
   }
-}
-
-function legacyAddBrainEvidence(event) {
-  var files = event.target.files;
-  if (!files || !files.length) return;
-  var status = document.getElementById('brainEvidenceStatus');
-  if (status) status.textContent = '⏳';
-  var count = files.length;
-  Array.from(files).forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      // Add to case documents as evidence
-      caseDocuments.push({
-        id: Date.now() + Math.random(),
-        type: 'other',
-        name: 'Evidence: ' + file.name,
-        originalName: file.name,
-        fileType: file.type,
-        date: new Date().toLocaleDateString('en-GB'),
-        extract: 'Evidence uploaded from Guardian Brain on ' + new Date().toLocaleDateString('en-GB'),
-        uploadedAt: new Date().toISOString(),
-        originalData: e.target.result.split(',')[1] ? e.target.result.split(',')[1].substring(0, 500000) : ''
-      });
-    };
-    reader.readAsDataURL(file);
-  });
-  setTimeout(function() {
-    localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
-    try { saveProfileToSupabase(); } catch(err) {}
-    if (status) status.textContent = '✅ ' + count + ' file' + (count > 1 ? 's' : '') + ' saved to Vault';
-    toast('✅ ' + count + ' file' + (count > 1 ? 's' : '') + ' added to your Vault');
-    renderIntelBar();
-  }, 500);
-  event.target.value = '';
 }
 
 function dismissContactReminder() { var b=document.getElementById("contactReminderBanner"); if(b) b.remove(); }
@@ -7531,19 +7263,6 @@ function addQAGuardianMsg(text) {
 }
 function scrollQA(){ var c=document.getElementById('qaMsgs'); c.scrollTop=c.scrollHeight; }
 
-function legacyHandleQAAttach(event) {
-  var files = Array.from(event.target.files||[]); event.target.value = '';
-  var file = files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    qaAttachment = { name: file.name, type: file.type, data: e.target.result.split(',')[1] };
-    document.getElementById('qaAttachName').textContent = 'ðŸ“Ž ' + file.name;
-    document.getElementById('qaAttachPreview').style.display = 'flex';
-  };
-  reader.readAsDataURL(file);
-  event.target.value = '';
-}
-
 function removeAttach() {
   qaAttachment = null;
   document.getElementById('qaAttachPreview').style.display = 'none';
@@ -7635,8 +7354,8 @@ function resizeImageForThread(dataUrl, callback) {
 }
 
 async function handleThreadImageUpload(event) {
-  var files = Array.from(event.target.files);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'thread_chat');
+  var files = uploadPlan.files;
   if (!files.length) return;
   var remaining = MAX_THREAD_IMAGES - threadImages.length;
   if (remaining <= 0) { toast('Maximum ' + MAX_THREAD_IMAGES + ' files reached'); return; }
@@ -7651,9 +7370,17 @@ async function handleThreadImageUpload(event) {
     try {
       if (typeof prepareCaseFile !== 'function') throw new Error('Document reader is not available.');
       var prepared = await prepareCaseFile(files[i]);
-      if (prepared.kind === 'image') threadImages.push({data:prepared.b64,type:prepared.mime||'image/jpeg',name:files[i].name,kind:'image'});
-      else if (prepared.kind === 'pdf') threadImages.push({data:prepared.b64,type:'application/pdf',name:files[i].name,kind:'pdf'});
-      else if (prepared.kind === 'text') threadImages.push({data:null,text:prepared.text,type:'text/plain',name:files[i].name,kind:'text'});
+      var vaultMetadata = await prepareVaultMetadata(files[i]);
+      var threadEntry = storePreparedEvidence(files[i], prepared.kind === 'image' ? 'screenshot' : 'other', {
+        title:files[i].name,
+        date:'unknown',
+        extract:'File attached to a message thread. Original preserved in the Vault before chat analysis.',
+        facts:[]
+      }, 'message_thread_attachment', vaultMetadata);
+      var vaultFields = { vaultEntryId:threadEntry.id, evidenceReference:threadEntry.evidenceReference || '', originalStored:!!threadEntry.originalStored };
+      if (prepared.kind === 'image') threadImages.push(Object.assign({data:prepared.b64,type:prepared.mime||'image/jpeg',name:files[i].name,kind:'image'}, vaultFields));
+      else if (prepared.kind === 'pdf') threadImages.push(Object.assign({data:prepared.b64,type:'application/pdf',name:files[i].name,kind:'pdf'}, vaultFields));
+      else if (prepared.kind === 'text') threadImages.push(Object.assign({data:null,text:prepared.text,type:'text/plain',name:files[i].name,kind:'text'}, vaultFields));
       else if (prepared.kind === 'preserved') throw new Error('The original can be stored in Files, but Chat cannot read this format. Export it as PDF or text.');
       else if (prepared.kind === 'media') throw new Error('Chat cannot reliably interpret this recording. Add it to Files with a user description or verified transcript.');
       else throw new Error('This file could not be prepared for Chat.');
@@ -8031,10 +7758,12 @@ function showOut() {
 }
 
 async function handleUpload(event) {
-  var files = Array.from(event.target.files);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'message_screenshot_reader', { firstOnly:true });
+  var files = uploadPlan.files;
   if (!files.length) return;
   var file = files[0];
+  var messageScreenshotVaultMetadata = {};
+  try { messageScreenshotVaultMetadata = await prepareVaultMetadata(file); } catch(e) { messageScreenshotVaultMetadata = { originalStored:false, vaultError:e.message || 'Could not preserve original' }; }
   // Clear any text in the paste box so screenshot is used, not old text
   var typeIn = document.getElementById('typeIn');
   if (typeIn) typeIn.value = '';
@@ -8059,6 +7788,15 @@ async function handleUpload(event) {
       unload();
       if (p && p.unclear) { toast('Screenshot not clear enough â€” please type the message instead'); return; }
       if (p && p.theirMessages && p.theirMessages.length > 3) {
+        try {
+          storePreparedEvidence(file, 'screenshot', {
+            title:file.name,
+            date:'unknown',
+            extract:'Message screenshot uploaded from the main chat box. Text was read into chat; original preserved separately.',
+            facts:[{ text:p.theirMessages.trim(), source:'message screenshot OCR', confirmed:false }]
+          }, 'message_screenshot_reader', messageScreenshotVaultMetadata);
+          try { await saveProfileToSupabase(); } catch(saveErr) {}
+        } catch(storeErr) {}
         currentMsg = p.theirMessages.trim();
         st.msg = p.theirMessages.trim();
         st.outgoing = false;
@@ -9767,55 +9505,7 @@ function logBrainContact(outcome) {
 // ── DOCUMENT EXPLAINER ──
 var lastExplainedDoc = null;
 
-async function legacyExplainDoc(event, docType) {
-  var files = Array.from(event.target.files||[]); event.target.value = '';
-  var file = files[0]; if (!file) return;
-  load('Reading your document...', 'Guardian is translating this into plain English');
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var b64 = e.target.result.split(',')[1];
-    var ctx = getCTX();
-    try {
-      var msgContent = [];
-      if (file.type && file.type.startsWith('image/')) {
-        msgContent = [
-          { type:'image', source:{ type:'base64', media_type:file.type, data:b64 } },
-          { type:'text', text:ctx + '\n\nThis parent has uploaded a document. Read it and explain it in plain English as if talking to a worried parent who has never dealt with the legal system before.\n\nReturn ONLY JSON:\n{"documentType":"<what type of document this is>","summary":"<plain English explanation — 3-4 sentences, no jargon>","actions":"<what the parent needs to do now>","deadline":"<any deadline mentioned, or blank>","urgency":"high|medium|low"}' }
-        ];
-      } else {
-        msgContent = [
-          { type:'document', source:{ type:'base64', media_type:'application/pdf', data:b64 } },
-          { type:'text', text:ctx + '\n\nThis parent has uploaded a document. Read it and explain it in plain English as if talking to a worried parent who has never dealt with the legal system before.\n\nReturn ONLY JSON:\n{"documentType":"<what type of document this is>","summary":"<plain English explanation — 3-4 sentences, no jargon>","actions":"<what the parent needs to do now>","deadline":"<any deadline mentioned, or blank>","urgency":"high|medium|low"}' }
-        ];
-      }
-      var res = await guardianFetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:400, system:'You are Guardian, explaining legal and official documents to parents in family court proceedings in England and Wales. Always use plain English. Never use legal jargon without explaining it. Be warm, direct, and reassuring. Focus on what the parent needs to understand and do.', messages:[{ role:'user', content:msgContent }] }) });
-      var data = await res.json();
-      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
-      var parsed = null;
-      try { parsed = JSON.parse(raw); } catch(err) { var m = raw.match(/\{[\s\S]*\}/); if(m) try{parsed=JSON.parse(m[0]);}catch(e2){} }
-      unload();
-      if (parsed) {
-        lastExplainedDoc = parsed;
-        extractCaseFacts((parsed.summary||'') + ' ' + (parsed.actions||''), 'document: ' + (parsed.documentType||'uploaded document'));
-        document.getElementById('explainerType').textContent = parsed.documentType || 'Document';
-        document.getElementById('explainerSummary').innerHTML = (parsed.summary || '').replace(/\n/g,'<br>');
-        document.getElementById('explainerActions').innerHTML = (parsed.actions || '').replace(/\n/g,'<br>');
-        if (parsed.deadline) {
-          document.getElementById('explainerDeadline').textContent = parsed.deadline;
-          document.getElementById('explainerDeadlineBox').style.display = 'block';
-        } else {
-          document.getElementById('explainerDeadlineBox').style.display = 'none';
-        }
-        document.getElementById('explainerResult').style.display = 'block';
-      } else {
-        toast('Could not read document — please try again');
-      }
-    } catch(err) { unload(); toast('Something went wrong — please try again'); }
-  };
-  reader.readAsDataURL(file);
-}
-
-function goQAWithDoc() {
+async function goQAWithDoc() {
   if (lastExplainedDoc) {
     qaHistory = [{ role:'assistant', content:'I have just read your ' + lastExplainedDoc.documentType + '. ' + lastExplainedDoc.summary + ' What would you like to know about it?' }];
     document.getElementById('qaMsgs').innerHTML = '';
@@ -9905,11 +9595,7 @@ function setScanType(type) {
   document.getElementById('theirsScanStatus').textContent = type==='mine' ? 'Upload my statement' : 'Upload their statement';
 }
 
-async function legacyScanStatement(event, forcedType) {
-  return scanStatement(event, forcedType);
-}
-
-// ── DIARY ──
+async // ── DIARY ──
 var diaryEntries = safeJSONParse(localStorage.getItem('gDiary'), []);
 
 function diaryReferenceNumber(index) {
@@ -10372,10 +10058,9 @@ function renderSelectedDiaryDatePanel() {
           (entries.length ? '<button type="button" onclick="reviewSelectedDiaryDate()" class="guardian-diary-secondary-action">Review saved entries<span class="guardian-diary-action-sub">Open what is already saved for this date.</span></button>' : '<button type="button" onclick="buildDiaryDraftFromTalk()" class="guardian-diary-secondary-action">Review today<span class="guardian-diary-action-sub">Use after you have talked through the day.</span></button>') +
         '</div>' +
       '</div>' +
-      '<details class="guardian-diary-more"><summary>More options</summary>' +
+      '<details class="guardian-diary-more"><summary>Recovery</summary>' +
         '<div style="display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;">' +
           '<button type="button" onclick="startSmoothHandoverDiaryChat()" class="guardian-diary-small-action">Quick note: handover ran smoothly<span class="guardian-diary-action-sub">Adds a balanced ordinary-care note, then you can add anything different.</span></button>' +
-          '<button type="button" onclick="loadDiaryEntry({date:guardianDiarySelectedDate()});go(&quot;sDiaryEntry&quot;)" class="guardian-diary-small-action">Add manually instead<span class="guardian-diary-action-sub">Only use this if you want the old structured entry screen.</span></button>' +
           '<button type="button" onclick="showAllDeletedDiaryEntries()" class="guardian-diary-small-action" style="color:' + (deletedTotal ? 'var(--red)' : 'var(--muted-hi)') + ';">Deleted diary entries<span class="guardian-diary-action-sub">' + deletedTotal + ' recoverable ' + (deletedTotal === 1 ? 'entry' : 'entries') + ' on this device.</span></button>' +
         '</div>' +
       '</details>' +
@@ -12034,27 +11719,6 @@ function showDiaryActivityInput(btn) {
   }
 }
 
-function legacyAddDiaryPhotos(event) {
-  var files = event.target.files;
-  if (!files || !files.length) return;
-  var row = document.getElementById('diaryPhotoRow');
-  if (!row) return;
-  Array.from(files).forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var thumb = document.createElement('div');
-      thumb.style.cssText = 'width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;flex-shrink:0;';
-      thumb.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">' +
-        '<button onclick="this.parentNode.remove()" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>';
-      // Store photo data
-      if (!diaryPhotos) diaryPhotos = [];
-      diaryPhotos.push({ data: e.target.result, name: file.name });
-      row.insertBefore(thumb, row.lastElementChild);
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
 var diaryPhotos = [];
 var lastSavedEntryId = null;
 var lastSavedEntryText = '';
@@ -12089,9 +11753,9 @@ function renderDiaryPhotoRow() {
 // Stable image-only diary attachment handler. Document attachments join the shared
 // upload engine in the next release stage.
 function addDiaryPhotos(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
   var row = document.getElementById('diaryPhotoRow');
+  var uploadPlan = guardianSelectFilesForUpload(event, 'diary_photo');
+  var files = uploadPlan.files;
   if (!files.length || !row) return;
   files.forEach(async function(file) {
     if (!file.type || !file.type.startsWith('image/')) {
@@ -12100,6 +11764,17 @@ function addDiaryPhotos(event) {
     }
     var originalHash = '';
     try { if (typeof sha256File === 'function') originalHash = await sha256File(file); } catch(e) {}
+    var vaultEntry = null;
+    try {
+      var vaultMetadata = await prepareVaultMetadata(file);
+      vaultEntry = storePreparedEvidence(file, 'screenshot', {
+        title:file.name,
+        date:'unknown',
+        extract:'Photo or screenshot attached during Diary logging. Original preserved in Vault and can be linked when the diary entry is approved.',
+        facts:[]
+      }, 'diary_photo_attachment', vaultMetadata);
+      try { await saveProfileToSupabase(); } catch(saveErr) {}
+    } catch(storeErr) {}
     var reader = new FileReader();
     reader.onload = function(e) {
       var img = new Image();
@@ -12119,7 +11794,10 @@ function addDiaryPhotos(event) {
           originalType:file.type || '',
           originalSize:Number(file.size) || 0,
           originalLastModified:Number(file.lastModified) || 0,
-          originalHash:originalHash
+          originalHash:originalHash,
+          vaultEntryId:vaultEntry ? vaultEntry.id : '',
+          evidenceReference:vaultEntry ? (vaultEntry.evidenceReference || '') : '',
+          originalStored:vaultEntry ? !!vaultEntry.originalStored : false
         };
         diaryPhotos.push(attachment);
         renderDiaryPhotoRow();
@@ -14054,53 +13732,6 @@ function getSwGuidance() {
   return null;
 }
 
-function legacySwUploadTheirDocs(event) {
-  var files = Array.from(event.target.files||[]); event.target.value = '';
-  var file = files[0]; if (!file) return;
-  load('Reading their document...', 'Guardian is finding every allegation');
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    var b64 = e.target.result.split(',')[1];
-    try {
-      var res = await guardianFetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 800,
-          system: 'You are reading a family court document filed by the other parent or their solicitor. Extract every allegation, concern, or claim made about the responding parent.',
-          messages: [{ role: 'user', content: [
-            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
-            { type: 'text', text: 'Read this document. Extract every allegation or concern raised about the other parent. Return ONLY JSON: {"docType":"<what this document is>","allegations":["<allegation 1>","<allegation 2>"],"summary":"<plain English summary>"}' }
-          ]}]
-        })
-      });
-      var data = await res.json();
-      var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
-      var parsed = null;
-      try{parsed=JSON.parse(raw);}catch(err){}
-      unload();
-      if (parsed) {
-        // Save to case documents
-        caseDocuments.push({ id:Date.now(), type:'other', name:parsed.docType||file.name, date:new Date().toLocaleDateString('en-GB'), extract:parsed.summary, uploadedAt:new Date().toISOString() });
-        localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
-        // Add allegations to profile
-        if (parsed.allegations && parsed.allegations.length > 0 && profile) {
-          var newAllegations = parsed.allegations.join('; ');
-          profile.allegations = profile.allegations ? profile.allegations + '; ' + newAllegations : newAllegations;
-          save();
-        }
-        toast('✅ Document read — ' + (parsed.allegations||[]).length + ' allegations found. Guardian will address each one.');
-        // Refresh guidance
-        swPickApplying(document.querySelector('#swApplyingOpts .opt.sel'), swApplying);
-      } else {
-        toast('Document saved — Guardian will use it for your statement');
-      }
-    } catch(err) { unload(); toast('Could not read document — continue and Guardian will still help'); }
-  };
-  reader.readAsDataURL(file);
-}
-
 function swContinueToStatement() {
   // Get the ask from StepA and copy to StepB if needed
   var askA = document.getElementById('swCourtAskInitial');
@@ -14199,37 +13830,6 @@ function swPickCourtLevel(btn, level) {
 function goStatementWriter() {
   go('sStatementWriter');
   setTimeout(function(){ showStatementDraftLibrary(); }, 0);
-}
-
-function legacyGoStatementWriterPreflight() {
-  // Pre-flight check — show what Guardian has
-  var checks = [];
-  var diary = diaryEntries.length;
-  var docs = caseDocuments.length;
-  var hasMsgs = msgLog.length > 0;
-  var hasAllegations = profile && profile.allegations && profile.allegations.length > 2;
-  var hasDismissed = profile && profile.dismissed && profile.dismissed.length > 2;
-  var hasCourtPlan = !!getSavedCourtPlan();
-
-  var checkHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">WHAT GUARDIAN HAS</div>';
-  checkHtml += [
-    { label: diary + ' diary entries', ok: diary > 0, tip: 'Log family time in My Diary' },
-    { label: docs + ' documents uploaded', ok: docs > 0, tip: 'Upload documents to Case File' },
-    { label: 'Court plan saved', ok: hasCourtPlan, tip: 'Build Court Plan first for staged proposed terms' },
-    { label: 'Message history', ok: hasMsgs, tip: 'Check messages through Reply Ready' },
-    { label: 'Allegations recorded', ok: hasAllegations, tip: 'Update in My Case' },
-    { label: 'Dismissed findings recorded', ok: hasDismissed, tip: 'Update in My Case — most important' },
-  ].map(function(c) {
-    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">' +
-      '<span style="font-size:14px;">' + (c.ok ? '✅' : '⚠️') + '</span>' +
-      '<div style="flex:1;"><div style="font-size:13px;color:' + (c.ok ? 'var(--white)' : 'var(--muted-hi)') + ';">' + c.label + '</div>' +
-      (!c.ok ? '<div style="font-size:11px;color:var(--muted);">' + c.tip + '</div>' : '') +
-      '</div></div>';
-  }).join('');
-
-  document.getElementById('swCaseCheck').innerHTML = checkHtml;
-  go('sStatementWriter');
-  setTimeout(function(){ renderStatementReadinessBoard(); renderStatementPrepBoard(); }, 0);
 }
 
 function startStatementBuild() {
@@ -15179,10 +14779,11 @@ function calDayTap(dateStr) {
 // ── COURT BUNDLE UPLOAD ──
 
 async function processBundleUpload(event) {
-  var files = Array.from(event.target.files||[]); event.target.value = '';
-  var file = files[0]; if (!file) return;
-  if (file.size > 12 * 1024 * 1024) {
-    toast('Bundle is over 12 MB. Split or compress the PDF, then try again.');
+  var uploadPlan = guardianSelectFilesForUpload(event, 'court_bundle', { firstOnly:true });
+  var file = uploadPlan.files[0];
+  if (!file) return;
+  if (!beginGuardianAction('court_bundle_upload')) {
+    toast('Guardian is already reading a bundle');
     return;
   }
 
@@ -15215,6 +14816,7 @@ async function processBundleUpload(event) {
   }, 800);
 
   try {
+    var vaultMetadata = await prepareVaultMetadata(file);
     var reader = new FileReader();
     reader.onload = async function(e) {
       var b64 = e.target.result.split(',')[1];
@@ -15251,6 +14853,16 @@ async function processBundleUpload(event) {
       prog.style.width = '100%';
 
       if (parsed && parsed.documents && parsed.documents.length > 0) {
+        var bundleEntry = storePreparedEvidence(file, 'court', {
+          title:file.name,
+          docType:'Court bundle',
+          sourceRole:'bundle',
+          date:'unknown',
+          extract:(parsed.bundleSummary || 'Court bundle uploaded and reviewed for internal document boundaries.') + ' Documents identified: ' + parsed.documents.length + '.',
+          facts:[],
+          clauses:[],
+          deadlines:[]
+        }, 'court_bundle_upload', vaultMetadata);
         // File each document to caseDocuments
         var typeMap = { court:'court', cafcass:'cafcass', theirs:'other', mine:'other', other:'other' };
         parsed.documents.forEach(function(doc){
@@ -15262,7 +14874,11 @@ async function processBundleUpload(event) {
             extract: doc.keyFacts + (doc.author ? ' Filed by: ' + doc.author + '.' : ''),
             author: doc.author || '',
             uploadedAt: new Date().toISOString(),
-            fromBundle: true
+            fromBundle: true,
+            sourceBundleReference:bundleEntry.evidenceReference || '',
+            sourceBundleId:bundleEntry.id,
+            originalStored:false,
+            sourceClass:'bundle_extracted_index'
           });
         });
         localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
@@ -15308,6 +14924,8 @@ async function processBundleUpload(event) {
     document.getElementById('bundleProcessing').style.display = 'none';
     document.getElementById('bundleStatus').textContent = '❌';
     toast('Something went wrong — please try again');
+  } finally {
+    endGuardianAction('court_bundle_upload');
   }
 }
 
@@ -15322,40 +14940,12 @@ function logSent(choice){
 }
 
 // EXPORT DOCUMENT SUMMARY
-function legacyDownloadOriginalDoc(docId) {
-  var doc = caseDocuments.find(function(d){ return d.id === docId; });
-  if (!doc || !doc.originalData) { toast('Original file not available — find it in your Downloads folder'); return; }
-  try {
-    var mime = doc.fileType || 'application/octet-stream';
-    var blob = b64toBlob(doc.originalData, mime);
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = doc.originalName || doc.name;
-    a.click();
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-    toast('✅ Downloading ' + (doc.originalName || doc.name));
-  } catch(e) {
-    toast('Could not download — find the original in your Downloads folder');
-  }
-}
-
 function b64toBlob(b64, mime) {
   var byteStr = atob(b64);
   var ab = new ArrayBuffer(byteStr.length);
   var ia = new Uint8Array(ab);
   for (var i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
   return new Blob([ab], { type: mime });
-}
-
-function legacyDeleteDoc(docId) {
-  var doc = caseDocuments.find(function(d){ return d.id === docId; });
-  if (!doc) return;
-  if (!confirm('Remove "' + doc.name + '" from your Case File?')) return;
-  caseDocuments = caseDocuments.filter(function(d){ return d.id !== docId; });
-  localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
-  renderTimeline();
-  toast('Document removed');
 }
 
 function exportDoc(docId) {
@@ -15427,162 +15017,7 @@ var _rawCaseDocs = localStorage.getItem('gCaseDocs');
 var caseDocuments = [];
 try { if (_rawCaseDocs && _rawCaseDocs.trim()) caseDocuments = JSON.parse(_rawCaseDocs); } catch(e) { caseDocuments = []; }
 
-function legacyRenderTimeline() {
-  var container = document.getElementById('docsTimeline');
-  if (!container) return;
-
-  // Update count banner
-  var banner = document.getElementById('docsCountBanner');
-  if (banner) {
-    if (caseDocuments.length > 0) {
-      banner.style.display = 'block';
-      banner.textContent = '📎 ' + caseDocuments.length + ' document' + (caseDocuments.length > 1 ? 's' : '') + ' in your Vault';
-    } else {
-      banner.style.display = 'none';
-    }
-  }
-
-  if (!caseDocuments.length) {
-    container.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:30px 0 10px;">No Vault items yet.<br>Add photos, orders, reports, letters, messages or screenshots above.</div>';
-    return;
-  }
-
-  var typeColors = { court:'ttype-court', cafcass:'ttype-cafcass', messages:'ttype-messages', screenshot:'ttype-screenshot', other:'ttype-other' };
-  var typeLabels = { court:'COURT DOC', cafcass:'CAFCASS', messages:'MESSAGES', screenshot:'SCREENSHOT', other:'DOCUMENT' };
-  var typeIcons = { court:'⚖️', cafcass:'👥', messages:'💬', screenshot:'📷', other:'📎' };
-  var dotColors = { court:'var(--blue)', cafcass:'var(--green)', messages:'var(--amber)', screenshot:'var(--gold)', other:'var(--muted-hi)' };
-
-  // SECTION 1: What's been added (upload order)
-  var listHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:10px;">UPLOADED DOCUMENTS (' + caseDocuments.length + ')</div>';
-  listHtml += caseDocuments.slice().reverse().map(function(doc) {
-    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;margin-bottom:7px;">' +
-      '<span style="font-size:18px;flex-shrink:0;">' + (typeIcons[doc.type]||'📎') + '</span>' +
-      '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:13px;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + doc.name + '</div>' +
-        '<div style="font-size:11px;color:var(--muted-hi);margin-top:2px;">Added ' + new Date(doc.uploadedAt).toLocaleDateString('en-GB') + '</div>' +
-      '</div>' +
-      '<span class="timeline-type ' + (typeColors[doc.type]||'ttype-other') + '">' + (typeLabels[doc.type]||'DOC') + '</span>' +
-    '</div>';
-  }).join('');
-
-  // SECTION 2: Chronological timeline
-  var sorted = caseDocuments.slice().sort(function(a,b){
-    var da = a.date ? new Date(a.date.split('/').reverse().join('-')) : new Date(0);
-    var db = b.date ? new Date(b.date.split('/').reverse().join('-')) : new Date(0);
-    return da - db;
-  });
-
-  var locationHints = {
-    court: 'Original uploaded from your files — find it in Downloads or Files app',
-    cafcass: 'Original uploaded from your files — find it in Downloads or Files app',
-    messages: 'Original WhatsApp export — find the .txt file in your Downloads folder',
-    screenshot: 'Original screenshots saved in your phone Photos app',
-    other: 'Original uploaded from your files — find it in Downloads or Files app'
-  };
-
-  var timelineHtml = '<div style="font-family:DM Sans,sans-serif;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin:20px 0 10px;">CASE TIMELINE</div>';
-  timelineHtml += sorted.map(function(doc, i) {
-    var showLine = i < sorted.length - 1;
-    return '<div class="timeline-item">' +
-      '<div class="timeline-dot-col">' +
-        '<div class="timeline-dot" style="background:' + (dotColors[doc.type]||dotColors.other) + '"></div>' +
-        (showLine ? '<div class="timeline-line"></div>' : '') +
-      '</div>' +
-      '<div class="timeline-body">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
-          '<span class="timeline-type ' + (typeColors[doc.type]||'ttype-other') + '">' + (typeLabels[doc.type]||'DOCUMENT') + '</span>' +
-          '<span class="timeline-date">' + (doc.date || 'Date unknown') + '</span>' +
-        '</div>' +
-        '<div class="timeline-title">' + doc.name + '</div>' +
-        (doc.extract ? '<div class="timeline-extract">' + doc.extract + '</div>' : '') +
-        '<div class="doc-location">📁 ' + (locationHints[doc.type]||locationHints.other) + '</div>' +
-        '<div class="doc-disclaimer">Guardian summary only — always use the original document in court proceedings</div>' +
-        '<div class="doc-actions">' +
-          '<button class="doc-export-btn" onclick="exportDoc(' + JSON.stringify(doc.id) + ')">↗ Share summary</button>' +
-          (doc.originalData ? '<button class="doc-export-btn" style="margin-left:6px;" onclick="downloadOriginalDoc(' + JSON.stringify(doc.id) + ')">⬇ Download original</button>' : '') +
-          '<button class="doc-export-btn" style="margin-left:6px;color:var(--red);border-color:rgba(184,68,68,0.3);" onclick="deleteDoc(' + JSON.stringify(doc.id) + ')">🗑 Remove</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
-  container.innerHTML = listHtml + timelineHtml;
-}
-
-async function legacyAddDoc(event, docType) {
-  var files = Array.from(event.target.files);
-  event.target.value = '';
-  if (!files.length) return;
-  document.getElementById('docsProcessing').style.display = 'block';
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    var reader = new FileReader();
-    await new Promise(function(resolve) {
-      reader.onload = async function(e) {
-        try {
-          var b64 = e.target.result.split(',')[1];
-          var msgContent = [];
-          if (file.type && file.type.startsWith('image/')) {
-            msgContent = [
-              { type:'image', source:{ type:'base64', media_type:file.type, data:b64 } },
-              { type:'text', text:'Extract from this document: 1) Document type 2) Date (DD/MM/YYYY if found) 3) Key facts in 2-3 sentences — orders made, allegations, findings, outcomes. Return ONLY JSON: {"docType":"<type>","date":"<date or unknown>","title":"<short title>","extract":"<key facts>"}' }
-            ];
-          } else if (file.type === 'application/pdf') {
-            msgContent = [
-              { type:'document', source:{ type:'base64', media_type:'application/pdf', data:b64 } },
-              { type:'text', text:'Extract from this document: 1) Document type 2) Date (DD/MM/YYYY if found) 3) Key facts in 2-3 sentences — orders made, allegations, findings, outcomes. Return ONLY JSON: {"docType":"<type>","date":"<date or unknown>","title":"<short title>","extract":"<key facts>"}' }
-            ];
-          } else {
-            var txt = atob(b64).substring(0, 2000);
-            msgContent = [{ type:'text', text:'Text export. Extract: 1) Type 2) Date range 3) Key patterns in 2-3 sentences. Return ONLY JSON: {"docType":"messages","date":"<date range>","title":"Message history","extract":"<key patterns>"}. Text: ' + txt }];
-          }
-          var res = await guardianFetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:300, messages:[{ role:'user', content:msgContent }] }) });
-          var data = await res.json();
-          var raw = ((data.content||[]).map(function(b){return b.text||'';}).join('').trim()).replace(/```json|```/g,'').trim();
-          var parsed = null;
-          try { parsed = JSON.parse(raw); } catch(err) { var m = raw.match(/\{[\s\S]*\}/); if(m) try { parsed = JSON.parse(m[0]); } catch(e2){} }
-          var entry = {
-            id: Date.now() + i,
-            type: docType,
-            name: parsed ? (parsed.title || file.name) : file.name,
-            originalName: file.name,
-            fileType: file.type,
-            date: parsed ? (parsed.date || new Date().toLocaleDateString('en-GB')) : new Date().toLocaleDateString('en-GB'),
-            extract: parsed ? (parsed.extract || '') : '',
-            uploadedAt: new Date().toISOString(),
-            originalData: b64.substring(0, 500000) // Store first 500KB for download
-          };
-          caseDocuments.push(entry);
-          localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
-          // Also add to doc extracts for case context
-          docs[docType + entry.id] = entry.extract;
-          localStorage.setItem('gDocs', JSON.stringify(docs));
-        } catch(e) {
-          caseDocuments.push({ id:Date.now()+i, type:docType, name:file.name, date:new Date().toLocaleDateString('en-GB'), extract:'Could not read document', uploadedAt:new Date().toISOString() });
-          localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
-        }
-        resolve();
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-  document.getElementById('docsProcessing').style.display = 'none';
-  renderTimeline();
-  parseContactDaysFromProfile();
-  try { saveProfileToSupabase(); } catch(e) {}
-  toast('✅ Document added to your timeline');
-  checkUpsellTriggers('document');
-  // Auto-extract intelligence from new documents
-  setTimeout(function(){ extractIntelFromNewDocs(); }, 500);
-  // Check if any document had contact/order info — prompt to update profile
-  caseDocuments.slice(-files.length).forEach(function(doc){
-    if (doc.extract && (doc.extract.toLowerCase().indexOf('contact') !== -1 || doc.extract.toLowerCase().indexOf('order') !== -1 || doc.extract.toLowerCase().indexOf('saturday') !== -1 || doc.extract.toLowerCase().indexOf('sunday') !== -1)) {
-      showDocContactPrompt(doc);
-    }
-  });
-}
-
-// Reliable Vault importer. This later declaration replaces the legacy importer above.
+async // Reliable Vault importer. This later declaration replaces the legacy importer above.
 function readCaseFile(file, mode) {
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
@@ -15762,13 +15197,18 @@ async function prepareCaseFile(file) {
       var img = new Image();
       img.onload = function() {
         try {
-          var maxSide = 1800;
+          var maxSide = 2600;
           var scale = Math.min(maxSide / img.width, maxSide / img.height, 1);
           var canvas = document.createElement('canvas');
           canvas.width = Math.max(1, Math.round(img.width * scale));
           canvas.height = Math.max(1, Math.round(img.height * scale));
           canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          resolve(canvas.toDataURL('image/jpeg', 0.82).split(',')[1]);
+          baseMetadata.imageWidth = img.width || 0;
+          baseMetadata.imageHeight = img.height || 0;
+          baseMetadata.imagePreparedWidth = canvas.width;
+          baseMetadata.imagePreparedHeight = canvas.height;
+          baseMetadata.imagePreparation = 'High-resolution JPEG prepared for reading visible text in screenshots and preserving visual context in photos.';
+          resolve(canvas.toDataURL('image/jpeg', 0.92).split(',')[1]);
         } catch(e) { reject(e); }
       };
       img.onerror = function() { reject(new Error('This image could not be opened. Convert it to JPEG or PNG.')); };
@@ -15790,6 +15230,46 @@ function parseCaseFileResponse(data) {
     if (match) try { return JSON.parse(match[0]); } catch(e2) {}
   }
   return null;
+}
+
+function fallbackPreparedDocumentAnalysis(file, prepared, reason) {
+  var ext = caseFileExtension(file);
+  var lowerName = String(file && file.name || '').toLowerCase();
+  var kind = prepared && prepared.kind ? prepared.kind : 'file';
+  var looksLikeOrder = /order|c43|directions|recital|stage|contact arrangement/.test(lowerName);
+  var looksLikeStatement = /statement|position|witness|respondent|applicant/.test(lowerName);
+  var looksLikeReport = /cafcass|section 7|s7|social|school|nursery|medical|report|cnf/.test(lowerName);
+  var docType = looksLikeOrder ? 'Court order or directions document'
+    : looksLikeStatement ? 'Statement or position statement'
+    : looksLikeReport ? 'Report or professional document'
+    : (kind === 'image' ? 'Image or screenshot' : kind === 'pdf' ? 'PDF document' : 'Uploaded document');
+  var warning = 'Guardian preserved the upload route, but could not read the wording reliably enough to rely on it. Upload a clearer digital/OCR copy, upload closer screenshots page by page, or paste the exact wording you want checked.';
+  if (kind === 'image') warning = 'Guardian could not read enough visible text from this screenshot/photo. If it is a court order, letter, report or statement, upload a clearer crop or the original PDF, or paste the exact wording.';
+  if (kind === 'pdf') warning = 'Guardian could not extract a reliable reading from this PDF. It may be scanned, protected or too unclear. Upload an OCR/searchable PDF or paste the exact clause before relying on wording.';
+  if (looksLikeOrder) warning += ' Guardian will not quote contact times, stages, clauses, recitals or deadlines from this copy until the wording is readable.';
+  return {
+    docType:docType,
+    documentType:docType,
+    sourceRole:looksLikeOrder ? 'order' : looksLikeStatement ? 'position_statement' : looksLikeReport ? 'professional_report' : 'other',
+    date:'unknown',
+    title:(file && file.name) || docType,
+    readabilityWarning:warning,
+    readingStatus:'needs_readable_copy',
+    extract:'Guardian could not safely read the wording from this ' + docType.toLowerCase() + '. The item needs a clearer copy or pasted text before Guardian should quote or rely on specific wording.',
+    summary:'Guardian could not safely read the wording from this upload.',
+    verdict:'Guardian could not safely read the wording from this upload.',
+    deadlines:[],
+    clauses:[],
+    facts:[],
+    allegations:[],
+    ordersRequested:[],
+    importantDates:[],
+    weaknesses:['Readable text is missing or uncertain.'],
+    strengths:['The upload was received and can be retried with a clearer source.'],
+    response:'Upload a clearer copy or paste the exact wording you want Guardian to check.',
+    fileExtension:ext,
+    analysisErrorReason:String(reason || 'Reader failed').substring(0, 240)
+  };
 }
 
 function buildPreparedContent(prepared, instruction) {
@@ -16016,6 +15496,7 @@ function storePreparedEvidence(file, docType, parsed, source, vaultMetadata) {
   if (docType === 'ai_notes') parsed.facts = [];
   var friendlyName = parsed.displayName || parsed.userTitle || '';
   var guardianName = parsed.title || parsed.documentType || parsed.docType || file.name;
+  var duplicateOriginal = findExistingEvidenceByHash(vaultMetadata.originalHash || '');
   var sourceClass = docType === 'ai_notes'
     ? 'ai_reference'
     : (vaultMetadata.originalStored ? 'secured_original' : 'uploaded_analysis_only');
@@ -16044,8 +15525,14 @@ function storePreparedEvidence(file, docType, parsed, source, vaultMetadata) {
     vaultStoredAt:vaultMetadata.vaultStoredAt || '',
     vaultStatus:vaultMetadata.vaultStatus || 'not_secured',
     vaultError:vaultMetadata.vaultError || '',
+    duplicateStatus:duplicateOriginal ? 'duplicate_original_hash' : 'unique_or_unchecked',
+    duplicateOf:duplicateOriginal ? duplicateOriginal.id : '',
+    duplicateOfReference:duplicateOriginal ? (duplicateOriginal.evidenceReference || '') : '',
+    duplicateOriginalName:duplicateOriginal ? (duplicateOriginal.originalName || duplicateOriginal.name || '') : '',
     sourceRole:parsed.sourceRole || '',
     readabilityWarning:parsed.readabilityWarning || '',
+    readingStatus:parsed.readingStatus || (parsed.readabilityWarning ? 'needs_readable_copy' : 'first_pass_read'),
+    readingReceipt:parsed.readingReceipt || null,
     extractedDeadlines:Array.isArray(parsed.deadlines) ? parsed.deadlines : [],
     extractedClauses:Array.isArray(parsed.clauses) ? parsed.clauses : [],
     analysisVersion:'evidence-v2',
@@ -16074,6 +15561,7 @@ function storePreparedEvidence(file, docType, parsed, source, vaultMetadata) {
   localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
   localStorage.setItem('gDocs', JSON.stringify(docs));
   verifyCaseDocumentLocalReadBack(entry.id);
+  guardianRecordUploadReceipt(entry);
   return entry;
 }
 
@@ -16118,13 +15606,8 @@ async function processEvidenceFile(file, docType, source, analyser) {
     } else parsed = await analyser(prepared);
   } catch(e) {
     analysisError = e.message || 'Guardian analysis could not complete.';
-    if (!vaultMetadata.originalStored) throw e;
-    parsed = {
-      title:file.name,
-      date:'unknown',
-      extract:'Original secured. Guardian analysis could not complete and should be retried.',
-      facts:[]
-    };
+    parsed = fallbackPreparedDocumentAnalysis(file, prepared, analysisError);
+    if (vaultMetadata.originalStored) parsed.extract = 'Original secured. ' + parsed.extract;
   }
   if (docType === 'messages') parsed = enrichMessageImport(parsed, prepared);
   var entry = storePreparedEvidence(file, docType, parsed, source, vaultMetadata);
@@ -16138,7 +15621,8 @@ async function processEvidenceFile(file, docType, source, analyser) {
 }
 
 function guardianOwnsEvidenceRecord(doc) {
-  if (!currentUser || !doc) return false;
+  if (!doc) return false;
+  if (!currentUser) return !doc.ownerId || doc.ownerId === 'local-unverified';
   if (doc.ownerId && doc.ownerId !== currentUser.id && doc.ownerId !== 'local-unverified') return false;
   if (doc.vaultPath && doc.vaultPath.indexOf(currentUser.id + '/') !== 0) return false;
   return true;
@@ -16224,7 +15708,8 @@ function addOriginalToVaultItem(docId) {
   input.accept = 'image/*,.pdf,.doc,.docx,.txt,.rtf,.heic,.heif,.mp3,.m4a,.wav,.mp4,.mov';
   input.style.display = 'none';
   input.onchange = function(event) {
-    var file = event.target.files && event.target.files[0];
+    var uploadPlan = guardianSelectFilesForUpload(event, 'repair_original', { firstOnly:true });
+    var file = uploadPlan.files[0];
     document.body.removeChild(input);
     if (file) repairVaultOriginal(docId, file);
   };
@@ -16307,6 +15792,72 @@ async function saveVerifiedTranscript() {
   toast('Verified transcript saved with the original recording');
 }
 
+function getDeletedVaultItems() {
+  try {
+    var items = JSON.parse(localStorage.getItem('gCaseDocsDeleted') || '[]');
+    return Array.isArray(items) ? items : [];
+  } catch(e) { return []; }
+}
+
+function saveDeletedVaultItems(items) {
+  try { localStorage.setItem('gCaseDocsDeleted', JSON.stringify((items || []).slice(-250))); } catch(e) {}
+}
+
+function renderVaultRecoveryPanel() {
+  var panel = document.getElementById('vaultRecoveryPanel');
+  if (!panel || panel.style.display === 'none') return;
+  var deleted = getDeletedVaultItems().slice().reverse();
+  if (!deleted.length) {
+    panel.innerHTML = '<div style="background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px;text-align:center;color:var(--muted-hi);font-size:13px;">No deleted Vault items on this device.</div>';
+    return;
+  }
+  panel.innerHTML =
+    '<div style="background:rgba(184,68,68,0.055);border:1px solid rgba(184,68,68,0.20);border-radius:16px;padding:14px;">' +
+      '<div style="font-size:11px;color:var(--red);font-weight:950;letter-spacing:0.08em;margin-bottom:5px;">VAULT RECOVERY</div>' +
+      '<div style="font-size:18px;color:var(--white);font-weight:950;margin-bottom:8px;">Deleted Vault items</div>' +
+      '<div style="font-size:12px;color:var(--muted-hi);line-height:1.5;margin-bottom:12px;">Deleted items stay here first so an original is not lost by accident. Restore anything you still need.</div>' +
+      deleted.slice(0, 30).map(function(doc){
+        return '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:11px;margin-bottom:8px;">' +
+          '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">' +
+            '<div style="min-width:0;"><div style="font-size:13px;color:var(--white);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + guardianEscapeHtml(evidenceDisplayName(doc)) + '</div>' +
+            '<div style="font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px;">' + guardianEscapeHtml(doc.evidenceReference || '') + ' · deleted ' + guardianEscapeHtml(doc.deletedAt ? new Date(doc.deletedAt).toLocaleString('en-GB') : 'recently') + (doc.originalStored ? ' · original still linked' : ' · analysis only') + '</div></div>' +
+            '<button type="button" onclick="restoreDeletedVaultItem(' + JSON.stringify(doc.deletedId || doc.id) + ')" style="padding:8px 10px;background:rgba(26,158,114,0.10);border:1px solid rgba(26,158,114,0.26);border-radius:9px;color:var(--green);font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;">Restore</button>' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+}
+
+function toggleVaultRecoveryPanel() {
+  var panel = document.getElementById('vaultRecoveryPanel');
+  if (!panel) return;
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  renderVaultRecoveryPanel();
+  if (panel.style.display !== 'none') {
+    try { panel.scrollIntoView({behavior:'smooth', block:'start'}); } catch(e) {}
+  }
+}
+
+async function restoreDeletedVaultItem(deletedId) {
+  var deleted = getDeletedVaultItems();
+  var index = deleted.findIndex(function(item){ return String(item.deletedId || item.id) === String(deletedId); });
+  if (index < 0) { toast('Deleted Vault item not found'); return; }
+  var doc = deleted.splice(index, 1)[0];
+  delete doc.deletedId;
+  delete doc.deletedAt;
+  delete doc.deletedReason;
+  doc.restoredAt = new Date().toISOString();
+  caseDocuments.push(doc);
+  docs[(doc.type || 'other') + doc.id] = doc.extract || '';
+  saveDeletedVaultItems(deleted);
+  localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
+  localStorage.setItem('gDocs', JSON.stringify(docs));
+  try { await saveProfileToSupabase(); } catch(e) {}
+  renderTimeline();
+  renderVaultRecoveryPanel();
+  toast('Vault item restored');
+}
+
 async function deleteDoc(docId) {
   var doc = caseDocuments.find(function(item){ return item.id === docId; });
   if (!doc) return;
@@ -16314,26 +15865,23 @@ async function deleteDoc(docId) {
     toast('This evidence record does not belong to the signed-in account');
     return;
   }
-  var warning = doc.originalStored
-    ? 'Permanently delete "' + doc.name + '" and its original file? This cannot be undone.'
-    : 'Remove "' + doc.name + '" from your Vault?';
+  var warning = 'Move "' + (doc.name || evidenceDisplayName(doc)) + '" to Vault recovery? You can restore it later from Deleted Vault items.';
   if (!confirm(warning)) return;
-  if (doc.originalStored && doc.vaultPath) {
-    try {
-      var removed = await guardianPromiseTimeout(supabase.storage.from(VAULT_BUCKET).remove([doc.vaultPath]), 30000, 'vault_delete');
-      if (removed.error) throw new Error(removed.error.message);
-    } catch(e) {
-      toast('Original was not deleted: ' + (e.message || 'secure storage error'));
-      return;
-    }
-  }
+  var deleted = getDeletedVaultItems();
+  deleted.push(Object.assign({}, doc, {
+    deletedId:String(doc.id),
+    deletedAt:new Date().toISOString(),
+    deletedReason:'User deleted from Vault'
+  }));
+  saveDeletedVaultItems(deleted);
   caseDocuments = caseDocuments.filter(function(item){ return item.id !== docId; });
   try { delete docs[(doc.type || 'other') + doc.id]; } catch(e) {}
   localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
   localStorage.setItem('gDocs', JSON.stringify(docs));
   try { await saveProfileToSupabase(); } catch(e) {}
   renderTimeline();
-  toast(doc.originalStored ? 'Original and analysis permanently deleted' : 'Document removed');
+  renderVaultRecoveryPanel();
+  toast('Vault item moved to recovery');
 }
 
 async function analysePreparedCaseFile(prepared) {
@@ -16375,13 +15923,14 @@ async function analysePreparedMessages(prepared) {
 }
 
 async function addDoc(event, docType) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'legacy_vault');
+  var files = uploadPlan.files;
   if (!files.length) return;
   if (!beginGuardianAction('case_file_import')) {
     toast('Guardian is already importing files');
     return;
   }
+  if (uploadPlan.message) toast(uploadPlan.message);
   var processing = document.getElementById('docsProcessing');
   if (processing) processing.style.display = 'block';
   var added = [];
@@ -16427,6 +15976,7 @@ async function addDoc(event, docType) {
 
   if (added.length) {
     toast('Added ' + added.length + ' file' + (added.length === 1 ? '' : 's') + ' to your case history');
+    renderEvidenceUploadStatus(added, [], vaultWarnings);
     checkUpsellTriggers('document');
     setTimeout(function(){ extractIntelFromNewDocs(); }, 500);
     added.forEach(function(doc) {
@@ -16779,6 +16329,164 @@ function evidenceDisplayName(doc) {
   return String((doc && (doc.displayName || doc.userTitle || doc.name || doc.originalName)) || 'Vault item');
 }
 
+var guardianUploadPlanRules = {
+  essential: {
+    key:'essential',
+    label:'Essential',
+    maxPhotosPerUpload:3,
+    maxFilesPerUpload:5,
+    maxFileSizeMb:25,
+    maxBatchSizeMb:75
+  },
+  case_companion: {
+    key:'case_companion',
+    label:'Case Companion',
+    maxPhotosPerUpload:10,
+    maxFilesPerUpload:15,
+    maxFileSizeMb:75,
+    maxBatchSizeMb:350
+  },
+  serious_case: {
+    key:'serious_case',
+    label:'Serious Case',
+    maxPhotosPerUpload:20,
+    maxFilesPerUpload:30,
+    maxFileSizeMb:150,
+    maxBatchSizeMb:1000
+  }
+};
+
+function guardianCurrentUploadPlanKey() {
+  var saved = '';
+  try { saved = localStorage.getItem('guardianPlan') || localStorage.getItem('gGuardianPlan') || ''; } catch(e) {}
+  var profilePlan = profile && (profile.plan || profile.subscriptionPlan || profile.tier) ? String(profile.plan || profile.subscriptionPlan || profile.tier) : '';
+  var raw = String(saved || profilePlan || 'case_companion').toLowerCase().replace(/[\s-]+/g, '_');
+  if (/starter|basic|low|29|main|essential/.test(raw)) return 'essential';
+  if (/serious|premium|pro|founder|unlimited|49|high/.test(raw)) return 'serious_case';
+  return 'case_companion';
+}
+
+function guardianCurrentUploadPlan() {
+  return guardianUploadPlanRules[guardianCurrentUploadPlanKey()] || guardianUploadPlanRules.case_companion;
+}
+
+function guardianFileIsPhoto(file) {
+  var mime = String(file && file.type || '').toLowerCase();
+  var name = String(file && file.name || '').toLowerCase();
+  return mime.indexOf('image/') === 0 || /\.(jpg|jpeg|png|webp|heic|heif|gif|bmp)$/i.test(name);
+}
+
+function guardianFileSizeMb(file) {
+  return (file && file.size ? file.size : 0) / (1024 * 1024);
+}
+
+function guardianApplyUploadPlanLimits(selectedFiles, surface) {
+  var plan = guardianCurrentUploadPlan();
+  var files = Array.prototype.slice.call(selectedFiles || []).filter(Boolean);
+  var accepted = [];
+  var skipped = [];
+  var photoCount = 0;
+  var totalMb = 0;
+  files.forEach(function(file) {
+    var isPhoto = guardianFileIsPhoto(file);
+    var sizeMb = guardianFileSizeMb(file);
+    if (accepted.length >= plan.maxFilesPerUpload) {
+      skipped.push({file:file, reason:'file_count'});
+      return;
+    }
+    if (isPhoto && photoCount >= plan.maxPhotosPerUpload) {
+      skipped.push({file:file, reason:'photo_count'});
+      return;
+    }
+    if (sizeMb > plan.maxFileSizeMb) {
+      skipped.push({file:file, reason:'file_size'});
+      return;
+    }
+    if (totalMb + sizeMb > plan.maxBatchSizeMb) {
+      skipped.push({file:file, reason:'batch_size'});
+      return;
+    }
+    accepted.push(file);
+    totalMb += sizeMb;
+    if (isPhoto) photoCount++;
+  });
+  var message = '';
+  if (skipped.length) {
+    var reasons = [];
+    if (skipped.some(function(item){ return item.reason === 'photo_count'; })) reasons.push('up to ' + plan.maxPhotosPerUpload + ' photos at once');
+    if (skipped.some(function(item){ return item.reason === 'file_count'; })) reasons.push('up to ' + plan.maxFilesPerUpload + ' files at once');
+    if (skipped.some(function(item){ return item.reason === 'file_size'; })) reasons.push('files up to ' + plan.maxFileSizeMb + ' MB each');
+    if (skipped.some(function(item){ return item.reason === 'batch_size'; })) reasons.push('batches up to ' + plan.maxBatchSizeMb + ' MB');
+    message = 'Upload limit reached. Your ' + plan.label + ' plan can add ' + reasons.join(', ') + '. I added ' + accepted.length + ' and did not upload ' + skipped.length + '. Nothing was silently dropped.';
+  }
+  return {
+    plan:plan,
+    files:accepted,
+    accepted:accepted,
+    skipped:skipped,
+    rejected:skipped,
+    message:message,
+    surface:surface || 'upload'
+  };
+}
+
+function guardianSelectFilesForUpload(event, surface, options) {
+  options = options || {};
+  var selectedFiles = Array.prototype.slice.call((event && event.target && event.target.files) || []).filter(Boolean);
+  if (event && event.target) event.target.value = '';
+  if (options.firstOnly) selectedFiles = selectedFiles.slice(0, 1);
+  var uploadPlan = guardianApplyUploadPlanLimits(selectedFiles, surface || 'upload');
+  uploadPlan.files = uploadPlan.files || uploadPlan.accepted || [];
+  uploadPlan.accepted = uploadPlan.files;
+  uploadPlan.rejected = uploadPlan.skipped || [];
+  uploadPlan.count = uploadPlan.files.length;
+  uploadPlan.totalBytes = uploadPlan.files.reduce(function(total, file) { return total + (Number(file && file.size) || 0); }, 0);
+  if (uploadPlan.message && !options.silentLimitToast) toast(uploadPlan.message);
+  return uploadPlan;
+}
+
+function guardianUploadReceiptLine(entry) {
+  if (!entry) return '';
+  var name = entry.originalName || entry.name || 'Uploaded file';
+  var ref = entry.evidenceReference ? entry.evidenceReference + ' · ' : '';
+  var original = entry.originalStored ? 'Original secured' : 'Original not secured';
+  var readBack = entry.localReadBackVerifiedAt ? 'local read-back checked' : 'local read-back pending';
+  var duplicate = entry.duplicateOfReference ? ' · duplicate of ' + entry.duplicateOfReference : '';
+  return ref + name + ' · ' + original + ' · ' + readBack + duplicate;
+}
+
+function guardianRecordUploadReceipt(entry) {
+  if (!entry) return null;
+  var receipt = {
+    id:String(entry.id || ''),
+    evidenceReference:entry.evidenceReference || '',
+    filename:entry.originalName || entry.name || 'Uploaded file',
+    sourceSurface:entry.sourceSurface || '',
+    originalStored:!!entry.originalStored,
+    originalHash:entry.originalHash || '',
+    vaultStatus:entry.vaultStatus || '',
+    duplicateStatus:entry.duplicateStatus || '',
+    duplicateOf:entry.duplicateOf || '',
+    duplicateOfReference:entry.duplicateOfReference || '',
+    localReadBackVerifiedAt:entry.localReadBackVerifiedAt || '',
+    storageStatus:entry.storageStatus || '',
+    createdAt:new Date().toISOString()
+  };
+  try {
+    var receipts = JSON.parse(localStorage.getItem('guardianUploadReceipts') || '[]') || [];
+    receipts.unshift(receipt);
+    localStorage.setItem('guardianUploadReceipts', JSON.stringify(receipts.slice(0, 250)));
+  } catch(e) {}
+  return receipt;
+}
+
+function findExistingEvidenceByHash(hash) {
+  if (!hash) return null;
+  return (caseDocuments || []).find(function(item) {
+    return item && item.originalHash && item.originalHash === hash;
+  }) || null;
+}
+
 
 var guardianQuickUploadFiles = [];
 function triggerGuardianQuickUpload() {
@@ -16788,8 +16496,8 @@ function triggerGuardianQuickUpload() {
   input.click();
 }
 function handleGuardianQuickUpload(event) {
-  guardianQuickUploadFiles = Array.prototype.slice.call((event && event.target && event.target.files) || []).filter(Boolean).slice(0, 30);
-  if (event && event.target) event.target.value = '';
+  var limited = guardianSelectFilesForUpload(event, 'vault');
+  guardianQuickUploadFiles = limited.files;
   if (!guardianQuickUploadFiles.length) return;
   var modal = document.getElementById('guardianQuickUploadModal');
   var title = document.getElementById('guardianQuickUploadTitle');
@@ -16883,7 +16591,11 @@ function renderEvidenceUploadStatus(added, failed, vaultWarnings) {
   var itemRows = added.map(function(item) {
     var storage = item.originalStored ? '<span style="color:var(--green);">Original secured</span>' : item.externalUrl ? '<span style="color:var(--gold);">External link only</span>' : '<span style="color:var(--gold);">Original not stored</span>';
     var processing = item.processingStatus === 'preserved_unread' ? 'Preserved, readable copy needed' : item.processingStatus === 'preserved_unreviewed' ? 'Preserved, not transcribed or interpreted' : item.processingStatus === 'reference_only' ? 'Reference only' : 'Guardian analysis saved';
-    return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,0.07);"><div style="font-size:12px;color:var(--white);font-weight:850;overflow-wrap:anywhere;">' + guardianEscapeHtml(item.evidenceReference || '') + ' · ' + guardianEscapeHtml(item.originalName || item.name || 'Vault item') + '</div><div style="font-size:10px;color:var(--muted-hi);line-height:1.5;margin-top:3px;">' + storage + ' · ' + guardianEscapeHtml(processing) + (item.linkedDiaryReference ? ' · Linked to ' + guardianEscapeHtml(item.linkedDiaryReference) : ' · Not linked to Diary') + '</div></div>';
+    var duplicate = item.duplicateOfReference ? ' · <span style="color:var(--amber);">Duplicate copy of ' + guardianEscapeHtml(item.duplicateOfReference) + '</span>' : '';
+    var originalActions = item.originalStored
+      ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;"><button type="button" onclick="viewOriginalDoc(' + JSON.stringify(item.id) + ')" style="padding:7px 8px;background:rgba(26,158,114,0.08);border:1px solid rgba(26,158,114,0.24);border-radius:8px;color:var(--green);font-size:10px;font-weight:900;cursor:pointer;">View original</button><button type="button" onclick="downloadOriginalDoc(' + JSON.stringify(item.id) + ')" style="padding:7px 8px;background:rgba(52,120,212,0.08);border:1px solid rgba(52,120,212,0.24);border-radius:8px;color:var(--blue);font-size:10px;font-weight:900;cursor:pointer;">Download</button></div>'
+      : '<div style="margin-top:7px;font-size:10px;color:var(--amber);line-height:1.4;">Keep your untouched original outside Guardian until secure storage is confirmed.</div>';
+    return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,0.07);"><div style="font-size:12px;color:var(--white);font-weight:850;overflow-wrap:anywhere;">' + guardianEscapeHtml(item.evidenceReference || '') + ' · ' + guardianEscapeHtml(item.originalName || item.name || 'Vault item') + '</div><div style="font-size:10px;color:var(--muted-hi);line-height:1.5;margin-top:3px;">' + storage + ' · ' + guardianEscapeHtml(processing) + duplicate + (item.linkedDiaryReference ? ' · Linked to ' + guardianEscapeHtml(item.linkedDiaryReference) : ' · Not linked to Diary') + '</div>' + originalActions + '</div>';
   }).join('');
   var linkedReference = added.map(function(item){ return item.linkedDiaryReference || ''; }).filter(Boolean)[0] || '';
   status.innerHTML =
@@ -16905,8 +16617,8 @@ function openDiaryReviewByReference(reference) {
 }
 
 async function addEvidence(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'vault');
+  var files = uploadPlan.files;
   if (!files.length) return;
   if (!beginGuardianAction('unified_evidence_import')) {
     toast('Guardian is already adding evidence');
@@ -16993,14 +16705,18 @@ async function analyseAIReferenceFile(prepared) {
 }
 
 async function bulkCaseImport(event, forceAIReference) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, forceAIReference ? 'ai_reference_bulk' : 'bulk_case_import');
+  var files = uploadPlan.files;
   if (!files.length) return;
   if (!beginGuardianAction('bulk_case_import')) {
     toast('A bulk import is already running');
     return;
   }
   var status = document.getElementById('bulkCaseImportStatus');
+  if (uploadPlan.message) {
+    toast(uploadPlan.message);
+    if (status) status.textContent = uploadPlan.message;
+  }
   if (files.length > 30) {
     alert('Choose up to 30 files at a time so Guardian can process them reliably.');
     endGuardianAction('bulk_case_import');
@@ -17194,6 +16910,10 @@ function renderTimeline() {
     var secured = !!doc.originalStored;
     var displayDate = evidenceDisplayDate(evidenceDateCandidate(doc));
     var dateMissing = displayDate === 'Date not set';
+    var duplicateShort = doc.duplicateOfReference ? ' <span style="color:var(--amber);"> · Duplicate of ' + guardianEscapeHtml(doc.duplicateOfReference) + '</span>' : '';
+    var quickOriginalActions = secured
+      ? '<button type="button" onclick="viewOriginalDoc(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(26,158,114,0.08);border:1px solid rgba(26,158,114,0.24);border-radius:8px;color:var(--green);font-size:10px;font-weight:900;cursor:pointer;">View original</button><button type="button" onclick="downloadOriginalDoc(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(52,120,212,0.08);border:1px solid rgba(52,120,212,0.24);border-radius:8px;color:var(--blue);font-size:10px;font-weight:900;cursor:pointer;">Download</button>'
+      : '<button type="button" onclick="addOriginalToVaultItem(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.24);border-radius:8px;color:var(--gold);font-size:10px;font-weight:900;cursor:pointer;">Add original</button>';
     return '<div style="display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--card);border:1.5px solid ' + (dateMissing ? 'rgba(245,158,11,0.35)' : 'var(--border)') + ';border-radius:12px;margin-bottom:8px;">' +
       '<div style="width:74px;flex-shrink:0;text-align:left;"><div style="font-size:10px;color:' + (dateMissing ? 'var(--amber)' : 'var(--gold)') + ';font-weight:900;">' + guardianEscapeHtml(displayDate) + '</div><div style="font-size:9px;color:var(--muted);margin-top:2px;">received/doc</div></div>' +
       '<div style="flex:1;min-width:0;">' +
@@ -17202,9 +16922,10 @@ function renderTimeline() {
         '<div style="font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Original: ' + guardianEscapeHtml(doc.originalName || doc.name || 'external link') + '</div>' +
         '<div style="font-size:11px;color:var(--muted-hi);margin-top:3px;">Uploaded ' + guardianEscapeHtml(evidenceUploadDisplay(doc)) +
           ' <span style="color:' + (secured ? 'var(--green)' : 'var(--amber)') + ';"> · ' + (secured ? 'Original secured' : 'Original not secured') + '</span>' +
+          duplicateShort +
           (doc.linkedDiaryReference ? ' · Linked to ' + guardianEscapeHtml(doc.linkedDiaryReference) : '') + '</div>' +
       '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;"><button type="button" onclick="editEvidenceDisplayName(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:10px;font-weight:900;cursor:pointer;">Rename</button><button type="button" onclick="editEvidenceReceivedDate(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.26);border-radius:8px;color:var(--gold);font-size:10px;font-weight:900;cursor:pointer;">Edit date</button><button type="button" onclick="editEvidenceDiaryReference(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.26);border-radius:8px;color:var(--blue);font-size:10px;font-weight:900;cursor:pointer;">' + (doc.linkedDiaryReference ? 'Change link' : 'Link Diary') + '</button></div>' +
+      '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">' + quickOriginalActions + '<button type="button" onclick="editEvidenceDisplayName(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:10px;font-weight:900;cursor:pointer;">Rename</button><button type="button" onclick="editEvidenceReceivedDate(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.26);border-radius:8px;color:var(--gold);font-size:10px;font-weight:900;cursor:pointer;">Edit date</button><button type="button" onclick="editEvidenceDiaryReference(' + JSON.stringify(doc.id) + ')" style="padding:7px 9px;background:rgba(52,120,212,0.1);border:1px solid rgba(52,120,212,0.26);border-radius:8px;color:var(--blue);font-size:10px;font-weight:900;cursor:pointer;">' + (doc.linkedDiaryReference ? 'Change link' : 'Link Diary') + '</button></div>' +
     '</div>';
   }).join('');
 
@@ -17228,6 +16949,12 @@ function renderTimeline() {
     var originalStatus = doc.originalStored
       ? '<div class="doc-location" style="color:var(--green);">Original secured in Vault · SHA-256 ' + guardianEscapeHtml((doc.originalHash || '').substring(0, 12)) + '...</div>'
       : '<div class="doc-location" style="color:var(--amber);">Analysis saved only. Add the original file to make this Vault item complete.</div>';
+    var readingStatusHtml = '';
+    if (doc.readabilityWarning || doc.readingStatus === 'needs_readable_copy') {
+      readingStatusHtml = '<div style="margin-top:8px;padding:9px 10px;border:1px solid rgba(245,158,11,0.28);background:rgba(245,158,11,0.08);border-radius:8px;font-size:11px;color:var(--amber);line-height:1.5;"><strong>Reading status:</strong> Needs clearer text/OCR before relying on wording.<br>' + guardianEscapeHtml(doc.readabilityWarning || 'Upload a clearer digital/OCR copy or paste the exact wording to check.') + '</div>';
+    } else if (doc.readingStatus === 'first_pass_read' || (doc.extract && !doc.readabilityWarning)) {
+      readingStatusHtml = '<div style="margin-top:8px;padding:8px 10px;border:1px solid rgba(26,158,114,0.22);background:rgba(26,158,114,0.06);border-radius:8px;font-size:11px;color:var(--green);line-height:1.5;"><strong>Reading status:</strong> First pass complete. Check important wording against the original before relying on it.</div>';
+    }
     var actions = '<button class="doc-export-btn" onclick="exportDoc(' + JSON.stringify(doc.id) + ')">Share analysis</button>';
     if (doc.externalUrl) actions += '<a class="doc-export-btn" style="margin-left:6px;display:inline-block;text-decoration:none;" href="' + guardianEscapeHtml(doc.externalUrl) + '" target="_blank" rel="noopener noreferrer">Open source link</a>';
     if (doc.mediaKind === 'audio') actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="openVerifiedTranscript(' + JSON.stringify(doc.id) + ')">' + (doc.verifiedTranscript ? 'Review transcript' : 'Add verified transcript') + '</button>';
@@ -17273,6 +17000,7 @@ function renderTimeline() {
         '<div style="font-size:11px;color:var(--muted-hi);line-height:1.45;margin-top:4px;">Sorted by received/document date, not upload date.</div>' +
         evidenceMeta +
         (doc.extract ? '<div class="timeline-extract"><strong>Guardian analysis:</strong> ' + guardianEscapeHtml(doc.extract) + '</div>' : '') +
+        readingStatusHtml +
         messageMeta +
         communicationMeta +
         originalStatus +
@@ -17283,11 +17011,12 @@ function renderTimeline() {
     '</div>';
   }).join('');
   container.innerHTML = listHtml + timelineHtml;
+  renderVaultRecoveryPanel();
 }
 
 async function handleQAAttach(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'ask_guardian', { firstOnly:true });
+  var files = uploadPlan.files;
   var file = files[0];
   if (!file) return;
   var nameEl = document.getElementById('qaAttachName');
@@ -17329,8 +17058,8 @@ async function handleQAAttach(event) {
 }
 
 async function addBrainEvidence(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'guardian_brain');
+  var files = uploadPlan.files;
   if (!files.length) return;
   var status = document.getElementById('brainEvidenceStatus');
   if (status) status.textContent = 'Reading ' + files.length + ' file' + (files.length === 1 ? '' : 's') + '...';
@@ -17357,8 +17086,8 @@ async function addBrainEvidence(event) {
 }
 
 async function explainDoc(event, docType) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'document_explainer', { firstOnly:true });
+  var files = uploadPlan.files;
   var file = files[0];
   if (!file) return;
   load('Reading your document...', 'Guardian is translating it into plain English');
@@ -17767,8 +17496,8 @@ function askAboutTheirStatement(index) {
 }
 
 async function scanStatement(event, forcedType) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, forcedType === 'theirs' ? 'statement_theirs' : 'statement_mine');
+  var files = uploadPlan.files;
   if (!files.length) return;
   var type = forcedType || scanType || 'mine';
   var statusEl = document.getElementById(type === 'theirs' ? 'theirsScanStatus' : 'mineScanStatus');
@@ -17788,8 +17517,7 @@ async function scanStatement(event, forcedType) {
         );
         if (processed.vaultError) vaultWarnings.push(files[i].name + ': ' + processed.vaultError);
         if (processed.analysisError) {
-          failed.push(files[i].name + ': original secured, analysis needs retry');
-          continue;
+          failed.push(files[i].name + ': ' + (processed.entry && processed.entry.originalStored ? 'original secured; ' : 'analysis-only receipt saved; ') + 'reading needs clearer copy or retry');
         }
         var parsed = processed.parsed;
         parsed._fileName = files[i].name;
@@ -17834,8 +17562,8 @@ async function scanStatement(event, forcedType) {
 }
 
 async function swUploadTheirDocs(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'statement_workspace');
+  var files = uploadPlan.files;
   if (!files.length) return;
   load('Reading their document...', 'Guardian is separating allegations from established facts');
   var added = 0;
@@ -17848,7 +17576,7 @@ async function swUploadTheirDocs(event) {
           return analysePreparedForPurpose(prepared, 'theirs');
         });
         if (processed.vaultError) vaultWarnings.push(files[i].name + ': ' + processed.vaultError);
-        if (processed.analysisError) failed.push(files[i].name + ': original secured, analysis needs retry');
+        if (processed.analysisError) failed.push(files[i].name + ': ' + (processed.entry && processed.entry.originalStored ? 'original secured; ' : 'analysis-only receipt saved; ') + 'reading needs clearer copy or retry');
         added++;
       } catch(e) {
         failed.push(files[i].name + ': ' + (e.message || 'Could not read file'));
@@ -18064,11 +17792,6 @@ var VIDEOS = {
     desc: "Upload the other party's position statement. Guardian analyses it for weak points, inconsistencies, and allegations — then tells you exactly how to respond to each one.",
     url: ""
   },
-  sBundleUpload: {
-    title: "Court Bundle",
-    desc: "Upload your full court bundle. Guardian reads every document and builds a complete picture of your case — everything available to every tool instantly.",
-    url: ""
-  }
 };
 
 function showVideoForScreen(id) {
@@ -18738,8 +18461,8 @@ function selectEditDynamic(type, desc) {
 }
 
 async function bulkLearnMessageStyle(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'message_style_learning');
+  var files = uploadPlan.files;
   if (!files.length) return;
   var status = document.getElementById('bulkToneStatus');
   var target = document.getElementById('editToneMessages');
@@ -19236,108 +18959,7 @@ function autoGrow(el) {
 <script data-guardian-module="guardian-chat.js">
 // ── DOC UPLOAD TO CHAT ──
 async function uploadDocToChat(event) {
-  var file = event.target.files[0];
-  event.target.value = '';
-  if (!file) return;
-  var mediaType = file.type || '';
-  var isImage = mediaType.startsWith('image/');
-  var isPDF = mediaType === 'application/pdf' || file.name.endsWith('.pdf');
-
-  var isWord = mediaType.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx');
-  var isText = mediaType === 'text/plain' || file.name.endsWith('.txt');
-  var isGdoc = file.name.endsWith('.gdoc') || file.name.endsWith('.gsheet');
-  if (isGdoc) { toast('Google Docs: File → Download → PDF, then upload the PDF'); return; }
-  if (!isImage && !isPDF && !isWord && !isText) {
-    toast('Supported: photos, PDFs, Word docs. Google Docs: export as PDF first.');
-    return;
-  }
-
-  load('Reading document...', 'Give me a moment');
-  var reader = new FileReader();
-  reader.onerror = function() { unload(); toast('Could not open file — try a different format'); };
-  reader.onload = async function(e) {
-    // Word docs come as ArrayBuffer — handle before any string operations
-    if (isWord) {
-      if (typeof mammoth === 'undefined') { unload(); toast('Loading Word support — try again in a moment'); return; }
-      mammoth.extractRawText({arrayBuffer: e.target.result}).then(function(result) {
-        var text = result.value.trim();
-        if (!text) { unload(); toast('Could not read Word doc — try saving as PDF first'); return; }
-        unload();
-        addChatMessage('user', '\uD83D\uDCCE ' + file.name + ' uploaded');
-        chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
-        var loadEl = document.createElement('div');
-        loadEl.style.cssText = 'padding:8px 16px;font-size:13px;color:var(--muted);font-style:italic;';
-        loadEl.textContent = 'Guardian is thinking...';
-        var msgsEl = document.getElementById('chatMessages');
-        if (msgsEl) msgsEl.appendChild(loadEl);
-        generateChatResponse('I have just read this document. Explain in plain English what it means, what it requires, any deadlines, and anything I need to flag for my case.', loadEl);
-      }).catch(function(){ unload(); toast('Could not read Word doc — try saving as PDF first'); });
-      return;
-    }
-    var b64 = e.target.result.split(',')[1];
-    if (!b64 || b64.length < 100) { unload(); toast('File too small to read'); return; }
-    // Word doc via mammoth
-    if (isWord) {
-      if (typeof mammoth === 'undefined') { unload(); toast('Loading Word support — try again in a moment'); return; }
-      var arrayBuffer = e.target.result;
-      mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function(result) {
-        var text = result.value.trim();
-        if (!text) { unload(); toast('Could not read Word doc — try saving as PDF first'); return; }
-        unload();
-        addChatMessage('user', '📎 ' + file.name + ' uploaded');
-        chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
-          // Show loading as plain text — not a bubble
-  var loadingEl = document.createElement('div');
-  loadingEl.id = 'chatLoadingIndicator';
-  loadingEl.style.cssText = 'padding:8px 16px;font-size:13px;color:var(--muted);font-style:italic;';
-  loadingEl.textContent = 'Guardian is thinking...';
-  var msgsEl = document.getElementById('chatMessages');
-  if (msgsEl) { msgsEl.appendChild(loadingEl); msgsEl.scrollTop = msgsEl.scrollHeight; }
-  // Safety timeout
-  var safetyTimer = setTimeout(function(){ if(loadingEl && loadingEl.textContent === 'Guardian is thinking...') { loadingEl.textContent = 'Something went wrong — try asking again'; } }, 30000);
-        generateChatResponse('I have just read this document. Explain what it means in plain English — what it says, what it requires, any deadlines, and what I need to flag for my case.', loadingEl);
-      }).catch(function(){ unload(); toast('Could not read Word doc — try saving as PDF first'); });
-      return;
-    }
-    if (isText) {
-      var text = atob(b64);
-      unload();
-      addChatMessage('user', '📎 ' + file.name + ' uploaded');
-      chatContext += '\n\nUPLOADED DOCUMENT (' + file.name + '):\n' + text.substring(0, 3000);
-      var loadingEl = addChatMessage('guardian', '...');
-      generateChatResponse('I have just read this document. Explain what it means in plain English.', loadingEl);
-      return;
-    }
-    try {
-      var content;
-      if (isImage) {
-        // Compress image first
-        var img = new Image();
-        img.onload = async function() {
-          try {
-            var canvas = document.createElement('canvas');
-            var scale = Math.min(1080/img.width, 1);
-            canvas.width = Math.round(img.width * scale);
-            canvas.height = Math.round(img.height * scale);
-            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-            var compressed = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
-            await sendDocToChat(compressed, 'image/jpeg', file.name);
-          } catch(err) {
-            await sendDocToChat(b64, mediaType, file.name);
-          }
-        };
-        img.onerror = async function() { await sendDocToChat(b64, mediaType, file.name); };
-        img.src = e.target.result;
-        return;
-      } else if (isPDF) {
-        await sendDocToChat(b64, 'application/pdf', file.name);
-      }
-    } catch(err) {
-      unload();
-      toast('Could not read document — try pasting the text instead');
-    }
-  };
-  reader.readAsDataURL(file);
+  return agHandleAttach(event);
 }
 
 async function sendDocToChat(b64, mediaType, fileName) {
@@ -19413,31 +19035,6 @@ function createRecognition(onResult, btnId) {
 
 var talkMicActive = false;
 var chatMicActive = false;
-function legacyToggleChatVoice() {
-  var btn = document.getElementById('chatMicBtn');
-  if (chatMicActive) {
-    if (chatRecognition) { try { chatRecognition.stop(); } catch(e) {} }
-    chatMicActive = false;
-    if (btn) { btn.textContent = '🎙️'; btn.style.background = 'rgba(255,255,255,0.08)'; btn.style.borderColor = 'rgba(255,255,255,0.15)'; }
-    return;
-  }
-  if (!chatRecognition) {
-    chatRecognition = createRecognition(function(text) {
-      chatMicActive = false;
-      var btn2 = document.getElementById('chatMicBtn');
-      if (btn2) { btn2.textContent = '🎙️'; btn2.style.background = 'rgba(255,255,255,0.08)'; btn2.style.borderColor = 'rgba(255,255,255,0.15)'; }
-      var input = document.getElementById('chatInput');
-      if (input) { input.value = text; sendChatMsg(); }
-    }, 'chatMicBtn');
-  }
-  if (!chatRecognition) return;
-  try {
-    chatRecognition.start();
-    chatMicActive = true;
-    if (btn) { btn.textContent = '⏹️'; btn.style.background = 'rgba(255,0,0,0.2)'; btn.style.borderColor = 'red'; }
-  } catch(e) { chatRecognition = null; chatMicActive = false; toggleChatVoice(); }
-}
-
 // ── TAKE EXCHANGE TO DIARY ──
 var chatVoiceFinal = '';
 function toggleChatVoice() {
@@ -19481,9 +19078,9 @@ function toggleChatVoice() {
 
 var replyEvidenceScreenshots = [];
 
-function captureReplyScreenshots(event) {
-  var files = Array.from(event.target.files || []);
-  event.target.value = '';
+async function captureReplyScreenshots(event) {
+  var uploadPlan = guardianSelectFilesForUpload(event, 'reply_diary_screenshot');
+  var files = uploadPlan.files;
   files.forEach(function(file) {
     if (!file.type || !file.type.startsWith('image/')) return;
     var reader = new FileReader();
@@ -19496,7 +19093,21 @@ function captureReplyScreenshots(event) {
         canvas.width = Math.max(1, Math.round(img.width * scale));
         canvas.height = Math.max(1, Math.round(img.height * scale));
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        replyEvidenceScreenshots.push({data:canvas.toDataURL('image/jpeg',0.75),name:file.name,type:'image/jpeg'});
+        var replyScreenshotItem = {data:canvas.toDataURL('image/jpeg',0.75),name:file.name,type:'image/jpeg'};
+        replyEvidenceScreenshots.push(replyScreenshotItem);
+        (async function(originalFile) {
+          try {
+            var vaultMetadata = await prepareVaultMetadata(originalFile);
+            var entry = storePreparedEvidence(originalFile, 'screenshot', {
+              title:originalFile.name,
+              date:'unknown',
+              extract:'Screenshot attached during reply-to-diary flow. Original preserved for later review.',
+              facts:[]
+            }, 'reply_diary_screenshot', vaultMetadata);
+            replyScreenshotItem.vaultEntryId = entry.id;
+            replyScreenshotItem.evidenceReference = entry.evidenceReference || '';
+          } catch(e) {}
+        })(file);
         var preview = document.getElementById('replyEvidencePreview');
         if (preview) {
           preview.style.display = 'block';
@@ -20461,6 +20072,9 @@ var ASK_GUARDIAN_SYS = [
   'Never invent facts, deadlines, legal outcomes or document contents.',
   'Never invent observed contact facts. Do not say a child was happy, settled, dysregulated, unwell, fed, changed, medicated, in a nappy, asleep, late, collected or returned unless that exact fact appears in the current chat, saved Diary, uploaded file text, or confirmed case context. If unsure, say what is missing.',
   'Court order accuracy rule: do not quote stage numbers, contact times, recitals, deadlines or order wording unless the exact wording is present in the active chat or confirmed case context. If the exact order text is not visible, say you cannot confirm the order wording from the material in front of you and ask the user to paste or open the order.',
+  'If contact times or arrangements come from profile memory, diary memory, old chat or old documents rather than the latest readable sealed order, label them as saved memory or the user\'s understanding. Do not write "your order says" unless the exact sealed-order wording is visible in the current answer context.',
+  'Money/contact boundary: do not give a legal conclusion such as "she has no legal right" or "this is a breach" unless quoting exact order wording and keeping it as information to check. Safer wording: "CMS and child contact are usually treated separately, but we should check the exact order and get legal advice if contact is withheld."',
+  'Breach boundary: when the user asks if something is a clear breach, do not answer with a bare yes. Say what the exact order wording would need to show, what facts should be logged, and that the court decides breach/non-compliance.',
   'Formal document accuracy rule: for Cafcass reports, social services reports, CNF/case narrative forms, solicitor letters, medical/school reports, statements and hearing documents, use the full source text when available. Do not rely on summaries for allegations, recommendations, professional views, dates, deadlines or required actions. If the exact wording is not visible, say the document text needs checking.',
   'Court document classification rule: translate form names into plain English. C100 is an application about child arrangements or related Children Act orders. C7 is an acknowledgement/response form. C21 is gatekeeping/allocation/directions. C43 is a child arrangements order. C79 is enforcement. C6 is a court notice. A bundle is an index/container, not one single story. Old position statements, draft orders and proposals are historical material unless a sealed order confirms them.',
   'Source hierarchy rule: the latest sealed order and exact court directions come before old proposals, old statements, summaries, party allegations, bundle indexes and AI notes. If documents conflict, say which source type appears stronger for record accuracy without predicting legal outcome.',
@@ -20473,6 +20087,7 @@ var ASK_GUARDIAN_SYS = [
   'Evidence coaching is allowed. You may say an item is strong support, useful but incomplete, or weak support for a specific factual point. Explain why using source, date, original file, independence, consistency and whether it is linked to a diary entry. Never call it proof of an outcome, never say it will win, and never give a legal-strength score.',
   'Pattern safety: identify repeated observable behaviour only when there is evidence. Never diagnose, label personality, claim motives, or tell the parent a delay or tone proves bad intent.',
   'When discussing patterns, separate FACT, POSSIBLE PATTERN, and WHAT TO LOG NEXT. Use cautious wording such as "may suggest" and "worth documenting".',
+  'Silence safety: silence, delayed replies or quiet periods do not prove that something is building or that contact will be stopped. Treat them as uncertainty. Validate the worry, then ask what specific message, deadline, handover or scheduled contact needs checking.',
   'Give legal information and preparation support, not personalised legal representation or guarantees.',
   'If the user asks you to rate their chances, predict the decision, say whether they will win, or assess legal strength: do not answer with odds, a percentage, a prediction or a legal-strength score.',
   'For chance/outcome questions, say: "I cannot predict the decision, but I can prepare you properly." Then give a preparation review: completed fields, missing dates, missing sources, unanswered claims, hearing questions to practise, and behaviour on the day.',
@@ -20504,9 +20119,14 @@ var agVoiceRecognition = null;
 var agVoiceActive = false;
 var agVoiceFinal = '';
 var agVoiceFinalChunks = [];
-var agVoiceReplies = false;
-var agSpokenRepliesEnabled = false;
+var agVoiceInterimSnapshot = '';
+var agVoiceStartedAt = 0;
+var agVoiceAutoSend = false;
+var agVoiceReplies = true;
+var agSpokenRepliesEnabled = true;
 var agSpeechUtterance = null;
+var agLastUserSendText = '';
+var agLastUserSendAt = 0;
 var askCloudSaveTimer = null;
 var agUseCaseContext = true;
 var agSkipDefaultOpenMessage = false;
@@ -20547,8 +20167,12 @@ function shouldKeepGuardianVoiceChunk(chunk) {
   if (!chunk) return false;
   return !agVoiceFinalChunks.some(function(existing) {
     existing = normaliseGuardianVoiceText(existing).toLowerCase();
-    return existing === chunk || existing.indexOf(chunk) >= 0 || chunk.indexOf(existing) >= 0;
+    return existing === chunk;
   });
+}
+
+function guardianIsMobileVoiceDevice() {
+  return /android|iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
 }
 
 function guardianChatKey() {
@@ -21152,11 +20776,102 @@ function normaliseAskAttachmentAnalysis(result) {
     apparentDate:text(value.apparentDate, 120) || 'unknown',
     purpose:text(value.purpose, 500),
     summary:text(value.summary, 1200),
+    readabilityWarning:text(value.readabilityWarning, 500),
     deadlines:list(value.deadlines),
     requiredActions:list(value.requiredActions),
     uncertainties:list(value.uncertainties),
     clauses:clauses(value.clauses)
   };
+}
+
+function fallbackAskAttachmentAnalysis(file, prepared, reason) {
+  var name = String(file && file.name || 'uploaded file');
+  var hay = name.toLowerCase();
+  var itemType = 'other';
+  if (/order|c43|directions|sealed|child arrangements|court|adobe|acrobat/.test(hay)) itemType = 'court_order';
+  else if (/cafcass|section.?7|safeguarding/.test(hay)) itemType = 'cafcass';
+  else if (/social|children.?s services|assessment|cnf|case narrative/.test(hay)) itemType = 'social_services';
+  else if (/solicitor|letter|legal/.test(hay)) itemType = 'solicitor';
+  else if (/school|nursery/.test(hay)) itemType = 'school';
+  else if (/medical|gp|health|doctor/.test(hay)) itemType = 'medical';
+  else if (/message|appclose|whatsapp|conversation|chat|sms|text/.test(hay)) itemType = 'message';
+  var isOrder = itemType === 'court_order';
+  var warning = isOrder
+    ? 'Guardian preserved the original, but could not read the order wording reliably enough to quote clauses. Use a clearer digital PDF, OCR copy, or paste the exact clause before relying on order terms.'
+    : 'Guardian preserved the original, but could not read or organise the content reliably. Use a clearer digital PDF, OCR copy, DOCX or pasted text before relying on it.';
+  return normaliseAskAttachmentAnalysis({
+    itemType:itemType,
+    apparentDate:'unknown',
+    purpose:isOrder ? 'Court order uploaded for reading and preservation.' : 'File uploaded for preservation and later review.',
+    summary:isOrder
+      ? 'I have saved the order original, but I cannot safely read the wording from this copy yet. I will not quote contact times, stages or clauses until the exact order text is readable or pasted.'
+      : 'I have saved the original, but I cannot safely read the content from this copy yet.',
+    readabilityWarning:warning,
+    deadlines:[],
+    requiredActions:[],
+    uncertainties:[warning, reason || 'Automated reading did not return a reliable structured result.'],
+    clauses:[]
+  });
+}
+
+function guardianAttachmentReadingStatus(item) {
+  item = item || {};
+  var parsed = item.parsed || {};
+  var prepared = item.prepared || {};
+  var vault = item.vaultEntry || {};
+  var originalStatus = vault.originalStored ? 'Original secured in Vault' : 'Original not secured yet';
+  var duplicateStatus = vault.duplicateOfReference ? 'Duplicate copy of ' + vault.duplicateOfReference : '';
+  var typeLabel = {
+    court_order:'court order',
+    cafcass:'Cafcass/report',
+    social_services:'social services document',
+    solicitor:'solicitor/letter',
+    school:'school/nursery document',
+    medical:'medical document',
+    message:'message screenshot/export',
+    hearing:'hearing/court document',
+    other:'file'
+  }[parsed.itemType || item.type] || 'file';
+  var clauseCount = Array.isArray(parsed.clauses) ? parsed.clauses.length : 0;
+  var deadlineCount = Array.isArray(parsed.deadlines) ? parsed.deadlines.length : 0;
+  var sourceKind = prepared.kind === 'image' ? 'screenshot/photo' : prepared.kind === 'pdf' ? 'PDF' : prepared.kind === 'text' ? 'text document' : (prepared.kind || 'file');
+  var reading = parsed.readabilityWarning
+    ? 'Needs clearer text/OCR before relying on wording'
+    : (clauseCount || deadlineCount || parsed.summary ? 'Readable enough for a first pass' : 'Original saved; content needs user description');
+  return {
+    ref:vault.evidenceReference || '',
+    typeLabel:typeLabel,
+    sourceKind:sourceKind,
+    reading:reading,
+    readable:!parsed.readabilityWarning,
+    clauseCount:clauseCount,
+    deadlineCount:deadlineCount,
+    originalStatus:originalStatus,
+    duplicateStatus:duplicateStatus,
+    warning:parsed.readabilityWarning || '',
+    nextStep:parsed.readabilityWarning
+      ? 'Upload a clearer digital/OCR copy or paste the exact wording you want checked.'
+      : (parsed.itemType === 'court_order' ? 'Ask about a clause, stage, handover term, missed-time wording or deadline.' : 'Tell Guardian what you want to do with it, or link it to Diary when approved.')
+  };
+}
+
+function guardianAttachmentReceiptText(item, index, total) {
+  var status = guardianAttachmentReadingStatus(item);
+  var parsed = item.parsed || {};
+  var prefix = total > 1 ? (index + 1) + '. ' : '';
+  var lines = [
+    prefix + 'Saved' + (status.ref ? ' as ' + status.ref : '') + ': ' + status.typeLabel,
+    'Original: ' + status.originalStatus,
+    'Source: ' + status.sourceKind,
+    'Reading: ' + status.reading
+  ];
+  if (status.duplicateStatus) lines.push(status.duplicateStatus);
+  if (status.clauseCount) lines.push('Clauses/sections found: ' + status.clauseCount);
+  if (status.deadlineCount) lines.push('Dates/deadlines found: ' + status.deadlineCount);
+  if (parsed.apparentDate && parsed.apparentDate !== 'unknown') lines.push('Document date found: ' + parsed.apparentDate);
+  if (status.warning) lines.push('Check: ' + status.warning);
+  lines.push('Next: ' + status.nextStep);
+  return lines.join('\n');
 }
 
 async function buildAskPreparationSheet() {
@@ -21241,7 +20956,7 @@ function startCafcassQuestionPractice() {
   agCallAPI('Create a private plan of likely Cafcass questions from this specific dated document and confirmed case facts. Do not display the full list yet. Ask the FIRST question only. After each answer, briefly coach it and ask the next question.');
 }
 
-function openTalkGuardian() { go('sTalkGuardian'); }
+function openTalkGuardian() { openDeepDiveChat(); }
 
 function openDeepDiveChat() {
   startGuardianChatSession();
@@ -21503,104 +21218,7 @@ function initTalkGuardian() {
   agAddMsg('guardian', 'What is on your mind today?\n\nPaste a message, paste your draft, tell me what happened, or ask anything. If something needs saving, I will help turn it into a factual Diary entry for you to check first.');
 }
 
-function legacyAgAddMsg(role, text) {
-  var msgs = document.getElementById('agMessages');
-  if (!msgs) return;
-  var div = document.createElement('div');
-  if (role === 'user') {
-    div.style.cssText = 'background:rgba(212,168,67,0.1);border:1.5px solid rgba(212,168,67,0.2);border-radius:12px;padding:12px 14px;color:var(--white);font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word;';
-  } else {
-    div.style.cssText = 'background:var(--card);border-left:3px solid var(--gold);border-radius:12px;padding:12px 14px;color:var(--white);font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word;';
-    var lbl = document.createElement('div');
-    lbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--gold);margin-bottom:6px;letter-spacing:0.5px;';
-    lbl.textContent = 'GUARDIAN';
-    div.insertBefore(lbl, null);
-    div.insertBefore(lbl, div.firstChild);
-  }
-  div.appendChild(document.createTextNode(text));
-  msgs.appendChild(div);
-  div.scrollIntoView({behavior:'smooth', block:'end'});
-}
-
-async function legacyAgCallAPI(prompt) {
-  var msgs = document.getElementById('agMessages');
-  var loadDiv = document.createElement('div');
-  loadDiv.id = 'agLoader';
-  loadDiv.style.cssText = 'color:var(--muted);font-size:14px;padding:8px 4px;';
-  loadDiv.textContent = 'Guardian is thinking...';
-  if (msgs) msgs.appendChild(loadDiv);
-  try {
-    var ctx = (typeof getCTX === 'function' ? getCTX() : '') + (agCoachContext ? '\n\n' + agCoachContext : '');
-    var payload = {
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 800,
-      system: typeof SYS !== 'undefined' ? SYS : 'You are Guardian, a co-parenting communication coach for parents in family court in England and Wales.',
-      messages: [{role: 'user', content: ctx + ' ' + prompt}]
-    };
-    var res = await guardianFetch(typeof API !== 'undefined' ? API : '/api/anthropic', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-    var data = await res.json();
-    var reply = (data.content || []).map(function(b) { return b.text || ''; }).join('').trim();
-    if (loadDiv.parentNode) loadDiv.parentNode.removeChild(loadDiv);
-    agAddMsg('guardian', reply || 'Something went wrong. Please try again.');
-  } catch(e) {
-    if (loadDiv.parentNode) loadDiv.parentNode.removeChild(loadDiv);
-    agAddMsg('guardian', 'Connection error. Check your signal and try again.');
-  }
-}
-
-function legacyAgSend() {
-  var inp = document.getElementById('agInput');
-  if (!inp) return;
-  var v = (inp.value || '').trim();
-  if (!v) return;
-  inp.value = '';
-  var panel = document.getElementById('agRatePanel');
-  if (panel) panel.style.display = 'none';
-  agAddMsg('user', v);
-  agCallAPI(v);
-}
-
-function legacyAgChip(type) {
-  var prompts = {
-    rate: null,
-    write: 'Help me write a reply to a message from the other parent. I will paste it now.',
-    judge: 'What would a judge think of this exchange? I will paste the messages.',
-    pattern: 'Looking at everything you know about my case, is the other parent building a pattern of behaviour? What should I be documenting?',
-    log: 'Based on recent events in my case, what should I be logging in my diary tonight?'
-  };
-  if (type === 'rate') {
-    var panel = document.getElementById('agRatePanel');
-    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    return;
-  }
-  var inp = document.getElementById('agInput');
-  if (inp && prompts[type]) {
-    inp.value = prompts[type];
-    inp.focus();
-  }
-}
-
-function legacyAgSubmitRating() {
-  var their = document.getElementById('agTheirMsg');
-  var mine = document.getElementById('agMyReply');
-  if (!their || !mine) return;
-  var theirVal = (their.value || '').trim();
-  var mineVal = (mine.value || '').trim();
-  if (!theirVal || !mineVal) { if (typeof toast === 'function') toast('Paste both messages first'); return; }
-  var panel = document.getElementById('agRatePanel');
-  if (panel) panel.style.display = 'none';
-  their.value = '';
-  mine.value = '';
-  agAddMsg('user', 'Rate my reply — Their message: ' + theirVal.substring(0, 80) + (theirVal.length > 80 ? '...' : ''));
-  var ratePrompt = 'Please rate this reply out of 10. Their message: [' + theirVal + '] My draft reply: [' + mineVal + '] Give a score, say what works, what could be stronger, and suggest one improvement. Keep it brief and honest. Consider: tone, brevity, legal safety, father not carer framing, does not confirm the other parent as authority.';
-  agCallAPI(ratePrompt);
-}
-
-// ── END ASK GUARDIAN ──────────────────────────────────────────────────────────
+async // ── END ASK GUARDIAN ──────────────────────────────────────────────────────────
 
 
 function agOpen() {
@@ -21640,6 +21258,14 @@ function stopAskVoice(showMessage, sendMessage) {
     try { agVoiceRecognition.stop(); } catch(e) {}
     agVoiceRecognition = null;
   }
+  var input = document.getElementById('agInput');
+  if (input) {
+    var stable = normaliseGuardianVoiceText(input.value || '');
+    var interim = normaliseGuardianVoiceText(agVoiceInterimSnapshot || '');
+    if (interim.split(/\s+/).length > stable.split(/\s+/).length) stable = interim;
+    input.value = stable;
+    try { autoGrow(input); } catch(e) {}
+  }
   var button = document.getElementById('agVoiceBtn');
   if (button) {
     button.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"></path></svg>';
@@ -21649,13 +21275,13 @@ function stopAskVoice(showMessage, sendMessage) {
   }
   if (showMessage) toast('Dictation stopped - review or send when ready');
   if (sendMessage) {
-    var input = document.getElementById('agInput');
     if (input && input.value.trim()) setTimeout(function(){ agSend(); }, 50);
   }
+  agVoiceAutoSend = false;
 }
 
 function toggleAskVoice() {
-  if (agVoiceActive) { stopAskVoice(true, false); return; }
+  if (agVoiceActive) { stopAskVoice(true, true); return; }
   var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!Recognition) { toast('Voice input is not supported on this browser'); return; }
   updateAskVoiceMode();
@@ -21663,8 +21289,10 @@ function toggleAskVoice() {
   var input = document.getElementById('agInput');
   agVoiceFinal = input ? input.value.trim() : '';
   agVoiceFinalChunks = agVoiceFinal ? [agVoiceFinal] : [];
+  agVoiceInterimSnapshot = agVoiceFinal;
+  agVoiceStartedAt = Date.now();
   agVoiceRecognition = new Recognition();
-  agVoiceRecognition.continuous = true;
+  agVoiceRecognition.continuous = !guardianIsMobileVoiceDevice();
   agVoiceRecognition.interimResults = true;
   agVoiceRecognition.lang = 'en-GB';
   agVoiceRecognition.onresult = function(event) {
@@ -21678,9 +21306,20 @@ function toggleAskVoice() {
         interim += transcriptPart;
       }
     }
-    if (input) input.value = normaliseGuardianVoiceText(agVoiceFinal + (interim ? ' ' + interim : ''));
+    agVoiceInterimSnapshot = normaliseGuardianVoiceText(agVoiceFinal + (interim ? ' ' + interim : ''));
+    if (input) {
+      input.value = agVoiceInterimSnapshot;
+      try { autoGrow(input); } catch(e) {}
+    }
   };
   agVoiceRecognition.onend = function() {
+    if (guardianIsMobileVoiceDevice()) {
+      var captured = normaliseGuardianVoiceText((input && input.value) || agVoiceInterimSnapshot || agVoiceFinal || '');
+      var enoughToSend = captured.split(/\s+/).filter(Boolean).length >= 4 && Date.now() - agVoiceStartedAt > 1200;
+      stopAskVoice(false, agVoiceAutoSend && enoughToSend);
+      if (!agVoiceAutoSend || !enoughToSend) toast('Dictation captured - tap send when ready');
+      return;
+    }
     if (agVoiceActive && agVoiceRecognition) {
       try { agVoiceRecognition.start(); } catch(e) { stopAskVoice(false); }
     }
@@ -21711,11 +21350,9 @@ function toggleAskVoice() {
 function updateAskVoiceMode() {
   var button = document.getElementById('agVoiceModeBtn');
   if (!button) return;
-  button.style.display = 'none';
-  agVoiceReplies = false;
-  stopAskSpeech();
-  return;
+  button.style.display = 'inline-flex';
   button.textContent = agVoiceReplies ? 'Voice replies: On' : 'Voice replies: Off';
+  button.setAttribute('aria-pressed', agVoiceReplies ? 'true' : 'false');
   button.style.color = agVoiceReplies ? '#d4a843' : '#e8edf5';
   button.style.borderColor = agVoiceReplies ? 'rgba(212,168,67,0.5)' : 'rgba(255,255,255,0.1)';
   button.style.background = agVoiceReplies ? 'rgba(212,168,67,0.1)' : 'rgba(255,255,255,0.05)';
@@ -21727,10 +21364,6 @@ function stopAskSpeech() {
 }
 
 function toggleAskVoiceReplies() {
-  agVoiceReplies = false;
-  stopAskSpeech();
-  toast('Spoken replies are off for now');
-  return;
   agVoiceReplies = !agVoiceReplies;
   if (!agVoiceReplies) stopAskSpeech();
   updateAskVoiceMode();
@@ -21783,6 +21416,13 @@ function speakAskReply(text) {
     utterance.lang = 'en-GB';
     utterance.rate = 0.94;
     utterance.pitch = 1;
+    try {
+      var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+      var preferred = voices.find(function(v){ return v.lang === 'en-GB' && /Google|Microsoft|Daniel|Ryan|Sonia|Serena|Natural/i.test(v.name || ''); })
+        || voices.find(function(v){ return v.lang === 'en-GB'; })
+        || voices.find(function(v){ return /^en/i.test(v.lang || ''); });
+      if (preferred) utterance.voice = preferred;
+    } catch(e) {}
     utterance.onend = speakNext;
     utterance.onerror = function(){ agSpeechUtterance = null; };
     agSpeechUtterance = utterance;
@@ -21940,14 +21580,15 @@ async function agCallAPI(prompt) {
 }
 
 async function agHandleAttach(event) {
-  var files = Array.prototype.slice.call(event.target.files || []).filter(Boolean).slice(0, 20);
-  event.target.value = '';
+  var uploadPlan = guardianSelectFilesForUpload(event, 'chat', { silentLimitToast:true });
+  var files = uploadPlan.files;
   if (!files.length) return;
   if (!beginGuardianAction('ask_attachment')) {
     toast('Guardian is already reading an attachment');
     return;
   }
   agAddMsg('u', files.length === 1 ? 'Photo or file added' : files.length + ' photos/files added');
+  if (uploadPlan.message) agAddMsg('g', uploadPlan.message);
   var msgs = document.getElementById('agMessages');
   var ld = document.createElement('div');
   ld.style.cssText = 'color:#7a8aaa;font-size:14px;padding:8px 4px;';
@@ -21995,7 +21636,13 @@ async function agHandleAttach(event) {
     });
     agCoachContext = contextParts.join('\n\n---\n\n');
     saveStandaloneAskSession();
-    var allImageAttachments = analysed.every(function(item){ return item && item.prepared && item.prepared.kind === 'image'; });
+    var allImageAttachments = analysed.every(function(item){
+      return item && item.prepared && item.prepared.kind === 'image' &&
+        item.parsed && item.parsed.itemType === 'other' &&
+        !item.parsed.readabilityWarning &&
+        !(item.parsed.clauses || []).length &&
+        !/(order|court|message|whatsapp|appclose|cafcass|solicitor|letter|report|statement|application|document)/i.test(String(item.parsed.summary || '') + ' ' + String(item.parsed.purpose || ''));
+    });
     var guardianFirstName = profile && profile.myName ? String(profile.myName).trim().split(/\s+/)[0] : '';
     var heyName = guardianFirstName ? 'Hey ' + guardianFirstName + ', ' : 'Hey, ';
     var diaryDateLabel = typeof guardianFormatDiarySelectedDate === 'function' && typeof guardianDiarySelectedDate === 'function'
@@ -22007,14 +21654,16 @@ async function agHandleAttach(event) {
           : heyName + 'I have added the photos.') +
         '\n\nShall we add ' + (analysed.length === 1 ? 'this' : 'these') + ' to your diary for ' + diaryDateLabel + '?\n\nTell me what ' + (analysed.length === 1 ? 'it shows' : 'they show') + ' in your own words, or say “review today” and I will pull it together before anything is saved.'
       : (files.length === 1
-          ? (parsed.summary || 'Guardian added the attachment.') +
+          ? 'Upload receipt\n\n' + guardianAttachmentReceiptText(analysed[0], 0, 1) +
+            (parsed.summary ? '\n\nWhat I can read so far: ' + parsed.summary : '') +
             ((parsed.deadlines||[]).length ? '\n\nDates or deadlines stated: ' + parsed.deadlines.join('; ') : '') +
             ((parsed.requiredActions||[]).length ? '\n\nWhat it asks you to do: ' + parsed.requiredActions.join('; ') : '') +
-            '\n\n' + (analysed[0].vaultEntry ? 'Saved to Vault as ' + (analysed[0].vaultEntry.evidenceReference || 'a file') + '. I can link it to today’s Diary if you approve.' : 'Saved in this chat. The Vault receipt needs checking.')
-          : analysed.length + ' files/photos saved.\n\n' + analysed.map(function(item, index){
-              return (index + 1) + '. ' + (item.vaultEntry ? 'Vault ' + item.vaultEntry.evidenceReference : 'Saved in chat') + ' — ' + (item.parsed.summary || item.parsed.purpose || 'added');
-            }).join('\n') + '\n\nIf these belong to a contact day or event, I can link them to the Diary entry when you approve it.');
+            '\n\n' + (analysed[0].vaultEntry ? 'Original preserved in Vault. I can link it to today’s Diary if you approve.' : 'Saved in this chat. The Vault receipt needs checking.')
+          : 'Upload receipts\n\n' + analysed.map(function(item, index){
+              return guardianAttachmentReceiptText(item, index, analysed.length);
+            }).join('\n\n') + '\n\nIf these belong to a contact day or event, I can link them to the Diary entry when you approve it.');
     agAddMsg('g', response);
+    speakAskReply(response);
     var detected = type;
     renderAskEventActions(detected);
   } catch(e) {
@@ -22043,12 +21692,21 @@ async function saveAskAttachmentToVault(item) {
     date:parsed.apparentDate && parsed.apparentDate !== 'unknown' ? parsed.apparentDate : '',
     summary:parsed.summary || parsed.purpose || '',
     extract:parsed.summary || parsed.purpose || '',
+    readabilityWarning:parsed.readabilityWarning || '',
+    readingStatus:parsed.readabilityWarning ? 'needs_readable_copy' : 'first_pass_read',
+    readingReceipt:guardianAttachmentReadingStatus(item),
     deadlines:parsed.deadlines || [],
     clauses:parsed.clauses || [],
     preservedKind:prepared.preservedKind || '',
     mediaKind:prepared.mediaKind || ''
   };
   var entry = storePreparedEvidence(item.file, docType, storeParsed, 'guardian_chat_attachment', vaultMetadata);
+  if (entry && parsed.readabilityWarning) {
+    entry.processingStatus = 'needs_readable_copy';
+    entry.reviewStatus = 'needs_readable_copy';
+    entry.analysisSource = 'guardian_ai_readability_warning';
+    try { localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments)); } catch(e) {}
+  }
   if (entry && agCoachMode === 'diary_voice') {
     entry.pendingDiaryDate = typeof guardianDiarySelectedDate === 'function' ? guardianDiarySelectedDate() : '';
     try { localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments)); } catch(e) {}
@@ -22058,35 +21716,18 @@ async function saveAskAttachmentToVault(item) {
 
 async function analyseAskAttachmentFile(file) {
   var prepared = await prepareCaseFile(file);
-  if (prepared && prepared.kind === 'image') {
-    var imageDate = '';
-    try {
-      if (prepared.metadata && prepared.metadata.dateTimeOriginal) imageDate = prepared.metadata.dateTimeOriginal;
-      else if (file && file.lastModified) imageDate = new Date(file.lastModified).toISOString().slice(0, 10);
-    } catch(e) {}
-    return {
-      file: file,
-      prepared: prepared,
-      parsed: {
-        itemType: 'other',
-        apparentDate: imageDate || 'unknown',
-        purpose: 'Photo or screenshot added by the user.',
-        summary: 'Photo or screenshot attached. Guardian has saved the original and will only describe what it shows if you ask.',
-        deadlines: [],
-        requiredActions: [],
-        uncertainties: ['What this photo supports has not been confirmed by the user yet.'],
-        clauses: []
-      },
-      type: 'other'
-    };
-  }
-  var instruction = getCTX() + '\n\nAnalyse this newly received attachment. Return ONLY JSON:\n{"itemType":"cafcass|hearing|court_order|solicitor|social_services|school|medical|message|other","apparentDate":"<date or unknown>","purpose":"<one sentence>","summary":"<plain English, maximum 4 sentences>","deadlines":["<explicit deadline only>"],"requiredActions":["<action clearly requested in the document>"],"uncertainties":["<important missing or unclear point>"],"clauses":[{"clauseId":"<clause/paragraph/section id>","label":"<short label>","text":"<exact wording>","tags":["<topic>"]}]}\n\nRules: Use only this attachment. Do not merge later case events into what the sender knew at this date. Never invent a deadline or requirement. For court orders, Cafcass reports, social services reports, CNF/case narrative forms, solicitor letters, school/medical reports, statements and hearing documents, extract the most important exact clauses, sections, requests, allegations, recommendations, deadlines or directions as clauses. Preserve exact wording where possible.';
+  var instruction = getCTX() + '\n\nAnalyse this newly received attachment. Return ONLY JSON:\n{"itemType":"cafcass|hearing|court_order|solicitor|social_services|school|medical|message|other","apparentDate":"<date or unknown>","purpose":"<one sentence>","summary":"<plain English, maximum 4 sentences>","readabilityWarning":"<blank if readable, otherwise say what could not be read>","deadlines":["<explicit deadline only>"],"requiredActions":["<action clearly requested in the document>"],"uncertainties":["<important missing or unclear point>"],"clauses":[{"clauseId":"<clause/paragraph/section id>","label":"<short label>","text":"<exact wording>","tags":["<topic>"]}]}\n\nRules: Use only this attachment. Do not merge later case events into what the sender knew at this date. Never invent a deadline or requirement. For screenshots/images: first decide whether it is an ordinary photo, a message screenshot, or a screenshot/photo of a document. If it is a message screenshot, read the visible message text, sender labels, dates and times where readable. If it is a screenshot/photo of an order, report, letter, statement or court document, read the visible text and extract exact clauses/sections where readable. If text is too small, cropped, blurred or unreadable, set readabilityWarning and do not guess. If it is an ordinary private photo without readable document/message text, do not identify people or over-describe private details; summarise only that a photo was preserved and ask the user what it supports. For court orders, Cafcass reports, social services reports, CNF/case narrative forms, solicitor letters, school/medical reports, statements and hearing documents, extract the most important exact clauses, sections, requests, allegations, recommendations, deadlines or directions as clauses. Preserve exact wording where possible.';
   var content = buildPreparedContent(prepared, instruction);
-  var res = await fetchWithTimeout(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:ASK_GUARDIAN_SYS,messages:[{role:'user',content:content}]})},45000);
-  if (!res.ok) throw new Error('Chat could not read ' + file.name + '. Save it in Files, or try a clearer PDF/DOCX copy.');
-  var data = await res.json();
-  var parsed = parseCaseFileResponse(data);
-  if (!parsed) throw new Error('I read ' + file.name + ' but could not organise the result. Please try again.');
+  var parsed = null;
+  try {
+    var res = await fetchWithTimeout(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,system:ASK_GUARDIAN_SYS,messages:[{role:'user',content:content}]})},45000);
+    if (!res.ok) throw new Error('reader returned ' + res.status);
+    var data = await res.json();
+    parsed = parseCaseFileResponse(data);
+  } catch(readErr) {
+    parsed = fallbackAskAttachmentAnalysis(file, prepared, readErr && readErr.message ? readErr.message : 'Reader failed');
+  }
+  if (!parsed) parsed = fallbackAskAttachmentAnalysis(file, prepared, 'Reader did not return valid JSON');
   parsed = normaliseAskAttachmentAnalysis(parsed);
   return {
     file: file,
@@ -22100,10 +21741,18 @@ async function agSend() {
   if (!inp) return;
   var v = normaliseGuardianVoiceText(inp.value || '');
   if (!v) return;
+  var now = Date.now();
+  if (agLastUserSendText === v && now - agLastUserSendAt < 9000) {
+    inp.value = '';
+    toast('Duplicate message skipped');
+    return;
+  }
   if (!beginGuardianAction('ask_guardian')) {
     toast('Guardian is already answering');
     return;
   }
+  agLastUserSendText = v;
+  agLastUserSendAt = now;
   stopAskVoice(false);
   inp.value = '';
   var panel = document.getElementById('agRatePanel');
@@ -22213,7 +21862,7 @@ function startDiaryVoiceCapture() {
   agCoachTranscript = [];
   agCoachAnswerCount = 0;
   agPreparationSheet = null;
-  agVoiceReplies = false;
+  agVoiceReplies = true;
   updateAskVoiceMode();
   saveStandaloneAskSession();
   agSkipDefaultOpenMessage = true;
@@ -22224,7 +21873,9 @@ function startDiaryVoiceCapture() {
   if (typeof closeChatTools === 'function') closeChatTools();
   var firstName = profile && profile.myName ? String(profile.myName).trim().split(/\s+/)[0] : '';
   var diaryHello = firstName ? 'Hey ' + firstName + ', ' : '';
-  agAddMsg('g', (diaryDateForChat ? 'Diary date: ' + (typeof guardianFormatDiarySelectedDate === 'function' ? guardianFormatDiarySelectedDate(diaryDateForChat) : diaryDateForChat) + '\n\n' : '') + diaryHello + 'what happened today?\n\nYou can say it roughly: pickup, handover, food, mood, anything good, anything missing, photos or messages. I will keep it as notes until you say “review today” or “add to diary”.');
+  var diaryOpening = (diaryDateForChat ? 'Diary date: ' + (typeof guardianFormatDiarySelectedDate === 'function' ? guardianFormatDiarySelectedDate(diaryDateForChat) : diaryDateForChat) + '\n\n' : '') + diaryHello + 'what happened today?\n\nYou can say it roughly: pickup, handover, food, mood, anything good, anything missing, photos or messages. I will keep it as notes until you say “review today” or “add to diary”.';
+  agAddMsg('g', diaryOpening);
+  speakAskReply(diaryOpening);
   renderAskDiaryCaptureActions();
 }
 
@@ -22267,7 +21918,9 @@ function startDiaryOwnWordsCapture() {
   }
   var voiceBtn = document.getElementById('agVoiceBtn');
   if (voiceBtn && !agVoiceActive) {
-    setTimeout(function(){ try { toggleAskVoice(); } catch(e) {} }, 80);
+    agVoiceAutoSend = true;
+    if (agVoiceReplies) speakAskReply('I am listening. Say it naturally.');
+    setTimeout(function(){ try { toggleAskVoice(); } catch(e) {} }, agVoiceReplies ? 900 : 80);
   }
   toast('Talk naturally. Guardian will organise it after.');
 }
@@ -22583,7 +22236,9 @@ function saveDiaryEntryFromChatDraft(draft) {
 function renderAskDiarySavedReceipt(entry) {
   var msgs = document.getElementById('agMessages');
   if (!msgs || !entry) return;
-  var linkedDocs = getAskLinkedVaultItems();
+  var linkedFileCount = Array.isArray(entry.linkedVaultReferences) ? entry.linkedVaultReferences.length :
+    Array.isArray(entry.linkedVaultIds) ? entry.linkedVaultIds.length :
+    Array.isArray(entry.attachments) ? entry.attachments.length : 0;
   var localOk = verifyDiaryLocalReadBack(entry.id);
   var receiptId = 'agDiarySavedReceipt_' + entry.id;
   var card = document.createElement('div');
@@ -22592,11 +22247,11 @@ function renderAskDiarySavedReceipt(entry) {
   card.style.cssText = 'align-self:stretch;background:linear-gradient(180deg,rgba(32,27,16,0.96),rgba(20,18,14,0.96));border:1px solid rgba(212,168,67,0.34);border-left:4px solid var(--gold);border-radius:18px;padding:16px;color:var(--white);box-shadow:0 18px 44px rgba(0,0,0,0.22);';
   card.innerHTML =
     '<div style="font-size:11px;color:var(--gold);font-weight:950;letter-spacing:0.08em;margin-bottom:5px;">SAVED RECEIPT</div>' +
-    '<div style="font-size:20px;font-weight:950;margin-bottom:12px;">Diary entry saved</div>' +
+    '<div style="font-size:20px;font-weight:950;margin-bottom:12px;">Diary entry saved and verified</div>' +
     '<div class="guardian-diary-receipt-grid" style="margin-bottom:12px;">' +
       '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px;"><div style="font-size:11px;color:var(--muted);font-weight:900;">Reference</div><div style="font-size:16px;font-weight:950;">' + guardianEscapeHtml(entry.reference || '') + '</div></div>' +
       '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px;"><div style="font-size:11px;color:var(--muted);font-weight:900;">Date/time</div><div style="font-size:14px;font-weight:900;">' + guardianEscapeHtml(guardianFormatDiarySelectedDate(entry.date || '')) + (entry.eventTime ? '<br>' + guardianEscapeHtml(entry.eventTime) : '') + '</div></div>' +
-      '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px;"><div style="font-size:11px;color:var(--muted);font-weight:900;">Files linked</div><div style="font-size:16px;font-weight:950;">' + linkedDocs.length + '</div></div>' +
+      '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px;"><div style="font-size:11px;color:var(--muted);font-weight:900;">Files linked</div><div style="font-size:16px;font-weight:950;">' + linkedFileCount + '</div></div>' +
       '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px;"><div style="font-size:11px;color:var(--muted);font-weight:900;">Local check</div><div style="font-size:13px;font-weight:900;color:' + (localOk ? 'var(--green)' : 'var(--red)') + ';">' + (localOk ? 'Saved and read back' : 'Needs checking') + '</div></div>' +
     '</div>' +
     '<div style="background:rgba(34,201,122,0.055);border:1px solid rgba(34,201,122,0.14);border-radius:12px;padding:11px;margin-bottom:10px;color:var(--muted-hi);font-size:13px;line-height:1.5;">Original words, Guardian notes and linked files stay separate. If you delete this later, it moves to recovery first.</div>' +
