@@ -15458,12 +15458,29 @@ async function uploadOriginalToVault(file, hash) {
     vaultAvailable = false;
     throw new Error(result.error.message || 'Secure storage is not available.');
   }
+  var readBack = await guardianPromiseTimeout(supabase.storage.from(VAULT_BUCKET).download(path), 30000, 'vault_upload_readback');
+  if (readBack.error || !readBack.data) {
+    vaultAvailable = false;
+    throw new Error((readBack.error && readBack.error.message) || 'Secure storage did not confirm the uploaded original.');
+  }
+  if (hash && window.crypto && window.crypto.subtle && readBack.data.arrayBuffer) {
+    var storedBuffer = await readBack.data.arrayBuffer();
+    var digest = await window.crypto.subtle.digest('SHA-256', storedBuffer);
+    var storedHash = Array.from(new Uint8Array(digest)).map(function(byte) {
+      return byte.toString(16).padStart(2, '0');
+    }).join('');
+    if (storedHash !== hash) {
+      vaultAvailable = false;
+      throw new Error('Secure storage read-back did not match the original file hash.');
+    }
+  }
   vaultAvailable = true;
   return {
     originalStored:true,
     vaultPath:path,
     originalHash:hash,
     vaultStoredAt:new Date().toISOString(),
+    vaultReadBackAt:new Date().toISOString(),
     vaultStatus:'secured'
   };
 }
@@ -15523,6 +15540,7 @@ function storePreparedEvidence(file, docType, parsed, source, vaultMetadata) {
     originalHash:vaultMetadata.originalHash || '',
     vaultPath:vaultMetadata.vaultPath || '',
     vaultStoredAt:vaultMetadata.vaultStoredAt || '',
+    vaultReadBackAt:vaultMetadata.vaultReadBackAt || '',
     vaultStatus:vaultMetadata.vaultStatus || 'not_secured',
     vaultError:vaultMetadata.vaultError || '',
     duplicateStatus:duplicateOriginal ? 'duplicate_original_hash' : 'unique_or_unchecked',
@@ -15628,9 +15646,39 @@ function guardianOwnsEvidenceRecord(doc) {
   return true;
 }
 
+function markVaultOriginalMissing(doc, reason) {
+  if (!doc) return;
+  doc.originalStored = false;
+  doc.vaultStatus = 'missing_original_needs_reupload';
+  doc.verificationStatus = 'original_missing';
+  doc.integrityStatus = 'missing';
+  doc.vaultError = reason || 'Vault original could not be found.';
+  doc.reviewStatus = 'needs_original_reupload';
+  doc.storageStatus = 'local_verified_analysis_only';
+  try { localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments)); } catch(e) {}
+  try { if (typeof saveProfileToSupabase === 'function') saveProfileToSupabase(); } catch(e) {}
+  try { renderTimeline(); } catch(e) {}
+}
+
+async function confirmVaultObjectExists(doc) {
+  if (!supabase || !currentUser || !doc || !doc.vaultPath) throw new Error('Secure original is not available.');
+  if (!guardianOwnsEvidenceRecord(doc)) throw new Error('This evidence record does not belong to the signed-in account.');
+  var result = await guardianPromiseTimeout(supabase.storage.from(VAULT_BUCKET).download(doc.vaultPath), 30000, 'vault_access_readback');
+  if (result.error || !result.data) {
+    var message = (result.error && result.error.message) || 'Vault original could not be found.';
+    markVaultOriginalMissing(doc, message);
+    throw new Error('Original missing from Vault. Please use Add original to repair this item.');
+  }
+  doc.vaultReadBackAt = new Date().toISOString();
+  doc.vaultStatus = 'secured';
+  try { localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments)); } catch(e) {}
+  return true;
+}
+
 async function getVaultAccessUrl(doc, download) {
   if (!supabase || !currentUser || !doc || !doc.vaultPath) throw new Error('Secure original is not available.');
   if (!guardianOwnsEvidenceRecord(doc)) throw new Error('This evidence record does not belong to the signed-in account.');
+  await confirmVaultObjectExists(doc);
   var options = download ? { download:doc.originalName || doc.name || 'evidence' } : undefined;
   var result = await guardianPromiseTimeout(supabase.storage.from(VAULT_BUCKET).createSignedUrl(doc.vaultPath, 60, options), 20000, 'vault_access');
   if (result.error || !result.data || !result.data.signedUrl) throw new Error((result.error && result.error.message) || 'Could not open secure original.');
@@ -15639,7 +15687,7 @@ async function getVaultAccessUrl(doc, download) {
 
 async function verifyEvidenceIntegrity(docId) {
   var doc = caseDocuments.find(function(item){ return item.id === docId; });
-  if (!doc || !doc.originalStored || !doc.originalHash) {
+  if (!doc || !evidenceOriginalIsSecured(doc) || !doc.originalHash) {
     toast('No secured original and hash are available for this item');
     return false;
   }
@@ -15664,6 +15712,7 @@ async function verifyEvidenceIntegrity(docId) {
     toast('Integrity warning - this file no longer matches its recorded hash');
     return false;
   } catch(e) {
+    if (/missing|not found|object/i.test(String(e && e.message || ''))) markVaultOriginalMissing(doc, e.message);
     toast(e.message || 'Could not verify this original');
     return false;
   }
@@ -15671,7 +15720,7 @@ async function verifyEvidenceIntegrity(docId) {
 
 async function viewOriginalDoc(docId) {
   var doc = caseDocuments.find(function(item){ return item.id === docId; });
-  if (!doc || !doc.originalStored) { toast('The complete original was not secured for this item'); return; }
+  if (!doc || !evidenceOriginalIsSecured(doc)) { toast('The complete original is not currently secured. Use Add original to repair it.'); return; }
   var tab = window.open('', '_blank');
   try {
     var url = await getVaultAccessUrl(doc, false);
@@ -15679,13 +15728,14 @@ async function viewOriginalDoc(docId) {
     else window.location.href = url;
   } catch(e) {
     if (tab) tab.close();
+    if (/missing|not found|object/i.test(String(e && e.message || ''))) markVaultOriginalMissing(doc, e.message);
     toast(e.message || 'Could not open secure original');
   }
 }
 
 async function downloadOriginalDoc(docId) {
   var doc = caseDocuments.find(function(item){ return item.id === docId; });
-  if (!doc || !doc.originalStored) { toast('The complete original was not secured for this item'); return; }
+  if (!doc || !evidenceOriginalIsSecured(doc)) { toast('The complete original is not currently secured. Use Add original to repair it.'); return; }
   try {
     var url = await getVaultAccessUrl(doc, true);
     var link = document.createElement('a');
@@ -15696,6 +15746,7 @@ async function downloadOriginalDoc(docId) {
     document.body.removeChild(link);
     toast('Downloading secure original');
   } catch(e) {
+    if (/missing|not found|object/i.test(String(e && e.message || ''))) markVaultOriginalMissing(doc, e.message);
     toast(e.message || 'Could not download secure original');
   }
 }
@@ -16487,6 +16538,10 @@ function findExistingEvidenceByHash(hash) {
   }) || null;
 }
 
+function evidenceOriginalIsSecured(doc) {
+  return !!(doc && doc.originalStored && doc.vaultPath && doc.vaultStatus !== 'missing_original_needs_reupload' && doc.verificationStatus !== 'original_missing');
+}
+
 
 var guardianQuickUploadFiles = [];
 function triggerGuardianQuickUpload() {
@@ -16589,12 +16644,13 @@ function renderEvidenceUploadStatus(added, failed, vaultWarnings) {
   vaultWarnings = vaultWarnings || [];
   var colour = failed.length ? 'var(--gold)' : 'var(--green)';
   var itemRows = added.map(function(item) {
-    var storage = item.originalStored ? '<span style="color:var(--green);">Original secured</span>' : item.externalUrl ? '<span style="color:var(--gold);">External link only</span>' : '<span style="color:var(--gold);">Original not stored</span>';
+    var secured = evidenceOriginalIsSecured(item);
+    var storage = secured ? '<span style="color:var(--green);">Original secured</span>' : item.externalUrl ? '<span style="color:var(--gold);">External link only</span>' : item.vaultStatus === 'missing_original_needs_reupload' ? '<span style="color:var(--red);">Original missing - add again</span>' : '<span style="color:var(--gold);">Original not stored</span>';
     var processing = item.processingStatus === 'preserved_unread' ? 'Preserved, readable copy needed' : item.processingStatus === 'preserved_unreviewed' ? 'Preserved, not transcribed or interpreted' : item.processingStatus === 'reference_only' ? 'Reference only' : 'Guardian analysis saved';
     var duplicate = item.duplicateOfReference ? ' · <span style="color:var(--amber);">Duplicate copy of ' + guardianEscapeHtml(item.duplicateOfReference) + '</span>' : '';
-    var originalActions = item.originalStored
+    var originalActions = secured
       ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;"><button type="button" onclick="viewOriginalDoc(' + JSON.stringify(item.id) + ')" style="padding:7px 8px;background:rgba(26,158,114,0.08);border:1px solid rgba(26,158,114,0.24);border-radius:8px;color:var(--green);font-size:10px;font-weight:900;cursor:pointer;">View original</button><button type="button" onclick="downloadOriginalDoc(' + JSON.stringify(item.id) + ')" style="padding:7px 8px;background:rgba(52,120,212,0.08);border:1px solid rgba(52,120,212,0.24);border-radius:8px;color:var(--blue);font-size:10px;font-weight:900;cursor:pointer;">Download</button></div>'
-      : '<div style="margin-top:7px;font-size:10px;color:var(--amber);line-height:1.4;">Keep your untouched original outside Guardian until secure storage is confirmed.</div>';
+      : '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;"><button type="button" onclick="addOriginalToVaultItem(' + JSON.stringify(item.id) + ')" style="padding:7px 8px;background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.24);border-radius:8px;color:var(--gold);font-size:10px;font-weight:900;cursor:pointer;">Add original</button></div><div style="margin-top:7px;font-size:10px;color:var(--amber);line-height:1.4;">Keep your untouched original outside Guardian until secure storage is confirmed.</div>';
     return '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,0.07);"><div style="font-size:12px;color:var(--white);font-weight:850;overflow-wrap:anywhere;">' + guardianEscapeHtml(item.evidenceReference || '') + ' · ' + guardianEscapeHtml(item.originalName || item.name || 'Vault item') + '</div><div style="font-size:10px;color:var(--muted-hi);line-height:1.5;margin-top:3px;">' + storage + ' · ' + guardianEscapeHtml(processing) + duplicate + (item.linkedDiaryReference ? ' · Linked to ' + guardianEscapeHtml(item.linkedDiaryReference) : ' · Not linked to Diary') + '</div>' + originalActions + '</div>';
   }).join('');
   var linkedReference = added.map(function(item){ return item.linkedDiaryReference || ''; }).filter(Boolean)[0] || '';
@@ -16838,13 +16894,14 @@ function editEvidenceDiaryReference(docId) {
   if (answer === null) return;
   answer = String(answer || '').trim().toUpperCase();
   if (answer && !/^D-\d{3,}$/.test(answer)) { toast('Use a Diary reference like D-003, or leave it blank'); return; }
+  var hadLink = !!current;
   doc.linkedDiaryReference = answer;
   doc.diaryReference = answer;
   doc.linkedAt = answer ? new Date().toISOString() : '';
   localStorage.setItem('gCaseDocs', JSON.stringify(caseDocuments));
   try { saveProfileToSupabase(); } catch(e) {}
   renderTimeline();
-  toast(answer ? 'Evidence linked to ' + answer : 'Evidence unlinked from Diary');
+  toast(answer ? 'Evidence linked to ' + answer : (hadLink ? 'Evidence unlinked from Diary' : 'No Diary link added'));
 }
 
 
@@ -16889,8 +16946,8 @@ function renderTimeline() {
     if (typeFilter && doc.type !== typeFilter) return false;
     if (dateFilter === 'dated' && !hasDate) return false;
     if (dateFilter === 'missing' && hasDate) return false;
-    if (dateFilter === 'secured' && !doc.originalStored) return false;
-    if (dateFilter === 'unsecured' && doc.originalStored) return false;
+    if (dateFilter === 'secured' && !evidenceOriginalIsSecured(doc)) return false;
+    if (dateFilter === 'unsecured' && evidenceOriginalIsSecured(doc)) return false;
     if (dateFilter === 'unlinked' && (doc.linkedDiaryReference || doc.diaryReference)) return false;
     return true;
   });
@@ -16907,7 +16964,7 @@ function renderTimeline() {
   listHtml += filteredDocs.slice().sort(function(a, b) {
     return (evidenceDateSortValue(b) - evidenceDateSortValue(a)) || (evidenceDateTime(b.uploadedAt) - evidenceDateTime(a.uploadedAt));
   }).slice(0, 8).map(function(doc) {
-    var secured = !!doc.originalStored;
+    var secured = evidenceOriginalIsSecured(doc);
     var displayDate = evidenceDisplayDate(evidenceDateCandidate(doc));
     var dateMissing = displayDate === 'Date not set';
     var duplicateShort = doc.duplicateOfReference ? ' <span style="color:var(--amber);"> · Duplicate of ' + guardianEscapeHtml(doc.duplicateOfReference) + '</span>' : '';
@@ -16921,7 +16978,7 @@ function renderTimeline() {
         '<div style="font-size:13px;font-weight:750;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + guardianEscapeHtml(evidenceDisplayName(doc)) + '</div>' +
         '<div style="font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Original: ' + guardianEscapeHtml(doc.originalName || doc.name || 'external link') + '</div>' +
         '<div style="font-size:11px;color:var(--muted-hi);margin-top:3px;">Uploaded ' + guardianEscapeHtml(evidenceUploadDisplay(doc)) +
-          ' <span style="color:' + (secured ? 'var(--green)' : 'var(--amber)') + ';"> · ' + (secured ? 'Original secured' : 'Original not secured') + '</span>' +
+          ' <span style="color:' + (secured ? 'var(--green)' : (doc.vaultStatus === 'missing_original_needs_reupload' ? 'var(--red)' : 'var(--amber)')) + ';"> · ' + (secured ? 'Original secured' : (doc.vaultStatus === 'missing_original_needs_reupload' ? 'Original missing - add again' : 'Original not secured')) + '</span>' +
           duplicateShort +
           (doc.linkedDiaryReference ? ' · Linked to ' + guardianEscapeHtml(doc.linkedDiaryReference) : '') + '</div>' +
       '</div>' +
@@ -16946,9 +17003,12 @@ function renderTimeline() {
     var confirmedCount = (brainLog || []).filter(function(fact) {
       return fact.userConfirmed && fact.sourceId === doc.id;
     }).length;
-    var originalStatus = doc.originalStored
+    var originalSecured = evidenceOriginalIsSecured(doc);
+    var originalStatus = originalSecured
       ? '<div class="doc-location" style="color:var(--green);">Original secured in Vault · SHA-256 ' + guardianEscapeHtml((doc.originalHash || '').substring(0, 12)) + '...</div>'
-      : '<div class="doc-location" style="color:var(--amber);">Analysis saved only. Add the original file to make this Vault item complete.</div>';
+      : doc.vaultStatus === 'missing_original_needs_reupload'
+        ? '<div class="doc-location" style="color:var(--red);">Original missing from Vault. Add the original file again to repair this item.</div>'
+        : '<div class="doc-location" style="color:var(--amber);">Analysis saved only. Add the original file to make this Vault item complete.</div>';
     var readingStatusHtml = '';
     if (doc.readabilityWarning || doc.readingStatus === 'needs_readable_copy') {
       readingStatusHtml = '<div style="margin-top:8px;padding:9px 10px;border:1px solid rgba(245,158,11,0.28);background:rgba(245,158,11,0.08);border-radius:8px;font-size:11px;color:var(--amber);line-height:1.5;"><strong>Reading status:</strong> Needs clearer text/OCR before relying on wording.<br>' + guardianEscapeHtml(doc.readabilityWarning || 'Upload a clearer digital/OCR copy or paste the exact wording to check.') + '</div>';
@@ -16958,7 +17018,7 @@ function renderTimeline() {
     var actions = '<button class="doc-export-btn" onclick="exportDoc(' + JSON.stringify(doc.id) + ')">Share analysis</button>';
     if (doc.externalUrl) actions += '<a class="doc-export-btn" style="margin-left:6px;display:inline-block;text-decoration:none;" href="' + guardianEscapeHtml(doc.externalUrl) + '" target="_blank" rel="noopener noreferrer">Open source link</a>';
     if (doc.mediaKind === 'audio') actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="openVerifiedTranscript(' + JSON.stringify(doc.id) + ')">' + (doc.verifiedTranscript ? 'Review transcript' : 'Add verified transcript') + '</button>';
-    if (doc.originalStored) {
+    if (originalSecured) {
       actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="viewOriginalDoc(' + JSON.stringify(doc.id) + ')">View original</button>';
       actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="downloadOriginalDoc(' + JSON.stringify(doc.id) + ')">Download</button>';
       actions += '<button class="doc-export-btn" style="margin-left:6px;" onclick="verifyEvidenceIntegrity(' + JSON.stringify(doc.id) + ')">Verify integrity</button>';
@@ -21648,10 +21708,14 @@ async function agHandleAttach(event) {
     var diaryDateLabel = typeof guardianFormatDiarySelectedDate === 'function' && typeof guardianDiarySelectedDate === 'function'
       ? guardianFormatDiarySelectedDate(guardianDiarySelectedDate())
       : 'today';
+    var uploadReceiptSummary = analysed.map(function(item, index) {
+      return guardianAttachmentReceiptText(item, index, analysed.length);
+    }).join('\n\n');
     var response = allImageAttachments
       ? (analysed.length === 1
-          ? heyName + 'I have added the photo.'
-          : heyName + 'I have added the photos.') +
+          ? heyName + 'I have saved the photo to your Vault.'
+          : heyName + 'I have saved the photos to your Vault.') +
+        '\n\nUpload receipt\n\n' + uploadReceiptSummary +
         '\n\nShall we add ' + (analysed.length === 1 ? 'this' : 'these') + ' to your diary for ' + diaryDateLabel + '?\n\nTell me what ' + (analysed.length === 1 ? 'it shows' : 'they show') + ' in your own words, or say “review today” and I will pull it together before anything is saved.'
       : (files.length === 1
           ? 'Upload receipt\n\n' + guardianAttachmentReceiptText(analysed[0], 0, 1) +
